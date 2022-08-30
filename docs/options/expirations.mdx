@@ -1,0 +1,151 @@
+---
+title: Expirations
+sidebar_position: 1
+---
+
+Get a list of current or historical option expiration dates for an underlying symbol. If no optional parameters are used, the endpoint returns the expirations for strike in the chain.
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+:::info Root Endpoint For OPTIONS
+https://api.marketdata.app/v1/options
+:::
+
+    https://api.marketdata.app/v1/options
+
+## Endpoint
+
+:::tip Expirations Endpoint
+/expirations/{underlyingSymbol}
+:::
+
+    /expirations/{underlyingSymbol}
+
+## Method
+
+    GET
+
+## Request Example
+
+    /expirations/AAPL
+
+## Response Example
+
+```json
+{
+  "s": "ok",
+  "expirations": [
+    "2021-04-16",
+    "2021-04-23",
+    "2021-04-30",
+    "2021-05-07",
+    "2021-05-14",
+    "2021-05-21",
+    "2021-05-28",
+    "2021-06-18",
+    "2021-07-16",
+    "2021-08-20",
+    "2021-09-17",
+    "2021-10-15",
+    "2022-01-21",
+    "2022-06-17",
+    "2022-06-17",
+    "2022-09-16",
+    "2023-01-23",
+    "2023-03-17",
+    "2023-06-16"
+  ],
+  "updated": 123456789
+}
+```
+
+## Request Parameters
+
+```mdx-code-block
+<Tabs>
+<TabItem value="required" label="Required" default>
+```
+
+- **underlyingSymbol** `string`
+
+  The underlying ticker symbol for the options chain you wish to lookup.
+  A company or securities identifier can also be used instead of a ticker symbol.
+  Ticker Formats: (`TICKER`, `TICKER.EX`, `EXCHANGE:TICKER`)
+  Company Identifiers: (`CIK`, `LEI`)
+  Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
+
+```mdx-code-block
+</TabItem>
+<TabItem value="optional" label="Optional">
+```
+
+- **strike** `number`
+
+  Limit the lookup of expiration dates to
+  the strike provide. This will cause the endpoint to only return expiration dates that include this strike.
+
+- **date** `date`
+
+  Use to lookup a historical list of
+  expiration dates from a specific previous trading day. If date is omitted the expiration dates will be from the current trading day during market hours or from the last trading day when the market is closed. Accepted date
+  inputs: `ISO 8601`, `unix`, `spreadsheet`.
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+## Response Attributes
+
+```mdx-code-block
+<Tabs>
+<TabItem value="Success" label="Success" default>
+```
+
+- **s** `string`
+
+  Status will always be `ok` when there is strike
+  data for the underlying/expirations requested.
+
+- **expirations** `array[date]`
+
+  The expiration dates requested for the underlying with the option strikes for each expiration.
+
+- **updated** `date`
+
+  The date and time of this list of options strikes was updated in Unix time. For historical strikes, this number should match the `date` parameter.
+
+```mdx-code-block
+</TabItem>
+<TabItem value="NoData" label="No Data">
+```
+
+- **s** `string`
+
+  Status will be `no_data` if no data is found for the request.
+
+- **nextTime** `number` optional
+
+  Unix time of the next quote if there is no data in the requested period, but there is data in a subsequent period.
+
+- **prevTime** `number` optional
+
+  Unix time of the previous quote if there is no data in the requested period, but there is data in a previous period.
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Error" label="Error">
+```
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```

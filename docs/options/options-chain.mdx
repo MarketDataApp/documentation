@@ -1,0 +1,207 @@
+---
+title: Options Chain
+sidebar_position: 3
+---
+
+Get a current or historical end of day options chain for an underlying ticker symbol. Optional parameters allow for extensive filtering of the chain. Use the optionSymbol returned from this endpoint to get quotes, greeks, or other information using the other endpoints.
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+:::info Root Endpoint For OPTIONS
+https://api.marketdata.app/v1/options
+:::
+
+    https://api.marketdata.app/v1/options
+
+## Endpoint
+
+:::tip Expirations Endpoint
+/chain/{underlyingSymbol}
+:::
+
+    /chain/{underlyingSymbol}
+
+## Method
+
+    GET
+
+## Request Example
+
+    /chain/AAPL/
+
+## Response Example
+
+```json
+{
+  "s": "ok",
+  "optionSymbol": "AAPL230120C00150000",
+  "underlying": "AAPL",
+  "expiration": 123456789,
+  "side": "call",
+  "strike": 150,
+  "firstTraded": 123456789
+}
+```
+
+## Request Parameters
+
+```mdx-code-block
+<Tabs>
+<TabItem value="required" label="Required" default>
+```
+
+- **underlyingSymbol** `string`
+
+  The underlying ticker symbol for the options chain you wish to lookup.
+  A company or securities identifier can also be used instead of a ticker symbol.
+  Ticker Formats: (`TICKER`, `TICKER.EX`, `EXCHANGE:TICKER`)
+  Company Identifiers: (`CIK`, `LEI`)
+  Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
+
+```mdx-code-block
+</TabItem>
+<TabItem value="optional" label="Optional">
+```
+
+- **date** `date`
+
+  Use to lookup a historical end of day options chain from a specific trading day. If no date is specified the chain will be the most current chain available during market hours. When the market is closed the chain will be from the last trading day. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
+
+- **expiration** `date`
+
+  Limit the option chain to a specific expiration date. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`. If omitted all expirations will be returned.
+
+- **from** `date`
+
+  Limit the option chain to expiration dates after from (inclusive). Should be combined with to to create a range. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`. If omitted all expirations will be returned.
+
+- **to** `date`
+
+  Limit the option chain to expiration dates before to (not inclusive). Should be combined with from to create a range. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`. If omitted all expirations will be returned.
+
+- **month** `number`
+
+  Limit the option chain to options that expire in a specific month (**1-12**).
+
+- **year** `number`
+
+  Limit the option chain to options that expire in a specific **year**.
+
+- **weekly** `boolean`
+
+  Limit the option chain to weekly expirations by setting weekly to `true` and omitting the `monthly` and `quarterly` parameters. If set to `false`, no weekly expirations will be returned.
+
+- **monthly** `boolean`
+
+  Limit the option chain to standard monthly expirations by setting monthly to `true` and omitting the `weekly` and `quarterly` parameters. If set to `false`, no monthly expirations will be returned.
+
+- **quarterly** `boolean`
+
+  Limit the option chain to quarterly expirations by setting quarterly to `true` and omitting the `weekly` and `monthly` parameters. If set to `false`, no quarterly expirations will be returned.
+
+- **dte** `number`
+
+  Days to expiry. Limit the option chain to a single expiration date closest to the `dte` provided. Should not be used together with `from` and `to`. Take care before combining with `weekly`, `monthly`, `quarterly`, since that will limit the expirations `dte` can return. If you are using the `date` parameter, dte is relative to the `date` provided.
+
+- **(coming soon) delta** `number`
+
+  Limit the option chain to a single strike closest to the `delta` provided.
+
+- **side** `string`
+
+  Limit the option chain to either `call` or `put`. If omitted, both sides will be returned.
+
+- **range** `string`
+
+  Limit the option chain to strikes that are in the money, out of the money, or include all. If omitted all options will be returned. Valid inputs: `itm`, `otm`, `all`.
+
+- **strike** `number`
+
+  Limit the option chain to options with the specific strike specified.
+
+- **minOpenInterest** `number`
+
+  Limit the option chain to options with an open interest greater than or equal to the `number` provided. Can be combined with `minVolume` and `minLiquidity` to further filter.
+
+- **minVolume** `number`
+
+  Limit the option chain to options with an volume transacted greater than or equal to the `number` provided.
+
+- **maxBidAskSpread** `number`
+
+  Limit the option chain to options with a bid-ask spread less than or equal to the `number` provided.
+
+- **maxBidAskSpreadPct** `number`
+
+  Limit the option chain to options with a bid-ask spread less than or equal to the `percent` provided (relative to the underlying). For example, a value of `0.5%` would exclude all options trading with a bid-ask spread greater than $1.00 in an underlying that trades at $200.
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+## Response Attributes
+
+```mdx-code-block
+<Tabs>
+<TabItem value="Success" label="Success" default>
+```
+
+- **s** `string`
+
+  Status will always be `ok` when there is the quote requested.
+
+- **optionSymbol** `array[string]`
+
+  The option symbol according to OCC symbology.
+
+- **underlying** `array[string]`
+
+  The ticker symbol of the underlying security.
+
+- **expiration** `array[number]`
+
+  The option's expiration date in Unix time.
+
+- **side** `array[string]`
+
+  The response will be `call` or `put`.
+
+- **strike** `array[number]`
+
+  The exercise price of the option.
+
+```mdx-code-block
+</TabItem>
+<TabItem value="NoData" label="No Data">
+```
+
+- **s** `string`
+
+  Status will be `no_data` if no candles are found for the request.
+
+- **nextTime** `number` optional
+
+  Unix time of the next quote if there is no data in the requested period, but there is data in a subsequent period.
+
+- **prevTime** `number` optional
+
+  Unix time of the previous quote if there is no data in the requested period, but there is data in a previous period.
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Error" label="Error">
+```
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```

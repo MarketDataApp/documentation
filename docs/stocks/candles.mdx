@@ -1,0 +1,180 @@
+---
+title: Candles
+sidebar_position: 1
+---
+
+Get historical price candles for a stock.
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+:::info Root Endpoint for STOCKS
+https://api.marketdata.app/v1/stocks
+:::
+
+    https://api.marketdata.app/v1/stocks
+
+## Endpoint
+
+:::tip Expirations Endpoint
+/candles/{resolution}/{symbol}
+:::
+
+    /candles/{resolution}/{symbol}
+
+## Method
+
+    GET
+
+## Request Example
+
+    /candles/D/AAPL?from=2020-01-01&to=2020-12-31
+
+    /candles/D/AAPL?from=2020-12-31&countback=252
+
+## Response Example
+
+```json
+{
+  "s": "ok",
+  "c": [217.68, 221.03, 219.89],
+  "h": [222.49, 221.5, 220.94],
+  "l": [217.19, 217.1402, 218.83],
+  "o": [221.03, 218.55, 220],
+  "t": [1569297600, 1569384000, 1569470400],
+  "v": [33463820, 24018876, 20730608]
+}
+```
+
+## Request Parameters
+
+```mdx-code-block
+<Tabs>
+<TabItem value="required" label="Required" default>
+```
+
+- **resolution** `string`
+
+  The duration of each candle.
+  Minutely Resolutions: (`minutely`, `1`, `3`, `5`, `15`, `30`, `45`, ...)
+  Hourly Resolutions: (`hourly`, `H`, `1H`, `2H`, ...)
+  Daily Resolutions: (`daily`, `D`, `1D`, `2D`, ...)
+  Weekly Resolutions: (`weekly`, `W`, `1W`, `2W`, ...)
+  Monthly Resolutions: (`monthly`, `M`, `1M`, `2M`, ...)
+  Yearly Resolutions:(`yearly`, `Y`, `1Y`, `2Y`, ...)
+
+- **symbol** `string`
+
+  The company's ticker symbol. If no exchange is specified, by default a US exchange will be assumed. You may embed the exchange in the ticker symbol using the Yahoo Finance or TradingView formats. A company or securities identifier can also be used instead of a ticker symbol. Ticker Formats: (`TICKER`, `TICKER.EX`, `EXCHANGE:TICKER`)
+  Company Identifiers: (`CIK`, `LEI`)
+  Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
+
+- **from** `date`
+
+  The leftmost candle on a chart (inclusive). If you use countback, to is not required. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+
+- **to** `date`
+
+  The rightmost candle on a chart (not inclusive). Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+
+- **countback** `number`
+
+  Countback will fetch a number of candles before (to the left of) to If you use from, countback is not required.
+
+```mdx-code-block
+</TabItem>
+<TabItem value="optional" label="Optional">
+```
+
+- **exchange** `string`
+
+  Use to specify the exchange of the ticker. This is useful when you need to specify stock that quotes on several exchanges with the same symbol. You may specify the exchange using the `EXCHANGE ACRONYM`, `MIC CODE`, or two digit `YAHOO FINANCE EXCHANGE CODE`. If no exchange is specified symbols will be matched to US exchanges first.
+
+- **extended** `boolean`
+
+  Include extended hours trading sessions when returning intraday candles. Daily resolutions never return extended hours candles. The default is `false`
+
+- **country** `string`
+
+  Use to specify the country of the exchange (not the country of the company) in conjunction with the symbol argument. This argument is useful when you know the ticker symbol and the country of the exchange, but not the exchange code. Use the two digit ISO 3166 country code. If no country is specified, US exchanges will be assumed.
+
+- **adjustsplits** `boolean`
+
+  Adjust historical data for for historical splits and reverse splits. Market Data uses the CRSP methodology for adjustment.
+  Daily candles default: `true`.
+  Intraday candles default: `false`.
+
+- **adjustdividends** `boolean`
+
+  Adjust candles for dividends. Market Data uses the CRSP methodology for adjustment.
+  Daily candles default: `true`.
+  Intraday candles default: `false`.
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+## Response Attributes
+
+```mdx-code-block
+<Tabs>
+<TabItem value="Success" label="Success" default>
+```
+
+- **s** `string`
+
+  ll always be `ok` when there is data for the candles requested.
+
+- **o** `array[number]`
+
+  Open price.
+
+- **h** `array[number]`
+
+  High price.
+
+- **l** `array[number]`
+
+  Low price.
+
+- **c** `array[number]`
+
+  Close price.
+
+- **v** `array[number]`
+
+  Volume.
+
+- **t** `array[number]`
+  Candle time (Unix timestamp, UTC). Daily, weekly, monthly, yearly candles are returned without times.
+
+```mdx-code-block
+</TabItem>
+<TabItem value="NoData" label="No Data">
+```
+
+- **s** `string`
+
+  Status will be `no_data` if no candles are found for the request.
+
+- **nextTime** `number` optional
+
+  Unix time of the next quote if there is no data in the requested period, but there is data in a subsequent period.
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Error" label="Error">
+```
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```

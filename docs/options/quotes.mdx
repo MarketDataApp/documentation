@@ -1,0 +1,177 @@
+---
+title: Quotes
+sidebar_position: 4
+---
+
+Get a current or historical end of day quote for a single or multiple options contracts. Separate multiple options symbols with a comma.
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+:::info Root Endpoint For OPTIONS
+https://api.marketdata.app/v1/options
+:::
+
+    https://api.marketdata.app/v1/options
+
+## Endpoint
+
+:::tip Expirations Endpoint
+/quotes/{optionSymbol}
+:::
+
+    /quotes/{optionSymbol}
+
+## Method
+
+    GET
+
+## Request Example
+
+    /quotes/AAPL230120C00150000/
+
+## Response Example
+
+```json
+{
+  "s": "ok",
+  "optionSymbol": "AAPL230120C00150000",
+  "ask": 13,
+  "askSize": 13,
+  "bid": 12.75,
+  "bidSize": 40,
+  "mid": 12.875,
+  "last": 12.75,
+  "volume": 5348,
+  "openInterest": 20284,
+  "underlyingPrice": 125.5,
+  "inTheMoney": false,
+  "updated": 123456789
+}
+```
+
+## Request Parameters
+
+```mdx-code-block
+<Tabs>
+<TabItem value="required" label="Required" default>
+```
+
+- **optionSymbol** `string`
+
+  The option symbol (as defined by the OCC) for the option you wish to lookup. Use the current OCC option symbol format, even for historic options that quoted before the format change in 2010.
+
+```mdx-code-block
+</TabItem>
+<TabItem value="optional" label="Optional">
+```
+
+- **date** `date`
+
+  Use to lookup a historical end of day quote from a specific trading day. If no date is specified the quote will be the most current price available during market hours. When the market is closed the quote will be from the last trading day. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
+
+- **from** `date`
+
+  Use to lookup a series of end of day quotes. From is the oldest (leftmost) date to return (inclusive). If from/to is not specified the quote will be the most current price available during market hours. When the market is closed the quote will be from the last trading day. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
+
+- **to** `date`
+
+  Use to lookup a series of end of day quotes. From is the newest (rightmost) date to return (exclusive). If from/to is not specified the quote will be the most current price available during market hours. When the market is closed the quote will be from the last trading day. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+## Response Attributes
+
+```mdx-code-block
+<Tabs>
+<TabItem value="Success" label="Success" default>
+```
+
+- **s** `string`
+
+  Status will always be `ok` when there is data for the quote requested.
+
+- **optionSymbol** `array[string]`
+
+  The option symbol according to OCC symbology.
+
+- **ask** `array[number]`
+
+  The ask price.
+
+- **askSize** `array[number]`
+
+  The number of contracts offered at the ask price.
+
+- **bid** `array[number]`
+
+  The bid price.
+
+- **bidSize** `array[number]`
+
+  The number of contracts offered at the bid price.
+
+- **mid** `array[number]`
+
+  The midpoint price between the ask and the bid, also known as the mark price.
+
+- **last** `array[number]`
+
+  The last price negotiated for this option contract at the time of this quote.
+
+- **volume** `array[number]`
+
+  The number of contracts negotiated during the trading day at the time of this quote.
+
+- **openInterest** `array[number]`
+
+  The total number of contracts that have not yet been settled at the time of this quote.
+
+- **underlyingPrice** `array[number]`
+
+  The last price of the underlying security at the time of this quote.
+
+- **inTheMoney** `array[booleans]`
+
+  Specifies whether the option contract was in the money true or false at the time of this quote.
+
+- **updated** `array[number]`
+
+  The date and time of this quote snapshot in Unix time.
+
+```mdx-code-block
+</TabItem>
+<TabItem value="NoData" label="No Data">
+```
+
+- **s** `string`
+
+  Status will be `no_data` if no candles are found for the request.
+
+- **nextTime** `number` optional
+
+  Unix time of the next quote if there is no data in the requested period, but there is data in a subsequent period.
+
+- **prevTime** `number` optional
+
+  Unix time of the previous quote if there is no data in the requested period, but there is data in a previous period.
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Error" label="Error">
+```
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
