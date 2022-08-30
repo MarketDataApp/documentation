@@ -1,0 +1,8 @@
+{
+  "label": "Stocks",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Stocks endpoints include numerous fundamental, technical, and pricing data."
+  }
+}

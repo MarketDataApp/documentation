@@ -1,0 +1,8 @@
+{
+  "label": "Options",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Options endpoints include pricing data and analytical data."
+  }
+}
