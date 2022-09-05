@@ -37,7 +37,7 @@ const config = {
           sidebarPath: require.resolve("./sidebars.js"),
           routeBasePath: "/",
           editUrl:
-            "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main/docs",
+            "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
         },
         blog: false,
         theme: {
@@ -57,7 +57,7 @@ const config = {
         routeBasePath: "api",
         sidebarPath: require.resolve("./sidebars.js"),
         editUrl:
-          "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main/api",
+          "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
       },
     ],
     [
@@ -68,7 +68,7 @@ const config = {
         path: "sheets-add-on",
         routeBasePath: "sheets-add-on",
         editUrl:
-          "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main/sheets-add-on",
+          "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
 
         sidebarPath: require.resolve("./sidebars.js"),
       },
@@ -81,7 +81,7 @@ const config = {
         path: "accounts-billing",
         routeBasePath: "accounts-billing",
         editUrl:
-          "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main/accounts-billing",
+          "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
 
         sidebarPath: require.resolve("./sidebars.js"),
       },
