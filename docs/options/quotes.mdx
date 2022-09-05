@@ -7,22 +7,17 @@ Get a current or historical end of day quote for a single or multiple options co
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
-
-:::info Root Endpoint For OPTIONS
-https://api.marketdata.app/v1/options
-:::
-
-    https://api.marketdata.app/v1/options
+import BgCustom from "@site/src/components/BgCustom";
 
 ## Endpoint
 
-:::tip Expirations Endpoint
+:::tip Endpoint
 /quotes/{optionSymbol}
 :::
 
     /quotes/{optionSymbol}
 
-## Method
+#### Method
 
     GET
 
@@ -55,6 +50,7 @@ https://api.marketdata.app/v1/options
 ```mdx-code-block
 <Tabs>
 <TabItem value="required" label="Required" default>
+<BgCustom>
 ```
 
 - **optionSymbol** `string`
@@ -62,8 +58,10 @@ https://api.marketdata.app/v1/options
   The option symbol (as defined by the OCC) for the option you wish to lookup. Use the current OCC option symbol format, even for historic options that quoted before the format change in 2010.
 
 ```mdx-code-block
+</BgCustom>
 </TabItem>
 <TabItem value="optional" label="Optional">
+<BgCustom>
 ```
 
 - **date** `date`
@@ -79,6 +77,7 @@ https://api.marketdata.app/v1/options
   Use to lookup a series of end of day quotes. From is the newest (rightmost) date to return (exclusive). If from/to is not specified the quote will be the most current price available during market hours. When the market is closed the quote will be from the last trading day. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
 
 ```mdx-code-block
+</BgCustom>
 </TabItem>
 </Tabs>
 ```
@@ -88,6 +87,7 @@ https://api.marketdata.app/v1/options
 ```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
+<BgCustom>
 ```
 
 - **s** `string`
@@ -143,8 +143,10 @@ https://api.marketdata.app/v1/options
   The date and time of this quote snapshot in Unix time.
 
 ```mdx-code-block
+</BgCustom>
 </TabItem>
 <TabItem value="NoData" label="No Data">
+<BgCustom>
 ```
 
 - **s** `string`
@@ -160,8 +162,10 @@ https://api.marketdata.app/v1/options
   Unix time of the previous quote if there is no data in the requested period, but there is data in a previous period.
 
 ```mdx-code-block
+</BgCustom>
 </TabItem>
 <TabItem value="Error" label="Error">
+<BgCustom>
 ```
 
 - **s** `string`
@@ -172,6 +176,7 @@ https://api.marketdata.app/v1/options
   An error message.
 
 ```mdx-code-block
+</BgCustom>
 </TabItem>
 </Tabs>
 ```

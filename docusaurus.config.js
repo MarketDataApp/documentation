@@ -45,11 +45,46 @@ const config = {
     ],
   ],
 
+  plugins: [
+    [
+      "@docusaurus/plugin-content-docs",
+      /** @type {import('@docusaurus/plugin-content-docs').Options} */
+      {
+        id: "api",
+        path: "api",
+        routeBasePath: "api",
+        sidebarPath: require.resolve("./sidebars.js"),
+      },
+    ],
+    [
+      "@docusaurus/plugin-content-docs",
+      /** @type {import('@docusaurus/plugin-content-docs').Options} */
+      {
+        id: "sheets-add-on",
+        path: "sheets-add-on",
+        routeBasePath: "sheets-add-on",
+
+        sidebarPath: require.resolve("./sidebars.js"),
+      },
+    ],
+    [
+      "@docusaurus/plugin-content-docs",
+      /** @type {import('@docusaurus/plugin-content-docs').Options} */
+      {
+        id: "accounts-billing",
+        path: "accounts-billing",
+        routeBasePath: "accounts-billing",
+
+        sidebarPath: require.resolve("./sidebars.js"),
+      },
+    ],
+  ],
+
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: "",
+        title: "Docs",
         logo: {
           alt: "My Logo",
           src: "img/logo.png",
@@ -58,12 +93,21 @@ const config = {
           // target: "_blank",
         },
         items: [
-          // {
-          //   type: "doc",
-          //   docId: "intro",
-          //   position: "left",
-          //   label: "Documentation",
-          // },
+          {
+            to: "/api/intro",
+            label: "API",
+            position: "left",
+          },
+          {
+            to: "/sheets-add-on/intro",
+            label: "Sheets Add-On",
+            position: "left",
+          },
+          {
+            to: "/accounts-billing/intro",
+            label: "Accounts & Billing",
+            position: "left",
+          },
           // { to: "/blog", label: "Blog", position: "left" },
           // {
           //   href: "https://github.com/facebook/docusaurus",
@@ -73,39 +117,18 @@ const config = {
         ],
       },
       footer: {
-        style: "dark",
-        links: [
-          {
-            title: "More",
-            items: [
-              {
-                label: "Previews On TrustPilot",
-                href: "https://www.trustpilot.com/review/www.marketdata.app",
-              },
-              {
-                label: "Privacy Policy",
-                href: "https://www.marketdata.app/privacy",
-              },
-              {
-                label: "Terms & Conditions",
-                href: "https://www.marketdata.app/terms",
-              },
-              {
-                label: "System Status",
-                href: "https://stats.uptimerobot.com/6Kv3zIow0A",
-              },
-            ],
-          },
-        ],
-        logo: {
-          alt: "MarketData Logo",
-          src: "/img/logo.png",
-          href: "https://www.marketdata.app/",
-          width: "300px",
-          target: "_blank",
-        },
-        copyright: `Copyright © ${new Date().getFullYear()} MarketData API Docs, Inc. All Rights Reserved.`,
+        style: "light",
+        copyright: `<div class="footer-custom-container" >
+        <p>© ${new Date().getFullYear()} Market Data. All Rights Reserved</p>
+        <div class="footer-custom">
+        <a target="_blank" style="font-size:15px" href="https://www.trustpilot.com/review/www.marketdata.app">See our Reviews On TrustPilot</a>
+        <a target="_blank" style="font-size:15px" href="https://www.marketdata.app/privacy">Privacy Policy</a>
+        <a target="_blank" style="font-size:15px" href="https://www.marketdata.app/terms">Terms & Conditions</a>
+        <a target="_blank" style="font-size:15px" href="https://stats.uptimerobot.com/6Kv3zIow0A">System Status</a>
+        </div>
+        </div>`,
       },
+
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,

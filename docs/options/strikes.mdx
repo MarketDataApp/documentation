@@ -7,22 +7,17 @@ Get a list of current or historical options strikes for an underlying symbol. If
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
-
-:::info Root Endpoint For OPTIONS
-https://api.marketdata.app/v1/options
-:::
-
-    https://api.marketdata.app/v1/options
+import BgCustom from "@site/src/components/BgCustom";
 
 ## Endpoint
 
-:::tip Expirations Endpoint
+:::tip Endpoint
 /strikes/{underlyingSymbol}
 :::
 
     /strikes/{underlyingSymbol}
 
-## Method
+#### Method
 
     GET
 
@@ -49,19 +44,25 @@ https://api.marketdata.app/v1/options
 ```mdx-code-block
 <Tabs>
 <TabItem value="required" label="Required" default>
+<BgCustom>
 ```
 
 - **underlyingSymbol** `string`
 
   The underlying ticker symbol for the options chain you wish to lookup.
   A company or securities identifier can also be used instead of a ticker symbol.
+
   Ticker Formats: (`TICKER`, `TICKER.EX`, `EXCHANGE:TICKER`)
+
   Company Identifiers: (`CIK`, `LEI`)
+
   Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
 
 ```mdx-code-block
+</BgCustom>
 </TabItem>
 <TabItem value="optional" label="Optional">
+<BgCustom>
 ```
 
 - **expiration** `date`
@@ -75,6 +76,7 @@ https://api.marketdata.app/v1/options
   inputs: `ISO 8601`, `unix`, `spreadsheet`.
 
 ```mdx-code-block
+</BgCustom>
 </TabItem>
 </Tabs>
 ```
@@ -84,6 +86,7 @@ https://api.marketdata.app/v1/options
 ```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
+<BgCustom>
 ```
 
 - **s** `string`
@@ -100,8 +103,10 @@ https://api.marketdata.app/v1/options
   The date and time of this list of options strikes was updated in Unix time. For historical strikes, this number should match the `date` parameter.
 
 ```mdx-code-block
+</BgCustom>
 </TabItem>
 <TabItem value="NoData" label="No Data">
+<BgCustom>
 ```
 
 - **s** `string`
@@ -117,8 +122,10 @@ https://api.marketdata.app/v1/options
   Unix time of the previous quote if there is no data in the requested period, but there is data in a previous period.
 
 ```mdx-code-block
+</BgCustom>
 </TabItem>
 <TabItem value="Error" label="Error">
+<BgCustom>
 ```
 
 - **s** `string`
@@ -129,6 +136,7 @@ https://api.marketdata.app/v1/options
   An error message.
 
 ```mdx-code-block
+</BgCustom>
 </TabItem>
 </Tabs>
 ```
