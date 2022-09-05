@@ -23,7 +23,46 @@ import BgCustom from "@site/src/components/BgCustom";
 
 ## Request Example
 
-    /strikes/AAPL?expiration=2023-01-20
+```mdx-code-block
+<Tabs>
+<TabItem value="NodeJS" label="NodeJS" default>
+<BgCustom>
+```
+
+```js title="app.js"
+fetch(
+  "https://api.marketdata.app/v1/options/strikes/AAPL?expiration=2023-01-20"
+)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+```mdx-code-block
+</BgCustom>
+</TabItem>
+<TabItem value="Python" label="Python">
+<BgCustom>
+```
+
+```python title="app.py"
+import requests
+
+url = "https://api.marketdata.app/v1/options/strikes/AAPL?expiration=2023-01-20"
+
+response = requests.request("GET", url)
+
+print(response.text)
+```
+
+```mdx-code-block
+</BgCustom>
+</TabItem>
+</Tabs>
+```
 
 ## Response Example
 

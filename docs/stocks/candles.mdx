@@ -23,9 +23,59 @@ import BgCustom from "@site/src/components/BgCustom";
 
 ## Request Example
 
-    /candles/D/AAPL?from=2020-01-01&to=2020-12-31
+```mdx-code-block
+<Tabs>
+<TabItem value="NodeJS" label="NodeJS" default>
+<BgCustom>
+```
 
-    /candles/D/AAPL?from=2020-12-31&countback=252
+```js title="app.js"
+fetch(
+  "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31"
+)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+fetch(
+  "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-12-31&countback=252"
+)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+```mdx-code-block
+</BgCustom>
+</TabItem>
+<TabItem value="Python" label="Python">
+<BgCustom>
+```
+
+```python title="app.py"
+import requests
+
+url1 = "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31"
+url2 = "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-12-31&countback=252"
+
+response1 = requests.request("GET", url1)
+response2 = requests.request("GET", url2)
+
+print(response1.text)
+print(response2.text)
+```
+
+```mdx-code-block
+</BgCustom>
+</TabItem>
+</Tabs>
+```
 
 ## Response Example
 
