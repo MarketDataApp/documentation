@@ -99,14 +99,16 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: "Docs",
+        title: "",
         logo: {
           alt: "My Logo",
-          src: "img/logo.png",
+          src: "img/pngs/logo.png",
           // href: "https://www.marketdata.app/",
           href: "/",
           // target: "_blank",
+          srcDark: "img/pngs/darkmode-logo.png",
         },
+
         items: [
           {
             to: "/api/intro",
