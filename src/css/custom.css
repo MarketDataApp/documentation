@@ -88,8 +88,13 @@
   width: 100%;
 }
 /* for the tabs nod background styling */
-.tabItem_node_modules-\@docusaurus-theme-classic-lib-theme-TabItem-styles-module{
-  background-color: var(--custom-bg-tabs) !important;
-  padding: 8px !important;
-  border-radius: 14px !important;
+/* .tabItem_node_modules-\@docusaurus-theme-classic-lib-theme-TabItem-styles-module{
+  background-color: var(--custom-bg-tabs);
+  padding: 8px;
+  border-radius: 14px;
+} */
+.tabItem_Ymn6{
+  background-color: var(--custom-bg-tabs);
+  padding: 8px;
+  border-radius: 14px;
 }
