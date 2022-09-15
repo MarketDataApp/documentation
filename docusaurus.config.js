@@ -9,7 +9,7 @@ const config = {
   title: "MarketData API Docs",
   tagline:
     "Real-Time & Historic Data For Stocks, Options, Crypto, Futures, Forex",
-  url: "https://your-docusaurus-test-site.com",
+  url: "https://marketdatav1.vercel.app",
   baseUrl: "/",
   onBrokenLinks: "ignore",
   onBrokenMarkdownLinks: "warn",
@@ -98,6 +98,11 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      algolia: {
+        apiKey: "743236374ece371570e05b678e3671b4",
+        appId: "2L8QIH6E44",
+        indexName: "dev_marketdata_fiverr_1",
+      },
       navbar: {
         title: "",
         logo: {
@@ -125,12 +130,16 @@ const config = {
             label: "Accounts & Billing",
             position: "left",
           },
+          {
+            type: "search",
+            position: "right",
+          },
           // { to: "/blog", label: "Blog", position: "left" },
-          // {
-          //   href: "https://github.com/facebook/docusaurus",
-          //   label: "GitHub",
-          //   position: "right",
-          // },
+          {
+            href: "https://github.com/AhmedCoolProjects/marketdata-work-fiverr",
+            label: "GitHub",
+            position: "right",
+          },
         ],
       },
       footer: {

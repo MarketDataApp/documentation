@@ -87,12 +87,14 @@
   padding-left: 0 !important;
   width: 100%;
 }
-/* for the tabs nod background styling */
+/* for the tabs nod background styling FOR DEV */
 /* .tabItem_node_modules-\@docusaurus-theme-classic-lib-theme-TabItem-styles-module{
   background-color: var(--custom-bg-tabs);
   padding: 8px;
   border-radius: 14px;
 } */
+
+/* for the tabs nod background styling FOR PROD */
 .tabItem_Ymn6{
   background-color: var(--custom-bg-tabs);
   padding: 8px;
