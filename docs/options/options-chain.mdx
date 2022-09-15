@@ -7,7 +7,6 @@ Get a current or historical end of day options chain for an underlying ticker sy
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
-import BgCustom from "@site/src/components/BgCustom";
 
 ## Endpoint
 
@@ -25,8 +24,25 @@ import BgCustom from "@site/src/components/BgCustom";
 
 ```mdx-code-block
 <Tabs>
-<TabItem value="NodeJS" label="NodeJS" default>
-<BgCustom>
+<TabItem value="HTTP" label="HTTP" default>
+
+```
+
+```js title="app.js"
+fetch("https://api.marketdata.app/v1/options/expirations/AAPL")
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
 ```
 
 ```js title="app.js"
@@ -40,10 +56,9 @@ fetch("https://api.marketdata.app/v1/options/chain/AAPL/")
 ```
 
 ```mdx-code-block
-</BgCustom>
 </TabItem>
 <TabItem value="Python" label="Python">
-<BgCustom>
+
 ```
 
 ```python title="app.py"
@@ -57,7 +72,7 @@ print(response.text)
 ```
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 </Tabs>
 ```
@@ -81,7 +96,7 @@ print(response.text)
 ```mdx-code-block
 <Tabs>
 <TabItem value="required" label="Required" default>
-<BgCustom>
+
 ```
 
 - **underlyingSymbol** `string`
@@ -96,10 +111,10 @@ print(response.text)
   Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 <TabItem value="optional" label="Optional">
-<BgCustom>
+
 ```
 
 - **date** `date`
@@ -175,7 +190,7 @@ print(response.text)
   Limit the option chain to options with a bid-ask spread less than or equal to the `percent` provided (relative to the underlying). For example, a value of `0.5%` would exclude all options trading with a bid-ask spread greater than $1.00 in an underlying that trades at $200.
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 </Tabs>
 ```
@@ -185,7 +200,7 @@ print(response.text)
 ```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
-<BgCustom>
+
 ```
 
 - **s** `string`
@@ -213,10 +228,10 @@ print(response.text)
   The exercise price of the option.
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 <TabItem value="NoData" label="No Data">
-<BgCustom>
+
 ```
 
 - **s** `string`
@@ -232,10 +247,10 @@ print(response.text)
   Unix time of the previous quote if there is no data in the requested period, but there is data in a previous period.
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 <TabItem value="Error" label="Error">
-<BgCustom>
+
 ```
 
 - **s** `string`
@@ -246,7 +261,7 @@ print(response.text)
   An error message.
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 </Tabs>
 ```

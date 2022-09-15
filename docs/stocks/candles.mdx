@@ -7,7 +7,6 @@ Get historical price candles for a stock.
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
-import BgCustom from "@site/src/components/BgCustom";
 
 ## Endpoint
 
@@ -25,8 +24,25 @@ import BgCustom from "@site/src/components/BgCustom";
 
 ```mdx-code-block
 <Tabs>
-<TabItem value="NodeJS" label="NodeJS" default>
-<BgCustom>
+<TabItem value="HTTP" label="HTTP" default>
+
+```
+
+```js title="app.js"
+fetch("https://api.marketdata.app/v1/options/expirations/AAPL")
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
 ```
 
 ```js title="app.js"
@@ -52,10 +68,9 @@ fetch(
 ```
 
 ```mdx-code-block
-</BgCustom>
 </TabItem>
 <TabItem value="Python" label="Python">
-<BgCustom>
+
 ```
 
 ```python title="app.py"
@@ -72,7 +87,7 @@ print(response2.text)
 ```
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 </Tabs>
 ```
@@ -96,7 +111,7 @@ print(response2.text)
 ```mdx-code-block
 <Tabs>
 <TabItem value="required" label="Required" default>
-<BgCustom>
+
 ```
 
 - **resolution** `string`
@@ -138,10 +153,10 @@ print(response2.text)
   Countback will fetch a number of candles before (to the left of) to If you use from, countback is not required.
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 <TabItem value="optional" label="Optional">
-<BgCustom>
+
 ```
 
 - **exchange** `string`
@@ -173,7 +188,7 @@ print(response2.text)
   Intraday candles default: `false`.
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 </Tabs>
 ```
@@ -183,7 +198,7 @@ print(response2.text)
 ```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
-<BgCustom>
+
 ```
 
 - **s** `string`
@@ -214,10 +229,10 @@ print(response2.text)
   Candle time (Unix timestamp, UTC). Daily, weekly, monthly, yearly candles are returned without times.
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 <TabItem value="NoData" label="No Data">
-<BgCustom>
+
 ```
 
 - **s** `string`
@@ -229,10 +244,10 @@ print(response2.text)
   Unix time of the next quote if there is no data in the requested period, but there is data in a subsequent period.
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 <TabItem value="Error" label="Error">
-<BgCustom>
+
 ```
 
 - **s** `string`
@@ -243,7 +258,7 @@ print(response2.text)
   An error message.
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 </Tabs>
 ```

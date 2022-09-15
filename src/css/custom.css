@@ -22,6 +22,7 @@
   --ifm-color-primary-light: #0048a9;
   --ifm-color-primary-lighter: #004bb1;
   --ifm-color-primary-lightest: #0055c8;
+  --custom-bg-tabs: #f6f8fa;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -41,6 +42,7 @@
   --ifm-color-primary-lighter: #f08894;
   --ifm-color-primary-lightest: #f6b3bb;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --custom-bg-tabs: #282A36;
 }
 .footer-custom-container{
   display: flex;
@@ -84,4 +86,10 @@
   padding-right: 0 !important;
   padding-left: 0 !important;
   width: 100%;
+}
+/* for the tabs nod background styling */
+.tabItem_node_modules-\@docusaurus-theme-classic-lib-theme-TabItem-styles-module{
+  background-color: var(--custom-bg-tabs);
+  padding: 8px;
+  border-radius: 14px;
 }

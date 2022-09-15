@@ -7,7 +7,6 @@ Get a list of current or historical option expiration dates for an underlying sy
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
-import BgCustom from "@site/src/components/BgCustom";
 
 ## Endpoint
 
@@ -23,8 +22,8 @@ import BgCustom from "@site/src/components/BgCustom";
 
 ```mdx-code-block
 <Tabs>
-<TabItem value="NodeJS" label="NodeJS" default>
-<BgCustom>
+<TabItem value="HTTP" label="HTTP" default>
+
 ```
 
 ```js title="app.js"
@@ -38,10 +37,27 @@ fetch("https://api.marketdata.app/v1/options/expirations/AAPL")
 ```
 
 ```mdx-code-block
-</BgCustom>
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
+```
+
+```js title="app.js"
+fetch("https://api.marketdata.app/v1/options/expirations/AAPL")
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+```mdx-code-block
+
 </TabItem>
 <TabItem value="Python" label="Python">
-<BgCustom>
+
 ```
 
 ```python title="app.py"
@@ -55,7 +71,7 @@ print(response.text)
 ```
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 </Tabs>
 ```
@@ -95,7 +111,7 @@ print(response.text)
 ```mdx-code-block
 <Tabs>
 <TabItem value="required" label="Required" default>
-<BgCustom>
+
 ```
 
 - **underlyingSymbol** `string`
@@ -110,10 +126,9 @@ print(response.text)
   Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
 
 ```mdx-code-block
-</BgCustom>
 </TabItem>
 <TabItem value="optional" label="Optional">
-<BgCustom>
+
 ```
 
 - **strike** `number`
@@ -128,7 +143,6 @@ print(response.text)
   inputs: `ISO 8601`, `unix`, `spreadsheet`.
 
 ```mdx-code-block
-</BgCustom>
 </TabItem>
 </Tabs>
 ```
@@ -138,7 +152,7 @@ print(response.text)
 ```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
-<BgCustom>
+
 ```
 
 - **s** `string`
@@ -155,10 +169,10 @@ print(response.text)
   The date and time of this list of options strikes was updated in Unix time. For historical strikes, this number should match the `date` parameter.
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 <TabItem value="NoData" label="No Data">
-<BgCustom>
+
 ```
 
 - **s** `string`
@@ -174,10 +188,10 @@ print(response.text)
   Unix time of the previous quote if there is no data in the requested period, but there is data in a previous period.
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 <TabItem value="Error" label="Error">
-<BgCustom>
+
 ```
 
 - **s** `string`
@@ -188,7 +202,7 @@ print(response.text)
   An error message.
 
 ```mdx-code-block
-</BgCustom>
+
 </TabItem>
 </Tabs>
 ```
