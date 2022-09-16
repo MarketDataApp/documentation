@@ -125,7 +125,7 @@ const config = {
             position: "left",
           },
           {
-            to: "/accounts-billing/intro",
+            to: "/accounts-billing",
             label: "Accounts & Billing",
             position: "left",
           },
