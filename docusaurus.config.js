@@ -35,7 +35,7 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve("./sidebars.js"),
-          routeBasePath: "/",
+          routeBasePath: "docs",
           editUrl:
             "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
         },
@@ -115,6 +115,11 @@ const config = {
         },
 
         items: [
+          {
+            to: "/docs",
+            label: "API",
+            position: "left",
+          },
           {
             to: "/sheets-add-on/help",
             label: "Sheets Add-On",
