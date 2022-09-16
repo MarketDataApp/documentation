@@ -8,7 +8,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 const config = {
   title: "Market Data Documentation",
   tagline: "The Complete Reference For All Market Data Products & Services",
-  url: "https://marketdatav1.vercel.app",
+  url: "https://docs.marketdata.app/",
   baseUrl: "/",
   onBrokenLinks: "ignore",
   onBrokenMarkdownLinks: "warn",
@@ -36,7 +36,7 @@ const config = {
         //   sidebarPath: require.resolve("./sidebars.js"),
         //   routeBasePath: "api",
         //   editUrl:
-        //     "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
+        //     "https://github.com/MarketDataApp/documentation/tree/main",
         // },
         blog: false,
         theme: {
@@ -62,8 +62,7 @@ const config = {
         path: "api",
         routeBasePath: "api",
         sidebarPath: require.resolve("./sidebars.js"),
-        editUrl:
-          "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
+        editUrl: "https://github.com/MarketDataApp/documentation/tree/main",
       },
     ],
     [
@@ -73,8 +72,7 @@ const config = {
         id: "sheets-add-on",
         path: "sheets-add-on",
         routeBasePath: "sheets-add-on",
-        editUrl:
-          "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
+        editUrl: "https://github.com/MarketDataApp/documentation/tree/main",
 
         sidebarPath: require.resolve("./sidebars.js"),
       },
@@ -86,8 +84,7 @@ const config = {
         id: "accounts-billing",
         path: "accounts-billing",
         routeBasePath: "accounts-billing",
-        editUrl:
-          "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
+        editUrl: "https://github.com/MarketDataApp/documentation/tree/main",
 
         sidebarPath: require.resolve("./sidebars.js"),
       },
@@ -135,7 +132,7 @@ const config = {
           },
           // { to: "/blog", label: "Blog", position: "left" },
           {
-            href: "https://github.com/AhmedCoolProjects/marketdata-work-fiverr",
+            href: "https://github.com/MarketDataApp/documentation",
             label: "GitHub",
             position: "right",
           },
