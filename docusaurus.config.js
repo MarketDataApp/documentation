@@ -33,12 +33,12 @@ const config = {
       "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
-        docs: {
-          sidebarPath: require.resolve("./sidebars.js"),
-          routeBasePath: "/",
-          editUrl:
-            "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
-        },
+        // docs: {
+        //   sidebarPath: require.resolve("./sidebars.js"),
+        //   routeBasePath: "/",
+        //   editUrl:
+        //     "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
+        // },
         blog: false,
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
@@ -61,7 +61,7 @@ const config = {
       {
         id: "api",
         path: "api",
-        routeBasePath: "api",
+        routeBasePath: "/",
         sidebarPath: require.resolve("./sidebars.js"),
         editUrl:
           "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
@@ -116,7 +116,7 @@ const config = {
 
         items: [
           {
-            to: "/api/intro",
+            to: "/",
             label: "API",
             position: "left",
           },

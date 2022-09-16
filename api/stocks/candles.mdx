@@ -28,15 +28,11 @@ import TabItem from "@theme/TabItem";
 
 ```
 
-```js title="app.js"
-fetch("https://api.marketdata.app/v1/options/expirations/AAPL")
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+```html title="HTTP GET"
+https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31
 ```
+
+Try it: [https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31](https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31)
 
 ```mdx-code-block
 
