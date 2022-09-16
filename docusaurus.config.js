@@ -121,7 +121,7 @@ const config = {
             position: "left",
           },
           {
-            to: "/sheets-add-on/intro",
+            to: "/sheets-add-on/help",
             label: "Sheets Add-On",
             position: "left",
           },
