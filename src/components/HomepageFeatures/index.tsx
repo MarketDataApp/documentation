@@ -3,63 +3,90 @@ import clsx from "clsx";
 import styles from "./styles.module.css";
 
 import ThemedImage from "@theme/ThemedImage";
+import Link from "@docusaurus/Link";
 
 type FeatureItem = {
   title: string;
   image: string;
   description: JSX.Element;
   darkImage: string;
+  link: string;
 };
 
 const FeatureList: FeatureItem[] = [
   {
-    title: "Title here",
+    title: "Market Data API",
     image: require("@site/static/img/pngs/api.png").default,
-    description: <>description here </>,
+    description: (
+      <>
+        A complete reference of all Market Data API endpoints, authentication,
+        and universal parameters.
+      </>
+    ),
     darkImage: require("@site/static/img/pngs/api-darkmode.png").default,
+    link: "/api",
   },
   {
-    title: "Title here",
+    title: "Google Sheets Add-On",
     image: require("@site/static/img/pngs/sheets.png").default,
-    description: <>description here </>,
+    description: (
+      <>
+        Learn how to use each Market Data formula in our Add-On with practical
+        examples.
+      </>
+    ),
     darkImage: require("@site/static/img/pngs/sheets-darkmode.png").default,
+    link: "/sheets-add-on",
   },
   {
-    title: "Title here",
+    title: "Accounts & Billing",
     image: require("@site/static/img/pngs/billing.png").default,
-    description: <>description here </>,
+    description: (
+      <>
+        Frequently asked questions about your account, our billing rules, and
+        administrative information.
+      </>
+    ),
     darkImage: require("@site/static/img/pngs/billing-darkmode.png").default,
+    link: "/accounts-billing",
   },
 ];
 
-function Feature({ title, image, darkImage, description }: FeatureItem) {
+function Feature({ title, link, image, darkImage, description }: FeatureItem) {
   return (
     <div className={clsx("col col--4")}>
-      <div
+      <Link
+        to={link}
         style={{
-          marginTop: 24,
-          marginBottom: 24,
-          padding: 12,
+          textDecoration: "none",
         }}
-        className="text--center"
       >
-        <ThemedImage
-          className={styles.featureSvg}
-          alt={title}
-          sources={{
-            light: image,
-            dark: darkImage,
-          }}
+        <div
           style={{
-            objectFit: "contain",
-            width: "50%",
+            marginTop: 24,
+            marginBottom: 24,
+            padding: 12,
           }}
-        />
-      </div>
-      <div className="text--center padding-horiz--md">
-        <h3>{title}</h3>
-        <p>{description}</p>
-      </div>
+          className="text--center"
+        >
+          <ThemedImage
+            className={styles.featureSvg}
+            alt={title}
+            sources={{
+              light: image,
+              dark: darkImage,
+            }}
+            style={{
+              objectFit: "contain",
+              width: "50%",
+            }}
+          />
+        </div>
+        <div className="text--center padding-horiz--md">
+          <h3>{title}</h3>
+          <p>{description}</p>
+        </div>
+      </Link>{" "}
     </div>
   );
 }

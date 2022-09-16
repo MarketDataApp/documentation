@@ -6,9 +6,8 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "MarketData API Docs",
-  tagline:
-    "Real-Time & Historic Data For Stocks, Options, Crypto, Futures, Forex",
+  title: "Market Data Documentation",
+  tagline: "The Complete Reference For All Market Data Products & Services",
   url: "https://marketdatav1.vercel.app",
   baseUrl: "/",
   onBrokenLinks: "ignore",
@@ -33,12 +32,12 @@ const config = {
       "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
-        docs: {
-          sidebarPath: require.resolve("./sidebars.js"),
-          routeBasePath: "docs",
-          editUrl:
-            "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
-        },
+        // docs: {
+        //   sidebarPath: require.resolve("./sidebars.js"),
+        //   routeBasePath: "api",
+        //   editUrl:
+        //     "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
+        // },
         blog: false,
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
@@ -55,18 +54,18 @@ const config = {
   ],
 
   plugins: [
-    // [
-    //   "@docusaurus/plugin-content-docs",
-    //   /** @type {import('@docusaurus/plugin-content-docs').Options} */
-    //   {
-    //     id: "api",
-    //     path: "api",
-    //     routeBasePath: "/",
-    //     sidebarPath: require.resolve("./sidebars.js"),
-    //     editUrl:
-    //       "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
-    //   },
-    // ],
+    [
+      "@docusaurus/plugin-content-docs",
+      /** @type {import('@docusaurus/plugin-content-docs').Options} */
+      {
+        id: "api",
+        path: "api",
+        routeBasePath: "api",
+        sidebarPath: require.resolve("./sidebars.js"),
+        editUrl:
+          "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
+      },
+    ],
     [
       "@docusaurus/plugin-content-docs",
       /** @type {import('@docusaurus/plugin-content-docs').Options} */
@@ -116,7 +115,7 @@ const config = {
 
         items: [
           {
-            to: "/docs",
+            to: "/api",
             label: "API",
             position: "left",
           },
