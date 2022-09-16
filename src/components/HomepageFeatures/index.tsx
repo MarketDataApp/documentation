@@ -2,35 +2,55 @@ import React from "react";
 import clsx from "clsx";
 import styles from "./styles.module.css";
 
+import ThemedImage from "@theme/ThemedImage";
+
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<"svg">>;
+  image: string;
   description: JSX.Element;
+  darkImage: string;
 };
 
 const FeatureList: FeatureItem[] = [
   {
     title: "Title here",
-    Svg: require("@site/static/img/undraw_docusaurus_mountain.svg").default,
+    image: require("@site/static/img/pngs/api.png").default,
     description: <>description here </>,
+    darkImage: require("@site/static/img/pngs/api-darkmode.png").default,
   },
   {
     title: "Title here",
-    Svg: require("@site/static/img/undraw_docusaurus_mountain.svg").default,
+    image: require("@site/static/img/pngs/sheets.png").default,
     description: <>description here </>,
+    darkImage: require("@site/static/img/pngs/sheets-darkmode.png").default,
   },
   {
     title: "Title here",
-    Svg: require("@site/static/img/undraw_docusaurus_mountain.svg").default,
+    image: require("@site/static/img/pngs/billing.png").default,
     description: <>description here </>,
+    darkImage: require("@site/static/img/pngs/billing-darkmode.png").default,
   },
 ];
 
-function Feature({ title, Svg, description }: FeatureItem) {
+function Feature({ title, image, darkImage, description }: FeatureItem) {
   return (
     <div className={clsx("col col--4")}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+      <div
+        style={{
+          marginTop: 24,
+          marginBottom: 24,
+          padding: 12,
+        }}
+        className="text--center"
+      >
+        <ThemedImage
+          className={styles.featureSvg}
+          alt={title}
+          sources={{
+            light: image,
+            dark: darkImage,
+          }}
+        />
       </div>
       <div className="text--center padding-horiz--md">
         <h3>{title}</h3>
