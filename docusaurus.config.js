@@ -33,12 +33,12 @@ const config = {
       "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
-        // docs: {
-        //   sidebarPath: require.resolve("./sidebars.js"),
-        //   routeBasePath: "/",
-        //   editUrl:
-        //     "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
-        // },
+        docs: {
+          sidebarPath: require.resolve("./sidebars.js"),
+          routeBasePath: "/",
+          editUrl:
+            "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
+        },
         blog: false,
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
@@ -55,18 +55,18 @@ const config = {
   ],
 
   plugins: [
-    [
-      "@docusaurus/plugin-content-docs",
-      /** @type {import('@docusaurus/plugin-content-docs').Options} */
-      {
-        id: "api",
-        path: "api",
-        routeBasePath: "/",
-        sidebarPath: require.resolve("./sidebars.js"),
-        editUrl:
-          "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
-      },
-    ],
+    // [
+    //   "@docusaurus/plugin-content-docs",
+    //   /** @type {import('@docusaurus/plugin-content-docs').Options} */
+    //   {
+    //     id: "api",
+    //     path: "api",
+    //     routeBasePath: "/",
+    //     sidebarPath: require.resolve("./sidebars.js"),
+    //     editUrl:
+    //       "https://github.com/AhmedCoolProjects/marketdata-work-fiverr/tree/main",
+    //   },
+    // ],
     [
       "@docusaurus/plugin-content-docs",
       /** @type {import('@docusaurus/plugin-content-docs').Options} */
@@ -115,11 +115,6 @@ const config = {
         },
 
         items: [
-          {
-            to: "/",
-            label: "API",
-            position: "left",
-          },
           {
             to: "/sheets-add-on/help",
             label: "Sheets Add-On",
