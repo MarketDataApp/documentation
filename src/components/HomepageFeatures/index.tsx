@@ -50,6 +50,10 @@ function Feature({ title, image, darkImage, description }: FeatureItem) {
             light: image,
             dark: darkImage,
           }}
+          style={{
+            objectFit: "contain",
+            width: "50%",
+          }}
         />
       </div>
       <div className="text--center padding-horiz--md">
