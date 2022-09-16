@@ -3,14 +3,14 @@ new Crawler({
   apiKey: "743236374ece371570e05b678e3671b4",
   rateLimit: 8,
   maxDepth: 10,
-  startUrls: ["https://marketdatav1.vercel.app/"],
-  sitemaps: ["https://marketdatav1.vercel.app/sitemap.xml"],
+  startUrls: ["https://docs-staging.marketdata.app/"],
+  sitemaps: ["https://docs-staging.marketdata.app/sitemap.xml"],
   ignoreCanonicalTo: true,
-  discoveryPatterns: ["https://marketdatav1.vercel.app/**"],
+  discoveryPatterns: ["https://docs-staging.marketdata.app/**"],
   actions: [
     {
       indexName: "dev_marketdata_fiverr_1",
-      pathsToMatch: ["https://marketdatav1.vercel.app/**"],
+      pathsToMatch: ["https://docs-staging.marketdata.app/**"],
       recordExtractor: ({ $, helpers }) => {
         // priority order: deepest active sub list header -> navbar active item -> 'Documentation'
         const lvl0 =
