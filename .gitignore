@@ -20,3 +20,6 @@ yarn-debug.log*
 yarn-error.log*
 
 .env
+
+/static/robots.txt
+static/robots.txt

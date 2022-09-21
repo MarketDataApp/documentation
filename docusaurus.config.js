@@ -3,10 +3,12 @@
 
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
+require("dotenv").config();
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: process.env.PROD ? "Market Data Docs" : "Market Data Docs (dev)",
+  title:
+    process.env.PROD == "true" ? "Market Data Docs" : "Market Data Docs (dev)",
   tagline: "The Complete Reference For All Market Data Products & Services",
   url: "https://docs-staging.marketdata.app/",
   baseUrl: "/",
@@ -31,14 +33,15 @@ const config = {
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
-        sitemap: process.env.PROD
-          ? {
-              changefreq: "weekly",
-              priority: 0.5,
-              ignorePatterns: ["/tags/**"],
-              filename: "sitemap.xml",
-            }
-          : {},
+        sitemap:
+          process.env.PROD == "true"
+            ? {
+                changefreq: "weekly",
+                priority: 0.5,
+                ignorePatterns: ["/tags/**"],
+                filename: "sitemap.xml",
+              }
+            : {},
       }),
     ],
   ],
@@ -77,12 +80,6 @@ const config = {
         editUrl: "https://github.com/MarketDataApp/documentation/tree/dev",
 
         sidebarPath: require.resolve("./sidebars.js"),
-      },
-    ],
-    [
-      "docusaurus2-dotenv",
-      {
-        systemvars: true,
       },
     ],
   ],
