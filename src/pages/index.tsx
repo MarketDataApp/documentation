@@ -16,7 +16,9 @@ function HomepageHeader() {
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
           <Link className="button button--secondary button--lg" to="/api">
-            Get Started With Market Data's API - 1min ⏱️
+
+            Get Started With Our API
+
           </Link>
         </div>
       </div>
@@ -27,7 +29,7 @@ function HomepageHeader() {
 export default function Home(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
   return (
-    <Layout title="Home" description="">
+    <Layout title="DEV" description="">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

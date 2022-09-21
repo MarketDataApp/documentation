@@ -3,25 +3,24 @@
 
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
+require("dotenv").config();
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "Market Data Documentation",
+  title:
+    process.env.PROD == "true" ? "Market Data Docs" : "Market Data Docs (dev)",
   tagline: "The Complete Reference For All Market Data Products & Services",
-  url: "https://docs.marketdata.app/",
+
+  url: process.env.PROD == "true" ? "https://docs.marketdata.app/" : "https://docs-staging.marketdata.app/",
+
   baseUrl: "/",
   onBrokenLinks: "ignore",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: "facebook", // Usually your GitHub org/user name.
-  projectName: "docusaurus", // Usually your repo name.
+  organizationName: "marketdata",
+  projectName: "documentation",
 
-  // Even if you don't use internalization, you can use this field to set useful
-  // metadata like html lang. For example, if your site is Chinese, you may want
-  // to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
@@ -32,23 +31,19 @@ const config = {
       "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
-        // docs: {
-        //   sidebarPath: require.resolve("./sidebars.js"),
-        //   routeBasePath: "api",
-        //   editUrl:
-        //     "https://github.com/MarketDataApp/documentation/tree/main",
-        // },
         blog: false,
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
-
-        sitemap: {
-          changefreq: "weekly",
-          priority: 0.5,
-          ignorePatterns: ["/tags/**"],
-          filename: "sitemap.xml",
-        },
+        sitemap:
+          process.env.PROD == "true"
+            ? {
+                changefreq: "weekly",
+                priority: 0.5,
+                ignorePatterns: ["/tags/**"],
+                filename: "sitemap.xml",
+              }
+            : {},
       }),
     ],
   ],
@@ -62,7 +57,9 @@ const config = {
         path: "api",
         routeBasePath: "api",
         sidebarPath: require.resolve("./sidebars.js"),
-        editUrl: "https://github.com/MarketDataApp/documentation/tree/main",
+
+        editUrl: "https://github.com/MarketDataApp/documentation/tree/dev",
+
       },
     ],
     [
@@ -72,7 +69,8 @@ const config = {
         id: "sheets-add-on",
         path: "sheets-add-on",
         routeBasePath: "sheets-add-on",
-        editUrl: "https://github.com/MarketDataApp/documentation/tree/main",
+        editUrl: process.env.PROD == "true" ? "https://github.com/MarketDataApp/documentation/tree/main" : "https://github.com/MarketDataApp/documentation/tree/dev",
+
 
         sidebarPath: require.resolve("./sidebars.js"),
       },
@@ -84,8 +82,7 @@ const config = {
         id: "accounts-billing",
         path: "accounts-billing",
         routeBasePath: "accounts-billing",
-        editUrl: "https://github.com/MarketDataApp/documentation/tree/main",
-
+        editUrl: process.env.PROD == "true" ? "https://github.com/MarketDataApp/documentation/tree/main" : "https://github.com/MarketDataApp/documentation/tree/dev",
         sidebarPath: require.resolve("./sidebars.js"),
       },
     ],
@@ -95,18 +92,16 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       algolia: {
-        apiKey: "743236374ece371570e05b678e3671b4",
-        appId: "2L8QIH6E44",
-        indexName: "dev_marketdata_fiverr_1",
+        apiKey: "616ed612753f947f246c4b57617af1ac",
+        appId: "TSE3E81M2L",
+        indexName: "first_index",
       },
       navbar: {
         title: "",
         logo: {
           alt: "My Logo",
           src: "img/pngs/logo.png",
-          // href: "https://www.marketdata.app/",
           href: "/",
-          // target: "_blank",
           srcDark: "img/pngs/darkmode-logo.png",
         },
 
@@ -130,7 +125,6 @@ const config = {
             type: "search",
             position: "right",
           },
-          // { to: "/blog", label: "Blog", position: "left" },
           {
             href: "https://github.com/MarketDataApp/documentation",
             label: "GitHub",
