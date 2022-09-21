@@ -10,7 +10,9 @@ const config = {
   title:
     process.env.PROD == "true" ? "Market Data Docs" : "Market Data Docs (dev)",
   tagline: "The Complete Reference For All Market Data Products & Services",
-  url: "https://docs-staging.marketdata.app/",
+
+  url: process.env.PROD == "true" ? "https://docs.marketdata.app/" : "https://docs-staging.marketdata.app/",
+
   baseUrl: "/",
   onBrokenLinks: "ignore",
   onBrokenMarkdownLinks: "warn",
@@ -55,7 +57,9 @@ const config = {
         path: "api",
         routeBasePath: "api",
         sidebarPath: require.resolve("./sidebars.js"),
+
         editUrl: "https://github.com/MarketDataApp/documentation/tree/dev",
+
       },
     ],
     [
@@ -65,7 +69,8 @@ const config = {
         id: "sheets-add-on",
         path: "sheets-add-on",
         routeBasePath: "sheets-add-on",
-        editUrl: "https://github.com/MarketDataApp/documentation/tree/dev",
+        editUrl: process.env.PROD == "true" ? "https://github.com/MarketDataApp/documentation/tree/main" : "https://github.com/MarketDataApp/documentation/tree/dev",
+
 
         sidebarPath: require.resolve("./sidebars.js"),
       },
@@ -77,8 +82,7 @@ const config = {
         id: "accounts-billing",
         path: "accounts-billing",
         routeBasePath: "accounts-billing",
-        editUrl: "https://github.com/MarketDataApp/documentation/tree/dev",
-
+        editUrl: process.env.PROD == "true" ? "https://github.com/MarketDataApp/documentation/tree/main" : "https://github.com/MarketDataApp/documentation/tree/dev",
         sidebarPath: require.resolve("./sidebars.js"),
       },
     ],
@@ -122,7 +126,7 @@ const config = {
             position: "right",
           },
           {
-            href: "https://github.com/AhmedCoolProjects/marketdata-work-fiverr",
+            href: "https://github.com/MarketDataApp/documentation",
             label: "GitHub",
             position: "right",
           },
