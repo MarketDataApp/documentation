@@ -6,7 +6,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "Market Data Documentation",
+  title: "Market Data Docs",
   tagline: "The Complete Reference For All Market Data Products & Services",
   url: "https://docs-staging.marketdata.app/",
   baseUrl: "/",
