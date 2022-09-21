@@ -14,14 +14,9 @@ const config = {
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: "facebook", // Usually your GitHub org/user name.
-  projectName: "docusaurus", // Usually your repo name.
+  organizationName: "marketdata",
+  projectName: "documentation",
 
-  // Even if you don't use internalization, you can use this field to set useful
-  // metadata like html lang. For example, if your site is Chinese, you may want
-  // to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
@@ -32,12 +27,6 @@ const config = {
       "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
-        // docs: {
-        //   sidebarPath: require.resolve("./sidebars.js"),
-        //   routeBasePath: "api",
-        //   editUrl:
-        //     "https://github.com/MarketDataApp/documentation/tree/dev",
-        // },
         blog: false,
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
@@ -88,18 +77,16 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       algolia: {
-        apiKey: "743236374ece371570e05b678e3671b4",
-        appId: "2L8QIH6E44",
-        indexName: "dev_marketdata_fiverr_1",
+        apiKey: "616ed612753f947f246c4b57617af1ac",
+        appId: "TSE3E81M2L",
+        indexName: "first_index",
       },
       navbar: {
         title: "",
         logo: {
           alt: "My Logo",
           src: "img/pngs/logo.png",
-          // href: "https://www.marketdata.app/",
           href: "/",
-          // target: "_blank",
           srcDark: "img/pngs/darkmode-logo.png",
         },
 
@@ -123,7 +110,6 @@ const config = {
             type: "search",
             position: "right",
           },
-          // { to: "/blog", label: "Blog", position: "left" },
           {
             href: "https://github.com/AhmedCoolProjects/marketdata-work-fiverr",
             label: "GitHub",
