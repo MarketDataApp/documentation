@@ -99,8 +99,8 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       algolia: {
-        apiKey: "7734e90f4007c2116492831e314d1c4e",
-        appId: "TSE3E81M2L",
+        apiKey: "61b9ada0eff725c3350523c78c53917d",
+        appId: "XRC74FGPQA",
         indexName: "prod_index",
       },
       navbar: {
