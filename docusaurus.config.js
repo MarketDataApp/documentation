@@ -103,6 +103,7 @@ const config = {
         appId: "XRC74FGPQA",
         indexName: "prod_index",
       },
+
       navbar: {
         title: "",
         logo: {
