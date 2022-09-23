@@ -1,5 +1,5 @@
 ---
-title: Stockdata
+title: STOCKDATA
 sidebar_position: 1
 ---
 
