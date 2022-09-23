@@ -16,13 +16,13 @@ Fetches a current or historical index price from Market Data.
 
     INDEXDATA(symbol, [historial attribute|quote attribute], startDate, endDate, resolution)
 
-- **symbol** _(REQUIRED)_ The stock’s ticker symbol.
+- **symbol** _(REQUIRED)_ The index symbol, without any leading index identifiers (i.e. use DJI do not use $DJI, ^DJI, or .DJI).
 
 - **[historial attributes | quote attributes]** _(Optional)_ Use a historical or quote attribute:
 
   - **historical attributes** _(OPTIONAL – "close" by default)_ Use one of the following attributes when requesting historical candles:
 
-    - "open" – The opening price of the stock.
+    - `"open"` – The opening price of the stock.
     - "high" – The high price of the stock.
     - "low" – The low price of the stock.
     - "close" – The closing price of the stock.
