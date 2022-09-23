@@ -22,10 +22,10 @@ Fetches a current or historical index price from Market Data.
 
   - **historical attributes** _(OPTIONAL – "close" by default)_ Use one of the following attributes when requesting historical candles:
 
-    - `"open"` – The opening price of the stock.
-    - `"high"` – The high price of the stock.
-    - `"low"` – The low price of the stock.
-    - `"close"` – The closing price of the stock.
+    - `"open"` – The opening price of the index.
+    - `"high"` – The high price of the index.
+    - `"low"` – The low price of the index.
+    - `"close"` – The closing price of the index.
     - `"date"` - The date/time of the candle.
     - `"all"` – Returns all values.
 
