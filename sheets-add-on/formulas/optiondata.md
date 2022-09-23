@@ -1,5 +1,5 @@
 ---
-title: Optiondata
+title: OPTIONDATA
 sidebar_position: 2
 ---
 
