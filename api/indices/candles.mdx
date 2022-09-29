@@ -3,7 +3,7 @@ title: Candles
 sidebar_position: 1
 ---
 
-Get historical price candles for a stock.
+Get historical price candles for an index.
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
@@ -28,7 +28,7 @@ import TabItem from "@theme/TabItem";
 
 ```
 
-**GET** [https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31](https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31)
+**GET** [https://api.marketdata.app/v1/indices/candles/D/VIX?from=2022-09-01&to=2022-09-05](https://api.marketdata.app/v1/indices/candles/D/VIX?from=2022-09-01&to=2022-09-05)
 
 ```mdx-code-block
 
@@ -39,7 +39,7 @@ import TabItem from "@theme/TabItem";
 
 ```js title="app.js"
 fetch(
-  "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31"
+  "https://api.marketdata.app/v1/indices/candles/D/VIX?from=2022-09-01&to=2022-09-05"
 )
   .then((res) => {
     console.log(res);
@@ -49,7 +49,7 @@ fetch(
   });
 
 fetch(
-  "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-12-31&countback=252"
+  "https://api.marketdata.app/v1/indices/candles/D/VIX?from=2022-09-01&to=2022-09-05"
 )
   .then((res) => {
     console.log(res);
@@ -68,14 +68,11 @@ fetch(
 ```python title="app.py"
 import requests
 
-url1 = "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31"
-url2 = "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-12-31&countback=252"
+url = "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31"
 
-response1 = requests.request("GET", url1)
-response2 = requests.request("GET", url2)
+response = requests.request("GET", url)
 
-print(response1.text)
-print(response2.text)
+print(response.text)
 ```
 
 ```mdx-code-block
@@ -87,14 +84,14 @@ print(response2.text)
 ## Response Example
 
 ```json
+
 {
-  "s": "ok",
-  "c": [217.68, 221.03, 219.89],
-  "h": [222.49, 221.5, 220.94],
-  "l": [217.19, 217.1402, 218.83],
-  "o": [221.03, 218.55, 220],
-  "t": [1569297600, 1569384000, 1569470400],
-  "v": [33463820, 24018876, 20730608]
+  "s":"ok",
+  "c":[22.84,23.93,21.95,21.44,21.15],
+  "h":[23.27,24.68,23.92,22.66,22.58],
+  "l":[22.26,22.67,21.68,21.44,20.76],
+  "o":[22.41,24.08,23.86,22.06,21.5],
+  "t":[1659326400,1659412800,1659499200,1659585600,1659672000]
 }
 ```
 
@@ -124,60 +121,7 @@ print(response2.text)
 
 - **symbol** `string`
 
-  The company's ticker symbol. If no exchange is specified, by default a US exchange will be assumed. You may embed the exchange in the ticker symbol using the Yahoo Finance or TradingView formats. A company or securities identifier can also be used instead of a ticker symbol.
-
-  Ticker Formats: (`TICKER`, `TICKER.EX`, `EXCHANGE:TICKER`)
-
-  Company Identifiers: (`CIK`, `LEI`)
-
-  Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
-
-- **from** `date`
-
-  The leftmost candle on a chart (inclusive). If you use countback, to is not required. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
-
-- **to** `date`
-
-  The rightmost candle on a chart (not inclusive). Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
-
-- **countback** `number`
-
-  Countback will fetch a number of candles before (to the left of) to If you use from, countback is not required.
-
-```mdx-code-block
-
-</TabItem>
-<TabItem value="optional" label="Optional">
-
-```
-
-- **exchange** `string`
-
-  Use to specify the exchange of the ticker. This is useful when you need to specify stock that quotes on several exchanges with the same symbol. You may specify the exchange using the `EXCHANGE ACRONYM`, `MIC CODE`, or two digit `YAHOO FINANCE EXCHANGE CODE`. If no exchange is specified symbols will be matched to US exchanges first.
-
-- **extended** `boolean`
-
-  Include extended hours trading sessions when returning intraday candles. Daily resolutions never return extended hours candles. The default is `false`
-
-- **country** `string`
-
-  Use to specify the country of the exchange (not the country of the company) in conjunction with the symbol argument. This argument is useful when you know the ticker symbol and the country of the exchange, but not the exchange code. Use the two digit ISO 3166 country code. If no country is specified, US exchanges will be assumed.
-
-- **adjustsplits** `boolean`
-
-  Adjust historical data for for historical splits and reverse splits. Market Data uses the CRSP methodology for adjustment.
-
-  Daily candles default: `true`.
-
-  Intraday candles default: `false`.
-
-- **adjustdividends** `boolean`
-
-  Adjust candles for dividends. Market Data uses the CRSP methodology for adjustment.
-
-  Daily candles default: `true`.
-
-  Intraday candles default: `false`.
+  The index ticker symbol.
 
 ```mdx-code-block
 
@@ -212,10 +156,6 @@ print(response2.text)
 - **c** `array[number]`
 
   Close price.
-
-- **v** `array[number]`
-
-  Volume.
 
 - **t** `array[number]`
   Candle time (Unix timestamp, UTC). Daily, weekly, monthly, yearly candles are returned without times.
