@@ -1,0 +1,160 @@
+---
+title: Quotes
+sidebar_position: 2
+---
+
+Get a real-time quote for an index.
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+## Endpoint
+
+:::info Endpoint
+https://api.marketdata.app/v1/indices/quotes/{symbol}/
+:::
+
+#### Method
+
+    GET
+
+## Request Example
+
+```mdx-code-block
+<Tabs>
+<TabItem value="HTTP" label="HTTP" default>
+
+```
+
+**GET** [https://api.marketdata.app/v1/indices/quotes/VIX/](https://api.marketdata.app/v1/indices/quotes/VIX/)
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
+```
+
+```js title="app.js"
+fetch(
+  "https://api.marketdata.app/v1/indices/quotes/VIX/"
+)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```
+
+```python title="app.py"
+import requests
+
+url = "https://api.marketdata.app/v1/indices/quotes/VIX/"
+
+response = requests.request("GET", url)
+
+print(response.text)
+```
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
+
+## Response Example
+
+```json
+{
+  "s": "ok",
+  "symbol": [
+    "VIX"
+  ],
+  "last": [
+    29.92
+  ],
+  "updated": [
+    1664224409
+  ]
+}
+```
+
+## Request Parameters
+
+```mdx-code-block
+<Tabs>
+<TabItem value="required" label="Required" default>
+
+```
+
+- **symbol** `string`
+
+  The index ticker symbol.
+  
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
+
+## Response Attributes
+
+```mdx-code-block
+<Tabs>
+<TabItem value="Success" label="Success" default>
+
+```
+
+- **s** `string`
+
+  Will always be `ok` when there is data for the symbol requested.
+
+- **symbol** `array[string]`
+
+  The symbol of the index.
+
+- **last** `array[number]`
+
+  The last price of the index.
+
+- **updated** `array[date]`
+
+  The date/time of the quote.
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NoData" label="No Data">
+
+```
+
+- **s** `string`
+
+  Status will be `no_data` if no quote can be found for the symbol.
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="Error" label="Error">
+
+```
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```

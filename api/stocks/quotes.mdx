@@ -1,0 +1,208 @@
+---
+title: Quotes
+sidebar_position: 2
+---
+
+Get a real-time price quote for a stock.
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+## Endpoint
+
+:::info Endpoint
+https://api.marketdata.app/v1/stocks/quotes/{symbol}/
+:::
+
+#### Method
+
+    GET
+
+## Request Example
+
+```mdx-code-block
+<Tabs>
+<TabItem value="HTTP" label="HTTP" default>
+
+```
+
+**GET** [https://api.marketdata.app/v1/stocks/quotes/AAPL/](https://api.marketdata.app/v1/stocks/quotes/AAPL/)
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
+```
+
+```js title="app.js"
+fetch(
+  "https://api.marketdata.app/v1/stocks/quotes/AAPL/"
+)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```
+
+```python title="app.py"
+import requests
+
+url = "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31"
+
+response = requests.request("GET", url)
+
+print(response.text)
+```
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
+
+## Response Example
+
+```json
+{
+  "s":"ok",
+  "symbol":[
+    "AAPL"
+  ],
+  "ask":[
+    149.08
+  ],
+  "askSize":[
+    200
+  ],
+  "bid":[
+    149.07
+  ],
+  "bidSize":[
+    600
+  ],
+  "mid":[
+    149.07
+  ],
+  "last":[
+    149.09
+  ],
+  "volume":[
+    66959442
+  ],
+  "updated":[
+    1663958092
+  ]
+}
+```
+
+## Request Parameters
+
+```mdx-code-block
+<Tabs>
+<TabItem value="required" label="Required" default>
+
+```
+
+- **symbol** `string`
+
+  The company's ticker symbol. If no exchange is specified, by default a US exchange will be assumed. You may embed the exchange in the ticker symbol using the Yahoo Finance or TradingView formats. A company or securities identifier can also be used instead of a ticker symbol.
+
+  Ticker Formats: (`TICKER`, `TICKER.EX`, `EXCHANGE:TICKER`)
+
+  Company Identifiers: (`CIK`, `LEI`)
+
+  Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
+
+## Response Attributes
+
+```mdx-code-block
+<Tabs>
+<TabItem value="Success" label="Success" default>
+
+```
+
+- **s** `string`
+
+  Will always be `ok` when there is data for the symbol requested.
+
+- **symbol** `array[string]`
+
+  The symbol of the stock.
+
+- **ask** `array[number]`
+
+  The ask price of the stock.
+
+- **askSize** `array[number]`
+
+  The number of shares offered at the ask price.
+
+- **bid** `array[number]`
+
+  The bid price.
+
+- **bidSize** `array[number]`
+
+  The number of shares that may be sold at the bid price.
+
+- **mid** `array[number]`
+
+  The midpoint price between the ask and the bid.
+
+- **last** `array[number]`
+
+  The last price the stock traded at.
+
+- **volume** `array[number]`
+
+  The number of shares traded during the current session.
+
+- **updated** `array[date]`
+
+  The date/time of the current stock quote.
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NoData" label="No Data">
+
+```
+
+- **s** `string`
+
+  Status will be `no_data` if no quote can be found for the symbol.
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="Error" label="Error">
+
+```
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
