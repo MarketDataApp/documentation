@@ -16,7 +16,7 @@ Fetches a current or historical index price from Market Data.
 
     INDEXDATA(symbol, [historial attribute|quote attribute], startDate, endDate, resolution)
 
-- **symbol** _(REQUIRED)_ The index symbol, without any leading index identifiers (i.e. use DJI do not use $DJI, ^DJI, or .DJI).
+- **symbol** _(REQUIRED)_ The index symbol, without any leading or trailing index identifiers. For example, use DJI do not use $DJI, ^DJI, .DJI, DJI.X, etc.
 
 - **[historial attributes | quote attributes]** _(Optional)_ Use a historical or quote attribute:
 
