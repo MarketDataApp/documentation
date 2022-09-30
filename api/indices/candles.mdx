@@ -48,15 +48,6 @@ fetch(
     console.log(err);
   });
 
-fetch(
-  "https://api.marketdata.app/v1/indices/candles/D/VIX?from=2022-09-01&to=2022-09-05"
-)
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
 ```
 
 ```mdx-code-block
@@ -68,7 +59,7 @@ fetch(
 ```python title="app.py"
 import requests
 
-url = "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31"
+url = "https://api.marketdata.app/v1/indices/candles/D/VIX?from=2022-09-01&to=2022-09-05"
 
 response = requests.request("GET", url)
 
