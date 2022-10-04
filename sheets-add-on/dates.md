@@ -13,10 +13,12 @@ All Market Data formulas support advanced date-handling features to allow you to
 
 - **Spreadsheet** Dates and times in spreadsheet format (days after the Excel epoch). For example, closing bell on Dec 30, 2020 for the NYSE would be: 44195.66667
 
-- **Relative Dates** Keywords or key phreases that indicate specific days, relative to the current date. For example: "today" or "yesterday".
+- **Relative Dates** Keywords or key phrases that indicate specific days, relative to the current date. For example, "today" or "yesterday".
 
 
-## Sample Usage
+## Relative Dates
+
+The only keywords currently supported are _today_ and _yesterday_.
 
     STOCKDATA("AAPL")
 
