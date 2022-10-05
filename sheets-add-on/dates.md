@@ -18,7 +18,19 @@ All Market Data formulas support advanced date-handling features to allow you to
 
 ## Relative Dates
 
-The only keywords currently supported are _today_ and _yesterday_.
+Relative dates allow Market Data formulas to continually modify the date sent to the formula based on the current date. The only keywords currently supported at present are `today` and `yesterday`, but additional keywords and key phrases are planeed for the future.
+
+- `today` Equivalent to today's date. This keyword can be used interchangably with Sheets' buildt-in formula `today()`.
+- `yesterday` Yesterday's date. The same as Sheets formula `today()-1`.
+
+:::warning The following relative date parameters are planned for the futrue and have not yet been implemented.
+
+---
+
+- `this [day of the week]` The day in the _current_ week. For example, if today is Tuesday and the expression is `this Monday`, the date returned would be yesterday. If the expression were `this Wednesday` the date returned would be tomorrow.
+- `last [day of the week]` The day in the _previous_ week. For example, if today is Tuesday and the expression used is `last Monday`, it would not refer to the Monday that occurred yesterday, but the Monday 8 days prior that ocurred in the previous week.
+- `next [day of the week]` The day in the _following_ week. For example, if today is Monday and the expression is `next Tuesday` it would not refer to tomorrow, but the Tuesday that ocurrs 8 days from now.
+
 
     STOCKDATA("AAPL")
 
