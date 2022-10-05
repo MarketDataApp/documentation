@@ -23,16 +23,28 @@ Relative dates allow Market Data formulas to continually modify the date sent to
 - `today` Equivalent to today's date. This keyword can be used interchangably with Sheets' built-in formula `today()`.
 - `yesterday` Yesterday's date. The same as Sheets formula `today()-1`.
 
-:::warning The following relative date parameters are planned for the future and have not yet been implemented.
+:::caution Coming Soon
+
+The following relative date parameters are planned for the future and have not yet been implemented.
 
 :::
 
-- **Weekly Parameters** Weekly keyprhases let you select a day of the week in the current, previous, or following week.
-  - `this [day of the week]` The day in the _current_ week. For example, if today is Tuesday and the expression is `this Monday`, the date returned would be yesterday. If the expression were `this Wednesday` the date returned would be tomorrow.
+- **Weekly Parameters** Weekly keyphrases let you select a day of the week in the current, previous, or following week.
+  - `this [day of the week]` Works the same way as specifying the day without adding _this_. The day in the _current_ week. For example, if today is Tuesday and the expression is `this Monday`, the date returned would be yesterday. If the expression were `this Wednesday` the date returned would be tomorrow. The word _this_ is optional. If it is omitted, the keyword will still return the date in the current week that corresponds with the day mentioned.
   - `last [day of the week]` The day in the _previous_ week. For example, if today is Tuesday and the expression used is `last Monday`, it would not refer to the Monday that occurred yesterday, but the Monday 8 days prior that ocurred in the previous week.
   - `next [day of the week]` The day in the _following_ week. For example, if today is Monday and the expression is `next Tuesday` it would not refer to tomorrow, but the Tuesday that ocurrs 8 days from now.
 
-- **Monthly Parameters** Weekly keyprhases let you select a day of the week in the current, previous, or following week.
+- **Monthly Parameters** Monthly keyphrases let you select a specific day of in a specific month.
+  - `[ordinal number] of [the/this] month` The nth day of the current month. For example, if today is September 10th and the phrase used is, `8th of this month` the date returned would be September 8. The keyphrase `of [the/this] month` is optional. Using a single ordinal number `8th` will also return the 8th of the current month.
+  - `[ordinal number] of last month` The nth day of the current month. For example, if today is December 15th and the phrase used is, `8th of last month` the date returned would be November 8.
+  - `[ordinal number] of next month` The nth day of the following month. For example, if today is December 15th and the phrase used is, `8th of next month` the date returned would be January 8 of the following year.
+  - `last day of [the/this/last/next] month` Using the `last day of` keyword will always select the final day of the month. Since months can end on the 28th, 29th, 30th, or 31st, this keyword allows you to always select the final day of a month. For example: `last day of this month`, `last day of next month`. It can also be used to select the last day in February without needing to determine wheether the current year is a leap year, `last day of february`. 
+
+- **Yearly Parameters** Yearly keyphrases let you select a specific day of in the current, previous, or following year.
+  - `[month] [number]` A specific date in the current year. For example `Feburary 18` would return February 18 of the current year.
+  - `[month] [number]` A specific date in the current year. For example `Feburary 18` would return February 18 of the current year.
+
+
 
 
 
