@@ -23,9 +23,7 @@ Relative dates allow Market Data formulas to continually modify the date sent to
 - `today` Equivalent to today's date. This keyword can be used interchangably with Sheets' buildt-in formula `today()`.
 - `yesterday` Yesterday's date. The same as Sheets formula `today()-1`.
 
-:::warning The following relative date parameters are planned for the futrue and have not yet been implemented.
-
----
+:::warning The following relative date parameters are planned for the futrue and have not yet been implemented.:::
 
 - `this [day of the week]` The day in the _current_ week. For example, if today is Tuesday and the expression is `this Monday`, the date returned would be yesterday. If the expression were `this Wednesday` the date returned would be tomorrow.
 - `last [day of the week]` The day in the _previous_ week. For example, if today is Tuesday and the expression used is `last Monday`, it would not refer to the Monday that occurred yesterday, but the Monday 8 days prior that ocurred in the previous week.
