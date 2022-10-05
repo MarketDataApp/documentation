@@ -23,7 +23,8 @@ Relative dates allow Market Data formulas to continually modify the date sent to
 - `today` Equivalent to today's date. This keyword can be used interchangably with Sheets' built-in formula `today()`.
 - `yesterday` Yesterday's date. The same as Sheets formula `today()-1`.
 
-:::warning The following relative date parameters are planned for the futrue and have not yet been implemented.
+:::warning The following relative date parameters are planned for the future and have not yet been implemented.
+
 :::
 
 - **Weekly Parameters** Weekly keyprhases let you select a day of the week in the current, previous, or following week.
