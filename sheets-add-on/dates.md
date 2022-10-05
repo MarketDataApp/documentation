@@ -21,6 +21,7 @@ All Market Data formulas support advanced date-handling features to allow you to
 Relative dates allow Market Data formulas to continually modify the date sent to the formula based on the current date. The only keywords currently supported at present are `today` and `yesterday`, but additional keywords and key phrases are planeed for the future.
 
 - `today` Equivalent to today's date. This keyword can be used interchangably with Sheets' built-in formula `today()`.
+
 - `yesterday` Yesterday's date. The same as Sheets formula `today()-1`.
 
 :::caution Coming Soon
@@ -36,20 +37,33 @@ The following relative date parameters are planned for the future and have not y
 
   - `next [day of the week]` The day in the _following_ week. For example, if today is Monday and the expression is `next Tuesday` it would not refer to tomorrow, but the Tuesday that ocurrs 8 days from now.
 
-- **Monthly Parameters** Monthly keyphrases let you select a specific day of in a specific month.
+- **Monthly Dates** Monthly keyphrases let you select a specific day of a specific month.
 
-  - **[ordinal number] of [the/this] month** - The nth day of the current month. For example, if today is September 10th and the phrase used is, `8th of this month` the date returned would be September 8. The keyphrase `of [the/this] month` is optional. Using a single ordinal number `8th` will also return the 8th of the current month.
+  - **[ordinal number] of [the|this] month** - The nth day of the current month. For example, if today is September 10th and the phrase used is, `8th of this month` the date returned would be September 8. The keyphrase `of [the/this] month` is optional. Using a single ordinal number `8th` will also return the 8th of the current month.
 
   - **[ordinal number] of last month** - The nth day of the current month. For example, if today is December 15th and the phrase used is, `8th of last month` the date returned would be November 8.
 
   - **[ordinal number] of next month** - The nth day of the following month. For example, if today is December 15th and the phrase used is, `8th of next month` the date returned would be January 8 of the following year.
 
-  - **last day of [the/this/last/next] month** - Using the `last day of` keyword will always select the final day of the month. Since months can end on the 28th, 29th, 30th, or 31st, this keyword allows you to always select the final day of a month. For example: `last day of this month`, `last day of next month`. It can also be used to select the last day in February without needing to determine wheether the current year is a leap year, `last day of february`. 
+  - **last day of [the|this|last|next] month** - Using the `last day of` keyword will always select the final day of the month. Since months can end on the 28th, 29th, 30th, or 31st, this keyword allows you to always select the final day of a month. For example: `last day of this month`, `last day of next month`. It can also be used to select the last day in February without needing to determine wheether the current year is a leap year, `last day of february`.
 
-- **Yearly Parameters** Yearly keyphrases let you select a specific day of in the current, previous, or following year.
-  - `[month] [number]` A specific date in the current year. For example `Feburary 18` would return February 18 of the current year.
-  - `[month] [number]` A specific date in the current year. For example `Feburary 18` would return February 18 of the current year.
+  - **[ordinal number] [day of the week] of [the|this|last|next] month** - Combine ordinal numbers and weekdays to specify a specific day of the week in the current, previous, or following month. For example, ``3nd Friday of last month``.
 
+  - **last [day of the week] of [the|this|last|next] month** - Selects the last day of the week in a month relative to the current month. If the last Monday of the month is needed, instead of using the keyphrase `4th Monday of this month`, it is safer to use `last Monday of this month`, since months can have 4 or 5 Mondays, depending on length. 
+
+  - **last [day of the week] in [month]** - Selects the last day of the week in a specific month. For example, Memorial Day could be selected by using the keyphrase `last Monday in May`.
+
+- **Yearly Dates** Yearly keyphrases let you select a specific day of in the current, previous, or following year.
+
+  - **[month] [number]** A specific date in the current year. For example `Feburary 18` would return February 18 of the current year.
+
+  - **[month] [number] [this|last|next] year** A specific date in the current, previous, or following year. For example, if today was Dec 31, 2022, `Feburary 18 next year` would return February 18, 2023.
+
+- **Option Dates** Option-related dates let you target specific dates that are useful for options traders. Dates are based on the US option expirations calendar.
+
+  - **[month] [year] expiration** - The standard monthly option expiration date for [month] during [year]. [year] is optional. This is useful for targeting the expiration date for a specific month. Although options normally expire the 3rd Friday, sometimes market holidays can modify this schedule. Using an option expiration keyphrase will ensure that you always obtain the exact date that options expire in a specific month. For example, if today was January 1, 2022, using `December expiration` or `December 2022 expiration` would both return _December 16, 2022_.
+
+  - **[this|last|next] month's expiration** - Returns the monthly option expirate date for the current, previous, or following month relative to the current month. For example if today is October 5, 2022, and `next month's expiration` is used, the date returned would be _November 18, 2022_.
 
 
 
