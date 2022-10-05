@@ -15,6 +15,8 @@ All Market Data formulas support advanced date-handling features to allow you to
 
 - **Relative Dates** Keywords or key phrases that indicate specific days, relative to the current date. For example, "today" or "yesterday".
 
+- **Option Expiration Dates** Keyphrase that select specific dates that correspond with dates in the US option expiration calendar.
+
 
 ## Relative Dates
 
