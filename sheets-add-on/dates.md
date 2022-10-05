@@ -66,6 +66,12 @@ The following relative date parameters are planned for the future and have not y
 
 Option expiration dates let you target the expiration dates for option contracts. Dates are based on the US option expirations calendar and are only meant for use with US markets.
 
+:::caution Coming Soon
+
+Option date parameters are planned for the future and have not yet been implemented.
+
+:::
+
 - **Monthly Expirations** - Target a relative month or specific month's option expiration date.
 
   - **[month] [year] expiration** - The standard monthly option expiration date for [month] during [year]. This is useful for targeting the expiration date for a specific month. Although options normally expire the 3rd Friday, sometimes market holidays can modify this schedule. Using an option expiration keyphrase will ensure that you always obtain the exact date that options expire in a specific month. For example, if today was January 1, 2022, using `December expiration` or `December 2022 expiration` would both return _December 16, 2022_. 
@@ -94,7 +100,7 @@ Not all underlyings offer weekly or quarterly options. Before building a spreads
 
   - **[ordinal number] quarter's expiration** - Returns the quarterly option expiration date for the 1st, 2nd, 3rd, or 4th quarter in the current financial year. For example if today is March 1, 2022, and `4th quarter's expiration` is used, the date returned would be _December 30, 2022_. This will lookup both expired and unexpired options.
 
-- **[this|last|next] quarter's expiration** - Returns the quarterly option expiration date for the current, previous, or following quarter relative to the current date. For example if today is March 1, 2022, and `this quarter's expiration` is used, the date returned would be _March 31, 2022_.
+  - **[this|last|next] quarter's expiration** - Returns the quarterly option expiration date for the current, previous, or following quarter relative to the current date. For example if today is March 1, 2022, and `this quarter's expiration` is used, the date returned would be _March 31, 2022_.
 
   - **expiration in [number] quarters** - Returns closest quarterly expiration that will occur [number] quarters from today without taking into account the current quarter. For example, if today is March 1, 2022 the phrase `expiration in 2 quarters` would return September 30, 2022.
 
