@@ -34,13 +34,13 @@ The following relative date parameters are planned for the future and have not y
 
 :::
 
-  - `[number] days ago` The days ago keyword lets you select a relative day, n days before the current date. For example, if today is January 5, 2022, then using `2 weeks ago` would select the date January 3, 2022.
+    - `[number] days ago` The days ago keyword lets you select a relative day, n days before the current date. For example, if today is January 5, 2022, then using `2 weeks ago` would select the date January 3, 2022.
 
 - **Time-based Parameters** Time keyphrases let you select a specific time of day, relative to the current time. Time-based parameters are typically used to model intraday stock movements.
 
-  - `at open`, `opening bell`, `market open` These keyphreases let you select the opening time for the market day. The phase is relative to each exchange's opening time. For example, if you were trading AAPL in the United States, using `at open` would set a time of 9:30 AM ET. 
+  - `at open`, `opening bell`, `market open` These keyphrases let you select the opening time for the market day. The phase is relative to each exchange's opening time. For example, if you were trading AAPL in the United States, using `at open` would set a time of 9:30 AM ET. 
 
-  - `at close`, `closing bell`, `market close` These keyphreases let you select the closing time for the market day. The phase is relative to each exchange's closing time. For example, if you were trading AAPL in the United States, using `at close` would set a time of 4:00 PM ET.
+  - `at close`, `closing bell`, `market close` These keyphrases let you select the closing time for the market day. The phase is relative to each exchange's closing time. For example, if you were trading AAPL in the United States, using `at close` would set a time of 4:00 PM ET.
 
   - `[number] [minutes|hours] before [open|close]` These before keyword lets you select a relative time before market open or close. For example `30 minutes before close` would select the time 3:30 PM ET if you are trading a stock on a U.S. exchange.
 
