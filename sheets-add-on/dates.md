@@ -1,5 +1,5 @@
 ---
-title: Dates
+title: Dates and Times
 sidebar_position: 3
 ---
 
@@ -13,24 +13,42 @@ All Market Data formulas support advanced date-handling features to allow you to
 
 - **Spreadsheet** Dates and times in spreadsheet format (days after the Excel epoch). For example, closing bell on Dec 30, 2020 for the NYSE would be: 44195.66667
 
-- **Relative Dates** Keywords or key phrases that indicate specific days, relative to the current date. For example, "today" or "yesterday".
+- **Relative Dates and Times** Keywords or key phrases that indicate specific days, relative to the current date. For example, "today" or "yesterday".
 
 - **Option Expiration Dates** Keyphrase that select specific dates that correspond with dates in the US option expiration calendar.
 
 
-## Relative Dates
+## Relative Dates and Times
 
 Relative dates allow Market Data formulas to continually modify the date sent to the formula based on the current date. The only keywords currently supported at present are `today` and `yesterday`, but additional keywords and key phrases are planeed for the future.
 
-- **today** Equivalent to today's date. This keyword can be used interchangably with Sheets' built-in formula `today()`.
+- **Daily Parameters** Daily keyphrases let you select a specific day, relative to the current day.
 
-- **yesterday** Yesterday's date. The same as Sheets formula `today()-1`.
+  - `today` Equivalent to today's date. This keyword can be used interchangably with Sheets' built-in formula `today()`.
+
+  - `yesterday` Yesterday's date. The same as Sheets formula `today()-1`.
 
 :::caution Coming Soon
 
 The following relative date parameters are planned for the future and have not yet been implemented.
 
 :::
+
+  -`[number] days ago` The days ago keyword lets you select a relative day, n days before the current date. For example, if today is January 5, 2022, then using `2 weeks ago` would select the date January 3, 2022.
+
+- **Time-based Parameters** Time keyphrases let you select a specific time of day, relative to the current time. Time-based parameters are typically used to model intraday stock movements.
+
+  - `at open`, `opening bell`, `market open` These keyphreases let you select the opening time for the market day. The phase is relative to each exchange's opening time. For example, if you were trading AAPL in the United States, using `at open` would set a time of 9:30 AM ET. 
+
+  - `at close`, `closing bell`, `market close` These keyphreases let you select the closing time for the market day. The phase is relative to each exchange's closing time. For example, if you were trading AAPL in the United States, using `at close` would set a time of 4:00 PM ET.
+
+  - `[number] [minutes|hours] before [open|close]` These before keyword lets you select a relative time before market open or close. For example `30 minutes before close` would select the time 3:30 PM ET if you are trading a stock on a U.S. exchange.
+
+  - `[number] [minutes|hours] after [open|close]` These after keyword lets you select a relative time after market open or close. For example `1 hour after open` would select the time 10:30 AM ET if you are trading a stock on a U.S. exchange.
+
+  - `[minutes|hours] ago` The ago keyword lets you select a relative time before the current time. For example, if right now is 11:00 AM, then using `1 hour ago` would select the time 10:00 AM.
+
+  - `[minutes|hours] ago` The ago keyword lets you select a relative time before the current time. For example, if right now is 11:00 AM, then using `1 hour ago` would select the time 10:00 AM.
 
 - **Weekly Parameters** Weekly keyphrases let you select a day of the week in the current, previous, or following week.
 
@@ -39,6 +57,8 @@ The following relative date parameters are planned for the future and have not y
   - `last [day of the week]` The day in the _previous_ week. For example, if today is Tuesday and the expression used is `last Monday`, it would not refer to the Monday that occurred yesterday, but the Monday 8 days prior that ocurred in the previous week.
 
   - `next [day of the week]` The day in the _following_ week. For example, if today is Monday and the expression is `next Tuesday` it would not refer to tomorrow, but the Tuesday that ocurrs 8 days from now.
+
+  -`[number] weeks ago` The weeks ago keyword lets you select a relative date, n weeks before the current date. For example, if today is January 5, 2022, then using `2 weeks ago` would select the date December 22, 2021.
 
 - **Monthly Dates** Monthly keyphrases let you select a specific day of a specific month.
 
@@ -56,11 +76,15 @@ The following relative date parameters are planned for the future and have not y
 
   - **last [day of the week] in [month]** - Selects the last day of the week in a specific month. For example, Memorial Day could be selected by using the keyphrase `last Monday in May`.
 
+  -`[number] months ago` The months ago keyword lets you select a relative date, n months before the current date. For example, if today is January 5, 2022, then using `3 months ago` would select the date October 5, 2021.
+
 - **Yearly Dates** Yearly keyphrases let you select a specific day of in the current, previous, or following year.
 
-  - **[month] [number]** A specific date in the current year. For example `Feburary 18` would return February 18 of the current year.
+  - `[month] [number]` A specific date in the current year. For example `Feburary 18` would return February 18 of the current year.
 
-  - **[month] [number] [this|last|next] year** A specific date in the current, previous, or following year. For example, if today was Dec 31, 2022, `Feburary 18 next year` would return February 18, 2023.
+  - `[month] [number] [this|last|next] year` A specific date in the current, previous, or following year. For example, if today was Dec 31, 2022, `Feburary 18 next year` would return February 18, 2023.
+
+  -`[number] years ago` The years ago keyword lets you select a relative date, 365 days before the current date. For example, if today is January 5, 2022, then using `2 years ago` would select the date January 5, 2020.
 
 ## Option Expiration Dates
 
