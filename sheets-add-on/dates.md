@@ -96,7 +96,7 @@ Not all underlyings offer weekly or quarterly options. Before building a spreads
 
   - **expiration in [number] weeks** - Returns closest expiration that will occur [number] weeks from today without taking into account the current week. For example, if today is August 1, 2022 the phrase `expiration in 6 weeks` would return September 16, 2022.
 
-  - **[month] [year] [ordinal number] expiration** - Returns the nth option expiration date for [month] during [year]. When both a month and year are combined, this can be used to lookup a weekly option date for an expired or unexpired option. For example, `March 2020's 2nd expiration` would return _March 14, 2020_.
+  - **[month] [year] [ordinal number] weekly expiration** - Returns the nth option expiration date for [month] during [year]. When both a month and year are combined, this can be used to lookup a weekly option date for an expired or unexpired option. For example, `March 2020's 2nd expiration` would return _March 14, 2020_.
 
 - **Quarterly Expirations** - Returns a quarterly expiration date for a relative date or specifically targeted date.
 
