@@ -86,7 +86,7 @@ Option-related keyphrases cannot be used to return expiration dates far in the f
 
 :::tip
 
-Not all underlyings offer weekly or quarterly options. Before building a spreadsheet that uses weekly or quarterly options, ensure that your underlying offers weekly or quarterly contracts.
+Not all underlyings offer weekly or quarterly options. Before building a spreadsheet that uses them, ensure that your underlying offers weekly or quarterly option contracts.
 
 :::
 
