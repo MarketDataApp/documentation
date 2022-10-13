@@ -34,7 +34,7 @@ The following relative date parameters are planned for the future and have not y
 
 :::
 
-    - `[number] days ago` The days ago keyword lets you select a relative day, n days before the current date. For example, if today is January 5, 2022, then using `2 weeks ago` would select the date January 3, 2022.
+  - `[number] days ago` The days ago keyword lets you select a relative day, n days before the current date. For example, if today is January 5, 2022, then using `2 weeks ago` would select the date January 3, 2022.
 
 - **Time-based Parameters** Time keyphrases let you select a specific time of day, relative to the current time. Time-based parameters are typically used to model intraday stock movements.
 
@@ -129,3 +129,9 @@ Not all underlyings offer weekly or quarterly options. Before building a spreads
   - `[expiration in [number] quarters` - Returns closest quarterly expiration that will occur [number] quarters from today without taking into account the current quarter. For example, if today is March 1, 2022 the phrase `expiration in 2 quarters` would return September 30, 2022.
 
   - `[year] [ordinal number] quarter expiration` - Returns the option expiration date for [nth] quarter during [year]. For example, `2020's 2nd quarter expiration` would return _June 30, 2020_.
+
+- **Specific Contract Expirations** - Target a specific date based on when a contract is first traded or when it expires.
+
+  - `at expiration` - Returns expiration date for the option contract. This must be used in the context of a specific option contract. For example, if you used at expiration with AAPL230120C00150000, the date returned would be January 20, 2023.
+
+  - `first traded` - Returns date when the contract was traded for the first time. For example, if you used first traded with AAPL230120C00150000, the date returned would be September 14, 2020.
