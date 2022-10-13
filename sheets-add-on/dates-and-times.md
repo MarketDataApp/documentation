@@ -28,14 +28,13 @@ Relative dates allow Market Data formulas to continually modify the date sent to
 
   - `yesterday` Yesterday's date. The same as Sheets formula `today()-1`.
 
-  -`[number] days ago` The days ago keyword lets you select a relative day, n days before the current date. For example, if today is January 5, 2022, then using `2 weeks ago` would select the date January 3, 2022.
-
-
 :::caution Coming Soon
 
 The following relative date parameters are planned for the future and have not yet been implemented.
 
 :::
+
+  - `[number] days ago` The days ago keyword lets you select a relative day, n days before the current date. For example, if today is January 5, 2022, then using `2 weeks ago` would select the date January 3, 2022.
 
 - **Time-based Parameters** Time keyphrases let you select a specific time of day, relative to the current time. Time-based parameters are typically used to model intraday stock movements.
 
@@ -57,7 +56,7 @@ The following relative date parameters are planned for the future and have not y
 
   - `next [day of the week]` The day in the _following_ week. For example, if today is Monday and the expression is `next Tuesday` it would not refer to tomorrow, but the Tuesday that ocurrs 8 days from now.
 
-  -`[number] weeks ago` The weeks ago keyword lets you select a relative date, n weeks before the current date. For example, if today is January 5, 2022, then using `2 weeks ago` would select the date December 22, 2021.
+  - `[number] weeks ago` The weeks ago keyword lets you select a relative date, n weeks before the current date. For example, if today is January 5, 2022, then using `2 weeks ago` would select the date December 22, 2021.
 
 - **Monthly Dates** Monthly keyphrases let you select a specific day of a specific month.
 
@@ -75,7 +74,7 @@ The following relative date parameters are planned for the future and have not y
 
   - `last [day of the week] in [month` - Selects the last day of the week in a specific month. For example, Memorial Day could be selected by using the keyphrase `last Monday in May`.
 
-  -`[number] months ago` The months ago keyword lets you select a relative date, n months before the current date. For example, if today is January 5, 2022, then using `3 months ago` would select the date October 5, 2021.
+  - `[number] months ago` The months ago keyword lets you select a relative date, n months before the current date. For example, if today is January 5, 2022, then using `3 months ago` would select the date October 5, 2021.
 
 - **Yearly Dates** Yearly keyphrases let you select a specific day of in the current, previous, or following year.
 
@@ -83,7 +82,7 @@ The following relative date parameters are planned for the future and have not y
 
   - `[month] [number] [this|last|next] year` A specific date in the current, previous, or following year. For example, if today was Dec 31, 2022, `Feburary 18 next year` would return February 18, 2023.
 
-  -`[number] years ago` The years ago keyword lets you select a relative date, 365 days before the current date. For example, if today is January 5, 2022, then using `2 years ago` would select the date January 5, 2020.
+  - `[number] years ago` The years ago keyword lets you select a relative date, 365 days before the current date. For example, if today is January 5, 2022, then using `2 years ago` would select the date January 5, 2020.
 
 ## Option Expiration Dates
 
@@ -101,7 +100,7 @@ Option-related keyphrases cannot be used to return expiration dates far in the f
 
 - **Monthly Expirations** - Target a relative month or specific month's option expiration date.
 
-  - `month] [year] expiration` - The standard monthly option expiration date for [month] during [year]. This is useful for targeting the expiration date for a specific month. Although options normally expire the 3rd Friday, sometimes market holidays can modify this schedule. Using an option expiration keyphrase will ensure that you always obtain the exact date that options expire in a specific month. For example, if today was January 1, 2022, using `December expiration` or `December 2022 expiration` would both return _December 16, 2022_. 
+  - `[month] [year] expiration` - The standard monthly option expiration date for [month] during [year]. This is useful for targeting the expiration date for a specific month. Although options normally expire the 3rd Friday, sometimes market holidays can modify this schedule. Using an option expiration keyphrase will ensure that you always obtain the exact date that options expire in a specific month. For example, if today was January 1, 2022, using `December expiration` or `December 2022 expiration` would both return _December 16, 2022_. 
 
     - [year] is optional. If [month] is used without [year] the lookup is relative to the current date and expired options will not be returned. For example, if today is April 8, 2022, `January expiration` will return January 20, 2023 and not the options which expired in January of 2022.
 
@@ -115,18 +114,18 @@ Not all underlyings offer weekly or quarterly options. Before building a spreads
 
 - **Weekly Expirations** - Target a relative week or specific week's option expiration date.
 
-  - `this|last|next] week's expiration` - Returns the weekly option expiration date for the current, previous, or following week relative to the current week. For example if today is October 5, 2022, and `next week's expiration` is used, the date returned would be _October 14, 2022_.
+  - `[this|last|next] week's expiration` - Returns the weekly option expiration date for the current, previous, or following week relative to the current week. For example if today is October 5, 2022, and `next week's expiration` is used, the date returned would be _October 14, 2022_.
 
   - `expiration in [number] weeks` - Returns closest expiration that will occur [number] weeks from today without taking into account the current week. For example, if today is August 1, 2022 the phrase `expiration in 6 weeks` would return September 16, 2022.
 
-  - `month] [year] [ordinal number] weekly expiration` - Returns the nth option expiration date for [month] during [year]. When both a month and year are combined, this can be used to lookup a weekly option date for an expired or unexpired option. For example, `March 2020's 2nd expiration` would return _March 14, 2020_.
+  - `[month] [year] [ordinal number] weekly expiration` - Returns the nth option expiration date for [month] during [year]. When both a month and year are combined, this can be used to lookup a weekly option date for an expired or unexpired option. For example, `March 2020's 2nd expiration` would return _March 14, 2020_.
 
 - **Quarterly Expirations** - Returns a quarterly expiration date for a relative date or specifically targeted date.
 
-  - `ordinal number] quarter's expiration` - Returns the quarterly option expiration date for the 1st, 2nd, 3rd, or 4th quarter in the current financial year. For example if today is March 1, 2022, and `4th quarter's expiration` is used, the date returned would be _December 30, 2022_. This will lookup both expired and unexpired options.
+  - `[ordinal number] quarter's expiration` - Returns the quarterly option expiration date for the 1st, 2nd, 3rd, or 4th quarter in the current financial year. For example if today is March 1, 2022, and `4th quarter's expiration` is used, the date returned would be _December 30, 2022_. This will lookup both expired and unexpired options.
 
-  - `this|last|next] quarter's expiration` - Returns the quarterly option expiration date for the current, previous, or following quarter relative to the current date. For example if today is March 1, 2022, and `this quarter's expiration` is used, the date returned would be _March 31, 2022_.
+  - `[this|last|next] quarter's expiration` - Returns the quarterly option expiration date for the current, previous, or following quarter relative to the current date. For example if today is March 1, 2022, and `this quarter's expiration` is used, the date returned would be _March 31, 2022_.
 
-  - `expiration in [number] quarters` - Returns closest quarterly expiration that will occur [number] quarters from today without taking into account the current quarter. For example, if today is March 1, 2022 the phrase `expiration in 2 quarters` would return September 30, 2022.
+  - `[expiration in [number] quarters` - Returns closest quarterly expiration that will occur [number] quarters from today without taking into account the current quarter. For example, if today is March 1, 2022 the phrase `expiration in 2 quarters` would return September 30, 2022.
 
-  - `year] [ordinal number] quarter expiration` - Returns the option expiration date for [nth] quarter during [year]. For example, `2020's 2nd quarter expiration` would return _June 30, 2020_.
+  - `[year] [ordinal number] quarter expiration` - Returns the option expiration date for [nth] quarter during [year]. For example, `2020's 2nd quarter expiration` would return _June 30, 2020_.
