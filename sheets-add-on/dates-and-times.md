@@ -132,6 +132,6 @@ Not all underlyings offer weekly or quarterly options. Before building a spreads
 
 - **Specific Contract Expirations** - Target a specific date based on when a contract is first traded or when it expires.
 
-  - `at expiration` - Returns expiration date for the option contract. This must be used in the context of a specific option contract. For example, if you used at expiration with AAPL230120C00150000, the date returned would be January 20, 2023.
+  - `at expiration` - Returns the expiration date for the option contract. This must be used in the context of a specific option contract. For example, if you used at expiration with AAPL230120C00150000, the date returned would be January 20, 2023.
 
-  - `first traded` - Returns date when the contract was traded for the first time. For example, if you used first traded with AAPL230120C00150000, the date returned would be September 14, 2020.
+  - `first traded` - Returns the date when the contract was traded for the first time. This must be used in the context of a specific option contract. For example, if you used first traded with AAPL230120C00150000, the date returned would be September 14, 2020.
