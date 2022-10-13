@@ -66,9 +66,13 @@ The following relative date parameters are planned for the future and have not y
 
 Option expiration dates let you target the expiration dates for option contracts. Dates are based on the US option expirations calendar and are only meant for use with US markets.
 
-:::caution Coming Soon
+:::caution
 
 Option date parameters are planned for the future and have not yet been implemented.
+
+---
+
+Option-related keyphrases cannot be used to return expiration dates far in the future for options which have not yet been traded or for options in the past which have already expired. For example, if today is January 15, 2023, you couldn't use `November 2023's 1st weekly expiration` since weekly options for November would not exist yet. The formula will return a `No data` response if you try to request an expiration that does not exist, whether in the future or the past.
 
 :::
 
@@ -93,8 +97,6 @@ Not all underlyings offer weekly or quarterly options. Before building a spreads
   - **expiration in [number] weeks** - Returns closest expiration that will occur [number] weeks from today without taking into account the current week. For example, if today is August 1, 2022 the phrase `expiration in 6 weeks` would return September 16, 2022.
 
   - **[month] [year] [ordinal number] expiration** - Returns the nth option expiration date for [month] during [year]. When both a month and year are combined, this can be used to lookup a weekly option date for an expired or unexpired option. For example, `March 2020's 2nd expiration` would return _March 14, 2020_.
-
-    - This keyphrase cannot be used to return expiration dates far in the future for weekly options which have not yet been released by OCC. For example, if today is January 15, 2023, you couldn't use `November 2023's 1st expiration` since weekly options for November do not exist yet. The formula will return a `No data` response if you try to request an expiration that does not exist yet.
 
 - **Quarterly Expirations** - Returns a quarterly expiration date for a relative date or specifically targeted date.
 
