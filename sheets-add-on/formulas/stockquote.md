@@ -12,14 +12,16 @@ Fetches a stock quote(s) from Market Data.
     STOCKQUOTE("AAPL", "bid")
 
     STOCKQUOTE("AAPL,MSFT,GOOG", "all")
-    
-    STOCKQUOTE(A1:D1, "all")
 
+    STOCKQUOTE({"AAPL";"MSFT";"GOOG"}, "all")
+
+    STOCKQUOTE(A1:C1, "all")
+    
 ## Syntax
 
     STOCKQUOTE(symbol, attributes)
 
-- **symbol** _(REQUIRED)_ The stock’s ticker symbol. Seperate multiple symbols with commas or use a single column cell range input.
+- **symbol(s)** _(REQUIRED)_ The stock’s ticker symbol. Seperate multiple symbols with commas or use a single column array or a single column of cell references.
 
 - **attributes** _(Optional)_ Use one of the following attributes when requesting a quote:
   - "symbol", "ticker" - The symbol for the stock.
