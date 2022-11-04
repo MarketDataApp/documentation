@@ -39,7 +39,7 @@ Fetches a stock quote(s) from Market Data.
 
 Group together all your stock quotes and request them all at once with a single ```STOCKQUOTE``` formula to _significantly_ speed up your sheet's loading time.
 
----
+:::
 
 :::info Notes
 
