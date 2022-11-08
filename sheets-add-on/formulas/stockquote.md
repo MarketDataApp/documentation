@@ -3,7 +3,13 @@ title: STOCKQUOTE
 sidebar_position: 1
 ---
 
-Fetches a stock quote(s) from Market Data.
+Fetches a single or multiple stock quotes from Market Data.
+
+:::tip
+
+Group together all your stock quotes and request them all at once with a single ```STOCKQUOTE``` formula to _significantly_ speed up your sheet's loading time.
+
+:::
 
 ## Sample Usage
 
@@ -37,13 +43,7 @@ Fetches a stock quote(s) from Market Data.
 
 ## Notes
 
-:::tip
-
-Group together all your stock quotes and request them all at once with a single ```STOCKQUOTE``` formula to _significantly_ speed up your sheet's loading time.
-
-:::
-
-:::info Notes
+:::info
 
 All parameters must be enclosed in quotation marks or be references to cells containing text.
 
