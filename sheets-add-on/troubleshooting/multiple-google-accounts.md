@@ -23,7 +23,9 @@ Fortunately this is an easy error to fix. There are two confirmed workarounds:
 1. Log out of all your Google accounts then log-in to the account that uses Market Data and use it while being signed-in to a single account. 
 2. Open a private browsing window (Icognito mode) and open the Google account you use with Market Data in the private window.
 
-There is also an unconfirmed workaround that some users have reported success with: 
+### Unconfirmed Workaround
+
+There is also an unconfirmed workaround that some users have reported success with and that will allow you to remain logged-in to multiple Google accounts at once: 
 
 - Set the Google account you use with the Market Data Add-On as your Default Google account.
 - The default Google account is simply the account you sign-in first to Google with. You can check this by clicking the profile icon in the upper right corner. 
