@@ -1,6 +1,6 @@
 ---
 title: OPTIONDATA
-sidebar_position: 2
+sidebar_position: 5
 ---
 
 Fetches a current or historical option quote from Market Data.
