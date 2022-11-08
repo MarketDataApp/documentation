@@ -1,6 +1,6 @@
 ---
 title: INDEXDATA
-sidebar_position: 3
+sidebar_position: 6
 ---
 
 Fetches a current or historical index price from Market Data.
