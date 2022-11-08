@@ -11,41 +11,46 @@ Group all your option quotes together and request them all at once with a single
 
 :::
 
+
 ## Sample Usage
 
-    STOCKQUOTE("AAPL")
+    OPTIONDATA("AAPL230120C00150000")
 
-    STOCKQUOTE("AAPL", "bid")
+    OPTIONDATA("AAPL230120C00150000", "bid")
 
-    STOCKQUOTE("AAPL,MSFT,GOOG", "all")
+    OPTIONDATA("AAPL230120C00150000", "ask", "1/1/2021", "1/31/2021")
 
-    STOCKQUOTE({"AAPL";"MSFT";"GOOG"}, "all")
+    OPTIONDATA("AAPL230120C00150000", "all", TODAY()-30, 30)
 
-    STOCKQUOTE(A1:C1, "all")
-    
 ## Syntax
 
-    STOCKQUOTE(symbol, attributes)
+    OPTIONDATA(option symbol, attributes)
 
-- **symbol(s)** _(REQUIRED)_ The stock’s ticker symbol. Seperate multiple symbols with commas or use a single column array or a single column of cell references.
-
-- **attributes** _(Optional)_ Use one of the following attributes when requesting a quote:
-  - "symbol", "ticker" - The symbol for the stock.
-  - "price", "mid", "mark" – The midpoint price of the stock.
-  - "bid" – The bid price of the stock.
-  - "ask" – The ask price of the stock.
-  - "bid size" – The quantity of shares offered at the bid price.
-  - "ask size" – The quantity of shares offered at the ask price.
-  - "last" – The last price of the stock.
-  - "volume" – The quantity of shares traded.
-  - "date", "updated" - The date and time of the stock quote.
+- **option symbol** _(REQUIRED)_ The OCC option symbol format for the option.
+- **attribute** _(OPTIONAL "price" by default)_ Use one of the following attributes:
+  - "symbol" - The OCC option symbol.
+  - "price", "mid", "mark" – The midpoint price of the option.
+  - "bid" – The bid price of the option.
+  - "ask" – The ask price of the option.
+  - "last" – The last price of the option. Depending on the liquidity of the symbol, the last traded price could have occurred one second ago or one day ago.
+  - "bid size" – The quantity of contracts offered at the bid price.
+  - "ask size" – The quantity of contracts offered at the ask price.
+  - "volume" – The number of contracts negotiated during the day.
+  - "open interest" – The number of open contracts.
+  - "underlying price" – The price of the underlying security at the time of this option quote.
+  - "in the money" – Will return TRUE if the option contract was in the money at the time of the quote or FALSE if the contract was not in the money at the time of the quote.
   - "all" – Returns all values.
+  - "noheaders" – Returns values without column headers.
 
 ## Notes
 
 :::info
 
-All parameters must be enclosed in quotation marks or be references to cells containing text.
+All parameters must be enclosed in quotation marks or be references to cells containing text. A possible exception is when endDate is specified as a number of days.
+
+---
+
+Real-time results will be returned as a value within a single cell unless specific attributes are requested.
 
 ---
 
