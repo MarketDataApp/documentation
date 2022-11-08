@@ -40,6 +40,10 @@ Group all your stock quotes together and request them all at once with a single 
 
 :::info
 
+Results will be returned as a value within a single cell unless more than one attribute is requested.
+
+---
+
 All parameters must be enclosed in quotation marks or be references to cells containing text.
 
 ---
