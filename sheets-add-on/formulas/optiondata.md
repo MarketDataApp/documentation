@@ -11,7 +11,7 @@ Fetches a current or historical option quote from Market Data.
 
     OPTIONDATA("AAPL230120C00150000", "bid")
 
-    OPTIONDATA("AAPL230120C00150000", "ask", "1/1/2021", "1/31/2021")
+    OPTIONDATA("AAPL230120C00150000", "bid,ask", "1/1/2021", "1/31/2021")
 
     OPTIONDATA("AAPL230120C00150000", "all", TODAY()-30, 30)
 
@@ -20,20 +20,27 @@ Fetches a current or historical option quote from Market Data.
     OPTIONDATA(optionSymbol, [attributes], startDate, endDate)
 
 - **optionSymbol** _(REQUIRED)_ Use the current OCC option symbol format for the option symbol, even for historic options prior to the symbol format change in 2010.
-- **attribute** _(OPTIONAL "price" by default)_ Use one of the following attributes:
-
+- **attribute** _(OPTIONAL "price" by default)_ Use at least one of the following attributes:
+  - "symbol" - The OCC option symbol.
+  - "date", "updated" - The date and time of the quote.
   - "price", "mid", "mark" – The midpoint price of the option.
   - "bid" – The bid price of the option.
   - "ask" – The ask price of the option.
   - "last" – The last price of the option. Depending on the liquidity of the symbol, the last traded price could have occurred one second ago or one day ago.
-  - "bidSize" – The quantity of contracts offered at the bid price.
-  - "askSize" – The quantity of contracts offered at the ask price.
+  - "bid size" – The quantity of contracts offered at the bid price.
+  - "ask size" – The quantity of contracts offered at the ask price.
   - "volume" – The number of contracts negotiated during the day.
-  - "openInterest" – The number of open contracts.
-  - "underlyingPrice" – The price of the underlying ticker at the time of this option quote.
-  - "underlyingPrice" – The price of the underlying security at the time of this option quote.
-  - "inTheMoney" – Will return TRUE if the option contract was in the money at the time of the quote or FALSE if the contract was not in the money at the time of the quote.
-  - "underlyingPrice" – The price of the underlying security at the time of this option quote.
+  - "open interest" – The number of open contracts.
+  - "underlying price" – The price of the underlying security at the time of this option quote.
+  - "in the money" – Will return TRUE if the option contract was in the money at the time of the quote or FALSE if the contract was not in the money at the time of the quote.
+  - "intrinsic value" - The intrinsic value of the option, if any.
+  - "extrinsic value" - The extrinsic or time value of the option.
+  - "iv", "implied volatility" - The implied volatility of the option.
+  - "delta" - The delta of the option.
+  - "gamma" - The gamma of the option.
+  - "theta" - The theta of the option.
+  - "vega" - The vega of the option.
+  - "rho" - The rho of the option.
   - "all" – Returns all values.
   - "noheaders" – Returns values without column headers.
 
