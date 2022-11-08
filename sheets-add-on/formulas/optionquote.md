@@ -18,9 +18,9 @@ Group all your option quotes together and request them all at once with a single
 
     OPTIONDATA("AAPL230120C00150000", "bid")
 
-    OPTIONDATA("AAPL230120C00150000", "ask", "1/1/2021", "1/31/2021")
+    OPTIONDATA("AAPL230120C00150000", "bid,ask")
 
-    OPTIONDATA("AAPL230120C00150000", "all", TODAY()-30, 30)
+    OPTIONDATA(A1:G1, "all")
 
 ## Syntax
 
