@@ -5,6 +5,12 @@ sidebar_position: 1
 
 From time to time you may encounter different error messages while using the Google Sheets Add-On. These messages are almost always due to limitations that Google places on Sheets Add-ons, which have certain limitations that most users are not aware of. By learning about the limitations Google has placed on your use of Add-ons, you will be able to avoid these common errors in the future.
 
+## Errors when Opening Your Sheet
+
+Sometimes you may get an error when you open your spreadsheet. These errors are usually related to Add-on authorization issues.
+
+- `ScriptError: Authorization is required to perform that action.` - The Market Data Add-on is not installed correctly in this spreadsheet or in your Google account. This typically occurs when customers are logged into multiple Google accounts at the same time.
+
 ## Errors in Market Data Sidebar
 
 The Market Data sidebar can detect service outages and other problems with your Google account. If you begin to have trouble with Market Data, open the sidebar and see if an error message is displayed.
@@ -44,4 +50,4 @@ These issues are related to problems with your Market Data account or general pr
 These issues relate to problems with your Google account. Google places strict limits on the use of Add-ons for free (@gmail.com accounts). If you exceed those limits, an error message will be shown and your account will be throttled.
 
 - `Your Google account has exceeded the minute request limit.` - Your account was throttled by Google for making too many requests. Try refreshing your cells using Market Data's refresh options, which are calibrated to avoid throttling issues.
-- `Your Google account has exceeded the urlfetch limit.` - You have exceeded Google's urlfetch limit. For 24 hours your account will be blocked from using all Google Workspace Add-ons, including Market Data. Please try again 24 hours from now.
+- [`Your Google account has exceeded the urlfetch limit.`](/sheets-add-on/troubleshooting/urlfetch) - You have exceeded Google's urlfetch limit. For 24 hours your account will be blocked from using all Google Workspace Add-ons, including Market Data. Please try again 24 hours from now.
