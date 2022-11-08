@@ -31,6 +31,8 @@ There is also an unconfirmed workaround that some users have reported success wi
 - The default Google account is simply the account you sign-in first to Google with. You can check this by clicking the profile icon in the upper right corner. 
 - If another account is showing up as the Default account, then you are not using Market Data with your default Google account.
 
+![default google account](/img/default-account.png)
+
 To fix this, use the following steps (not guaranteed to work, but reported successful by multiple users):
 
 1. Sign out of all your Google accounts.
