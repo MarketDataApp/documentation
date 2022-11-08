@@ -17,10 +17,10 @@ Fetches a current or historical option quote from Market Data.
 
 ## Syntax
 
-    OPTIONDATA(optionSymbol, [attributes], startDate, endDate)
+    OPTIONDATA(option symbol, [attributes], start date, end date)
 
-- **optionSymbol** _(REQUIRED)_ Use the current OCC option symbol format for the option symbol, even for historic options prior to the symbol format change in 2010.
-- **attribute** _(OPTIONAL "price" by default)_ Use at least one of the following attributes:
+- **option symbol** _(REQUIRED)_ Use the current OCC option symbol format for the option symbol, even for historic options prior to the symbol format change in 2010.
+- **attribute** _(OPTIONAL "price" by default)_ Use at least one of the following attributes; seperate multiple attributes with commas:
   - "symbol" - The OCC option symbol.
   - "date", "updated" - The date and time of the quote.
   - "price", "mid", "mark" – The midpoint price of the option.
@@ -44,23 +44,19 @@ Fetches a current or historical option quote from Market Data.
   - "all" – Returns all values.
   - "noheaders" – Returns values without column headers.
 
-- **startDate** _(OPTIONAL)_ – The start date when fetching historical data. If start date is specified, but endDate is not, only the single day’s data is returned.
+- **start date** _(OPTIONAL)_ – The start date when fetching historical data. If start date is specified, but endDate is not, only the single day’s data is returned.
 
-- **endDate** _(OPTIONAL)_ – The end date when fetching historical data, or the number of calendar days (not trading days) from startDate for which to return data.
+- **end date** _(OPTIONAL)_ – The end date when fetching historical data, or the number of calendar days (not trading days) from startDate for which to return data.
 
 ## Notes
 
 :::info Notes
 
-All parameters must be enclosed in quotation marks or be references to cells containing text. A possible exception is when endDate is specified as a number of days.
+All parameters must be enclosed in quotation marks or be references to cells containing text. A possible exception is when end date is specified as a number of days.
 
 ---
 
-Real-time or current day results will be returned as a value within a single cell unless specific attributes are requested. Historical data, even for a single day, will be returned as an expanded array with column headers.
-
----
-
-If any date parameters are specified, the request is considered historical and only the historical attributes are allowed.
+Results will be returned as a value within a single cell if a single attribute is requested. Multiple attributes or multi-day results will be returned with column headers.
 
 ---
 
