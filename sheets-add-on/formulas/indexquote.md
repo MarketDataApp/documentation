@@ -7,7 +7,7 @@ Fetches a real-time index price or pricing for multiple indices from Market Data
 
 :::tip
 
-Group all your index quotes together and request them all at once with a single ```INDEXQUOTE``` formula to _significantly_ speed up your sheet's loading time and avoid Google's urlfetch limits.
+Group all your index quotes together and request them all at once with a single ```INDEXQUOTE``` formula to _significantly_ speed up your sheet's loading time and avoid Google's [urlfetch limits](/sheets-add-on/troubleshooting/urlfetch).
 
 :::
 
