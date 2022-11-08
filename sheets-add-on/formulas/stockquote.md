@@ -3,11 +3,11 @@ title: STOCKQUOTE
 sidebar_position: 1
 ---
 
-Fetches a single or multiple stock quotes from Market Data.
+Fetches real-time stock quote(s) from Market Data.
 
 :::tip
 
-Group together all your stock quotes and request them all at once with a single ```STOCKQUOTE``` formula to _significantly_ speed up your sheet's loading time.
+Group all your stock quotes together and request them all at once with a single ```STOCKQUOTE``` formula to _significantly_ speed up your sheet's loading time and avoid Google's urlfetch limits.
 
 :::
 
