@@ -9,7 +9,7 @@ Google does not support multi-login with Google Workspace Add-ons. Google's offi
 
 For users who work with multiple Google accounts during the day, such as a work and home account at the same time, this can be a serious problem, since it will cause errors with Add-ons such as Market Data, which need to access your Google account to function properly.
 
-## Error Messages You May See In The Add-on Due to Multiple Google Accounts
+## Error Messages
 
 This error may present itself when you first open the sheet or during your use of the sheet, depending on whether Market Data has been installed in the secondary Google account. The error messages you may see are as follows:
 
