@@ -15,11 +15,8 @@ Group all your option quotes together and request them all at once with a single
 ## Sample Usage
 
     OPTIONDATA("AAPL230120C00150000")
-
     OPTIONDATA("AAPL230120C00150000", "bid")
-
     OPTIONDATA("AAPL230120C00150000", "bid,ask")
-
     OPTIONDATA(A1:G1, "all")
 
 ## Syntax
@@ -59,7 +56,7 @@ All parameters must be enclosed in quotation marks or be references to cells con
 
 ---
 
-Real-time results will be returned as a value within a single cell unless more than one attribute is requested.
+Results will be returned as a value within a single cell unless more than one attribute is requested.
 
 ---
 
