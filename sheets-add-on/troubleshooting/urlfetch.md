@@ -18,7 +18,7 @@ Urlfetch calls are different from Market Data requests. Even if you have our Tra
 Although there is no way to determine how many urlfetch calls can be made by your account, Market Data can detect when the limit has been exceeded and will display an error message. Each of the following error messages indicate that your Google account has exceeded the urlfetch limit:
 
 - `Your Google account has exceeded the urlfetch limit.`
-- `ScriptError: Exception: Service invoked too many times for one day: urlfetch`
+- `ScriptError: Exception: Service invoked too many times for one day: urlfetch.`
 - `Urlfetch error.`
 
 ## Consequences Of Surpassing the Urlfetch Limit
@@ -57,7 +57,7 @@ Your urlfetch quota is shared between all your Google Workspace Add-ons. If you 
 
 Unless you are 100% sure that your other add-ons don't cause excessive recalculation of your spreadsheet and don't make excessive urlfetch calls, consider uninstalling add-ons that are no longer in use.
 
-- [Workspace Add-ons installed in your account] (https://workspace.google.com/marketplace/myapps)
-- [Scripts authorized to run in your account] (https://script.google.com/home/all)
-- [Log of scripts which are executing] (https://script.google.com/home/executions) 
+- [Workspace Add-ons installed in your account](https://workspace.google.com/marketplace/myapps)
+- [Scripts authorized to run in your account](https://script.google.com/home/all)
+- [Log of scripts which are executing](https://script.google.com/home/executions) 
 
