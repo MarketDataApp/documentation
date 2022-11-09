@@ -7,7 +7,7 @@ Fetches real-time option quote(s) from Market Data.
 
 :::tip
 
-Group all your option quotes together and request them all at once with a single ```OPTIONQUOTE``` formula to _significantly_ speed up your sheet's loading time and avoid Google's urlfetch limits.
+Group all your option quotes together and request them all at once with a single ```OPTIONQUOTE``` formula to _significantly_ speed up your sheet's loading time and avoid Google's [urlfetch limits](/sheets-add-on/troubleshooting/urlfetch).
 
 :::
 
