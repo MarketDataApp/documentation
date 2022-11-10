@@ -108,7 +108,7 @@ print(response.text)
   Yearly Resolutions:(`yearly`, `Y`, `1Y`, `2Y`, ...)
   
 - **symbol** `string`
-- 
+
   The index symbol, without any leading or trailing index identifiers. For example, use DJI do not use $DJI, ^DJI, .DJI, DJI.X, etc.
 ```mdx-code-block
 </TabItem>
@@ -123,23 +123,23 @@ print(response.text)
 
 ```
 - **s** `string`
-- 
+
   Will always be `ok` when there is data for the candles requested.
   
 - **o** `array[number]`
-- 
+ 
   Open price.  
 - **h** `array[number]`
-- 
+ 
   High price.
 - **l** `array[number]`
-- 
+ 
   Low price.
 - **c** `array[number]`
-- 
+ 
   Close price.
 - **t** `array[number]`
-- 
+ 
   Candle time (Unix timestamp, UTC). Daily, weekly, monthly, yearly candles are returned without times.
 ```mdx-code-block
 
