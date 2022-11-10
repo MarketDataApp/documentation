@@ -48,8 +48,13 @@ Fetches a current or historical option quote from Market Data.
 :::info Notes
 
 All parameters must be enclosed in quotation marks or be references to cells containing text. A possible exception is when end date is specified as a number of days.
+
 ---
+
 Results will be returned as a value within a single cell if a single attribute is requested. Multiple attributes or multi-day results will be returned with column headers.
+
 ---
+
 Dates and times are returned in the same timezone of the exchange.
+
 :::
