@@ -14,17 +14,17 @@ Group all your option quotes together and request them all at once with a single
 
 ## Sample Usage
 
-    OPTIONDATA("AAPL230120C00150000")
-    OPTIONDATA("AAPL230120C00150000", "bid")
-    OPTIONDATA("AAPL230120C00150000", "bid,ask")
-    OPTIONDATA(A1:G1, "all")
+    OPTIONQUOTE("AAPL230120C00150000")
+    OPTIONQUOTE("AAPL230120C00150000", "bid")
+    OPTIONQUOTE("AAPL230120C00150000,AAPL230120C00160000,AAPL230120C00170000", "bid,ask")
+    OPTIONQUOTE(A1:G1, "all")
 
 ## Syntax
 
-    OPTIONDATA(option symbol, attributes)
+    OPTIONQUOTE("option symbols", "attributes")
 
-- **option symbol** _(REQUIRED)_ The OCC option symbol format for the option.
-- **attribute** _(OPTIONAL "price" by default)_ Use at least one of the following attributes; seperate multiple attributes with commas:
+- **option symbol(s)** _(REQUIRED)_ The OCC option symbol format for the option.
+- **attribute(s)** _(OPTIONAL "price" by default)_ Use at least one of the following attributes; seperate multiple attributes with commas:
   - "symbol" - The OCC option symbol.
   - "date", "updated" - The date and time of the quote.
   - "price", "mid", "mark" – The midpoint price of the option.
