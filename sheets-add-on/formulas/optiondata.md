@@ -8,11 +8,8 @@ Fetches a current or historical option quote from Market Data.
 ## Sample Usage
 
     OPTIONDATA("AAPL230120C00150000")
-
     OPTIONDATA("AAPL230120C00150000", "bid")
-
     OPTIONDATA("AAPL230120C00150000", "bid,ask", "1/1/2021", "1/31/2021")
-
     OPTIONDATA("AAPL230120C00150000", "all", TODAY()-30, 30)
 
 ## Syntax
@@ -43,9 +40,7 @@ Fetches a current or historical option quote from Market Data.
   - "rho" - The rho of the option.
   - "all" – Returns all values.
   - "noheaders" – Returns values without column headers.
-
 - **start date** _(OPTIONAL)_ – The start date when fetching historical data. If start date is specified, but endDate is not, only the single day’s data is returned.
-
 - **end date** _(OPTIONAL)_ – The end date when fetching historical data, or the number of calendar days (not trading days) from startDate for which to return data.
 
 ## Notes
@@ -53,13 +48,8 @@ Fetches a current or historical option quote from Market Data.
 :::info Notes
 
 All parameters must be enclosed in quotation marks or be references to cells containing text. A possible exception is when end date is specified as a number of days.
-
 ---
-
 Results will be returned as a value within a single cell if a single attribute is requested. Multiple attributes or multi-day results will be returned with column headers.
-
 ---
-
 Dates and times are returned in the same timezone of the exchange.
-
 :::
