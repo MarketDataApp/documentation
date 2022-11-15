@@ -29,7 +29,7 @@ The columns parameter is used to limit the results of any endpoint to only the c
 
 Use a list of columns names separated by commas to limit the response to just the columns requested. You may also use a minus sign in front of the column name to exclude one or more columns from the default API output.
 
-:::warning
+:::caution
 
 You can not include _and_ exclude columns in the same API call. The columns parameter will be ignored if both postive and negative attributes values are used in the same API call.
 
