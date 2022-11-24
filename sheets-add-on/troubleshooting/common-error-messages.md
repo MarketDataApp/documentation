@@ -48,9 +48,10 @@ These issues are related to problems with your specific Market Data account and 
 These issues relate to general Market Data technical or service issues. The only solution is to check back later or submit a support ticket if the problem does not resolve itself after a few minutes.
 
 - `Internal server error, please try again later.` - This is a usually temporary failure of Market Data's server. If the error continues for more than 24 hours, open a ticket with the helpdesk.
+- `API Endpoint Offline.` - The Market Data API endpoint that should be responding to your formula's request is offline. If this problem continues for more than 15 minutes, report it to the helpdesk.
+- `API Gateway Offline.` - The gateway server is not responding or unavailable. If this problem continues for more than 15 minutes, report it to the helpdesk.
 - `Market Data is offline.` - Market Data servers are offline. The Add-on will not function until our servers are back online. [Check our status page](https://stats.uptimerobot.com/6Kv3zIow0A) to see details about the service outage.
-- `API Endpoint Offline` - The Market Data API endpoint that should be responding to your formula's request is offline. If this problem continues for more than 15 minutes, report it to the helpdesk.
-- `API Gateway Offline` - The gateway server is not responding or unavailable. If this problem continues for more than 15 minutes, report it to the helpdesk.
+
 
 ### Google Account Issues
 
