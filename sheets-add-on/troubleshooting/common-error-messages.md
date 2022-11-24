@@ -35,15 +35,22 @@ The following errors are usually easily correceted by modifying the input to you
 - `Invalid attribute.` - You are requesting an attribute that is not valid for the data you are requesting. Usually this happens when requesting a real-time quote attribute for historic data or vice versa.
 - `Invalid resolution.` - We cannot generate timeseries data for the resolution you are requsting. Read the documentation to see what resolutions are supported.
 
-### Market Data Account / Service Issues
+### Market Data Account Issues
 
-These issues are related to problems with your Market Data account or general problems with the Market Data service. You'll only be able to solve issues that relate to your individual account. If there is a general problem, such as a server outage, the only solution is to check back later.
+These issues are related to problems with your specific Market Data account and are usually easily solvable. 
 
 - `Missing token.` - You haven't yet added your token in the Market Data sidebar. The token must be added to each new spreadsheet that you create. Open the side bar in Extensions > Market Data > Start and add your token to the sheet.
-- `Unable to start a Market Data session with sidebar closed.` - This error occurs when you first open your sheet for the day. Open the side bar in Extensions > Market Data > Start and refresh your data using one of the refresh options provided.
-- `Internal server error, please try again later.` - This is a usually temporary failure of Market Data's server. If the error continues for more than 24 hours, open a ticket with the helpdesk.
-- `Market Data is offline.` - Market Data servers are offline. The Add-on will not function until our servers are back online. Check our status page to see details about the service outage.
+- `Unable to start a Market Data session with sidebar closed.` - This error occurs when you first open your sheet for the day. Open the sidebar in Extensions > Market Data > Start and refresh your data using one of the refresh options provided.
 - `Your Market Data plan has exceeded its daily limit.` - You have used all your Market Data requests for the day. Your account will be refilled with new requests at opening bell (9:30 AM Eastern Time) tomorrow.
+
+### Market Data Service Issues
+
+These issues relate to general Market Data technical or service issues. The only solution is to check back later or submit a support ticket if the problem does not resolve itself after a few minutes.
+
+- `Internal server error, please try again later.` - This is a usually temporary failure of Market Data's server. If the error continues for more than 24 hours, open a ticket with the helpdesk.
+- `Market Data is offline.` - Market Data servers are offline. The Add-on will not function until our servers are back online. [Check our status page](https://stats.uptimerobot.com/6Kv3zIow0A) to see details about the service outage.
+- `API Endpoint Offline` - The Market Data API endpoint that should be responding to your formula's request is offline. If this problem continues for more than 15 minutes, report it to the helpdesk.
+- `API Gateway Offline` - The gateway server is not responding or unavailable. If this problem continues for more than 15 minutes, report it to the helpdesk.
 
 ### Google Account Issues
 
