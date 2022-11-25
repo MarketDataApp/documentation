@@ -21,17 +21,27 @@ For users working with options, take care before repeatly requesting quotes for 
 
 :::
 
-### Daily Limit
-
-All plans have a hard limit on the number of prices or requests that can be made per day. Exceeding the daily limit will cause an error and your account will be unable to make new requests until the next trading day. Usage counters for all plans are reset at 9:30 AM Eastern Time (NYSE opening bell).
-
-### Throttling
+#### Throttling
 
 Plans with unlimited daily API calls are subject to throttling and can receive a total of 1000 prices per second. If this throttling is unacceptable for your use case, please let us know how we can meet your needs. The Starter and Trader plans (and any plan with a published daily request limit has no per second throttling.
 
 ## Unique Daily Symbols Limits
 
 Our Free Forever and Starter plans include limits on the number of daily symbols that can be requested. Once this limit has been reached, you may only continue to request prices and data of the symbols you have already used during the day. 
+
+## Historical Data Age Limit
+
+Our Free Forever and Starter plans include historical age limits on historical data queries. If you attempt to access data older than the plan's limits permit, the request will be denied.
+
+## Brokerage Connections
+
+:::info
+
+Backtests are not yet implemented.
+
+:::
+
+Brokerage connection limits apply both per broker and per account at the same broker. For example, the Starter plan allows you to connect a single brokerage account. If you have more than one account at the same broker, you could only connect one of the two.
 
 ## Backtests
 
@@ -42,3 +52,7 @@ Backtests are not yet implemented.
 :::
 
 Plans with unlimited backtests are subjet to throttling after 10,000 daily backtests have been performed. This means backtests will still be performed, but only after other users' backtests have completed. Users on the Starter and Trader plans (and any plan with a published daily backtest limit) have no throttling and can process backtests immediately.
+
+## About Daily Limits
+
+All usage counters (requests, unique symbols, backtests, etc.) for all plans are reset at 9:30 AM Eastern Time (NYSE opening bell). All limits are hard limits and once reached, you won't be able to continue until the next trading day.
