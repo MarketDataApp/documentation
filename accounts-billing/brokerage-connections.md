@@ -5,7 +5,7 @@ sidebar_position: 3
 
 :::info
 
-Broker connections are not yet implemented, but are coming soon.
+Brokerage connections are not yet implemented, but are coming soon.
 
 :::
 
