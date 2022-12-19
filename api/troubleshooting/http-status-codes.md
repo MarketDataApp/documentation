@@ -25,5 +25,5 @@ Server errors are used to indicate problems with Market Data's service. They are
 - `509 - API ENDPOINT OVERLOADED` - The endpoint is currently overloaded. Please try again in a few minutes. If this problem continues for more than 15 minutes, report it to the helpdesk.
 - `521 - API ENDPOINT OFFLINE` - The Market Data API endpoint that should be responding to your formula's request is offline. If this problem continues for more than 15 minutes, report it to the helpdesk.
 - `529 - DATABASE OFFLINE` - The database is offline, overloaded, or not responding. Write to support@marketdata.app or submit a ticket in the customer dashboard if this error continues for more than 15 minutes.
+- `530 - DATABASE ERROR` - This request produced a database error. Write to support@marketdata.app or submit a ticket in the customer dashboard with the contents of your API request or spreadsheet formula.
 - `598 - API GATEWAY OFFLINE` - The gateway server is not responding or unavailable. If this problem continues for more than 15 minutes, report it to the helpdesk.
-
