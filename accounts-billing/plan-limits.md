@@ -11,6 +11,19 @@ If our standard plans do not fit your use-case, please do not hesitate to speak 
 
 :::
 
+## Standard Plans
+
+|                       | Free Forever | Starter   | Trader    | Commercial Plans |
+|-----------------------|--------------|-----------|-----------|------------------|
+| Daily Requests        | 100          | 10000     | 50000     | No Limit         |
+| Daily Prices          | 100          | 10000     | 50000     | No Limit         |
+| Unique Daily Symbols  | 10           | 1000      | No Limit  | No Limit         |
+| Daily Backtests       | 1            | 100       | 1000      | No Limit *       |
+| Brokerage Connections | 0            | 1         | No Limit  | No Limit         |
+| Historical Data       | 1 Year       | 5 Years   | 50 Years  | No Limit         |
+| Data                  | Delayed      | Real-time | Real-time | Real-time        |
+| API Endpoints         | Standard     | Premium   | Premium   | Premium + Custom |
+
 ## Prices / Requests Limits
 
 Each time you or our Add-on makes a request to the API, the system will increase your daily request counter. Normally each call to our API will be counted as a single request. However, if you request prices for multiple symbols, the a request will be added for each symbol that is included.
