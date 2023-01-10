@@ -16,7 +16,11 @@ Requests that are answered successful.
 
 Client errors occur when Market Data cannot respond to a request due to a problem with the request. The request will need to be changed in order to get a different response.
 
+- `400 - BAD REQUEST` - This indicates that the API endpoint is not being used properly. Usually this happens when a paramter cannot be parsed correctly (i.e. sending a string instead of a number or viceversa).
+- `401 - UNAUTHORIZED` - The token supplied with the request is missing, invalid, or cannot be used.
+- `402 - PAYMENT REQUIRED` - The request you made cannot be made with your current plan. This may occur if you attempt to access historical data with a free plan or very old historical data with a Starter plan.
 - `404 - NOT FOUND` - There is no data for the symbol or time period requested. Try a different symbol or a different timeframe.
+- `429 - TOO MANY REQUESTS` - Your account has exceeded the daily request limit. New requests will be allowed at 9:30 AM ET (opening bell).
 
 ## Server Errors (5xx)
 
