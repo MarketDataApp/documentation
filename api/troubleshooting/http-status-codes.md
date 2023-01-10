@@ -10,6 +10,7 @@ The Market Data API uses standard HTTP status codes to report most errors. By pr
 Requests that are answered successful.
 
 - `200 OK` - The request was successfuly answered.
+- `203 NON-AUTHORITAVE INFORMATION` - The request was successful, but had to be routed to a backup data provider. You can treat this result the same as STATUS 200.
 
 ## Client Errors (4xx)
 
