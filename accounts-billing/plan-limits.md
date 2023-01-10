@@ -7,7 +7,7 @@ Each Market Data plan comes with certain limitations to allow for shared use of 
 
 :::tip
 
-If our standard plans do not fit your use-case, please do not hesitate to speak with sales. We'd be happy to provide you with a custom plan that meets your needs.
+Most users don't run into trouble with our limits. However, if our standard plans do not fit your use-case, please do not hesitate to speak with sales. We'd be happy to provide you with a custom plan that meets your needs.
 
 :::
 
@@ -24,9 +24,9 @@ If our standard plans do not fit your use-case, please do not hesitate to speak 
 | Data                  | Delayed      | Real-time | Real-time | Real-time        |
 | API Endpoints         | Standard     | Premium   | Premium   | Premium + Custom |
 
-## Prices / Requests Limits
+## Prices vs Requests
 
-Each time you or our Add-on makes a request to the API, the system will increase your daily request counter. Normally each call to our API will be counted as a single request. However, if you request prices for multiple symbols, the a request will be added for each symbol that is included.
+Each time you or our Add-on makes a request to the API, the system will increase your daily request counter. Normally prices and requests are interchangable. Each call to our API will normally be counted as a single request. However, if you request prices for multiple symbols in a single API call, a request will be used for each symbol that is included. Once this limit has been reached, you will no longer be able to make requests until the next day.
 
 :::caution
 
