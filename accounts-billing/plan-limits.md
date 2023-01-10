@@ -50,7 +50,7 @@ Our Free Forever and Starter plans include historical age limits on historical d
 
 :::info
 
-Backtests are not yet implemented.
+Brokerage Connections are not yet implemented.
 
 :::
 
