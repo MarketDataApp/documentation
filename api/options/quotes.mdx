@@ -28,7 +28,7 @@ import TabItem from "@theme/TabItem";
 
 ```
 
-**GET** [https://api.marketdata.app/v1/options/quotes/AAPL230120C00150000/](https://api.marketdata.app/v1/options/quotes/AAPL230120C00150000/)
+**GET** [https://api.marketdata.app/v1/options/quotes/AAPL250117C00150000/](https://api.marketdata.app/v1/options/quotes/AAPL250117C00150000/)
 
 ```mdx-code-block
 
@@ -38,7 +38,7 @@ import TabItem from "@theme/TabItem";
 ```
 
 ```js title="app.js"
-fetch("https://api.marketdata.app/v1/options/quotes/AAPL230120C00150000/")
+fetch("https://api.marketdata.app/v1/options/quotes/AAPL250117C00150000/")
   .then((res) => {
     console.log(res);
   })
@@ -56,7 +56,7 @@ fetch("https://api.marketdata.app/v1/options/quotes/AAPL230120C00150000/")
 ```python title="app.py"
 import requests
 
-url = "https://api.marketdata.app/v1/options/quotes/AAPL230120C00150000/"
+url = "https://api.marketdata.app/v1/options/quotes/AAPL250117C00150000/"
 
 response = requests.request("GET", url)
 
@@ -75,7 +75,7 @@ print(response.text)
 {
   "s":"ok",
   "optionSymbol":[
-    "AAPL230120C00150000"
+    "AAPL250117C00150000"
   ],
   "ask":[
     5.25
