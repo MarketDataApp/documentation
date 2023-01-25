@@ -16,8 +16,36 @@ The human parameter will use human-readable attribute names in the JSON or CSV o
 ## Response Example
 
 ```json
-{"s":"ok","Symbol":["AAPL"],"Ask":[152.63],"Ask Size":[400],"Bid":[152.61],"Bid Size":[600],"Mid":[152.62],"Last":[152.63],"Volume":[35021819],"Date":[1668531422]}```
-```
+{
+  "s":"ok",
+  "Symbol":[
+    "AAPL"
+  ],
+  "Ask":[
+    152.63
+  ],
+  "Ask Size":[
+    400
+  ],
+  "Bid":[
+    152.61
+  ],
+  "Bid Size":[
+    600
+  ],
+  "Mid":[
+    152.62
+  ],
+  "Last":[
+    152.63
+  ],
+  "Volume":[
+    35021819
+  ],
+  "Date":[
+    1668531422
+  ]
+}```
 
 ## Values
 
