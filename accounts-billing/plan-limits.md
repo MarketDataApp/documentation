@@ -21,7 +21,7 @@ Most users don't run into trouble with our limits. However, if our standard plan
 | Daily Backtests       | 1            | 100       | 1000      | No Limit *       |
 | Brokerage Connections | 0            | 1         | No Limit  | No Limit         |
 | Historical Data       | 1 Year       | 5 Years   | 50 Years  | No Limit         |
-| Data                  | Delayed      | Real-time | Real-time | Real-time        |
+| Data Type             | Delayed      | Real-time | Real-time | Real-time        |
 | API Endpoints         | Standard     | Premium   | Premium   | Premium + Custom |
 
 ## Prices vs Requests
@@ -42,9 +42,13 @@ Plans with unlimited daily API calls are subject to throttling and can receive a
 
 Our Free Forever and Starter plans include limits on the number of daily symbols that can be requested. Once this limit has been reached, you may only continue to request prices and data of the symbols you have already used during the day. 
 
-## Historical Data Age Limit
+## Daily Backtests Limit
 
-Our Free Forever and Starter plans include historical age limits on historical data queries. If you attempt to access data older than the plan's limits permit, the request will be denied.
+:::info
+Backtests are not yet implemented.
+:::
+
+Plans with unlimited backtests are subjet to throttling after 10,000 daily backtests have been performed. This means backtests will still be performed, but only after other users' backtests have completed. Users on the Starter and Trader plans (and any plan with a published daily backtest limit) have no throttling and can process backtests immediately.
 
 ## Brokerage Connections
 
@@ -52,17 +56,19 @@ Our Free Forever and Starter plans include historical age limits on historical d
 Brokerage Connections are not yet implemented.
 :::
 
-When you connect a brokerage account to Market Data, our servers will fetch prices from your broker. The advantage to using a broker with Market Data is that any data request satisfied by your broker will not increase your Market Data usage counter. This is especially advantageous to users needing large quantities of real-time data throughout the day.
-
 Brokerage connection limits apply both per broker and per account at the same broker. For example, the Starter plan allows you to connect a single brokerage account. If you have more than one account at the same broker, you could only connect one of the two accounts.
 
-## Backtests
+## Historical Data Age Limit
 
-:::info
-Backtests are not yet implemented.
-:::
+The Free Forever and Starter plans include historical age limits on historical data queries. If you attempt to access data older than the plan's limits permit, the request will be denied.
 
-Plans with unlimited backtests are subjet to throttling after 10,000 daily backtests have been performed. This means backtests will still be performed, but only after other users' backtests have completed. Users on the Starter and Trader plans (and any plan with a published daily backtest limit) have no throttling and can process backtests immediately.
+## Data Type
+
+The Free Forever plan as well as the free trial plans provide users with delayed data. All paid plans offer real-time data.
+
+## API Endpoints
+
+The Free Forever plan only provides access to pricing data. Premium endpoints and spreadsheet formulas that contain reference data are not available on free plans.
 
 ## About Daily Limits
 
