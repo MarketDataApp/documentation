@@ -24,7 +24,9 @@ Authorization: Token {token}
 
 Add the token as a variable directly in the URL using the format ```token={token}```. For example:
 
-```https://api.marketdata.app/v1/stocks/quotes/SPY/?token={token}```
+```
+https://api.marketdata.app/v1/stocks/quotes/SPY/?token={token}
+```
 
 :::important
 If you associate a brokerage connection with a token, URL Parameter Authentication will be disabled for that token. Only Header Authentication will be allowed.
