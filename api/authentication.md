@@ -32,7 +32,7 @@ https://api.marketdata.app/v1/stocks/quotes/SPY/?token={token}
 If you associate a brokerage connection with a token, URL Parameter Authentication will be disabled for that token. Only Header Authentication will be allowed.
 :::
 
-## Try The API With No Authentication
+### Demo The API With No Authentication
 
 You can try stock, option, and index endpoints with several different symbols that are unlocked and do not require a token. 
 
