@@ -49,19 +49,17 @@ Our Free Forever and Starter plans include historical age limits on historical d
 ## Brokerage Connections
 
 :::info
-
 Brokerage Connections are not yet implemented.
-
 :::
 
-Brokerage connection limits apply both per broker and per account at the same broker. For example, the Starter plan allows you to connect a single brokerage account. If you have more than one account at the same broker, you could only connect one of the two.
+When you connect a brokerage account to Market Data, our servers will fetch prices from your broker. The advantage to using a broker with Market Data is that any data request satisfied by your broker will not increase your Market Data usage counter. This is especially advantageous to users needing large quantities of real-time data throughout the day.
+
+Brokerage connection limits apply both per broker and per account at the same broker. For example, the Starter plan allows you to connect a single brokerage account. If you have more than one account at the same broker, you could only connect one of the two accounts.
 
 ## Backtests
 
 :::info
-
 Backtests are not yet implemented.
-
 :::
 
 Plans with unlimited backtests are subjet to throttling after 10,000 daily backtests have been performed. This means backtests will still be performed, but only after other users' backtests have completed. Users on the Starter and Trader plans (and any plan with a published daily backtest limit) have no throttling and can process backtests immediately.
