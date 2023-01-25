@@ -3,6 +3,11 @@ title: Human Readable
 sidebar_position: 8
 ---
 
+:::info
+This feature is planned but has not yet been implemented.
+:::
+
+
 The human parameter will use human-readable attribute names in the JSON or CSV output instead of the standard camelCase attribute names.
 
 ## Parameter
