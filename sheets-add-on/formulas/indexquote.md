@@ -1,7 +1,11 @@
 ---
-title: INDEXQUOTE
+title: INDEXQUOTE (Coming Soon)
 sidebar_position: 3
 ---
+
+:::caution Coming Soon
+This formula is planned for the future and has not yet been implemented.
+:::
 
 Fetches a real-time index price or pricing for multiple indices from Market Data.
 
