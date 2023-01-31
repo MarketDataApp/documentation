@@ -1,7 +1,13 @@
 ---
-title: OPTIONQUOTE
+title: OPTIONQUOTE (Coming Soon)
 sidebar_position: 2
 ---
+
+:::caution Coming Soon
+
+This formula is planned for the future and has not yet been implemented.
+
+:::
 
 Fetches real-time option quote(s) from Market Data.
 
