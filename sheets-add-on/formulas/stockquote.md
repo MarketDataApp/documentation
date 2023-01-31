@@ -3,6 +3,12 @@ title: STOCKQUOTE
 sidebar_position: 1
 ---
 
+:::caution Coming Soon
+
+This formula is planned for the future and has not yet been implemented.
+
+:::
+
 Fetches real-time stock quote(s) from Market Data.
 
 :::tip
