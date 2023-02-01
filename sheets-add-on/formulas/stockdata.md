@@ -1,6 +1,6 @@
 ---
 title: STOCKDATA
-sidebar_position: 1
+sidebar_position: 4
 ---
 
 Fetches a current stock quote or historical stock candle from Market Data.

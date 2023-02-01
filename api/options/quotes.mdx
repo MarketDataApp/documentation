@@ -3,18 +3,14 @@ title: Quotes
 sidebar_position: 4
 ---
 
-Get a current or historical end of day quote for a single or multiple options contracts. Separate multiple options symbols with a comma.
+Get a current or historical end of day quote for a single options contract.
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
 ## Endpoint
 
-:::info Endpoint
-/quotes/{optionSymbol}
-:::
-
-    /quotes/{optionSymbol}
+    https://api.marketdata.app/v1/options/quotes/{optionSymbol}
 
 #### Method
 
@@ -28,7 +24,7 @@ import TabItem from "@theme/TabItem";
 
 ```
 
-**GET** [https://api.marketdata.app/v1/options/quotes/AAPL230120C00150000/](https://api.marketdata.app/v1/options/quotes/AAPL230120C00150000/)
+**GET** [https://api.marketdata.app/v1/options/quotes/AAPL250117C00150000/](https://api.marketdata.app/v1/options/quotes/AAPL250117C00150000/)
 
 ```mdx-code-block
 
@@ -38,7 +34,7 @@ import TabItem from "@theme/TabItem";
 ```
 
 ```js title="app.js"
-fetch("https://api.marketdata.app/v1/options/quotes/AAPL230120C00150000/")
+fetch("https://api.marketdata.app/v1/options/quotes/AAPL250117C00150000/")
   .then((res) => {
     console.log(res);
   })
@@ -56,7 +52,7 @@ fetch("https://api.marketdata.app/v1/options/quotes/AAPL230120C00150000/")
 ```python title="app.py"
 import requests
 
-url = "https://api.marketdata.app/v1/options/quotes/AAPL230120C00150000/"
+url = "https://api.marketdata.app/v1/options/quotes/AAPL250117C00150000/"
 
 response = requests.request("GET", url)
 
@@ -75,7 +71,7 @@ print(response.text)
 {
   "s":"ok",
   "optionSymbol":[
-    "AAPL230120C00150000"
+    "AAPL250117C00150000"
   ],
   "ask":[
     5.25
