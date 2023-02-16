@@ -3,7 +3,7 @@ title: Additional Information
 sidebar_position: 5
 ---
 
-- [SUPPORT](https://documentation.marketdata.app/sheets/support/)
+- [SUPPORT](https://dashboard.marketdata.app/marketdata/helpdesk/)
 
   Get help with this Add-on.
 
