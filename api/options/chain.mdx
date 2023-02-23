@@ -1,5 +1,5 @@
 ---
-title: Options Chain
+title: Option Chain
 sidebar_position: 3
 ---
 
@@ -10,11 +10,7 @@ import TabItem from "@theme/TabItem";
 
 ## Endpoint
 
-:::info Endpoint
-/chain/{underlyingSymbol}
-:::
-
-    /chain/{underlyingSymbol}
+    https://api.marketdata.app/v1/options/chain/{underlyingSymbol}
 
 #### Method
 
@@ -354,11 +350,9 @@ print(response.text)
   The underlying ticker symbol for the options chain you wish to lookup.
   A company or securities identifier can also be used instead of a ticker symbol.
 
-  Ticker Formats: (`TICKER`, `TICKER.EX`, `EXCHANGE:TICKER`)
-
-  Company Identifiers: (`CIK`, `LEI`)
-
-  Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
+  - Ticker Formats: (`TICKER`, `TICKER.EX`, `EXCHANGE:TICKER`)
+  - Company Identifiers: (`CIK`, `LEI`)
+  - Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
 
 ```mdx-code-block
 
@@ -371,10 +365,21 @@ print(response.text)
 
   Use to lookup a historical end of day options chain from a specific trading day. If no date is specified the chain will be the most current chain available during market hours. When the market is closed the chain will be from the last trading day. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
 
+- **quote** `boolean` 
+  Returns a real-time or historical quote for each matching contract in the option chain. If omitted, the default value is false.
+
+:::caution
+Take care when using `true` for the the `quote` parameter. Each option symbol the chain returns will consume a price from your plan's daily limit. The recommended procedure to avoid exhausing your plan's price limit is to filter the chain first and then request quotes only for the option contracts you need.
+:::
+
 - **expiration** `date`
 
-  Limit the option chain to a specific expiration date. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`. If omitted all expirations will be returned.
-
+  Limits the option chain to a specific expiration date. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`. This parameter is only required if requesting a quote along with the chain. If omitted all expirations will be returned.
+  
+:::tip
+If you use `true` for the `quote` parameter, the `expiration` parameter will also be required. Market Data can only return quotes for a single expiration date. If you need quotes for multiple expirations, use a new request for each expiration date needed.
+:::
+  
 - **from** `date`
 
   Limit the option chain to expiration dates after from (inclusive). Should be combined with to to create a range. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`. If omitted all expirations will be returned.
