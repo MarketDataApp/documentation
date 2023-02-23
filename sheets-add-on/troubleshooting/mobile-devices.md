@@ -3,7 +3,7 @@ title: Mobile Devices
 sidebar_position: 5
 ---
 
-Google Workspace Add-ons are not supported on mobile devices yet. This means there is no way to launch the Market Data sidebar on your mobile device. However, if you would like to use our service on your mobile device there are several workarounds you can try. Our custom formulas like `STOCKDATA` and `OPTIONDATA` will work on your mobile device.
+Google Workspace Add-ons are not supported on mobile devices yet. This means there is no way to launch the Market Data sidebar on your mobile device. However, if you would like to use our service on your mobile device there are several workarounds you can try. Our custom formulas like [STOCKDATA](https://docs.marketdata.app/sheets-add-on/formulas/stockdata) and [OPTIONDATA](https://docs.marketdata.app/sheets-add-on/formulas/optiondata) will work on your mobile device.
 
 :::caution
 The following recommendations are only for users who want to experiment with Market Data on their mobile device. We do not officially support mobile devices with our add-on.
@@ -26,7 +26,7 @@ The system currently validates that the sidebar has been opened before allowing 
 
     =DEBUG("disable_sidebar_check")
 
-Please be aware that command will stop the sidebar check when running your custom formulas. If you leave your spreadsheet open for an extended period of time formulas will continue to execute and you may run into (urlfetch errors)[https://docs.marketdata.app/sheets-add-on/troubleshooting/urlfetch]. If you find yourself running into urlfetch errors, reenable the sidebar check using the following command (type it into any cell):
+Please be aware that command will stop the sidebar check when running your custom formulas. If you leave your spreadsheet open for an extended period of time formulas will continue to execute and you may run into [urlfetch errors](https://docs.marketdata.app/sheets-add-on/troubleshooting/urlfetch). If you find yourself running into urlfetch errors, enable the sidebar check again using the following command (type it into any cell):
 
     =DEBUG("enable_sidebar_check")
 
