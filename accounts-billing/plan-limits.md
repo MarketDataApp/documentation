@@ -15,8 +15,8 @@ Most users don't run into trouble with our limits. However, if our standard plan
 
 |                       | Free Forever | Starter   | Trader    | Commercial Plans |
 |-----------------------|--------------|-----------|-----------|------------------|
-| Daily Requests        | 100          | 10000     | 50000     | No Limit         |
-| Daily Prices          | 100          | 10000     | 50000     | No Limit         |
+| Daily Requests        | 100          | 10000     | 100000    | No Limit         |
+| Daily Prices          | 100          | 10000     | 100000    | No Limit         |
 | Unique Daily Symbols  | 10           | 1000      | No Limit  | No Limit         |
 | Daily Backtests       | 1            | 100       | 1000      | No Limit *       |
 | Brokerage Connections | 0            | 1         | No Limit  | No Limit         |
