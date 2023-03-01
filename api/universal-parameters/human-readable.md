@@ -3,12 +3,7 @@ title: Human Readable
 sidebar_position: 8
 ---
 
-:::info
-This feature is planned but has not yet been implemented.
-:::
-
-
-The human parameter will use human-readable attribute names in the JSON or CSV output instead of the standard camelCase attribute names.
+The human parameter will use human-readable attribute names in the JSON or CSV output instead of the standard camelCase attribute names. Use of this parameter will result in API output that can be loaded directly into a table or viewer and presented to an end-user with no further transformation required on the front-end.
 
 ## Parameter
 
@@ -22,7 +17,6 @@ The human parameter will use human-readable attribute names in the JSON or CSV o
 
 ```json
 {
-  "s":"ok",
   "Symbol":[
     "AAPL"
   ],
@@ -57,7 +51,7 @@ The human parameter will use human-readable attribute names in the JSON or CSV o
 
 ### True
 
-The API will output human-readable attribute names instead of the standard camelCase attribute names. The output will be capitalized as a title, with the first letter of each major word capitalized.
+The API will output human-readable attribute names instead of the standard camelCase attribute names. The output will be capitalized as a title, with the first letter of each major word capitalized. The `s` status response is also surpressed.
 
 ### False (default)
 
