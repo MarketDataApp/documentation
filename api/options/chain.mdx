@@ -422,11 +422,19 @@ If you use `true` for the `quote` parameter, the `expiration` parameter will als
 
 - **range** `string`
 
-  Limit the option chain to strikes that are in the money, out of the money, or include all. If omitted all options will be returned. Valid inputs: `itm`, `otm`, `all`.
+  Limit the option chain to strikes that are in the money, out of the money, at the money, or include all. If omitted all options will be returned. Valid inputs: `itm`, `otm`, `all`.
 
 - **strike** `number`
 
   Limit the option chain to options with the specific strike specified.
+
+- **strikeLimit** `number`
+
+  Limit the number of total strikes returned by the option chain. For example, if a complete chain included 30 strikes and the limit was set to 10, the 20 strikes furthest from the money will be excluded from the response. 
+  
+ :::tip
+ If this `strikeLimit` is combined with the `range` parameter, `range` will be applied first. In the above example, if the `range` were set to `itm` (in the money), all out of the money strikes would be first excluded by the `range` parameter and then strikeLimit will return the 10 in the money strikes that are closest to the money.
+ :::
 
 - **minOpenInterest** `number`
 
