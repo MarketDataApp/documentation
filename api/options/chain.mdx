@@ -433,7 +433,7 @@ If you use `true` for the `quote` parameter, the `expiration` parameter will als
   Limit the number of total strikes returned by the option chain. For example, if a complete chain included 30 strikes and the limit was set to 10, the 20 strikes furthest from the money will be excluded from the response. 
   
  :::tip
- If `strikeLimit` is combined with the `range` parameter, range will be applied first. In the above example, if the range were set to `itm` (in the money), all out of the money strikes would be first excluded by the range parameter and then strikeLimit will return a maximum of 10 in the money strikes that are closest to the money.
+ If `strikeLimit` is combined with the `range` parameter, range will be applied first. In the above example, if the range were set to `itm` (in the money), all out of the money strikes would be first excluded by the range parameter and then strikeLimit will return a maximum of 10 in the money strikes that are closest to the money. If the `side` parameter has not been used, then `strikeLimit` will return the requested number of strikes for each side of the chain, duplicating the number of strikes that are received.
  :::
 
 - **minOpenInterest** `number`
