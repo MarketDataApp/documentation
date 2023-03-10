@@ -47,10 +47,10 @@ Fetches a current option chain from Market Data.
   - "noheaders" – Returns values without column headers.
 - **expiration date** - _(REQUIRED)_ - The expiration date of the option chain. Options from this expiration will be returned.
 - **strikes** _(OPTIONAL)_ – Limit the strikes returned from the option chain formula to only the specified strikes. 
-  - "\[number]" - A single number or a cell reference to a number. Example: ```150```
-  - "\[array of numbers]" - Use a one column array containing each strike or a cell reference to the array. Example: ```{1;2;3;4}```
-  - "\[string of numbers]" - Seperate multiple strikes with commas. Example: ```150,160,170```
-  - "\[logical expression]" - A logical expression. Example: ```<200``` 
+  - \[number] - A single number or a cell reference to a number. Example: ```150```
+  - \[array of numbers] - Use a one column array containing each strike or a cell reference to the array. Example: ```{1;2;3;4}```
+  - "\string of numbers" - Seperate multiple strikes with commas. Example: ```"150,160,170"```
+  - "\logical expression" - A logical expression. Example: ```"<200"``` 
 - **filters** _(OPTIONAL)_ – Use specific keywords to further filter the option chain.
   - "call", "calls" - Only return calls.
   - "put", "puts" - Only return puts.
