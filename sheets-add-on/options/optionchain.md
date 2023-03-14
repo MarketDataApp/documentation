@@ -46,6 +46,9 @@ Fetches a current option chain from Market Data.
   - "all" – Returns all values.
   - "noheaders" – Returns values without column headers.
 - **expiration date** - _(REQUIRED)_ - The expiration date of the option chain. Options from this expiration will be returned.
+  - "date" - A single date in YYYY-MM-DD or MM/DD/YYYY format enclosed between quotes.
+  - \[date cell reference] - A cell reference to a date in Sheets.
+  - "dte _number_" - Days to expiry. Return the expiration date most closely matching the indicated number. For example, if today was Jan 1 and you used a DTE of 45, the expiration closest to Feb 15 would be selected.
 - **strikes** _(OPTIONAL)_ – Limit the strikes returned from the option chain formula to only the specified strikes. 
   - \[number] - A single number or a cell reference to a number. Example: ```150```
   - \[array of numbers] - Use a one column array containing each strike or a cell reference to the array. Example: ```{1;2;3;4}```
