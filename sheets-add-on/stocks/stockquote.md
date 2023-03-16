@@ -1,6 +1,6 @@
 ---
 title: STOCKQUOTE (Coming Soon)
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 :::caution Coming Soon

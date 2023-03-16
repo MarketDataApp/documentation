@@ -3,7 +3,7 @@ title: Expirations
 sidebar_position: 1
 ---
 
-Get a list of current or historical option expiration dates for an underlying symbol. If no optional parameters are used, the endpoint returns the expirations for strike in the chain.
+Get a list of current or historical option expiration dates for an underlying symbol. If no optional parameters are used, the endpoint returns all expiration dates in the option chain.
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
@@ -108,11 +108,9 @@ print(response.text)
   The underlying ticker symbol for the options chain you wish to lookup.
   A company or securities identifier can also be used instead of a ticker symbol.
 
-  Ticker Formats: (`TICKER`, `TICKER.EX`, `EXCHANGE:TICKER`)
-
-  Company Identifiers: (`CIK`, `LEI`)
-
-  Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
+  - Ticker Formats: (`TICKER`, `TICKER.EX`, `EXCHANGE:TICKER`)
+  - Company Identifiers: (`CIK`, `LEI`)
+  - Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
 
 ```mdx-code-block
 </TabItem>
@@ -122,14 +120,11 @@ print(response.text)
 
 - **strike** `number`
 
-  Limit the lookup of expiration dates to
-  the strike provide. This will cause the endpoint to only return expiration dates that include this strike.
+  Limit the lookup of expiration dates to the strike provided. This will cause the endpoint to only return expiration dates that include this strike.
 
 - **date** `date`
 
-  Use to lookup a historical list of
-  expiration dates from a specific previous trading day. If date is omitted the expiration dates will be from the current trading day during market hours or from the last trading day when the market is closed. Accepted date
-  inputs: `ISO 8601`, `unix`, `spreadsheet`.
+  Use to lookup a historical list of expiration dates from a specific previous trading day. If date is omitted the expiration dates will be from the current trading day during market hours or from the last trading day when the market is closed. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
 
 ```mdx-code-block
 </TabItem>

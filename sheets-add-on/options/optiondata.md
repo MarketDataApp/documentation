@@ -1,36 +1,23 @@
 ---
-title: OPTIONQUOTE (Coming Soon)
-sidebar_position: 2
+title: OPTIONDATA
+sidebar_position: 1
 ---
 
-:::caution Coming Soon
-
-This formula is planned for the future and has not yet been implemented.
-
-:::
-
-Fetches real-time option quote(s) from Market Data.
-
-:::tip
-
-Group all your option quotes together and request them all at once with a single ```OPTIONQUOTE``` formula to _significantly_ speed up your sheet's loading time and avoid Google's [urlfetch limits](/sheets-add-on/troubleshooting/urlfetch).
-
-:::
-
+Fetches a current or historical option quote from Market Data.
 
 ## Sample Usage
 
-    OPTIONQUOTE("AAPL230120C00150000")
-    OPTIONQUOTE("AAPL230120C00150000", "bid")
-    OPTIONQUOTE("AAPL230120C00150000,AAPL230120C00160000,AAPL230120C00170000", "bid,ask")
-    OPTIONQUOTE(A1:G1, "all")
+    OPTIONDATA("AAPL250117C00150000")
+    OPTIONDATA("AAPL250117C00150000", "bid")
+    OPTIONDATA("AAPL250117C00150000", "bid,ask", "1/1/2021", "1/31/2021")
+    OPTIONDATA("AAPL250117C00150000", "all", TODAY()-30, 30)
 
 ## Syntax
 
-    OPTIONQUOTE("option symbols", "attributes")
+    OPTIONDATA(option symbol, [attributes], start date, end date)
 
-- **option symbol(s)** _(REQUIRED)_ The OCC option symbol format for the option.
-- **attribute(s)** _(OPTIONAL "price" by default)_ Use at least one of the following attributes; seperate multiple attributes with commas:
+- **option symbol** _(REQUIRED)_ Use the current OCC option symbol format for the option symbol, even for historic options prior to the symbol format change in 2010.
+- **attribute** _(OPTIONAL "price" by default)_ Use at least one of the following attributes; seperate multiple attributes with commas:
   - "symbol" - The OCC option symbol.
   - "date", "updated" - The date and time of the quote.
   - "price", "mid", "mark" – The midpoint price of the option.
@@ -53,16 +40,18 @@ Group all your option quotes together and request them all at once with a single
   - "rho" - The rho of the option.
   - "all" – Returns all values.
   - "noheaders" – Returns values without column headers.
+- **start date** _(OPTIONAL)_ – The start date when fetching historical data. If start date is specified, but endDate is not, only the single day’s data is returned.
+- **end date** _(OPTIONAL)_ – The end date when fetching historical data, or the number of calendar days (not trading days) from startDate for which to return data.
 
 ## Notes
 
-:::info
+:::info Notes
 
-All parameters must be enclosed in quotation marks or be references to cells containing text. A possible exception is when endDate is specified as a number of days.
+All parameters must be enclosed in quotation marks or be references to cells containing text. A possible exception is when end date is specified as a number of days.
 
 ---
 
-Results will be returned as a value within a single cell unless more than one attribute is requested.
+Results will be returned as a value within a single cell if a single attribute is requested. Multiple attributes or multi-day results will be returned with column headers.
 
 ---
 

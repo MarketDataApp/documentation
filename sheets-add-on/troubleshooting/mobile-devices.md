@@ -18,7 +18,7 @@ There are two steps needed to enable your sheet for mobile device use:
 
 #### Adding Your Token
 
-To use your sheet with a mobile device, you must first open the sheet on a computer and add your token to the sheet. Since there is no way to open the sidebar on a mobile device, this step can only be compelted on your computer.
+To use your sheet with a mobile device, you must first open the sheet on a computer and add your token to the sheet. Since there is no way to open the sidebar on a mobile device, this step can only be completed on your computer.
 
 #### Disable the Sidebar Check
 

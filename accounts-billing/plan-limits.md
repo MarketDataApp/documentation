@@ -15,8 +15,8 @@ Most users don't run into trouble with our limits. However, if our standard plan
 
 |                       | Free Forever | Starter   | Trader    | Commercial Plans |
 |-----------------------|--------------|-----------|-----------|------------------|
-| Daily Requests        | 100          | 10000     | 50000     | No Limit         |
-| Daily Prices          | 100          | 10000     | 50000     | No Limit         |
+| Daily Requests        | 100          | 10000     | 100000    | No Limit         |
+| Daily Prices          | 100          | 10000     | 100000    | No Limit         |
 | Unique Daily Symbols  | 10           | 1000      | No Limit  | No Limit         |
 | Daily Backtests       | 1            | 100       | 1000      | No Limit *       |
 | Brokerage Connections | 0            | 1         | No Limit  | No Limit         |
@@ -38,9 +38,9 @@ For users working with options, take care before repeatly requesting quotes for 
 
 Plans with unlimited daily API calls are subject to throttling and can receive a total of 1000 prices per second. If this throttling is unacceptable for your use case, please let us know how we can meet your needs. The Starter and Trader plans (and any plan with a published daily request limit has no per second throttling.
 
-## Unique Daily Symbols Limits
+## Unique Daily Symbols Limit
 
-Our Free Forever and Starter plans include limits on the number of daily symbols that can be requested. Once this limit has been reached, you may only continue to request prices and data of the symbols you have already used during the day. 
+Our Free Forever and Starter plans include a limit on the number of daily symbols that can be requested. Once this limit has been reached, you may only continue to request prices and data of the symbols you have already requested during the day. If you need to analyize a large variety of symbols we recommend using the Trader plan to avoid hitting this limit.
 
 ## Daily Backtests Limit
 

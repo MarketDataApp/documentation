@@ -1,46 +1,38 @@
 ---
-title: STOCKDATA
-sidebar_position: 4
+title: INDEXDATA
+sidebar_position: 1
 ---
 
-Fetches a current stock quote or historical stock candle from Market Data.
+Fetches a current or historical index price from Market Data.
 
 ## Sample Usage
 
-    STOCKDATA("AAPL")
-
-    STOCKDATA("AAPL", "open")
-
-    STOCKDATA("AAPL", "close", "1/1/2021", "1/31/2021", "hourly")
-
-    STOCKDATA("AAPL", "all", TODAY()-30, 30)
+    INDEXDATA("SPX")
+    INDEXDATA("SPX", "all")
+    INDEXDATA("SPX", "close", "9/23/2022", "10/23/2022", "hourly")
+    INDEXDATA("SPX", "all", TODAY()-30, 30)
 
 ## Syntax
 
-    STOCKDATA(symbol, [historial attribute|quote attribute], startDate, endDate, resolution)
+    INDEXDATA(symbol, [historial attribute|quote attribute], startDate, endDate, resolution)
 
-- **symbol** _(REQUIRED)_ The stock’s ticker symbol.
+- **symbol** _(REQUIRED)_ The index symbol, without any leading or trailing index identifiers. For example, use DJI do not use $DJI, ^DJI, .DJI, DJI.X, etc.
 
 - **[historial attributes | quote attributes]** _(Optional)_ Use a historical or quote attribute:
 
   - **historical attributes** _(OPTIONAL – "close" by default)_ Use one of the following attributes when requesting historical candles:
 
-    - "open" – The opening price of the stock.
-    - "high" – The high price of the stock.
-    - "low" – The low price of the stock.
-    - "close" – The closing price of the stock.
-    - "volume" – The number of shares traded.
-    - "all" – Returns all values.
+    - `"open"` – The opening price of the index.
+    - `"high"` – The high price of the index.
+    - `"low"` – The low price of the index.
+    - `"close"` – The closing price of the index.
+    - `"date"` - The date/time of the candle.
+    - `"all"` – Returns all values.
 
   - **quote attributes** _(OPTIONAL – "mid" by default)_ Use one of the following attributes when requesting a quote:
-    - "price", "mid", "mark" – The midpoint price of the stock.
-    - "bid" – The bid price of the stock.
-    - "ask" – The ask price of the stock.
-    - "last" – The last price of the stock.
-    - "bidSize" – The quantity of shares offered at the bid price.
-    - "askSize" – The quantity of shares offered at the ask price.
-    - "volume" – The quantity of shares traded.
-    - "all" – Returns all values.
+    - `"price"`, `"mid"`, `"mark"`, `"last"` – The price of the index.
+    - `"date"` - The date/time of the index quote.
+    - `"all"` – Returns all values.
 
 - **startDate** _(OPTIONAL)_ The start date when fetching historical data. If start date is specified, but endDate is not, only the single day’s data is returned.
 
