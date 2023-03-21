@@ -20,3 +20,7 @@ To get more detailed information, use the "all" parameter with STOCKDATA like th
 ![price differences](/img/price-differences.png)
 
 In the example shown, we've requested a price using both STOCKDATA and GOOGLEFINANCE at 3 AM in the early morning for a stock that was thinly traded in the extended session. Note how STOCKDATA shows a price of $128.64 (midpoint between the bid/ask) while GOOGLEFINANCE shows $129.42, the day's closing price. When STOCKDATA is run with the "ALL" parameter we can see the bid/ask and verify how the midpoint price is calculated.
+
+## Force STOCKDATA to Use Trades
+
+If you prefer to see trades instead of quotes for real-time prices, you can modify the STOCKDATA formula slightly and the price shown will be the last trade instead of the most up to date quote. Instead of using `=STOCKDATA("TICKER")`, use instead `=STOCKDATA("TICKER","LAST")`. This will force the formula to use the last price instead of the midpoint price when outputting the result to a single cell.
