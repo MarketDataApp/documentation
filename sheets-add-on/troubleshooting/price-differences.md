@@ -1,0 +1,16 @@
+---
+title: Price Differences
+sidebar_position: 6
+---
+
+You may notice that from time to time prices differ when using Market Data compared to Google Finance, TradingView, Yahoo Finance, or other financial websites, especially after hours. This is normal and it to be expected since those platforms display real-time prices using trades (i.e. the last trade or closing price), while Market Data displays real-time prices using quotes.
+
+## Trades vs Quotes
+
+A trade is a transaction that took place between a buyer and a seller in the past. A quote is a bid/ask price from the top of the order book and represents the price a buyer or seller would pay right now if a new transaction were to take place. Trades are indiciatve of the current stock price, but they are a lagging indicator. A quote represents the most current price.
+
+## STOCKDATA vs GOOGLEFINANCE After Hours
+
+When you run `STOCKDATA` after hours you will be shown the midpoint price between the bid and the ask. `GOOGLEFINANCE` after hours will always provide you with the last trade (i.e. the closing price). During the extended session (after hours) trading, the bid and the ask can be much further apart than during the market hours. This means the midpoint price between the bid and the ask could be much further away from the last price than usual. 
+
+To get more detailed information, use the "all" parameter with STOCKDATA like this: `=STOCKDATA("TICKER","ALL")`. This will provide you with a more detailed quote with column names and help you understand where the price is coming from. 
