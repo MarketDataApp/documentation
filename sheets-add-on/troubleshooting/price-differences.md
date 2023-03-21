@@ -15,4 +15,8 @@ When you run `STOCKDATA` after hours you will be shown the midpoint price betwee
 
 To get more detailed information, use the "all" parameter with STOCKDATA like this: `=STOCKDATA("TICKER","ALL")`. This will provide you with a more detailed quote with column names and help you understand where the price is coming from. 
 
+#### Example From 3 AM
+
 ![price differences](/img/price-differences.png)
+
+In the example shown, we've requested a price using both STOCKDATA and GOOGLEFINANCE at 3 AM in the early morning for a stock that was thinly traded in the extended session. Note how STOCKDATA shows a price of $128.64 (midpoint between the bid/ask) while GOOGLEFINANCE shows $129.42, the day's closing price. When STOCKDATA is run with the "ALL" parameter we can see the bid/ask and verify how the midpoint price is calculated.
