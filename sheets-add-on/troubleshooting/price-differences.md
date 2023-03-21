@@ -14,3 +14,5 @@ A trade is a transaction that took place between a buyer and a seller in the pas
 When you run `STOCKDATA` after hours you will be shown the midpoint price between the bid and the ask. `GOOGLEFINANCE` after hours will always provide you with the last trade (i.e. the closing price). During the extended session (after hours) trading, the bid and the ask can be much further apart than during the market hours. This means the midpoint price between the bid and the ask could be much further away from the last price than usual. 
 
 To get more detailed information, use the "all" parameter with STOCKDATA like this: `=STOCKDATA("TICKER","ALL")`. This will provide you with a more detailed quote with column names and help you understand where the price is coming from. 
+
+![price differences](/img/price-differences.png)
