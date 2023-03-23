@@ -5,6 +5,10 @@ sidebar_position: 3
 
 Fetches a current option chain from Market Data.
 
+## Video Tutorial
+
+<iframe width="100%" height="503" src="https://www.youtube.com/embed/Pwnsp5SsU3M" title="How To View and Filter The Options Chain" frameborder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Sample Usage
 
     OPTIONCHAIN("AAPL","all","1/17/2025")
