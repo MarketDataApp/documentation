@@ -11,9 +11,13 @@ We highly encourage users with need mission critical applications to have a back
 
 We utilize the service UptimeRobot to independently monitor our real-time and historical APIs and the results of this monitoring is made available to the public at our [status page](https://stats.uptimerobot.com/6Kv3zIow0A).
 
+- Status Page: [https://stats.uptimerobot.com/6Kv3zIow0A](https://stats.uptimerobot.com/6Kv3zIow0A)
+
 ### Confirm Downtime Programmatically
 
 UptimeRobot offers a [JSON file](https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A) that is updated every 5 minutes with the uptime status of each of our APIs. If you need to monitor the uptime status of our API, we encourage you to use this file.
+
+- JSON Status File: [https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A](https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A)
 
 ## What To Do During Downtime
 
