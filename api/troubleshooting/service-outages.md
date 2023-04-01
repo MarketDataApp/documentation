@@ -3,7 +3,7 @@ title: Service Outages
 sidebar_position: 2
 ---
 
-Market Data, as stated in our [terms of service](https://www.marketdata.app/terms/), makes no representation as to the reliability, availability, or timeliness of our service. This is not just a standard disclaimer. We have not yet been able to achieve 99.9% relability, which is a metric we consider a minimum level to be considered reliable. Some API requests might take longer the 5 seconds to complete or even time out in some cases.
+Market Data, as stated in our [terms of service](https://www.marketdata.app/terms/), makes no representation as to the reliability, availability, or timeliness of our service. This is not just a standard disclaimer. We have not yet been able to achieve 99.9% relability, which is a metric we consider a minimum level of reliability to operate without a backup.
 
 We highly encourage users with need mission critical applications to have a backup provider in place. Market Data is a low cost provider and we have determined that cost, rather than reliability, is our key driver. 
 
