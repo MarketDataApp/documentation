@@ -1,0 +1,184 @@
+---
+title: Status
+sidebar_position: 1
+---
+
+Get the current or historical status for a stock market. The endpoint will respond with "open" or "closed".
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+## Endpoint
+
+    https://api.marketdata.app/v1/markets/status/
+
+#### Method
+
+    GET
+
+## Request Example
+
+```mdx-code-block
+<Tabs>
+<TabItem value="HTTP" label="HTTP" default>
+
+```
+
+**GET** [https://api.marketdata.app/v1/markets/status/?from=2020-01-01&to=2020-12-31](https://api.marketdata.app/v1/markets/status/?from=2020-01-01&to=2020-12-31)
+
+**GET** [https://api.marketdata.app/v1/markets/status/?date=yesterday](https://api.marketdata.app/v1/markets/status/?date=yesterday)
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
+```
+
+```js title="app.js"
+fetch(
+  "https://api.marketdata.app/v1/markets/status/?from=2020-01-01&to=2020-12-31"
+)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+fetch(
+  "https://api.marketdata.app/v1/markets/status/?date=yesterday"
+)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```
+
+```python title="app.py"
+import requests
+
+url1 = "https://api.marketdata.app/v1/markets/status/?from=2020-01-01&to=2020-12-31"
+url2 = "https://api.marketdata.app/v1/markets/status/?date=yesterday"
+
+response1 = requests.request("GET", url1)
+response2 = requests.request("GET", url2)
+
+print(response1.text)
+print(response2.text)
+```
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
+
+## Response Example
+
+```json
+{
+  "s":"ok",
+  "date":[1680580800],
+  "status":["open"]
+}
+```
+
+## Request Parameters
+
+```mdx-code-block
+<Tabs>
+<TabItem value="required" label="Required">
+
+```
+
+- There are no required parameters for `status`. If no parameter is given, the request will return the market status in the United States for the current day.
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="optional" label="Optional" default>
+
+```
+
+- **country** `string`
+
+  Use to specify the country. Use the two digit ISO 3166 country code. If no country is specified, `US` will be assumed.
+
+- **from** `date`
+
+  The earliest date (inclusive). If you use countback, from is not required. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+
+- **to** `date`
+
+  The last date (inclusive). Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+
+- **countback** `number`
+
+  Countback will fetch a number of dates before `to` If you use from, countback is not required.
+
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
+
+## Response Attributes
+
+```mdx-code-block
+<Tabs>
+<TabItem value="Success" label="Success" default>
+
+```
+
+- **s** `string`
+
+  ll always be `ok` when there is data for the dates requested.
+
+- **date** `array[dates]`
+
+  The date.
+
+- **status** `array[string]`
+
+  The market status. This will always be `open` or `closed` or `null`. Half days or partial trading days are reported as `open`. Requests for days further in the past or further in the future than our data will be returned as `null`.
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NoData" label="No Data">
+
+```
+
+- **s** `string`
+
+  Status will be `no_data` if no data is found for the request.
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="Error" label="Error">
+
+```
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
