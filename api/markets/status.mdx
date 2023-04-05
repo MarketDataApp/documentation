@@ -3,7 +3,7 @@ title: Status
 sidebar_position: 1
 ---
 
-Get the current or historical status for a stock market. The endpoint will respond with "open" or "closed".
+Get the past, present, or future status for a stock market. The endpoint will respond with "open" for trading days or "closed" for weekends or market holidays.
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
@@ -113,13 +113,17 @@ print(response2.text)
 
   Use to specify the country. Use the two digit ISO 3166 country code. If no country is specified, `US` will be assumed. Only countries that Market Data supports for stock price data are available (currently only the United States).
 
+- **date** `date`
+
+  Consult whether the market was open or closed on the specified date. Accepted timestamp inputs: ISO 8601, unix, spreadsheet, relative date strings.
+
 - **from** `date`
 
-  The earliest date (inclusive). If you use countback, from is not required. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+  The earliest date (inclusive). If you use countback, from is not required. Accepted timestamp inputs: ISO 8601, unix, spreadsheet, relative date strings.
 
 - **to** `date`
 
-  The last date (inclusive). Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+  The last date (inclusive). Accepted timestamp inputs: ISO 8601, unix, spreadsheet, relative date strings.
 
 - **countback** `number`
 
