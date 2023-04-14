@@ -28,6 +28,10 @@ Relative dates allow Market Data formulas to continually modify the date sent to
 
   - `yesterday` Yesterday's date. The same as Sheets formula `today()-1`.
 
+- **Time-based Parameters** Time keyphrases let you select a specific time of day, relative to the current time. Time-based parameters are typically used to model intraday stock movements.
+
+  - `now` The current time. Use this keyword to select the current open candle, for example.
+
 :::caution Coming Soon
 
 The following relative date parameters are planned for the future and have not yet been implemented.
