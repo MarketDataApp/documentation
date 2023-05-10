@@ -388,6 +388,11 @@ If you use `true` for the `quote` parameter, the `expiration` parameter will als
 
   Limit the option chain to expiration dates before to (not inclusive). Should be combined with from to create a range. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`. If omitted all expirations will be returned.
 
+:::caution
+The `from` and `to` parameters are not supported for real-time quotes. If you are requesting a real-time quote you must request a single expiration date.
+:::
+
+
 - **month** `number`
 
   Limit the option chain to options that expire in a specific month (**1-12**).
