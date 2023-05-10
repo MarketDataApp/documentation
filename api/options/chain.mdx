@@ -496,6 +496,88 @@ If the `side` parameter has not been used but `range` has been specified, then `
 
   The exercise price of the option.
 
+:::tip
+The following parameters are quote parameters and will only be present in the response if you use the optional `quote` parameter and set a value of `true`.
+:::
+
+- **ask** `array[number]`
+
+  The ask price.
+
+- **askSize** `array[number]`
+
+  The number of contracts offered at the ask price.
+
+- **bid** `array[number]`
+
+  The bid price.
+
+- **bidSize** `array[number]`
+
+  The number of contracts offered at the bid price.
+
+- **mid** `array[number]`
+
+  The midpoint price between the ask and the bid, also known as the mark price.
+
+- **last** `array[number]`
+
+  The last price negotiated for this option contract at the time of this quote.
+
+- **volume** `array[number]`
+
+  The number of contracts negotiated during the trading day at the time of this quote.
+
+- **openInterest** `array[number]`
+
+  The total number of contracts that have not yet been settled at the time of this quote.
+
+- **underlyingPrice** `array[number]`
+
+  The last price of the underlying security at the time of this quote.
+
+- **inTheMoney** `array[booleans]`
+
+  Specifies whether the option contract was in the money true or false at the time of this quote.
+
+- **intrinsicValue** `array[number]`
+
+  The instrinisc value of the option.
+
+- **extrnisicValue** `array[number]`
+
+  The extrinsic value of the option.
+
+- **updated** `array[number]`
+
+  The date and time of this quote snapshot in Unix time.
+
+- **iv** `array[number]`
+
+  The [implied volatility](https://www.investopedia.com/terms/i/iv.asp) of the option.
+
+- **delta** `array[number]`
+
+  The [delta](https://www.investopedia.com/terms/d/delta.asp) of the option.
+  
+- **gamma** `array[number]`
+
+  The [gamma](https://www.investopedia.com/terms/g/gamma.asp) of the option.
+  
+- **theta** `array[number]`
+
+  The [theta](https://www.investopedia.com/terms/t/theta.asp) of the option.
+
+- **vega** `array[number]`
+
+  The [vega](https://www.investopedia.com/terms/v/vega.asp) of the option.
+
+- **rho** `array[number]`
+
+  The [rho](https://www.investopedia.com/terms/r/rho.asp) of the option.
+
+
+
 ```mdx-code-block
 
 </TabItem>
