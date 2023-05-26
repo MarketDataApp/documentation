@@ -4,12 +4,7 @@ slug: /troubleshooting
 sidebar_position: 8
 ---
 
-import DocCardList from "@theme/DocCardList";
-import { useCurrentSidebarCategory } from "@docusaurus/theme-common";
-
-<DocCardList items={useCurrentSidebarCategory().items} />
-
-## First Step: Use the Debug Formula
+## Debug Formula
 
 If you are having problems using or installing Market Data, the `debug()` formula can help you determine what problem might be occuring. Follow the steps below to debug your Market Data installation in any spreadsheet:
 
@@ -24,9 +19,16 @@ After running the `debug()` frormula, compare the output of your formula to the 
 | =debug()           | Expected Output  | Error Output           |
 |--------------------|------------------|------------------------|
 | Installation       | Complete         | Incomplete             |
-| Urlfetch           | Passed           | Failed                 |
+| [Urlfetch](/urlfetch)           | Passed           | Failed                 |
 | Token              | Installed        | None                   |
 | Market Data Status | Online           | Offline                |
 | Version            | 0.115 (or newer) | Blank                  |
 | User Key           | ~75 characters   | Blank                  |
 | Last Health Check  | Today's Date     | Blank or Previous Date |
+
+## Additional Resources
+
+import DocCardList from "@theme/DocCardList";
+import { useCurrentSidebarCategory } from "@docusaurus/theme-common";
+
+<DocCardList items={useCurrentSidebarCategory().items} />
