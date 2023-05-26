@@ -3,18 +3,26 @@ title: HTTP Status Codes
 sidebar_position: 1
 ---
 
-The Market Data API uses standard HTTP status codes to report most errors. By preparing your application to utilize these status codes, you can often times solve common errors, or retry failed requests.
+The Market Data API uses standard HTTP status codes to respond to each request. By preparing your application to utilize these status codes, you can often times solve common errors, or retry failed requests.
 
 ## Successful Requests (2xx)
 
-Requests that are answered successful.
+These are requests that are answered successfully.
+
+:::caution
+Some libraries are not prepared to handle HTTP 203 response codes as successful requests. Ensure the library you are using can accept a 203 response code the same way as a 200 response code.
+:::
 
 - `200 OK` - The request was successfuly answered.
 - `203 NON-AUTHORITAVE INFORMATION` - The request was successful, but had to be routed to a backup data provider. You can treat this result the same as STATUS 200.
 
 ## Client Errors (4xx)
 
-Client errors occur when Market Data cannot respond to a request due to a problem with the request. The request will need to be changed in order to get a different response.
+Client errors occur when Market Data cannot respond to a request due to a problem with the request. The request will need to be modified in order to get a different response.
+
+:::tip
+If you believe your request is correct and you received a 4xx reply in error, please ensure you log our complete response to your request, including the full response headers along with the complete JSON error message we deliver in our reply. Open a ticket at our help desk and provide this information to our support staff and we will investigate further.
+:::
 
 - `400 - BAD REQUEST` - This indicates that the API endpoint is not being used properly. Usually this happens when a parameter cannot be parsed correctly (i.e. sending a string instead of a number or viceversa).
 - `401 - UNAUTHORIZED` - The token supplied with the request is missing, invalid, or cannot be used.
@@ -24,7 +32,11 @@ Client errors occur when Market Data cannot respond to a request due to a proble
 
 ## Server Errors (5xx)
 
-Server errors are used to indicate problems with Market Data's service. They are requests that appear to be properly formed, but can't be responded to due to some kind of problem with our servers. Most of these errors are temporary and resolve themselves on their own. You can retry requests that receive 5xx errors at a later time and they may successful.
+Server errors are used to indicate problems with Market Data's service. They are requests that appear to be properly formed, but can't be responded to due to some kind of problem with our servers. 
+
+:::tip 
+Most 5xx errors are temporary and resolve themselves on their own. You can retry requests that receive 5xx errors at a later time and they may successful.
+:::
 
 - `500 - INTERNAL SERVER ERROR` - This is a generic error message that indicates that an unknown server issue prevents Market Data from responding to your request. This is a usually temporary failure of Market Data's server. If the error continues for more than 24 hours, open a ticket with the helpdesk.
 - `502 - BAD GATEWAY` - This error occurs when Market Data's API server does not respond to the gateway. Market Data's API is offline.
