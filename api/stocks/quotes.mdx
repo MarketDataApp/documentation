@@ -123,7 +123,15 @@ print(response.text)
   Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
 
 ```mdx-code-block
+</TabItem>
+<TabItem value="Optional" label="Optional">
+```
 
+- **52week** `boolean`
+
+  Enable the output of 52-week high and 52-week low data in the quote output. By default this parameter is `false` if omitted.
+
+```mdx-code-block
 </TabItem>
 </Tabs>
 ```
@@ -172,6 +180,12 @@ print(response.text)
 - **changepct** `array[number]`
 
   The difference in price in percent compared to the closing price of the previous day.
+- **52weekHigh** `array[number]`
+
+  The 52-week high for the stock. This parameter is omitted unless the optional 52week request parameter is set to true.
+- **52weekLow** `array[number]`
+
+  The 52-week low for the stock. This parameter is omitted unless the optional 52week request parameter is set to true.
 - **volume** `array[number]`
 
   The number of shares traded during the current session.

@@ -99,7 +99,15 @@ print(response.text)
   The index symbol, without any leading or trailing index identifiers. For example, use DJI do not use $DJI, ^DJI, .DJI, DJI.X, etc.
   
 ```mdx-code-block
+</TabItem>
+<TabItem value="Optional" label="Optional">
+```
 
+- **52week** `boolean`
+
+  Enable the output of 52-week high and 52-week low data in the quote output. By default this parameter is `false` if omitted.
+
+```mdx-code-block
 </TabItem>
 </Tabs>
 ```
@@ -109,7 +117,6 @@ print(response.text)
 ```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
-
 ```
 
 - **s** `string`
@@ -124,6 +131,18 @@ print(response.text)
 
   The last price of the index.
 
+- **change** `array[number]`
+
+  The difference in price in dollars (or the index's native currency if different from dollars) compared to the closing price of the previous day.
+- **changepct** `array[number]`
+
+  The difference in price in percent compared to the closing price of the previous day.
+- **52weekHigh** `array[number]`
+
+  The 52-week high for the index.
+- **52weekLow** `array[number]`
+
+  The 52-week low for the index.
 - **updated** `array[date]`
 
   The date/time of the quote.

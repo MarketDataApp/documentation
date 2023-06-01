@@ -4,6 +4,30 @@ slug: /troubleshooting
 sidebar_position: 8
 ---
 
+## Debug Formula
+
+If you are having problems using or installing Market Data, the `debug()` formula can help you determine what problem might be occuring. Follow the steps below to debug your Market Data installation in any spreadsheet:
+
+1. Add a new sheet to your workbook.
+2. Run the `=debug()` in any empty cell.
+3. Compare the output of the formula with the table below. If any errors are reported, click on the link to learn more about how to fix it.
+
+#### Debug Output
+
+After running the `debug()` frormula, compare the output of your formula to the table below. If the output from the formula matches something in the Error Output column, click for additional details.
+
+| =debug()           | Expected Output  | Error Output           |
+|--------------------|------------------|------------------------|
+| Installation       | Complete         | Incomplete             |
+| [Urlfetch](/urlfetch)           | Passed           | Failed                 |
+| Token              | Installed        | None                   |
+| Market Data Status | Online           | Offline                |
+| Version            | 0.115 (or newer) | Blank                  |
+| User Key           | ~75 characters   | Blank                  |
+| Last Health Check  | Today's Date     | Blank or Previous Date |
+
+## Additional Resources
+
 import DocCardList from "@theme/DocCardList";
 import { useCurrentSidebarCategory } from "@docusaurus/theme-common";
 

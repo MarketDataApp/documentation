@@ -24,3 +24,5 @@ In the example shown, we've requested a price using both STOCKDATA and GOOGLEFIN
 ## Force STOCKDATA to Use Trades
 
 If you prefer to see trades instead of quotes for real-time prices, you can modify the STOCKDATA formula slightly and the price shown will be the last trade instead of the most up to date quote. Instead of using `=STOCKDATA("TICKER")`, use instead `=STOCKDATA("TICKER","LAST")`. This will force the formula to use the last price instead of the midpoint price when outputting the result to a single cell.
+
+Please be aware that by using this method, the price shown will be a historical price instead of a price that is likely to result in an order fill. If you are using the formula for trading, the midpoint price is recommended.
