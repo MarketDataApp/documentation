@@ -17,7 +17,6 @@ Most users don't run into trouble with our limits. However, if our standard plan
 |-----------------------|--------------|-----------|-----------|------------------|
 | Daily Requests        | 100          | 10000     | 100000    | No Limit         |
 | Daily Prices          | 100          | 10000     | 100000    | No Limit         |
-| Unique Daily Symbols  | 10           | 1000      | No Limit  | No Limit         |
 | Daily Backtests       | 1            | 100       | 1000      | No Limit *       |
 | Brokerage Connections | 0            | 1         | No Limit  | No Limit         |
 | Historical Data       | 1 Year       | 5 Years   | 50 Years  | No Limit         |
@@ -26,21 +25,15 @@ Most users don't run into trouble with our limits. However, if our standard plan
 
 ## Prices vs Requests
 
-Each time you or our Add-on makes a request to the API, the system will increase your daily request counter. Normally prices and requests are interchangable. Each call to our API will normally be counted as a single request. However, if you request prices for multiple symbols in a single API call, a request will be used for each symbol that is included. Once this limit has been reached, you will no longer be able to make requests until the next day.
+Each time you or our Add-on makes a request to the API, the system will increase your daily request counter. Normally prices and requests are interchangable. Each call to our API will normally be counted as a single request. However, if you request prices for multiple symbols in a single API call using the option chain endpoint, a request will be used for each symbol that is included in the response. Once this limit has been reached, you will no longer be able to make requests until the next day.
 
 :::caution
-
 For users working with options, take care before repeatly requesting quotes for an entire option chain. Each option symbol you request will consume a request. If you were to download the entire SPX option chain (which has 6200+ option symbols), you would exchaust your daily request limit very quickly. Use our extensive option chain filtering parameters to request only the prices you need.
-
 :::
 
 #### Throttling
 
 Plans with unlimited daily API calls are subject to throttling and can receive a total of 1000 prices per second. If this throttling is unacceptable for your use case, please let us know how we can meet your needs. The Starter and Trader plans (and any plan with a published daily request limit has no per second throttling.
-
-## Unique Daily Symbols Limit
-
-Our Free Forever and Starter plans include a limit on the number of daily symbols that can be requested. Once this limit has been reached, you may only continue to request prices and data of the symbols you have already requested during the day. If you need to analyize a large variety of symbols we recommend using the Trader plan to avoid hitting this limit.
 
 ## Daily Backtests Limit
 
@@ -64,11 +57,15 @@ The Free Forever and Starter plans include historical age limits on historical d
 
 ## Data Type
 
-The Free Forever plan as well as the free trial plans provide users with delayed data. All paid plans offer real-time data.
+The Free Forever plan provides users with delayed data. All paid plans offer real-time data.
+
+:::info
+Free trials of paid plans also provide delayed data. Only the paid version of the Starter and Trader plans offer acccess to real-time data.
+:::
 
 ## API Endpoints
 
-The Free Forever plan only provides access to pricing data. Premium endpoints and spreadsheet formulas that contain reference data are not available on free plans.
+The Free Forever plan only provides access to pricing data. Premium endpoints and spreadsheet formulas that contain reference data are not available on free plans. In addition to our public endpoints, Commercial plans also have access to custom-built endpoints to satisfy the needs of their specific application.
 
 ## About Daily Limits
 
