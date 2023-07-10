@@ -40,6 +40,7 @@ Most 5xx errors are temporary and resolve themselves on their own. You can retry
 
 - `500 - INTERNAL SERVER ERROR` - This is a generic error message that indicates that an unknown server issue prevents Market Data from responding to your request. This is a usually temporary failure of Market Data's server. If the error continues for more than 24 hours, open a ticket with the helpdesk.
 - `502 - BAD GATEWAY` - This error occurs when Market Data's API server does not respond to the gateway. Market Data's API is offline.
+- `503 - SERVICE UNAVAILABLE` - This error occurs when Market Data's API server is accessible but cannot fullfil the request. This usually means the server is overloaded. Please retry the request again in a few minutes.
 - `504 - GATEWAY TIMEOUT` - Market Data's load balancer did not receive a response from the API. This indicates the request is taking too long for the API to resolve. Try the request again in 1-2 minutes and if the error message remains report it to the helpdesk.
 - `509 - API ENDPOINT OVERLOADED` - The endpoint is currently overloaded. Please try again in a few minutes. If this problem continues for more than 15 minutes, report it to the helpdesk.
 - `521 - API ENDPOINT OFFLINE` - The Market Data API endpoint that should be responding to your formula's request is offline. If this problem continues for more than 15 minutes, report it to the helpdesk.
