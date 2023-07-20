@@ -33,7 +33,7 @@ There are a number of stratgies you can use to reduce your use of urlfetch calls
 
 ### Copy & Paste Values For Historical Data
 
-When you query Market Data for historical data, such as the price of a stock in the past, consider copying and using the _paste values_ option once the formula finishes its output. This delete the Market Data formula, but it will preserve the formula's output. 
+When you query Market Data for historical data, such as the price of a stock in the past, consider copying and using the _paste values_ option once the formula finishes its output. This deletes the Market Data formula, but it will preserve the formula's output. 
 
 There are a number of advantages to removing historical formulas and replacing them with the output:
 - It will prevent future repeat queries for the same historical data, preserving your urlfetch quota.
