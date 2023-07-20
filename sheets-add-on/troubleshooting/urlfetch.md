@@ -9,7 +9,7 @@ Each time Market Data recalculates the data in a cell, that will consume one cal
 
 :::caution
 
-Urlfetch calls are different from Market Data requests. Even if you have our Trader plan and can make 50,000 requests per day, if you use a consumer (gmail.com) account, you'll only be able to make 20,000 urlfetch calls with your spreadsheet. Your urlfetch limit is set by Google and cannot be modified by Market Data.
+Urlfetch calls are different from Market Data requests. Even if you have our Trader plan and can make 100,000 requests per day, if you use a consumer (gmail.com) account, you'll only be able to make 20,000 urlfetch calls with your spreadsheet. Your urlfetch limit is set by Google and cannot be modified by Market Data.
 
 :::
 
