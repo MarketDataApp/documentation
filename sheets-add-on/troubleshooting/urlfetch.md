@@ -55,9 +55,14 @@ If you are typically updating your prices every 10 minutes, for example, conside
 
 Your urlfetch quota is shared between all your Google Workspace Add-ons. If you are using other add-ons that are also making urlfetch calls, you may burn through your quota very quickly. Some add-ons may also cause your spreadsheet to recalculate cells much more frequently than Google's default of once per hour. If you have 1000 Market Data formulas and another add-on is recalculating your sheet once every 3 minutes, you'll hit the urlfetch limit in an hour. 
 
-Unless you are 100% sure that your other add-ons don't cause excessive recalculation of your spreadsheet and don't make excessive urlfetch calls, consider uninstalling add-ons that are no longer in use.
+#### How Investigate Your Google Account's Add-ons, Scripts & Macros
+
+Use the following links to investigate what other scripts and Add-ons may be running in your Google account:
 
 - [Workspace Add-ons installed in your account](https://workspace.google.com/marketplace/myapps)
 - [Scripts authorized to run in your account](https://script.google.com/home/all)
 - [Log of scripts which are executing](https://script.google.com/home/executions) 
 
+#### Uninstall Unused Add-ons
+
+Unless you are 100% sure that your other add-ons don't cause excessive recalculation of your spreadsheet and don't make excessive urlfetch calls, consider uninstalling add-ons that are no longer in use.
