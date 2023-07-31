@@ -7,7 +7,7 @@ The Transactions endpoint allows users to manage transactions. Depending on the 
 
 ## Endpoint
 
-`/v1/portfolios/transactions`
+`https://api.marketdata.app/v1/portfolios/transactions`
 
 ## Methods
 
