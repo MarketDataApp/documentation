@@ -35,7 +35,7 @@ Retrieve a list of all transactions or filter the output by including one or mor
 - `Fees` - Additional fees, such as regulatory fees
 - `Amount` - Total amount of the transaction. The number should be negative for transactions that consume the account's cash balance or positive for transactions that add to the account's cash balance.
 
-### Response Example
+#### Response Example
 
 ```json
 {
