@@ -1,6 +1,6 @@
 ---
 title: Accounts
-sidebar_position: 2
+sidebar_position: 1
 ---
 
 The Accounts endpoint allows users to manage their accounts. Depending on the method used (GET, POST, PATCH, DELETE), users can view/search, create, modify, or delete accounts.
