@@ -33,6 +33,23 @@ Retrieve a list of all accounts or filter the output by including one or more pa
 - `Currency` - Currency used in the account (e.g., USD)
 - `Status` - Status of the account (e.g., Active)
 
+### Response Example
+
+```json
+{
+  "s": "ok",
+  "ID": "203284",
+  "Account Owner ID": "294",
+  "Broker": "Interactive Brokers",
+  "Account Number": "330382N",
+  "Account Title": "John Smith Rollover IRA Interactive Brokers, Custodian",
+  "Account Alias": "John's Traditional IRA",
+  "Account Type": "Margin",
+  "Currency": "USD",
+  "Status": "Active"
+}
+```
+
 ### POST
 
 Create a new account.
