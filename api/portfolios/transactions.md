@@ -1,6 +1,6 @@
 ---
 title: Transactions
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 The Transactions endpoint allows users to manage transactions. Depending on the method used (GET, POST, PATCH, DELETE), users can view, add, modify, or delete transactions.
