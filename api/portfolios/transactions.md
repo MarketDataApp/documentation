@@ -87,6 +87,6 @@ Remove a transaction.
 
 #### Request
 
-- `Transaction ID` - Unique identifier for the transaction (required for identification)
+- `TransactionID` - Unique identifier for the transaction (required for identification)
 
 ---
