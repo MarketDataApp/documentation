@@ -33,7 +33,7 @@ Retrieve a list of all accounts or filter the output by including one or more pa
 - `Currency` - Currency used in the account (e.g., USD)
 - `Status` - Status of the account (e.g., Active)
 
-### Response Example
+#### Response Example
 
 ```json
 {
