@@ -43,7 +43,7 @@ Retrieve a list of all trades or filter the output by including one or more para
   "Description": "I sold puts on AAPL for March for an ongoing Wheel strategy.",
   "Notes": [
     {
-      "Date": "8/19/2019",
+      "Date": 1566187200,
       "Note": "Sold puts before earnings to collect some nice premium."
     }
   ],
