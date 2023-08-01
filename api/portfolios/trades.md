@@ -25,10 +25,10 @@ Retrieve a list of all trades or filter the output by including one or more para
 
 - `ID` - Unique identifier for the trade
 - `Account Owner ID` - ID of the account owner
-- `Trade Identifier` - Unique identifier for the trade
-- `Trade Name` - Name of the trade
-- `Trade Description` - Description of the trade
-- `Trade Notes` - Notes associated with the trade, including date and note content
+- `Identifier` - Unique identifier for the trade as provided by the user
+- `Name` - Name of the trade
+- `Description` - Description of the trade
+- `Notes` - Notes associated with the trade, including date and note content
 - `Transactions` - List of transaction IDs associated with the trade
 
 #### Response Example
@@ -38,10 +38,10 @@ Retrieve a list of all trades or filter the output by including one or more para
   "s": "ok",
   "ID": "203284",
   "Account Owner ID": "294",
-  "Trade Identifier": "19-AAPL-03",
-  "Trade Name": "March AAPL Puts",
-  "Trade Description": "I sold puts on AAPL for March for an ongoing Wheel strategy.",
-  "Trade Notes": [
+  "Identifier": "19-AAPL-03",
+  "Name": "March AAPL Puts",
+  "Description": "I sold puts on AAPL for March for an ongoing Wheel strategy.",
+  "Notes": [
     {
       "Date": "8/19/2019",
       "Note": "Sold puts before earnings to collect some nice premium."
@@ -59,10 +59,10 @@ Create a new trade.
 
 - `ID` - Unique identifier for the trade
 - `Account Owner ID` - ID of the account owner
-- `Trade Identifier` - Unique identifier for the trade
-- `Trade Name` - Name of the trade
-- `Trade Description` - Description of the trade
-- `Trade Notes` - Notes associated with the trade
+- `Identifier` - Unique identifier for the trade as provided by the user
+- `Name` - Name of the trade
+- `Description` - Description of the trade
+- `Notes` - Notes associated with the trade
 - `Transactions` - List of transaction IDs to associate with the trade
 
 ### PATCH
@@ -72,7 +72,7 @@ Modify an existing trade.
 #### Request
 
 - `ID` - Unique identifier for the trade (required for identification)
-- Any other fields you wish to modify (e.g., `Trade Name`, `Trade Description`, etc.)
+- Any other fields you wish to modify (e.g., `Name`, `Description`, etc.)
 
 ### DELETE
 
