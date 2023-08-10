@@ -9,7 +9,7 @@ Each time Market Data recalculates the data in a cell, that will consume one cal
 
 :::caution
 
-Urlfetch calls are different from Market Data requests. Even if you have our Trader plan and can make 50,000 requests per day, if you use a consumer (gmail.com) account, you'll only be able to make 20,000 urlfetch calls with your spreadsheet. Your urlfetch limit is set by Google and cannot be modified by Market Data.
+Urlfetch calls are different from Market Data requests. Even if you have our Trader plan and can make 100,000 requests per day, if you use a consumer (gmail.com) account, you'll only be able to make 20,000 urlfetch calls with your spreadsheet. Your urlfetch limit is set by Google and cannot be modified by Market Data.
 
 :::
 
@@ -33,7 +33,7 @@ There are a number of stratgies you can use to reduce your use of urlfetch calls
 
 ### Copy & Paste Values For Historical Data
 
-When you query Market Data for historical data, such as the price of a stock in the past, consider copying and using the _paste values_ option once the formula finishes its output. This delete the Market Data formula, but it will preserve the formula's output. 
+When you query Market Data for historical data, such as the price of a stock in the past, consider copying and using the _paste values_ option once the formula finishes its output. This deletes the Market Data formula, but it will preserve the formula's output. 
 
 There are a number of advantages to removing historical formulas and replacing them with the output:
 - It will prevent future repeat queries for the same historical data, preserving your urlfetch quota.
@@ -55,9 +55,14 @@ If you are typically updating your prices every 10 minutes, for example, conside
 
 Your urlfetch quota is shared between all your Google Workspace Add-ons. If you are using other add-ons that are also making urlfetch calls, you may burn through your quota very quickly. Some add-ons may also cause your spreadsheet to recalculate cells much more frequently than Google's default of once per hour. If you have 1000 Market Data formulas and another add-on is recalculating your sheet once every 3 minutes, you'll hit the urlfetch limit in an hour. 
 
-Unless you are 100% sure that your other add-ons don't cause excessive recalculation of your spreadsheet and don't make excessive urlfetch calls, consider uninstalling add-ons that are no longer in use.
+#### How Investigate Your Google Account's Add-ons, Scripts & Macros
+
+Use the following links to investigate what other scripts and Add-ons may be running in your Google account:
 
 - [Workspace Add-ons installed in your account](https://workspace.google.com/marketplace/myapps)
 - [Scripts authorized to run in your account](https://script.google.com/home/all)
 - [Log of scripts which are executing](https://script.google.com/home/executions) 
 
+#### Uninstall Unused Add-ons
+
+Unless you are 100% sure that your other add-ons don't cause excessive recalculation of your spreadsheet and don't make excessive urlfetch calls, consider uninstalling add-ons that are no longer in use.

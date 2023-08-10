@@ -1,0 +1,128 @@
+---
+title: Lookup
+sidebar_position: 1
+---
+
+Generate a properly formatted OCC option symbol based on the user's human-readable description of an option. This endpoint converts text such as "AAPL 7/26/23 $200 Call" to OCC option symbol format: AAPL230726C00200000. The user input must be URL-encoded.
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+## Endpoint
+
+    https://api.marketdata.app/v1/options/lookup/{userInput}
+
+#### Method
+
+    GET
+
+## Request Example
+
+```mdx-code-block
+<Tabs>
+<TabItem value="HTTP" label="HTTP" default>
+
+```
+
+**GET** [https://api.marketdata.app/v1/options/lookup/AAPL%207/26/2023%20200%20Call](https://api.marketdata.app/v1/options/lookup/AAPL%207/26/2023%20200%20Call)
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
+```
+
+```js title="app.js"
+fetch(
+  "https://api.marketdata.app/v1/options/lookup/AAPL%207/26/2023%20200%20Call"
+)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```
+
+```python title="app.py"
+import requests
+
+url = "https://api.marketdata.app/v1/options/lookup/AAPL%207/26/2023%20200%20Call"
+
+response = requests.request("GET", url)
+
+print(response.text)
+```
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
+
+## Response Example
+
+```json
+{
+  "s":"ok",
+  "optionSymbol":"AAPL230726C00200000"
+}
+```
+
+## Request Parameters
+
+```mdx-code-block
+<Tabs>
+<TabItem value="required" label="Required" default>
+
+- **userInput** `string`
+
+  The human-readable string input that contains (1) stock symbol (2) strike (3) expiration date (4) option side (i.e. put or call). This endpoint will translate the user's input into a valid OCC option symbol.
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
+## Response Attributes
+
+```mdx-code-block
+<Tabs>
+<TabItem value="Success" label="Success" default>
+
+```
+
+- **s** `string`
+
+  Status will always be `ok` when the OCC option symbol is successfully generated.
+
+- **optionSymbol** `string`
+
+  The generated OCC option symbol based on the user's input.
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="Error" label="Error">
+
+```
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
