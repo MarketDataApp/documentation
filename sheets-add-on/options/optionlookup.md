@@ -24,7 +24,7 @@ It is not necessary to know the exact date of the option expiration. The formula
 
     OPTIONLOOKUP("text")
 
-- **text** _(REQUIRED)_ Text containing (1) underlying symbol, (2) expiration date, (3) strike, (4) call or put. 
+- **text** _(REQUIRED)_ Text or 4 cell references containing (1) underlying symbol, (2) expiration date, (3) strike, (4) call or put. 
 
 ## Notes
 
