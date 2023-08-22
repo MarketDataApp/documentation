@@ -14,7 +14,7 @@ Some libraries are not prepared to handle HTTP 203 response codes as successful 
 :::
 
 - `200 OK` - The request was successfuly answered.
-- `203 NON-AUTHORITAVE INFORMATION` - The request was successful, but had to be routed to a backup data provider. You can treat this result the same as STATUS 200.
+- `203 NON-AUTHORITATIVE INFORMATION` - The request was successful, but it was served from our caching server. You can treat this result the same as STATUS 200.
 
 ## Client Errors (4xx)
 
