@@ -32,6 +32,8 @@ UptimeRobot offers a [JSON file](https://stats.uptimerobot.com/api/getMonitorLis
 curl -s "https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A" | \
 awk -F',' '/"monitorId":787721652/ || /"monitorId":790800599/ {getline; if($0 ~ /"statusClass":"success"/) print "Online"; else print "Offline"}'
 
+```
+
 ```mdx-code-block
 
 </TabItem>
