@@ -27,7 +27,7 @@ UptimeRobot offers a [JSON file](https://stats.uptimerobot.com/api/getMonitorLis
 <Tabs>
 <TabItem value="Bash" label="Bash" default>
 
-```
+```bash title="status.sh"
 
 curl -s "https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A" | \
 awk -F',' '/"monitorId":787721652/ || /"monitorId":790800599/ {getline; if($0 ~ /"statusClass":"success"/) print "Online"; else print "Offline"}'
@@ -39,7 +39,7 @@ awk -F',' '/"monitorId":787721652/ || /"monitorId":790800599/ {getline; if($0 ~ 
 
 ```
 
-```js title="app.js"
+```js title="status.js"
 const https = require('https');
 
 const url = 'https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A';
@@ -71,7 +71,7 @@ https.get(url, (response) => {
 
 ```
 
-```python title="app.py"
+```python title="status.py"
 # Importing the required library
 import requests
 
