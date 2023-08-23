@@ -1,16 +1,16 @@
 ---
-title: Rate Limits
+title: Rate Limiting
 sidebar_position: 3
 ---
 
-Different plans have specific rate limits.
+Different plans have specific rate limits, with most plans enforcing a daily rate limit while our Commercial Plan uses a per minute rate limit.
 
 ## Rate Limits By Plan
 
 - **Free Forever Plan:** 100 requests/prices per day.
 - **Starter Plan:** 1000 requests/prices per day.
 - **Trader Plan:** 100,000 requests/prices per day.
-- **Commercial Plan:** 1000 requests/prices per second (burstable to a max of 60,000 prices per minute).
+- **Commercial Plan:** Advertised as 1000 requests/prices per second (measured as 60,000 prices per minute).
 
 ## Headers to Manage Rate Limit
 We provide the following headers in our responses to help you manage the rate limit:
