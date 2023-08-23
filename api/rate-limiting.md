@@ -3,7 +3,7 @@ title: Rate Limiting
 sidebar_position: 3
 ---
 
-Different plans have specific rate limits, with most plans enforcing a daily rate limit while our Commercial Plan uses a per minute rate limit.
+Different plans have specific rate limits, with most plans enforcing a daily rate limit while our Commercial Plan uses a per minute rate limit. Normally each API call consumes a single request. However, if the response includes more than a single symbol, it can consume multiple requests.
 
 ## Rate Limits By Plan
 
@@ -22,7 +22,9 @@ We provide the following headers in our responses to help you manage the rate li
 
 ## Specific Rules
 - Each request consumes a minimum of 1 request.
-- Requests may consume more than 1 request if they include more than 1 symbol (e.g., OPTIONCHAIN endpoint).
+- Only status 200/203 responses consume requests.
+- Requests may consume more than 1 request if the response include prices for more than 1 symbol (e.g., an OPTIONCHAIN endpoint).
+- Requests that include more than one symbol but do not include the bid, ask, or mid columns **do not** consume prices and count as a single request.
 - NULL responses are not counted.
 - Error responses are not counted.
 - Certain free trial symbols like AAPL stocks, AAPL options, VIX index do not consume prices or requests.
