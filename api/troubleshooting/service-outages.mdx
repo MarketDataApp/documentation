@@ -1,0 +1,109 @@
+---
+title: Service Outages
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Market Data, as stated in our [terms of service](https://www.marketdata.app/terms/), makes no representation as to the reliability, availability, or timeliness of our service. This is not just a standard disclaimer. We have not yet been able to achieve 99.9% relability, which is a metric we consider a minimum level of reliability that is needed to operate without a backup provider.
+
+This is why we highly encourage users with mission critical applications to have a backup provider in place. Market Data is a low cost provider and we have determined that cost, rather than reliability, is our key driver. While we hope to achieve 99.9% relability in the future, our focus will remain on keeping down costs and avoiding price increases.
+
+## How To Confirm Downtime
+
+We utilize the service UptimeRobot to independently monitor our real-time and historical APIs and the results of this monitoring is made available to the public at our [status page](https://stats.uptimerobot.com/6Kv3zIow0A).
+
+- Status Page: [https://stats.uptimerobot.com/6Kv3zIow0A](https://stats.uptimerobot.com/6Kv3zIow0A)
+
+### Confirm Downtime Programmatically
+
+UptimeRobot offers a [JSON file](https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A) that is updated every 5 minutes with the uptime status of each of our APIs. If you need to monitor the uptime status of our API, we encourage you to use this file.
+
+- JSON Status File: [https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A](https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A)
+
+
+```mdx-code-block
+<Tabs>
+<TabItem value="Bash" label="Bash" default>
+
+```bash title="status.sh"
+
+curl -s "https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A" | \
+awk -F',' '/"monitorId":787721652/ || /"monitorId":790800599/ {getline; if($0 ~ /"statusClass":"success"/) print "Online"; else print "Offline"}'
+
+```
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
+```
+
+```js title="status.js"
+const https = require('https');
+
+const url = 'https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A';
+
+https.get(url, (response) => {
+  let data = '';
+
+  response.on('data', (chunk) => {
+    data += chunk;
+  });
+
+  response.on('end', () => {
+    const jsonData = JSON.parse(data);
+    jsonData.psp.monitors.forEach((monitor) => {
+      if (monitor.monitorId === 787721652 || monitor.monitorId === 790800599) {
+        const status = monitor.statusClass === 'success' ? 'Online' : 'Offline';
+        console.log(`${monitor.name}: ${status}`);
+      }
+    });
+  });
+}).on('error', (err) => {
+  console.log('Error:', err.message);
+});
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```
+
+```python title="status.py"
+# Importing the required library
+import requests
+
+# URL to the JSON data
+url = "https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A"
+json_data = requests.get(url).json()
+
+# Monitor IDs for Historical Data API and Real-time Data API
+historical_data_api_id = 787721652
+real_time_data_api_id = 790800599
+
+# Function to check the status of the given monitor ID
+def check_api_status(monitor_id):
+    for monitor in json_data["psp"]["monitors"]:
+        if monitor["monitorId"] == monitor_id:
+            return "Online" if monitor["statusClass"] == "success" else "Offline"
+
+# Checking the status of Historical Data API and Real-time Data API
+historical_status = check_api_status(historical_data_api_id)
+real_time_status = check_api_status(real_time_data_api_id)
+
+historical_status, real_time_status
+```
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
+
+## What To Do During Downtime
+
+It is not necessary to advise us of downtime or service outages. We monitor the status of our systems and we investigate and respond to all service outages. During Market Data service outages, we encourage you to switch your systems over to your back-up provider until our systems come back online.
