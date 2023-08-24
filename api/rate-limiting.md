@@ -8,7 +8,7 @@ Different plans have specific rate limits, with most plans enforcing a daily rat
 ## Rate Limits By Plan
 
 - **Free Forever Plan:** 100 requests/prices per day.
-- **Starter Plan:** 1000 requests/prices per day.
+- **Starter Plan:** 10,000 requests/prices per day.
 - **Trader Plan:** 100,000 requests/prices per day.
 - **Commercial Plan:** Advertised as 1000 requests/prices per second (measured as 60,000 prices per minute).
 
