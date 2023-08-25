@@ -20,10 +20,10 @@ The rate limit is a hard limit. Once the limit has been reached, you will no lon
 - **Commercial Plan:** Advertised as 1000 requests/prices per second, but measured each minute. (e.g. 60,000 per minute)
 
 ## Requests vs Prices
-Each time you make a request to the API, the system will increase your counter. Normally each successful response will increase your counter by 1 and each call to our API will be counted once. However, **if you request prices for multiple symbols in a single API call using the option chain endpoint, a request will be used for each symbol that is included in the response**. 
+Each time you make a request to the API, the system will increase your counter. Normally each successful response will increase your counter by 1 and each call to our API will be counted once. However, **if you request prices for multiple symbols in a single API call using the option chain endpoint, a request will be used for each option symbol that is included in the response**. 
 
 :::caution 
-For users working with options, take care before repeatly requesting quotes for an entire option chain. Each option symbol included in the response will consume a request. If you were to download the entire SPX option chain (which has 20,000+ option symbols), you would exhaust your request limit very quickly. Use our extensive option chain filtering parameters to request only the strikes/expirations you need. 
+For users working with options, take care before repeatly requesting quotes for an entire option chain. **Each option symbol included in the response will consume a request**. If you were to download the entire SPX option chain (which has 20,000+ option symbols), you would exhaust your request limit very quickly. Use our extensive option chain filtering parameters to request only the strikes/expirations you need. 
 :::
 
 ## Headers to Manage Rate Limit
