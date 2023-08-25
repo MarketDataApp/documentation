@@ -11,15 +11,15 @@ We enforce rate limits to ensure our API remains accessible and efficient for al
 
 Different plans have specific rate limits, with most plans enforcing a daily rate limit while our Commercial Plan uses a per minute rate limit.
 
-- **Free Forever Plan:** 100 requests/prices per day.
-- **Starter Plan:** 10,000 requests/prices per day.
-- **Trader Plan:** 100,000 requests/prices per day.
-- **Commercial Plan:** Advertised as 1000 requests/prices per second, but measured each minute. (e.g. 60,000 per minute)
-
 |                  | Free Forever | Starter   | Trader    | Commercial Plans |
 |------------------|--------------|-----------|-----------|------------------|
 | Daily Limit      | 100          | 10,000    | 100,000   | No Limit         |
 | Per Minute Limit | No Limit     | No Limit  | No Limit  | 60,000           |
+
+- **Free Forever Plan:** 100 requests/prices per day.
+- **Starter Plan:** 10,000 requests/prices per day.
+- **Trader Plan:** 100,000 requests/prices per day.
+- **Commercial Plan:** Advertised as 1000 requests/prices per second, but measured each minute. (e.g. 60,000 per minute)
 
 The usage counter for all plans with a daily limit are reset at 9:30 AM Eastern Time (NYSE opening bell).
 
