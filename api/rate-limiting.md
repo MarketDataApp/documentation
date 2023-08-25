@@ -30,7 +30,7 @@ Each time you make a request to the API, the system will increase your counter. 
 For users working with options, take care before repeatly requesting quotes for an entire option chain. **Each option symbol included in the response will consume a request**. If you were to download the entire SPX option chain (which has 20,000+ option symbols), you would exhaust your request limit very quickly. Use our extensive option chain filtering parameters to request only the strikes/expirations you need. 
 :::
 
-## Headers to Manage The Rate Limit
+## Headers to Manage the Rate Limit
 We provide the following headers in our responses to help you manage the rate limit and throttle your applications when necessary:
 
 - `X-Api-RateLimit-Limit`: The maximum number of requests you're permitted to make (per day for Free/Starter/Trader plans or per minute for commercial users).
