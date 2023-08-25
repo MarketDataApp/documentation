@@ -3,7 +3,7 @@ title: Rate Limiting
 sidebar_position: 3
 ---
 
-We enforce rate limits to ensure our API remains accessible and efficient for all users. These limits are strategically designed to offer generous functionality without enabling misuse. Often, users can navigate around a rate limit by utilizing alternative API methods or making the most of the diverse filters we provide (e.g., instead of retrieving an entire option chain, apply specific filters to narrow down the results).
+We enforce rate limits to ensure our API remains accessible and efficient for all users. These limits are strategically designed to offer generous functionality without enabling misuse. Normally each API call consumes a single request. However, **if the response includes more than a single symbol, it can consume multiple requests**. Often, users can navigate around a rate limit by utilizing alternative API methods or making the most of the diverse filters we provide (e.g., instead of retrieving an entire option chain, apply specific filters to narrow down the results).
 
 **The rate limit is a hard limit. Once the limit has been reached, you will no longer be able to make requests until the request counter resets.** Requests in excess of the rate limit will generate 429 responses.
 
