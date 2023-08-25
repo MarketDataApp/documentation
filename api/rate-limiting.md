@@ -21,6 +21,8 @@ Different plans have specific rate limits, with most plans enforcing a daily rat
 | Daily Limit      | 100          | 10,000    | 100,000   | No Limit         |
 | Per Minute Limit | No Limit     | No Limit  | No Limit  | 60,000           |
 
+The usage counter for all plans with a daily limit are reset at 9:30 AM Eastern Time (NYSE opening bell).
+
 ## Requests vs Prices
 Each time you make a request to the API, the system will increase your counter. Normally each successful response will increase your counter by 1 and each call to our API will be counted once. However, **if you request prices for multiple symbols in a single API call using the option chain endpoint, a request will be used for each option symbol that is included in the response**. 
 
@@ -43,4 +45,4 @@ We provide the following headers in our responses to help you manage the rate li
 - Error responses are not counted.
 - Responses may consume more than 1 request if the response includes prices for more than 1 symbol (e.g., an OPTIONCHAIN endpoint).
 - Responses that include more than one symbol, but do not include the bid, ask, or mid columns **do not** consume prices and are counted as a single request.
-- Certain free trial symbols like AAPL stocks, AAPL options, VIX index do not consume prices or requests.
+- Certain free trial symbols like AAPL stock, AAPL options, or the VIX index do not consume requests.
