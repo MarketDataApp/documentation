@@ -3,7 +3,7 @@ title: Rate Limiting
 sidebar_position: 3
 ---
 
-Different plans have specific rate limits, with most plans enforcing a daily rate limit while our Commercial Plan uses a per minute rate limit. Normally each API call consumes a single request. However, if the response includes more than a single symbol, it can consume multiple requests.
+Different plans have specific rate limits, with most plans enforcing a daily rate limit while our Commercial Plan uses a per minute rate limit. Normally each API call consumes a single request. However, **if the response includes more than a single symbol, it can consume multiple requests**.
 
 ## Rate Limits By Plan
 
