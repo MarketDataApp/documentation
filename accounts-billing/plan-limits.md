@@ -28,7 +28,7 @@ Most users don't run into trouble with our limits. However, if our standard plan
 Each time you or our Add-on makes a request to the API, the system will increase your daily request counter. Normally prices and requests are interchangable. Each call to our API will normally be counted as a single request. However, if you request prices for multiple symbols in a single API call using the option chain endpoint, a request will be used for each symbol that is included in the response. Once this limit has been reached, you will no longer be able to make requests until the next day.
 
 :::caution
-For users working with options, take care before repeatly requesting quotes for an entire option chain. Each option symbol you request will consume a request. If you were to download the entire SPX option chain (which has 6200+ option symbols), you would exchaust your daily request limit very quickly. Use our extensive option chain filtering parameters to request only the prices you need.
+For users working with options, take care before repeatly requesting quotes for an entire option chain. Each option symbol you request will consume a request. If you were to download the entire SPX option chain (which has 20,000+ option symbols), you would exchaust your daily request limit very quickly. Use our extensive option chain filtering parameters to request only the prices you need.
 :::
 
 #### Throttling
