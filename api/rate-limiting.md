@@ -46,3 +46,8 @@ We provide the following headers in our responses to help you manage the rate li
 - Responses may consume more than 1 request if the response includes prices for more than 1 symbol (e.g., an OPTIONCHAIN endpoint).
 - Responses that include more than one symbol, but do not include the bid, ask, or mid columns **do not** consume prices and are counted as a single request.
 - Certain free trial symbols like AAPL stock, AAPL options, or the VIX index do not consume requests.
+
+## Strategies To Avoid Rate Limiting
+
+- Exclude the bid, ask, mid symbols from your option chain requests if the current price is not needed.
+- Use the extensive option chain filters such as `strikeLimit` to exclude unnecessary strikes from your requests.
