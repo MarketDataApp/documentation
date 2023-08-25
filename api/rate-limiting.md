@@ -9,8 +9,8 @@ Different plans have specific rate limits, with most plans enforcing a daily rat
 
 |                       | Free Forever | Starter   | Trader    | Commercial Plans |
 |-----------------------|--------------|-----------|-----------|------------------|
-| Daily Requests        | 100          | 10000     | 100000    | No Limit         |
-| Requests Per Minute   | No Limit     | No Limit  | No Limit  | 60000            |
+| Daily Requests        | 100          | 10,000     | 100,000    | No Limit         |
+| Requests Per Minute   | No Limit     | No Limit  | No Limit  | 60,000            |
 
 - **Free Forever Plan:** 100 requests/prices per day.
 - **Starter Plan:** 10,000 requests/prices per day.
