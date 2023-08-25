@@ -9,10 +9,10 @@ The rate limit is a hard limit. Once the limit has been reached, you will no lon
 
 ## Rate Limits By Plan
 
-| Requests / Prices     | Free Forever | Starter   | Trader    | Commercial Plans |
-|-----------------------|--------------|-----------|-----------|------------------|
-| Daily Limit           | 100          | 10,000    | 100,000   | No Limit         |
-| Minute Limit          | No Limit     | No Limit  | No Limit  | 60,000           |
+|                  | Free Forever | Starter   | Trader    | Commercial Plans |
+|------------------|--------------|-----------|-----------|------------------|
+| Daily Limit      | 100          | 10,000    | 100,000   | No Limit         |
+| Per Minute Limit | No Limit     | No Limit  | No Limit  | 60,000           |
 
 - **Free Forever Plan:** 100 requests/prices per day.
 - **Starter Plan:** 10,000 requests/prices per day.
