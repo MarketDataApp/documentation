@@ -3,21 +3,23 @@ title: Rate Limiting
 sidebar_position: 3
 ---
 
-Different plans have specific rate limits, with most plans enforcing a daily rate limit while our Commercial Plan uses a per minute rate limit. Normally each API call consumes a single request. However, **if the response includes more than a single symbol, it can consume multiple requests**. 
+We enforce rate limits to ensure our API remains accessible and efficient for all users. These limits are strategically designed to offer generous functionality without enabling misuse. Often, users can navigate around a rate limit by utilizing alternative API methods or making the most of the diverse filters we provide (e.g., instead of retrieving an entire option chain, apply specific filters to narrow down the results).
 
-The rate limit is a hard limit. Once the limit has been reached, you will no longer be able to make requests until the request counter resets. Requests in excess of the rate limit will generate 429 responses.
+**The rate limit is a hard limit. Once the limit has been reached, you will no longer be able to make requests until the request counter resets.** Requests in excess of the rate limit will generate 429 responses.
 
 ## Rate Limits By Plan
 
-|                  | Free Forever | Starter   | Trader    | Commercial Plans |
-|------------------|--------------|-----------|-----------|------------------|
-| Daily Limit      | 100          | 10,000    | 100,000   | No Limit         |
-| Per Minute Limit | No Limit     | No Limit  | No Limit  | 60,000           |
+Different plans have specific rate limits, with most plans enforcing a daily rate limit while our Commercial Plan uses a per minute rate limit.
 
 - **Free Forever Plan:** 100 requests/prices per day.
 - **Starter Plan:** 10,000 requests/prices per day.
 - **Trader Plan:** 100,000 requests/prices per day.
 - **Commercial Plan:** Advertised as 1000 requests/prices per second, but measured each minute. (e.g. 60,000 per minute)
+
+|                  | Free Forever | Starter   | Trader    | Commercial Plans |
+|------------------|--------------|-----------|-----------|------------------|
+| Daily Limit      | 100          | 10,000    | 100,000   | No Limit         |
+| Per Minute Limit | No Limit     | No Limit  | No Limit  | 60,000           |
 
 ## Requests vs Prices
 Each time you make a request to the API, the system will increase your counter. Normally each successful response will increase your counter by 1 and each call to our API will be counted once. However, **if you request prices for multiple symbols in a single API call using the option chain endpoint, a request will be used for each option symbol that is included in the response**. 
