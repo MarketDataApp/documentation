@@ -16,10 +16,13 @@ Different plans have specific rate limits, with most plans enforcing a daily rat
 | Daily Limit      | 100          | 10,000    | 100,000   | No Limit         |
 | Per Minute Limit | No Limit     | No Limit  | No Limit  | 60,000           |
 
+
+#### Summary
+
 - **Free Forever Plan:** 100 requests/prices per day.
 - **Starter Plan:** 10,000 requests/prices per day.
 - **Trader Plan:** 100,000 requests/prices per day.
-- **Commercial Plan:** Advertised as 1000 requests/prices per second, but measured each minute. (e.g. 60,000 per minute)
+- **Commercial Plan:** 60,000 requests/prices per minute.
 
 The usage counter for all plans with a daily limit are reset at 9:30 AM Eastern Time (NYSE opening bell).
 
@@ -43,7 +46,7 @@ We provide the following headers in our responses to help you manage the rate li
 - Only status 200/203 responses consume requests.
 - NULL responses are not counted.
 - Error responses are not counted.
-- Responses may consume more than 1 request if the response includes prices for more than 1 symbol (e.g., an OPTIONCHAIN endpoint).
+- Responses may consume more than 1 request if the response includes prices for more than 1 symbol (e.g. an OPTIONCHAIN endpoint).
 - Responses that include more than one symbol, but do not include the bid, ask, or mid columns **do not** consume prices and are counted as a single request.
 - Certain free trial symbols like AAPL stock, AAPL options, or the VIX index do not consume requests.
 

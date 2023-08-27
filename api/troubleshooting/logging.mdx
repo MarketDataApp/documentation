@@ -1,0 +1,103 @@
+---
+title: Logging
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+## Why Logging is Important
+
+Logging our API's responses is crucial for monitoring the behavior of your application and troubleshooting problems, either with our API or your usage of the API.
+
+### What Should Be Logged
+
+Market Data responds to successful requests with either a 200 or 203 status code. Therefore, we recommend you log any response that doesn't have a 2xx status code. Successful responses may be logged if you wish, but normally this is not necessary.
+
+When logging errors, the log should include the exact request made, Market Data's response, and the CF-Ray header.
+
+## Logging Examples
+
+```mdx-code-block
+<Tabs>
+<TabItem value="NodeJS" label="NodeJS">
+
+```
+
+```js title="logger.js"
+const axios = require('axios');
+const fs = require('fs');
+
+// Make the API request
+axios.get('https://api.marketdata.app/v1/your_endpoint_here')
+  .then(response => {
+    // Do nothing for successful responses
+  })
+  .catch(error => {
+    if (error.response.status !== 200 && error.response.status !== 203) {
+      const logData = {
+        request: error.config.method.toUpperCase() + ' ' + error.config.url,
+        response: error.response.data,
+        cfRayHeader: error.response.headers['cf-ray'] || 'Not available'
+      };
+      // Save to a logfile
+      fs.appendFileSync('api_error_log.json', JSON.stringify(logData) + '\n');
+    }
+  });
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```
+
+```python title="logger.py"
+import requests
+import json
+
+# Make the API request
+response = requests.get("https://api.marketdata.app/v1/any_endpoint_here")
+
+# Check if the response is not 200 or 203
+if response.status_code not in [200, 203]:
+    log_data = {
+        "request": response.request.method + " " + response.request.url,
+        "response": response.content.decode("utf-8"),
+        "cf_ray_header": response.headers.get("CF-Ray", "Not available")
+    }
+    # Save to a logfile
+    with open("api_error_log.json", "a") as logfile:
+        logfile.write(json.dumps(log_data) + "\n")
+```
+
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
+
+## The CF-Ray Header
+
+### What is the CF-Ray Header
+
+The CF-Ray header (otherwise known as a Ray ID) is a hashed value that encodes information about the Cloudflare data center and the request. Every request that travels through the Cloudflare network is assigned a unique Ray ID for tracking.
+
+### Why It's Important
+
+Since Market Data operates on the Cloudflare network, we log each of our API responses with Cloudflare's Ray ID. This allows us to have a unique identifier for each and every API request made to our systems. Additionally, we can also trace all requests through the Cloudflare network from our servers to your application. 
+
+:::tip
+When opening a ticket at the customer helpdesk, if a Ray ID is provided to our support staff, we'll be able to identify the exact request you made and find why it produced an error.
+:::
+
+## Opening a Support Ticket
+
+### When to Open a Ticket
+
+Open a ticket if you experience persistent issues or errors that cannot be resolved through logging. For example, if you are making properly formatted requests to our systems and you are getting INTERNAL SERVER ERROR messages.
+
+### What to Include
+
+Include the log data and the CF-Ray header value for faster resolution. By attaching your log data to your support ticket, it becomes much easier for our staff to understand and solve your ticket.
