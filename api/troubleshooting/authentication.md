@@ -16,7 +16,7 @@ Authentication issues usually arise due to incorrect headers or omission of the 
 1. **Test the Token with URL Parameter Authentication**
    
    ```bash
-   curl -X GET "https://api.marketdata.app/v1/stocks/quotes/AADI/?token=YOUR_API_KEY"
+   curl -X GET "https://api.marketdata.app/v1/stocks/quotes/AADI/?token=YOUR_TOKEN"
    ```
 
 2. **Inspect Request Headers**
