@@ -32,7 +32,7 @@ Authentication issues usually arise due to incorrect headers or omission of the 
    ```
 
 :::tip
-If the issue persists, include the log data and the Ray ID when you submit a helpdesk ticket. This will help our support team assist you more effectively.
+If the issue persists, include the log data and the Ray ID (listed in the CF-Ray header) when you submit a helpdesk ticket. This will help our support team locate your specific request in our server logs and assist you more effectively.
 :::
 
 ## Opening a Support Ticket
