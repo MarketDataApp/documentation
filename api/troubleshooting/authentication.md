@@ -22,13 +22,13 @@ Authentication issues usually arise due to incorrect headers or omission of the 
 2. **Inspect Request Headers**
    
    ```bash
-   curl -X GET "https://httpbin.org/headers" -H "Authorization: Bearer YOUR_API_KEY"
+   curl -X GET "https://httpbin.org/headers" -H "Authorization: Token YOUR_TOKEN"
    ```
 
 3. **Log Response Headers and Submit a Helpdesk Ticket**
    
    ```bash
-   curl -X GET "https://api.marketdata.app/v1/stocks/quotes/AADI/" -H "Authorization: Bearer YOUR_API_KEY" -i
+   curl -X GET "https://api.marketdata.app/v1/stocks/quotes/AADI/" -H "Authorization: Token YOUR_TOKEN" -i
    ```
 
 :::tip
