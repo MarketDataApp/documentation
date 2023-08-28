@@ -1,9 +1,7 @@
 ---
-title: Authentication Troubleshooting
+title: Authentication
 sidebar_position: 1
 ---
-
-## Why Troubleshooting Authentication is Important
 
 Troubleshooting authentication issues is crucial for ensuring uninterrupted access to our API services. Most authentication issues are related to header-based authentication, and this guide aims to provide you with steps to resolve common problems. Even though it is more complex to set-up, we encourage all users to take the extra time required to configure header-based authentication for our API, as this is the most secure method of authentication.
 
