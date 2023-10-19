@@ -20,7 +20,15 @@ All Market Data formulas support advanced date-handling features to allow you to
 
 ## Relative Dates and Times
 
-Relative dates allow Market Data formulas to continually modify the date sent to the formula based on the current date. The only keywords currently supported at present are `today` and `yesterday`, but additional keywords and key phrases are planeed for the future.
+Relative dates allow Market Data formulas to continually modify the date sent to the formula based on the current date. The only keywords currently supported at present are `today`, `yesterday`, and `ago`, but additional keywords and key phrases are planeed for the future.
+
+- **Time-based Parameters** Time keyphrases let you select a specific time of day, relative to the current time. Time-based parameters are typically used to model intraday stock movements.
+
+  - `now` The current time. Use this keyword to select the current open candle, for example. This is the same as the Google Sheets built-in formula `now()`. Please note that due to technical limitations by Google Sheets , `now()` cannot be embedded in or refrenced by any Market Data formula. Use the `now` relative keyword as a replacement.
+ 
+  - `[number] minutes ago` The `minutes ago` keyword lets you select a relative time, _n_ minutes before the current time. For example, if the time is 10:00 AM then `30 minutes ago` would refer to 9:30 AM of the current day.
+    
+  - `[number] hours ago` The `hours ago` keyword lets you select a relative time, _n_ hours before the current time. For example, if the time is 4:00 PM then `4 hours ago` would refer to 12:00 PM of the current day.
 
 - **Daily Parameters** Daily keyphrases let you select a specific day, relative to the current day.
 
@@ -28,17 +36,25 @@ Relative dates allow Market Data formulas to continually modify the date sent to
 
   - `yesterday` Yesterday's date. The same as Sheets formula `today()-1`.
 
-- **Time-based Parameters** Time keyphrases let you select a specific time of day, relative to the current time. Time-based parameters are typically used to model intraday stock movements.
+  - `[number] days ago` The `days ago` keyword lets you select a relative day, _n_ days before the current date. For example, if today is January 5, 2024, then using `2 days ago` would select the date January 3, 2024.
+ 
+- **Weekly Parameters** Weekly keyphrases let you select a day of the week in the current, previous, or following week.
 
-  - `now` The current time. Use this keyword to select the current open candle, for example. This is the same as the Google Sheets built-in formula `now()`. Please note that due to Google Sheets limitations, `now()` cannot be used in any Market Data formula. Use the `now` relative keyword as a replacement.
+  - `[number] weeks ago` The `weeks ago` keyword lets you select a relative week, _n_ weeks before the current date. For example, if today is January 1, 2024, then using `2 weeks ago` would select the date January 3, 2024.
+
+- **Monthly Dates** Monthly keyphrases let you select a specific day of a specific month.
+
+  - `[number] months ago` The months ago keyword lets you select a relative date, _n_ months before the current date. For example, if today is January 5, 2024, then using `3 months ago` would select the date October 5, 2023.
+
+- **Yearly Dates** Yearly keyphrases let you select a specific day of in the current, previous, or following year.
+
+  - `[number] years ago` The years ago keyword lets you select a relative date, 365 days before the current date. For example, if today is January 5, 2024, then using `2 years ago` would select the date January 5, 2022.
 
 :::caution Coming Soon
 
 The following relative date parameters are planned for the future and have not yet been implemented.
 
 :::
-
-  - `[number] days ago` The days ago keyword lets you select a relative day, n days before the current date. For example, if today is January 5, 2022, then using `2 weeks ago` would select the date January 3, 2022.
 
 - **Time-based Parameters** Time keyphrases let you select a specific time of day, relative to the current time. Time-based parameters are typically used to model intraday stock movements.
 
@@ -50,8 +66,6 @@ The following relative date parameters are planned for the future and have not y
 
   - `[number] [minutes|hours] after [open|close]` These after keyword lets you select a relative time after market open or close. For example `1 hour after open` would select the time 10:30 AM ET if you are trading a stock on a U.S. exchange.
 
-  - `[number] [minutes|hours] ago` The minutes ago or hours ago keywphreases allow you select a relative time before the current time. For example, if right now is 11:00 AM, then using `1 hour ago` would select the time 10:00 AM.
-
 - **Weekly Parameters** Weekly keyphrases let you select a day of the week in the current, previous, or following week.
 
   - `this [day of the week]` Works the same way as specifying the day without adding _this_. The day in the _current_ week. For example, if today is Tuesday and the expression is `this Monday`, the date returned would be yesterday. If the expression were `this Wednesday` the date returned would be tomorrow. The word _this_ is optional. If it is omitted, the keyword will still return the date in the current week that corresponds with the day mentioned.
@@ -59,8 +73,6 @@ The following relative date parameters are planned for the future and have not y
   - `last [day of the week]` The day in the _previous_ week. For example, if today is Tuesday and the expression used is `last Monday`, it would not refer to the Monday that occurred yesterday, but the Monday 8 days prior that ocurred in the previous week.
 
   - `next [day of the week]` The day in the _following_ week. For example, if today is Monday and the expression is `next Tuesday` it would not refer to tomorrow, but the Tuesday that ocurrs 8 days from now.
-
-  - `[number] weeks ago` The weeks ago keyword lets you select a relative date, n weeks before the current date. For example, if today is January 5, 2022, then using `2 weeks ago` would select the date December 22, 2021.
 
 - **Monthly Dates** Monthly keyphrases let you select a specific day of a specific month.
 
@@ -78,15 +90,11 @@ The following relative date parameters are planned for the future and have not y
 
   - `last [day of the week] in [month` - Selects the last day of the week in a specific month. For example, Memorial Day could be selected by using the keyphrase `last Monday in May`.
 
-  - `[number] months ago` The months ago keyword lets you select a relative date, n months before the current date. For example, if today is January 5, 2022, then using `3 months ago` would select the date October 5, 2021.
-
 - **Yearly Dates** Yearly keyphrases let you select a specific day of in the current, previous, or following year.
 
   - `[month] [number]` A specific date in the current year. For example `Feburary 18` would return February 18 of the current year.
 
   - `[month] [number] [this|last|next] year` A specific date in the current, previous, or following year. For example, if today was Dec 31, 2022, `Feburary 18 next year` would return February 18, 2023.
-
-  - `[number] years ago` The years ago keyword lets you select a relative date, 365 days before the current date. For example, if today is January 5, 2022, then using `2 years ago` would select the date January 5, 2020.
 
 ## Option Expiration Dates
 
