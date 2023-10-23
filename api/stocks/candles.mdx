@@ -152,18 +152,17 @@ print(response2.text)
 
   Use to specify the country of the exchange (not the country of the company) in conjunction with the symbol argument. This argument is useful when you know the ticker symbol and the country of the exchange, but not the exchange code. Use the two digit ISO 3166 country code. If no country is specified, US exchanges will be assumed.
 
-:::caution
-
-Adjusted data is planned for the future, but not yet implemented. All data is currently returned unadjusted.
-
-:::
-
-
 - **adjustsplits** `boolean`
 
   Adjust historical data for for historical splits and reverse splits. Market Data uses the CRSP methodology for adjustment.
   Daily candles default: `true`.
   Intraday candles default: `false`.
+
+:::caution
+
+Adjusted dividend data is planned for the future, but not yet implemented. All data is currently returned unadjusted for dividends.
+
+:::
 
 - **adjustdividends** `boolean`
 
