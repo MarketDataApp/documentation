@@ -15,7 +15,7 @@ When submitting your token in a URL, your token is exposed in server logs, cache
 
 ## Use Example
 
-    /profile?symbol=AAPL&token=demo
+    https://api.marketdata.app/v1/stocks/quotes/SPY/?token=put-your-token-here
 
 ## Values
 
