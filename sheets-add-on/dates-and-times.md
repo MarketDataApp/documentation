@@ -20,7 +20,7 @@ All Market Data formulas support advanced date-handling features to allow you to
 
 ## Relative Dates and Times
 
-Relative dates allow Market Data formulas to continually modify the date sent to the formula based on the current date. The only keywords currently supported at present are `today`, `yesterday`, and `ago`, but additional keywords and key phrases are planeed for the future.
+Relative dates allow Market Data formulas to continually modify the date sent to the formula based on the current date. We have a lot of relative date keywords supported already and quite a few more planned for the future, so keep an eye out on this section for continual improvements to this feature.
 
 - **Time-based Parameters** Time keyphrases let you select a specific time of day, relative to the current time. Time-based parameters are typically used to model intraday stock movements.
 
