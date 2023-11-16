@@ -175,14 +175,14 @@ The `from` and `to` parameters are not supported for real-time quotes. If you ar
 
 - **delta** `number`
 
-:::info
-Filter strikes using the aboslulte value of the delta. The values used will always return both sides of the chain (e.g. puts & calls). This means you must filter using `side` to exclude puts or calls. Delta cannot be used to filter the side of the chain, only the strikes.
-:::
-
   - Limit the option chain to a single strike closest to the `delta` provided. (e.g. `.50`)
   - Limit the option chain to a specific set of deltas (e.g. `.60,.30`)
   - Limit the option chain to an open interval of strikes using a logical expression (e.g. `>.50`)
   - Limit the option chain to a closed interval of strikes by specifying both endpoints. (e.g. `.30-.60`)
+
+  :::tip
+  Filter strikes using the aboslulte value of the delta. The values used will always return both sides of the chain (e.g. puts & calls). This means you must filter using `side` to exclude puts or calls. Delta cannot be used to filter the side of the chain, only the strikes.
+  :::
 
 - **side** `string`
 
