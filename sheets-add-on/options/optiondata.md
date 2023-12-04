@@ -9,7 +9,7 @@ Fetches a current or historical option quote from Market Data.
 
     OPTIONDATA("AAPL250117C00150000")
     OPTIONDATA("AAPL250117C00150000", "bid")
-    OPTIONDATA("AAPL250117C00150000", "bid,ask", "1/1/2021", "1/31/2021")
+    OPTIONDATA("AAPL250117C00150000", "date,bid,ask", "9/1/2022", "1/31/2023")
     OPTIONDATA("AAPL250117C00150000", "all", TODAY()-30, 30)
 
 ## Syntax
