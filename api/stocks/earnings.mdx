@@ -1,0 +1,234 @@
+---
+title: Earnings
+sidebar_position: 3
+---
+
+Get historical earnings per share data or a future earnings calendar for a stock.
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+## Endpoint
+
+:::info Endpoint
+https://api.marketdata.app/v1/stocks/earnings/{symbol}/
+:::
+
+#### Method
+
+    GET
+
+## Request Example
+
+```mdx-code-block
+<Tabs>
+<TabItem value="HTTP" label="HTTP" default>
+
+```
+
+**GET** [https://api.marketdata.app/v1/stocks/earnings/AAPL/](https://api.marketdata.app/v1/stocks/earnings/AAPL/)
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
+```
+
+```js title="app.js"
+fetch(
+  "https://api.marketdata.app/v1/stocks/earnings/AAPL/"
+)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```
+
+```python title="app.py"
+import requests
+
+url = "https://api.marketdata.app/v1/stocks/earnings/AAPL/"
+
+response = requests.request("GET", url)
+
+print(response.text)
+```
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
+
+## Response Example
+
+```json
+{
+  "s":"ok",
+  "symbol": "AAPL",
+  "fiscalYear": 2023
+  "fiscalQuarter": 1
+  "date": "2022-12-31"
+  "reportDate": "2023-02-02",
+  "reportTime": "before market open",
+  "currency": "USD",
+  "reportedEPS": 1.88,
+  "estimatedEPS": 1.94,
+  "surpriseEPS": -0.06,
+  "surpriseEPSpct": -3.0928
+  "updated": 1701690000
+}
+```
+
+## Request Parameters
+
+```mdx-code-block
+<Tabs>
+<TabItem value="required" label="Required" default>
+
+```
+
+
+- **symbol** `string`
+
+  The company's ticker symbol. If no exchange is specified, by default a US exchange will be assumed. You may embed the exchange in the ticker symbol using the Yahoo Finance or TradingView formats. A company or securities identifier can also be used instead of a ticker symbol.
+
+  - Ticker Formats: (`TICKER`, `TICKER.EX`, `EXCHANGE:TICKER`)
+  - Company Identifiers: (`CIK`, `LEI`)
+  - Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Optional" label="Optional">
+```
+
+- **from** `date`
+
+  The earliest earnings report to include in the output. If you use countback, `from` is not required. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+
+- **to** `date`
+
+  The latest earnings report to include in the output. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+
+- **countback** `number`
+
+  Countback will fetch a specific number of earnings reports before `to`. If you use `from`, countback is not required.
+
+- **date** `date`
+
+  Retrieve a specific earnings report by date. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+
+- **report** `datekey`
+
+  Retrieve a specific earnings report by date and quarter. Example: `2023-Q4`. This allows you to retrieve a 4th qurater value without knowing the company's specific fiscal year.
+
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+## Response Attributes
+
+```mdx-code-block
+<Tabs>
+<TabItem value="Success" label="Success" default>
+
+```
+
+- **s** `string`
+
+  Will always be `ok` when there is data for the symbol requested.
+
+- **symbol** `array[string]`
+
+  The symbol of the stock.
+
+- **fiscalYear** `array[number]`
+
+  The fiscal year of the earnings report. This may not always align with the calendar year.
+
+- **fiscalQuarter** `array[number]`
+
+  The fiscal quarter of the earnings report. This may not always align with the calendar quarter.
+
+- **date** `array[date]`
+
+  The last calendar day that corresponds to this earnings report.
+
+- **reportDate** `array[date]`
+
+  The date the earnings report was released or is projected to be released.
+
+- **reportTime** `array[string]`
+
+  The value will be either `before market open`, `after market close`, or `during market hours`.
+
+- **currency** `array[string]`
+
+  The currency of the earnings report.
+
+- **reportedEPS** `array[number]`
+
+  The earnings per share reported by the company. Earnings reported are typically non-GAAP unless the company does not report non-GAAP earnings.
+
+:::info
+
+GAAP (Generally Accepted Accounting Principles) earnings per share (EPS) count all financial activities except for discontinued operations and major changes in accounting methods. Non-GAAP EPS, on the other hand, typically doesn't include losses or devaluation of assets, and often leaves out irregular expenses like significant restructuring costs, large tax or legal charges, especially for companies not in the financial sector.
+:::
+
+- **estimatedEPS** `array[number]`
+
+  The average consensus estimate by Wall Street analysts.
+
+- **surpriseEPS** `array[number]`
+
+  The difference (in earnings per share) between the estimated earnings per share and the reported earnings per share.
+
+- **surpriseEPSpct** `array[number]`
+
+  The difference in percentage terms between the estimated EPS and the reported EPS.
+
+- **updated** `array[date]`
+
+  The date/time the earnings data for this ticker was last updated.
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NoData" label="No Data">
+
+```
+
+- **s** `string`
+
+  Status will be `no_data` if no earnings data can be found for the symbol.
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="Error" label="Error">
+
+```
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
