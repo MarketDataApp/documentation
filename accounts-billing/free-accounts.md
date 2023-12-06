@@ -13,6 +13,6 @@ Trial accounts work almost exactly the same as paid accounts and have the same [
 |-----------------------|--------------|-------------|------------|
 | Delayed Data          | ✅           | ✅           | ❌         |
 | Real-Time Data        | ❌            | ❌          | ✅          |
-| Standard Endpoints    | ✅            | ✅           | No Limit    |
+| Standard Endpoints    | ✅            | ✅           | ✅    |
 | Premium Endpoints     | ❌            | ❌          | ✅           |
-| Historical Data       | 1 Year       | 1 Year      | ✅           |
+| Historical Data       | 1 Year      | 1 Year      | Full Access           |
