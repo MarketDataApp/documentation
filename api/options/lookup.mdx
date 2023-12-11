@@ -3,7 +3,7 @@ title: Lookup
 sidebar_position: 1
 ---
 
-Generate a properly formatted OCC option symbol based on the user's human-readable description of an option. This endpoint converts text such as "AAPL 7/26/23 $200 Call" to OCC option symbol format: AAPL230726C00200000. The user input must be URL-encoded.
+Generate a properly formatted OCC option symbol based on the user's human-readable description of an option. This endpoint converts text such as "AAPL 7/28/23 $200 Call" to OCC option symbol format: AAPL230728C00200000. The user input must be URL-encoded.
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
@@ -24,7 +24,7 @@ import TabItem from "@theme/TabItem";
 
 ```
 
-**GET** [https://api.marketdata.app/v1/options/lookup/AAPL%207/26/2023%20200%20Call](https://api.marketdata.app/v1/options/lookup/AAPL%207/26/2023%20200%20Call)
+**GET** [https://api.marketdata.app/v1/options/lookup/AAPL%207/28/2023%20200%20Call](https://api.marketdata.app/v1/options/lookup/AAPL%207/28/2023%20200%20Call)
 
 ```mdx-code-block
 
@@ -35,7 +35,7 @@ import TabItem from "@theme/TabItem";
 
 ```js title="app.js"
 fetch(
-  "https://api.marketdata.app/v1/options/lookup/AAPL%207/26/2023%20200%20Call"
+  "https://api.marketdata.app/v1/options/lookup/AAPL%207/28/2023%20200%20Call"
 )
   .then((res) => {
     console.log(res);
@@ -54,7 +54,7 @@ fetch(
 ```python title="app.py"
 import requests
 
-url = "https://api.marketdata.app/v1/options/lookup/AAPL%207/26/2023%20200%20Call"
+url = "https://api.marketdata.app/v1/options/lookup/AAPL%207/28/2023%20200%20Call"
 
 response = requests.request("GET", url)
 
@@ -72,7 +72,7 @@ print(response.text)
 ```json
 {
   "s":"ok",
-  "optionSymbol":"AAPL230726C00200000"
+  "optionSymbol":"AAPL230728C00200000"
 }
 ```
 
