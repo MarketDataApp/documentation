@@ -3,14 +3,14 @@ title: Bulk Candles
 sidebar_position: 2
 ---
 
-Get bulk candle data for stocks. This endpoint returns bulk daily or bulk 1-minute candle data for multiple stocks. Unlike the standard candles endpoint, this endpoint returns a single candle only for each symbol provided. The typical use-case for this endpoint is to get a complete market snapshot during trading, though it can also be used for bulk snapshots of historical daily candles.
+Get bulk candle data for stocks. This endpoint returns bulk daily candle data for multiple stocks. Unlike the standard candles endpoint, this endpoint returns a single daily for each symbol provided. The typical use-case for this endpoint is to get a complete market snapshot during trading hours, though it can also be used for bulk snapshots of historical daily candles. 
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
 ## Endpoint
 
-    https://api.marketdata.app/v1/stocks/bulkcandles/{resolution}/
+    https://api.marketdata.app/v1/stocks/bulkcandles/{resolution}/{date}/
 
 #### Method
 
@@ -88,16 +88,13 @@ print(response.text)
 
 ```mdx-code-block
 <Tabs>
-<TabItem value="required" label="Required" default>
+<TabItem value="required" label="Optional" default>
 
 ```
 
-- **resolution** `string`
+- **date** `datekey`
 
-  The duration of each candle.
-
-  - Minutely Resolutions: (`minutely`, `minute`, `min`, `1`)
-  - Daily Resolutions: (`daily`, `D`, `1D`)
+  The date of the candle to be returned in ISO 8601 (YYYY-MM-DD) format. If no date is provided, the current day is assumed. The leftmost candle on a chart (inclusive). If you use countback, to is not required. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
 
 - **symbols** `string`
 
