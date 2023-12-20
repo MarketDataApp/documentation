@@ -26,7 +26,7 @@ https://api.marketdata.app/v1/stocks/news/{symbol}/
 
 ```
 
-**GET** [https://api.marketdata.app/v1/stocks/earnings/AAPL/](https://api.marketdata.app/v1/stocks/earnings/AAPL/)
+**GET** [https://api.marketdata.app/v1/stocks/earnings/AAPL/](https://api.marketdata.app/v1/stocks/news/AAPL/)
 
 ```mdx-code-block
 
@@ -148,6 +148,10 @@ print(response.text)
 - **content** `array[string]`
 
   The content of the article, if available.
+
+  :::tip
+  Please be aware that this may or may not include the full content of the news article. Additionally, it may include captions of images, copyright notices, syndication information, and other elements that may not be suitable for reproduction without additional filtering.
+  :::
 
 - **source** `array[url]`
 
