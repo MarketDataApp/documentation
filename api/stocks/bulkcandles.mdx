@@ -1,0 +1,210 @@
+---
+title: Candles
+sidebar_position: 2
+---
+
+Get bulk candle data for stocks. This endpoint returns bulk daily or bulk 1-minute candle data for multiple stocks. Unlike the standard candles endpoint, this endpoint returns a single candle only for each symbol provided. The typical use-case for this endpoint is to get a complete market snapshot during trading, though it can also be used for bulk snapshots of historical daily candles.
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+## Endpoint
+
+    https://api.marketdata.app/v1/stocks/bulkcandles/{resolution}/
+
+#### Method
+
+    GET
+
+## Request Example
+
+```mdx-code-block
+<Tabs>
+<TabItem value="HTTP" label="HTTP" default>
+
+```
+
+**GET** [https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT](https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT)
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
+```
+
+```js title="app.js"
+fetch(
+  "https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT"
+)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```
+
+```python title="app.py"
+import requests
+
+url = "https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT"
+
+response = requests.request("GET", url)
+
+print(response.text)
+```
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
+
+## Response Example
+
+```json
+{
+  "s": "ok",
+  "symbol": ["AAPL", "META", "MSFT"],
+  "o": [196.16, 345.58, 371.49],
+  "h": [196.95, 353.6, 373.26],
+  "l": [195.89, 345.12, 369.84],
+  "c": [196.94, 350.36, 373.26],
+  "v": [40714051, 17729362, 20593658]
+  "t": [1703048400,1703048400,1703048400]
+}
+
+```
+
+## Request Parameters
+
+```mdx-code-block
+<Tabs>
+<TabItem value="required" label="Required" default>
+
+```
+
+- **resolution** `string`
+
+  The duration of each candle.
+
+  - Minutely Resolutions: (`minutely`, `minute`, `min`, `1`)
+  - Daily Resolutions: (`daily`, `D`, `1D`)
+
+- **symbols** `string`
+
+  The ticker symbols to return. If no exchange is specified, by default a US exchange will be assumed. You may embed the exchange in the ticker symbol using the Yahoo Finance or TradingView formats. A company or securities identifier can also be used instead of a ticker symbol.
+
+  - Ticker Formats: (`TICKER`, `TICKER.EX`, `EXCHANGE:TICKER`)
+  - Company Identifiers: (`CIK`, `LEI`)
+  - Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
+
+- **exchange** `string`
+
+  Use to specify the exchange of the ticker. This is useful when you need to specify stock that quotes on several exchanges with the same symbol. You may specify the exchange using the `EXCHANGE ACRONYM`, `MIC CODE`, or two digit `YAHOO FINANCE EXCHANGE CODE`. If no exchange is specified symbols will be matched to US exchanges first.
+
+- **country** `string`
+
+  Use to specify the country of the exchange (not the country of the company) in conjunction with the symbol argument. This argument is useful when you know the ticker symbol and the country of the exchange, but not the exchange code. Use the two digit ISO 3166 country code. If no country is specified, US exchanges will be assumed.
+
+- **adjustsplits** `boolean`
+
+  Adjust historical data for for historical splits and reverse splits. Market Data uses the CRSP methodology for adjustment.
+  Daily candles default: `true`.
+  Intraday candles default: `false`.
+
+:::caution
+
+Adjusted dividend data is planned for the future, but not yet implemented. All data is currently returned unadjusted for dividends.
+
+:::
+
+- **adjustdividends** `boolean`
+
+  Adjust candles for dividends. Market Data uses the CRSP methodology for adjustment.
+  Daily candles default: `true`.
+  Intraday candles default: `false`.
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
+
+## Response Attributes
+
+```mdx-code-block
+<Tabs>
+<TabItem value="Success" label="Success" default>
+
+```
+
+- **s** `string`
+
+  Will always be `ok` when there is data for the candles requested.
+
+- **symbol** `string`
+
+  The ticker symbol of the stock.
+  
+- **o** `array[number]`
+
+  Open price.
+
+- **h** `array[number]`
+
+  High price.
+
+- **l** `array[number]`
+
+  Low price.
+
+- **c** `array[number]`
+
+  Close price.
+
+- **v** `array[number]`
+
+  Volume.
+
+- **t** `array[number]`
+  Candle time (Unix timestamp, Exchange Timezone). Daily candles are returned at 00:00:00 without times.
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NoData" label="No Data">
+
+```
+
+- **s** `string`
+
+  Status will be `no_data` if no candles are found for the request.
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="Error" label="Error">
+
+```
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
