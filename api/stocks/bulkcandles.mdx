@@ -10,7 +10,7 @@ import TabItem from "@theme/TabItem";
 
 ## Endpoint
 
-    https://api.marketdata.app/v1/stocks/bulkcandles/{resolution}/{date}/
+    https://api.marketdata.app/v1/stocks/bulkcandles/{resolution}/
 
 #### Method
 
@@ -88,50 +88,32 @@ print(response.text)
 
 ```mdx-code-block
 <Tabs>
-<TabItem value="required" label="Optional" default>
+<TabItem value="required" label="Required" default>
 
 ```
 
-- **date** `datekey`
+- **resolution** `string`
 
-  The date of the candle to be returned in ISO 8601 (YYYY-MM-DD) format. If no date is provided, the current day is assumed. The leftmost candle on a chart (inclusive). If you use countback, to is not required. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+  The duration of each candle. Only daily candles are supported at this time.
 
-- **symbols** `string`
-
-  The ticker symbols to return. If no exchange is specified, by default a US exchange will be assumed. You may embed the exchange in the ticker symbol using the Yahoo Finance or TradingView formats. A company or securities identifier can also be used instead of a ticker symbol.
-
-  - Ticker Formats: (`TICKER`, `TICKER.EX`, `EXCHANGE:TICKER`)
-  - Company Identifiers: (`CIK`, `LEI`)
-  - Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
+  - Daily Resolutions: (`daily`, `D`, `1D`)
 
 ```mdx-code-block
 </TabItem>
 <TabItem value="optional" label="Optional">
 ```
 
-- **exchange** `string`
+- **symbols** `string`
 
-  Use to specify the exchange of the ticker. This is useful when you need to specify stock that quotes on several exchanges with the same symbol. You may specify the exchange using the `EXCHANGE ACRONYM`, `MIC CODE`, or two digit `YAHOO FINANCE EXCHANGE CODE`. If no exchange is specified symbols will be matched to US exchanges first.
+  The ticker symbols to return in the response, separated by commas. If the symbols parameter is not provided, a full market response that includes all symbols will be returned.
 
-- **country** `string`
+- **date** `date`
 
-  Use to specify the country of the exchange (not the country of the company) in conjunction with the symbol argument. This argument is useful when you know the ticker symbol and the country of the exchange, but not the exchange code. Use the two digit ISO 3166 country code. If no country is specified, US exchanges will be assumed.
+  The date of the candles to be returned. If no date is specified, during market hours the candles returned will be from the current session. If the market is closed the candles will be from the most recent session. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
 
 - **adjustsplits** `boolean`
 
   Adjust historical data for for historical splits and reverse splits. Market Data uses the CRSP methodology for adjustment.
-  Daily candles default: `true`.
-  Intraday candles default: `false`.
-
-:::caution
-
-Adjusted dividend data is planned for the future, but not yet implemented. All data is currently returned unadjusted for dividends.
-
-:::
-
-- **adjustdividends** `boolean`
-
-  Adjust candles for dividends. Market Data uses the CRSP methodology for adjustment.
   Daily candles default: `true`.
   Intraday candles default: `false`.
 
@@ -211,3 +193,7 @@ Adjusted dividend data is planned for the future, but not yet implemented. All d
 </TabItem>
 </Tabs>
 ```
+
+:::info
+Please note that only stocks, ETFs, and closed-end funds are available via the bulk candles endpoint. Mutual fund data is not avaialble via this endpoint.
+:::
