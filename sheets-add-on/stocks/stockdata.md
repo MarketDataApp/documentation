@@ -69,7 +69,7 @@ All parameters must be enclosed in quotation marks or be references to cells con
 
 ---
 
-Real-time or current day results will be returned as a value within a single cell unless specific attributes are requested. Historical data, even for a single day, will be returned as an expanded array with column headers.
+Results with a single data point will be returned as a value within a single cell. Multiple data points will be returned as an expanded array with column headers.
 
 ---
 
@@ -78,5 +78,9 @@ If any date parameters are specified, the request is considered historical and o
 ---
 
 Dates and times are returned in the same timezone of the exchange.
+
+---
+
+When writing bulk candles formulas, only a single date is allowed. Date ranges are not permitted. Only daily candles are supported for bulk candles.
 
 :::
