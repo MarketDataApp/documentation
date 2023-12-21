@@ -5,16 +5,16 @@ sidebar_position: 1
 
 Fetches a current stock quote or historical stock candles from Market Data. It can also fetch a single historical candle for multiple stocks.
 
-## Sample Usage (Quotes)
+## Sample Usage For Quotes
 
     STOCKDATA("AAPL")
 
-## Sample Usage (Candles)
+## Sample Usage For Candles
 
     STOCKDATA("AAPL", "close", "1/1/2021", "1/31/2021", "hourly")
     STOCKDATA("AAPL", "all", TODAY()-30, 30)
 
-#### Sample Usage (Bulk Candles)
+#### Bulk Candles
 
     STOCKDATA("AAPL,MSFT,TSLA", "all", "today")
     STOCKDATA("AAPL,MSFT,TSLA", "all", "12/20/2023")
