@@ -169,6 +169,10 @@ The `from` and `to` parameters are not supported for real-time quotes. If you ar
 
   Limit the option chain to quarterly expirations by setting quarterly to `true` and omitting the `weekly` and `monthly` parameters. If set to `false`, no quarterly expirations will be returned.
 
+- **nonstandard** `boolean`
+
+  Include non-standard contracts by nonstandard to `true`. If set to `false`, no non-standard options expirations will be returned. If no parameter is provided, the output will default to false.
+
 - **dte** `number`
 
   Days to expiry. Limit the option chain to a single expiration date closest to the `dte` provided. Should not be used together with `from` and `to`. Take care before combining with `weekly`, `monthly`, `quarterly`, since that will limit the expirations `dte` can return. If you are using the `date` parameter, dte is relative to the `date` provided.
