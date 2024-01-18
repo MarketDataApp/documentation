@@ -1,0 +1,193 @@
+---
+title: News
+sidebar_position: 6
+---
+
+Get news for a stock.
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+## Endpoint
+
+:::info Endpoint
+https://api.marketdata.app/v1/stocks/news/{symbol}/
+:::
+
+#### Method
+
+    GET
+
+## Request Example
+
+```mdx-code-block
+<Tabs>
+<TabItem value="HTTP" label="HTTP" default>
+
+```
+
+**GET** [https://api.marketdata.app/v1/stocks/news/AAPL/](https://api.marketdata.app/v1/stocks/news/AAPL/)
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
+```
+
+```js title="app.js"
+fetch(
+  "https://api.marketdata.app/v1/stocks/news/AAPL/"
+)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```
+
+```python title="app.py"
+import requests
+
+url = "https://api.marketdata.app/v1/stocks/news/AAPL/"
+
+response = requests.request("GET", url)
+
+print(response.text)
+```
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```
+
+## Response Example
+
+```json
+{
+  "s":"ok",
+  "symbol": "AAPL",
+  "headline": "Whoa, There! Let Apple Stock Take a Breather Before Jumping in Headfirst."
+  "content": "Apple is a rock-solid company, but this doesn't mean prudent investors need to buy AAPL stock at any price."
+  "source": "https://investorplace.com/2023/12/whoa-there-let-apple-stock-take-a-breather-before-jumping-in-headfirst/"
+  "updated": 1703041200
+}
+```
+
+## Request Parameters
+
+```mdx-code-block
+<Tabs>
+<TabItem value="required" label="Required" default>
+
+```
+
+
+- **symbol** `string`
+
+  The company's ticker symbol. If no exchange is specified, by default a US exchange will be assumed. You may embed the exchange in the ticker symbol using the Yahoo Finance or TradingView formats. A company or securities identifier can also be used instead of a ticker symbol.
+
+  - Ticker Formats: (`TICKER`, `TICKER.EX`, `EXCHANGE:TICKER`)
+  - Company Identifiers: (`CIK`, `LEI`)
+  - Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Optional" label="Optional">
+```
+
+- **from** `date`
+
+  The earliest news to include in the output. If you use countback, `from` is not required. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+
+- **to** `date`
+
+  The latest news to include in the output. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+
+- **countback** `number`
+
+  Countback will fetch a specific number of news before `to`. If you use `from`, countback is not required.
+
+- **date** `date`
+
+  Retrieve news for a specific day. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+## Response Attributes
+
+```mdx-code-block
+<Tabs>
+<TabItem value="Success" label="Success" default>
+
+```
+
+- **s** `string`
+
+  Will always be `ok` when there is data for the symbol requested.
+
+- **symbol** `array[string]`
+
+  The symbol of the stock.
+
+- **headline** `array[string]`
+
+  The headline of the news article.
+
+- **content** `array[string]`
+
+  The content of the article, if available.
+
+  :::tip
+  Please be aware that this may or may not include the full content of the news article. Additionally, it may include captions of images, copyright notices, syndication information, and other elements that may not be suitable for reproduction without additional filtering.
+  :::
+
+- **source** `array[url]`
+
+  The source URL where the news appeared. 
+
+- **publicationDate** `array[date]`
+
+  The date the news was published on the source website.
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="NoData" label="No Data">
+
+```
+
+- **s** `string`
+
+  Status will be `no_data` if no news can be found for the symbol.
+
+```mdx-code-block
+
+</TabItem>
+<TabItem value="Error" label="Error">
+
+```
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+```mdx-code-block
+
+</TabItem>
+</Tabs>
+```

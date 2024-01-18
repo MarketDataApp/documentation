@@ -3,18 +3,26 @@ title: STOCKDATA
 sidebar_position: 1
 ---
 
-Fetches a current stock quote or historical stock candle from Market Data.
+Fetches a current stock quote or historical stock candles from Market Data. It can also fetch a single historical candle for multiple stocks.
 
-## Sample Usage
+## Sample Usage For Quotes
 
     STOCKDATA("AAPL")
-    STOCKDATA("AAPL", "open")
+
+## Sample Usage For Candles
+
     STOCKDATA("AAPL", "close", "1/1/2021", "1/31/2021", "hourly")
     STOCKDATA("AAPL", "all", TODAY()-30, 30)
 
+#### Bulk Candles
+
+    STOCKDATA("AAPL,MSFT,TSLA", "all", "today")
+    STOCKDATA("AAPL,MSFT,TSLA", "all", "12/20/2023")
+    STOCKDATA(A1:A3, "all", "12/20/2023")
+
 ## Syntax
 
-    STOCKDATA(symbol, [historial attribute|quote attribute], startDate, endDate, resolution)
+    STOCKDATA(symbol, [historial attribute|quote attribute], start date, end date, resolution)
 
 - **symbol** _(REQUIRED)_ The stock’s ticker symbol.
 
@@ -28,6 +36,8 @@ Fetches a current stock quote or historical stock candle from Market Data.
     - "close" – The closing price of the stock.
     - "volume" – The number of shares traded.
     - "all" – Returns all values.
+    - "symbol" - The ticker symbol of the stock. _Only returned when using a bulk candles formula._ 
+
 
   - **quote attributes** _(OPTIONAL – "mid" by default)_ Use one of the following attributes when requesting a quote:
     - "price", "mid", "mark" – The midpoint price of the stock.
@@ -39,7 +49,7 @@ Fetches a current stock quote or historical stock candle from Market Data.
     - "volume" – The quantity of shares traded.
     - "all" – Returns all values.
 
-- **startDate** _(OPTIONAL)_ The start date when fetching historical data. If start date is specified, but endDate is not, only the single day’s data is returned.
+- **startDate** _(OPTIONAL)_ The start date when fetching historical data. If start date is specified, but endDate is not, only the single day’s data is returned. Multiple tickers may be used if only a single day's data is being returned.
 
 - **endDate** _(OPTIONAL)_ The end date when fetching historical data, or the number of calendar days (not trading days) from startDate for which to return data.
 
@@ -59,7 +69,7 @@ All parameters must be enclosed in quotation marks or be references to cells con
 
 ---
 
-Real-time or current day results will be returned as a value within a single cell unless specific attributes are requested. Historical data, even for a single day, will be returned as an expanded array with column headers.
+Results with a single data point will be returned as a value within a single cell. Multiple data points will be returned as an expanded array with column headers.
 
 ---
 
@@ -68,5 +78,9 @@ If any date parameters are specified, the request is considered historical and o
 ---
 
 Dates and times are returned in the same timezone of the exchange.
+
+---
+
+When writing bulk candles formulas, only a single date is allowed. Date ranges are not permitted. Only daily candles are supported for bulk candles.
 
 :::
