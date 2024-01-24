@@ -103,3 +103,24 @@
 .DocSearch.DocSearch-Button {
   border-radius: 8px;
 }
+
+.cus-tag {
+  font-size: 28px;
+  color: white;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-radius: 8px;
+}
+
+.tg-n {
+  background-color: blue;
+}
+.tg-p {
+  background-color: #d22a46;
+}
+
+.tg-h {
+  background-color: #b128e3;
+}
