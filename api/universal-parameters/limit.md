@@ -10,7 +10,7 @@ In the example below, the daily candle endpoint by default returns the last 252 
 
 ## Parameter
 
-    limit=<number>
+    limit=\<number\>
 
 ## Use Example
 

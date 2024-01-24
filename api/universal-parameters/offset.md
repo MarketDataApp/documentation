@@ -7,7 +7,7 @@ The offset parameter is used together with limit to allow you to implement pagin
 
 ## Parameter
 
-    offset=<number>
+    offset=\<number\>
 
 ## Use Example
 

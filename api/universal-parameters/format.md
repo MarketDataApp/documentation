@@ -7,7 +7,7 @@ The format parameter is used to specify the format for your data. We support JSO
 
 ## Parameter
 
-    format=<json|csv>
+    format=\<json\|csv\>
 
 ## Use Example
 

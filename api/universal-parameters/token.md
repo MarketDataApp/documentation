@@ -11,7 +11,7 @@ When submitting your token in a URL, your token is exposed in server logs, cache
 
 ## Parameter
 
-    token=<token>
+    token=\<token\>
 
 ## Use Example
 

@@ -1,8 +1,9 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require("prism-react-renderer/themes/github");
-const darkCodeTheme = require("prism-react-renderer/themes/dracula");
+const lightCodeTheme = require("prism-react-renderer").themes.github;
+const darkCodeTheme = require("prism-react-renderer").themes.dracula;
+
 require("dotenv").config();
 
 /** @type {import('@docusaurus/types').Config} */
@@ -16,7 +17,7 @@ const config = {
       ? "https://docs.marketdata.app/"
       : "https://docs-staging.marketdata.app/",
 
-  baseUrl: "/",
+  baseUrl: "/docs",
   onBrokenLinks: "ignore",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",

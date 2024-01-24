@@ -11,7 +11,7 @@ Fetches real-time stock quote(s) from Market Data.
 
 :::tip
 
-Group all your stock quotes together and request them all at once with a single ```STOCKQUOTE``` formula to _significantly_ speed up your sheet's loading time and avoid Google's [urlfetch limits](/sheets-add-on/troubleshooting/urlfetch).
+Group all your stock quotes together and request them all at once with a single `STOCKQUOTE` formula to _significantly_ speed up your sheet's loading time and avoid Google's [urlfetch limits](/sheets-add-on/troubleshooting/urlfetch).
 
 :::
 
@@ -20,9 +20,9 @@ Group all your stock quotes together and request them all at once with a single 
     STOCKQUOTE("AAPL")
     STOCKQUOTE("AAPL", "bid")
     STOCKQUOTE("AAPL,MSFT,GOOG", "all")
-    STOCKQUOTE({"AAPL";"MSFT";"GOOG"}, "all")
+    STOCKQUOTE(\{"AAPL";"MSFT";"GOOG"\}, "all")
     STOCKQUOTE(A1:C1, "all")
-    
+
 ## Syntax
 
     STOCKQUOTE(symbol, attributes)

@@ -7,7 +7,7 @@ The human parameter will use human-readable attribute names in the JSON or CSV o
 
 ## Parameter
 
-    human=<true|false>
+    human=\<true\|false\>
 
 ## Use Example
 
@@ -17,33 +17,15 @@ The human parameter will use human-readable attribute names in the JSON or CSV o
 
 ```json
 {
-  "Symbol":[
-    "AAPL"
-  ],
-  "Ask":[
-    152.63
-  ],
-  "Ask Size":[
-    400
-  ],
-  "Bid":[
-    152.61
-  ],
-  "Bid Size":[
-    600
-  ],
-  "Mid":[
-    152.62
-  ],
-  "Last":[
-    152.63
-  ],
-  "Volume":[
-    35021819
-  ],
-  "Date":[
-    1668531422
-  ]
+  "Symbol": ["AAPL"],
+  "Ask": [152.63],
+  "Ask Size": [400],
+  "Bid": [152.61],
+  "Bid Size": [600],
+  "Mid": [152.62],
+  "Last": [152.63],
+  "Volume": [35021819],
+  "Date": [1668531422]
 }
 ```
 
