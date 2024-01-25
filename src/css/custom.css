@@ -26,7 +26,7 @@
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme='dark'] {
+[data-theme="dark"] {
   /* --ifm-color-primary: #25c2a0;
   --ifm-color-primary-dark: #21af90;
   --ifm-color-primary-darker: #1fa588;
@@ -42,45 +42,44 @@
   --ifm-color-primary-lighter: #f08894;
   --ifm-color-primary-lightest: #f6b3bb;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
-  --custom-bg-tabs: #282A36;
+  --custom-bg-tabs: #282a36;
 }
-.footer-custom-container{
+.footer-custom-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   width: 100% !important;
   color: #ffffff80;
-
 }
-.footer-custom{
+.footer-custom {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
   width: 100%;
 }
-.footer-custom a{
+.footer-custom a {
   color: #ffffff80 !important;
   text-decoration: none;
 }
 @media screen and (min-width: 768px) {
-  .footer-custom-container{
+  .footer-custom-container {
     flex-direction: row;
     justify-content: space-between !important;
   }
-  .footer-custom{
+  .footer-custom {
     width: 60%;
     justify-content: space-between;
   }
-  .footer-custom-container p{
+  .footer-custom-container p {
     margin: 0;
     padding: 0;
   }
 }
-  
+
 #__docusaurus > footer {
-  background-color: #040F30;
+  background-color: #040f30;
   padding-top: 20px;
   padding-bottom: 20px;
   padding-right: 0 !important;
@@ -95,8 +94,41 @@
 } */
 
 /* for the tabs nod background styling FOR PROD */
-.tabItem_Ymn6{
+.tabItem_Ymn6 {
   background-color: var(--custom-bg-tabs);
   padding: 8px;
   border-radius: 14px;
+}
+
+.DocSearch.DocSearch-Button {
+  border-radius: 8px;
+}
+
+.cus-tag {
+  font-size: 28px;
+  color: white;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-radius: 8px;
+}
+.cus-tag-sm {
+  font-size: 12px;
+  margin-left: 6px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  border-radius: 4px;
+}
+.tg-n {
+  background-color: blue;
+}
+.tg-p {
+  background-color: #d22a46;
+}
+
+.tg-h {
+  background-color: #b128e3;
 }

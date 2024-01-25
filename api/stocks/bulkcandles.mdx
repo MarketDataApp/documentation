@@ -3,7 +3,7 @@ title: Bulk Candles
 sidebar_position: 2
 ---
 
-Get bulk candle data for stocks. This endpoint returns bulk daily candle data for multiple stocks. Unlike the standard candles endpoint, this endpoint returns a single daily for each symbol provided. The typical use-case for this endpoint is to get a complete market snapshot during trading hours, though it can also be used for bulk snapshots of historical daily candles. 
+Get bulk candle data for stocks. This endpoint returns bulk daily candle data for multiple stocks. Unlike the standard candles endpoint, this endpoint returns a single daily for each symbol provided. The typical use-case for this endpoint is to get a complete market snapshot during trading hours, though it can also be used for bulk snapshots of historical daily candles.
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
@@ -18,20 +18,13 @@ import TabItem from "@theme/TabItem";
 
 ## Request Example
 
-```mdx-code-block
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-```
-
 **GET** [https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT](https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT)
-
-```mdx-code-block
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
-
-```
 
 ```js title="app.js"
 fetch(
@@ -43,14 +36,10 @@ fetch(
   .catch((err) => {
     console.log(err);
   });
-
 ```
 
-```mdx-code-block
 </TabItem>
 <TabItem value="Python" label="Python">
-
-```
 
 ```python title="app.py"
 import requests
@@ -62,11 +51,8 @@ response = requests.request("GET", url)
 print(response.text)
 ```
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
 
 ## Response Example
 
@@ -86,11 +72,8 @@ print(response.text)
 
 ## Request Parameters
 
-```mdx-code-block
 <Tabs>
 <TabItem value="required" label="Required" default>
-
-```
 
 - **resolution** `string`
 
@@ -98,10 +81,8 @@ print(response.text)
 
   - Daily Resolutions: (`daily`, `D`, `1D`)
 
-```mdx-code-block
 </TabItem>
-<TabItem value="optional" label="Optional">
-```
+<TabItem value="Optional" label="Optional">
 
 - **symbols** `string`
 
@@ -117,19 +98,13 @@ print(response.text)
   Daily candles default: `true`.
   Intraday candles default: `false`.
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
 
 ## Response Attributes
 
-```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
-
-```
 
 - **s** `string`
 
@@ -138,7 +113,7 @@ print(response.text)
 - **symbol** `string`
 
   The ticker symbol of the stock.
-  
+
 - **o** `array[number]`
 
   Open price.
@@ -163,23 +138,15 @@ print(response.text)
 
   Candle time (Unix timestamp, Exchange Timezone). Daily candles are returned at 00:00:00 without times.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="NoData" label="No Data">
-
-```
 
 - **s** `string`
 
   Status will be `no_data` if no candles are found for the request.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="Error" label="Error">
-
-```
 
 - **s** `string`
 
@@ -188,11 +155,8 @@ print(response.text)
 - **errmsg** `string`
   An error message.
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
 
 :::info
 Please note that only stocks, ETFs, and closed-end funds are available via the bulk candles endpoint. Mutual fund data is not avaialble via this endpoint.

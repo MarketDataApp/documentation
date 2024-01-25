@@ -20,25 +20,16 @@ https://api.marketdata.app/v1/indices/quotes/{symbol}/
 
 ## Request Example
 
-```mdx-code-block
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-```
-
 **GET** [https://api.marketdata.app/v1/indices/quotes/VIX/](https://api.marketdata.app/v1/indices/quotes/VIX/)
-
-```mdx-code-block
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
 
-```
-
 ```js title="app.js"
-fetch(
-  "https://api.marketdata.app/v1/indices/quotes/VIX/"
-)
+fetch("https://api.marketdata.app/v1/indices/quotes/VIX/")
   .then((res) => {
     console.log(res);
   })
@@ -47,11 +38,8 @@ fetch(
   });
 ```
 
-```mdx-code-block
 </TabItem>
 <TabItem value="Python" label="Python">
-
-```
 
 ```python title="app.py"
 import requests
@@ -63,61 +51,43 @@ response = requests.request("GET", url)
 print(response.text)
 ```
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
 
 ## Response Example
 
 ```json
 {
   "s": "ok",
-  "symbol": [
-    "VIX"
-  ],
-  "last": [
-    29.92
-  ],
-  "updated": [
-    1664224409
-  ]
+  "symbol": ["VIX"],
+  "last": [29.92],
+  "updated": [1664224409]
 }
 ```
 
 ## Request Parameters
 
-```mdx-code-block
 <Tabs>
 <TabItem value="required" label="Required" default>
-
-```
 
 - **symbol** `string`
 
   The index symbol, without any leading or trailing index identifiers. For example, use DJI do not use $DJI, ^DJI, .DJI, DJI.X, etc.
-  
-```mdx-code-block
+
 </TabItem>
 <TabItem value="Optional" label="Optional">
-```
 
 - **52week** `boolean`
 
   Enable the output of 52-week high and 52-week low data in the quote output. By default this parameter is `false` if omitted.
 
-```mdx-code-block
 </TabItem>
 </Tabs>
-```
 
 ## Response Attributes
 
-```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
-```
 
 - **s** `string`
 
@@ -134,36 +104,32 @@ print(response.text)
 - **change** `array[number]`
 
   The difference in price in dollars (or the index's native currency if different from dollars) compared to the closing price of the previous day.
+
 - **changepct** `array[number]`
 
   The difference in price in percent compared to the closing price of the previous day.
+
 - **52weekHigh** `array[number]`
 
   The 52-week high for the index.
+
 - **52weekLow** `array[number]`
 
   The 52-week low for the index.
+
 - **updated** `array[date]`
 
   The date/time of the quote.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="NoData" label="No Data">
-
-```
 
 - **s** `string`
 
   Status will be `no_data` if no quote can be found for the symbol.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="Error" label="Error">
-
-```
 
 - **s** `string`
 
@@ -172,8 +138,5 @@ print(response.text)
 - **errmsg** `string`
   An error message.
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```

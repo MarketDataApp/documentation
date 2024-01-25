@@ -1,6 +1,8 @@
 ---
-title: MARKETSTATUS
+title: MARKETSTATUS tg h
 sidebar_position: 1
+tags:
+  - high
 ---
 
 Get the past, present, or future status for a stock market for a single date or multiple dates. The formula will respond with "open" for trading days or "closed" for weekends or market holidays.

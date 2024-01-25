@@ -18,20 +18,13 @@ import TabItem from "@theme/TabItem";
 
 ## Request Example
 
-```mdx-code-block
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-```
-
 **GET** [https://api.marketdata.app/v1/options/expirations/AAPL](https://api.marketdata.app/v1/options/expirations/AAPL)
-
-```mdx-code-block
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
-
-```
 
 ```js title="app.js"
 fetch("https://api.marketdata.app/v1/options/expirations/AAPL")
@@ -43,12 +36,8 @@ fetch("https://api.marketdata.app/v1/options/expirations/AAPL")
   });
 ```
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="Python" label="Python">
-
-```
 
 ```python title="app.py"
 import requests
@@ -60,18 +49,15 @@ response = requests.request("GET", url)
 print(response.text)
 ```
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
 
 ## Response Example
 
 ```json
 {
-  "s":"ok",
-  "expirations":[
+  "s": "ok",
+  "expirations": [
     "2022-09-23",
     "2022-09-30",
     "2022-10-07",
@@ -91,17 +77,14 @@ print(response.text)
     "2024-06-21",
     "2025-01-17"
   ],
-  "updated":1663704000
+  "updated": 1663704000
 }
 ```
 
 ## Request Parameters
 
-```mdx-code-block
 <Tabs>
 <TabItem value="required" label="Required" default>
-
-```
 
 - **underlyingSymbol** `string`
 
@@ -112,11 +95,8 @@ print(response.text)
   - Company Identifiers: (`CIK`, `LEI`)
   - Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
 
-```mdx-code-block
 </TabItem>
 <TabItem value="optional" label="Optional">
-
-```
 
 - **strike** `number`
 
@@ -126,18 +106,13 @@ print(response.text)
 
   Use to lookup a historical list of expiration dates from a specific previous trading day. If date is omitted the expiration dates will be from the current trading day during market hours or from the last trading day when the market is closed. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
 
-```mdx-code-block
 </TabItem>
 </Tabs>
-```
 
 ## Response Attributes
 
-```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
-
-```
 
 - **s** `string`
 
@@ -152,12 +127,8 @@ print(response.text)
 
   The date and time of this list of options strikes was updated in Unix time. For historical strikes, this number should match the `date` parameter.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="NoData" label="No Data">
-
-```
 
 - **s** `string`
 
@@ -171,12 +142,8 @@ print(response.text)
 
   Unix time of the previous quote if there is no data in the requested period, but there is data in a previous period.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="Error" label="Error">
-
-```
 
 - **s** `string`
 
@@ -185,8 +152,5 @@ print(response.text)
 - **errmsg** `string`
   An error message.
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```

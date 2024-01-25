@@ -18,20 +18,13 @@ import TabItem from "@theme/TabItem";
 
 ## Request Example
 
-```mdx-code-block
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-```
-
 **GET** [https://api.marketdata.app/v1/options/lookup/AAPL%207/28/2023%20200%20Call](https://api.marketdata.app/v1/options/lookup/AAPL%207/28/2023%20200%20Call)
-
-```mdx-code-block
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
-
-```
 
 ```js title="app.js"
 fetch(
@@ -45,11 +38,8 @@ fetch(
   });
 ```
 
-```mdx-code-block
 </TabItem>
 <TabItem value="Python" label="Python">
-
-```
 
 ```python title="app.py"
 import requests
@@ -61,24 +51,20 @@ response = requests.request("GET", url)
 print(response.text)
 ```
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
 
 ## Response Example
 
 ```json
 {
-  "s":"ok",
-  "optionSymbol":"AAPL230728C00200000"
+  "s": "ok",
+  "optionSymbol": "AAPL230728C00200000"
 }
 ```
 
 ## Request Parameters
 
-```mdx-code-block
 <Tabs>
 <TabItem value="required" label="Required" default>
 
@@ -86,18 +72,13 @@ print(response.text)
 
   The human-readable string input that contains (1) stock symbol (2) strike (3) expiration date (4) option side (i.e. put or call). This endpoint will translate the user's input into a valid OCC option symbol.
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
+
 ## Response Attributes
 
-```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
-
-```
 
 - **s** `string`
 
@@ -107,12 +88,8 @@ print(response.text)
 
   The generated OCC option symbol based on the user's input.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="Error" label="Error">
-
-```
 
 - **s** `string`
 
@@ -121,8 +98,5 @@ print(response.text)
 - **errmsg** `string`
   An error message.
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```

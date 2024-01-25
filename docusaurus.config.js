@@ -1,8 +1,9 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require("prism-react-renderer/themes/github");
-const darkCodeTheme = require("prism-react-renderer/themes/dracula");
+const lightCodeTheme = require("prism-react-renderer").themes.github;
+const darkCodeTheme = require("prism-react-renderer").themes.dracula;
+
 require("dotenv").config();
 
 /** @type {import('@docusaurus/types').Config} */
@@ -11,7 +12,10 @@ const config = {
     process.env.PROD == "true" ? "Market Data Docs" : "Market Data Docs (dev)",
   tagline: "The Complete Reference For All Market Data Products & Services",
 
-  url: process.env.PROD == "true" ? "https://docs.marketdata.app/" : "https://docs-staging.marketdata.app/",
+  url:
+    process.env.PROD == "true"
+      ? "https://docs.marketdata.app/"
+      : "https://docs-staging.marketdata.app/",
 
   baseUrl: "/",
   onBrokenLinks: "ignore",
@@ -59,7 +63,6 @@ const config = {
         sidebarPath: require.resolve("./sidebars.js"),
 
         editUrl: "https://github.com/MarketDataApp/documentation/tree/dev",
-
       },
     ],
     [
@@ -69,8 +72,10 @@ const config = {
         id: "sheets-add-on",
         path: "sheets-add-on",
         routeBasePath: "sheets-add-on",
-        editUrl: process.env.PROD == "true" ? "https://github.com/MarketDataApp/documentation/tree/main" : "https://github.com/MarketDataApp/documentation/tree/dev",
-
+        editUrl:
+          process.env.PROD == "true"
+            ? "https://github.com/MarketDataApp/documentation/tree/main"
+            : "https://github.com/MarketDataApp/documentation/tree/dev",
 
         sidebarPath: require.resolve("./sidebars.js"),
       },
@@ -82,7 +87,10 @@ const config = {
         id: "accounts-billing",
         path: "accounts-billing",
         routeBasePath: "accounts-billing",
-        editUrl: process.env.PROD == "true" ? "https://github.com/MarketDataApp/documentation/tree/main" : "https://github.com/MarketDataApp/documentation/tree/dev",
+        editUrl:
+          process.env.PROD == "true"
+            ? "https://github.com/MarketDataApp/documentation/tree/main"
+            : "https://github.com/MarketDataApp/documentation/tree/dev",
         sidebarPath: require.resolve("./sidebars.js"),
       },
     ],
@@ -92,10 +100,11 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       algolia: {
-        apiKey: "616ed612753f947f246c4b57617af1ac",
-        appId: "TSE3E81M2L",
-        indexName: "first_index",
+        apiKey: "61b9ada0eff725c3350523c78c53917d",
+        appId: "XRC74FGPQA",
+        indexName: "prod_index",
       },
+
       navbar: {
         title: "",
         logo: {

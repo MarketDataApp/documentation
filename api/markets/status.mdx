@@ -18,22 +18,15 @@ import TabItem from "@theme/TabItem";
 
 ## Request Example
 
-```mdx-code-block
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
-
-```
 
 **GET** [https://api.marketdata.app/v1/markets/status/?from=2020-01-01&to=2020-12-31](https://api.marketdata.app/v1/markets/status/?from=2020-01-01&to=2020-12-31)
 
 **GET** [https://api.marketdata.app/v1/markets/status/?date=yesterday](https://api.marketdata.app/v1/markets/status/?date=yesterday)
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
-
-```
 
 ```js title="app.js"
 fetch(
@@ -46,9 +39,7 @@ fetch(
     console.log(err);
   });
 
-fetch(
-  "https://api.marketdata.app/v1/markets/status/?date=yesterday"
-)
+fetch("https://api.marketdata.app/v1/markets/status/?date=yesterday")
   .then((res) => {
     console.log(res);
   })
@@ -57,11 +48,8 @@ fetch(
   });
 ```
 
-```mdx-code-block
 </TabItem>
 <TabItem value="Python" label="Python">
-
-```
 
 ```python title="app.py"
 import requests
@@ -76,38 +64,28 @@ print(response1.text)
 print(response2.text)
 ```
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
 
 ## Response Example
 
 ```json
 {
-  "s":"ok",
-  "date":[1680580800],
-  "status":["open"]
+  "s": "ok",
+  "date": [1680580800],
+  "status": ["open"]
 }
 ```
 
 ## Request Parameters
 
-```mdx-code-block
 <Tabs>
 <TabItem value="required" label="Required">
 
-```
-
 - There are no required parameters for `status`. If no parameter is given, the request will return the market status in the United States for the current day.
-
-```mdx-code-block
 
 </TabItem>
 <TabItem value="optional" label="Optional" default>
-
-```
 
 - **country** `string`
 
@@ -129,20 +107,13 @@ print(response2.text)
 
   Countback will fetch a number of dates before `to` If you use from, countback is not required.
 
-
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
 
 ## Response Attributes
 
-```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
-
-```
 
 - **s** `string`
 
@@ -156,23 +127,15 @@ print(response2.text)
 
   The market status. This will always be `open` or `closed` or `null`. Half days or partial trading days are reported as `open`. Requests for days further in the past or further in the future than our data will be returned as `null`.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="NoData" label="No Data">
-
-```
 
 - **s** `string`
 
   Status will be `no_data` if no data is found for the request.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="Error" label="Error">
-
-```
 
 - **s** `string`
 
@@ -181,8 +144,5 @@ print(response2.text)
 - **errmsg** `string`
   An error message.
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```

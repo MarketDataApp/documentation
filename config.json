@@ -1,5 +1,5 @@
 {
-    "index_name": "first_index",
+    "index_name": "prod_index",
     "start_urls": [
         "https://docs.marketdata.app/"
     ],

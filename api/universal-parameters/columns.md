@@ -7,20 +7,15 @@ The columns parameter is used to limit the results of any endpoint to only the c
 
 ## Parameter
 
-    columns=<column_name1,column_name2,etc>
-    columns=-column_name
-
-
 ## Use Example
 
-    https://api.marketdata.app/v1/stocks/quotes/AAPL/?columns=ask,bid
-    https://api.marketdata.app/v1/stocks/quotes/AAPL/?columns=-mid
-
+    [https://api.marketdata.app/v1/stocks/quotes/AAPL/?columns=ask,bid](https://api.marketdata.app/v1/stocks/quotes/AAPL/?columns=ask,bid)
+    [https://api.marketdata.app/v1/stocks/quotes/AAPL/?columns=-mid](https://api.marketdata.app/v1/stocks/quotes/AAPL/?columns=-mid)
 
 ## Response Example
 
 ```json
-{"ask":[152.14],"bid":[152.12]}
+{ "ask": [152.14], "bid": [152.12] }
 ```
 
 ## Values

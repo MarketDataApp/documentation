@@ -7,7 +7,7 @@ The dateformat parameter allows you specify the format you wish to receive date 
 
 ## Parameter
 
-    dateformat=<timestamp|unix|spreadsheet>
+    dateformat=\<timestamp\|unix\|spreadsheet\>
 
 ## Use Example
 

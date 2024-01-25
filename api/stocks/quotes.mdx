@@ -20,25 +20,16 @@ https://api.marketdata.app/v1/stocks/quotes/{symbol}/
 
 ## Request Example
 
-```mdx-code-block
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-```
-
 **GET** [https://api.marketdata.app/v1/stocks/quotes/AAPL/](https://api.marketdata.app/v1/stocks/quotes/AAPL/)
-
-```mdx-code-block
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
 
-```
-
 ```js title="app.js"
-fetch(
-  "https://api.marketdata.app/v1/stocks/quotes/AAPL/"
-)
+fetch("https://api.marketdata.app/v1/stocks/quotes/AAPL/")
   .then((res) => {
     console.log(res);
   })
@@ -47,11 +38,8 @@ fetch(
   });
 ```
 
-```mdx-code-block
 </TabItem>
 <TabItem value="Python" label="Python">
-
-```
 
 ```python title="app.py"
 import requests
@@ -63,54 +51,30 @@ response = requests.request("GET", url)
 print(response.text)
 ```
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
 
 ## Response Example
 
 ```json
 {
-  "s":"ok",
-  "symbol":[
-    "AAPL"
-  ],
-  "ask":[
-    149.08
-  ],
-  "askSize":[
-    200
-  ],
-  "bid":[
-    149.07
-  ],
-  "bidSize":[
-    600
-  ],
-  "mid":[
-    149.07
-  ],
-  "last":[
-    149.09
-  ],
-  "volume":[
-    66959442
-  ],
-  "updated":[
-    1663958092
-  ]
+  "s": "ok",
+  "symbol": ["AAPL"],
+  "ask": [149.08],
+  "askSize": [200],
+  "bid": [149.07],
+  "bidSize": [600],
+  "mid": [149.07],
+  "last": [149.09],
+  "volume": [66959442],
+  "updated": [1663958092]
 }
 ```
 
 ## Request Parameters
 
-```mdx-code-block
 <Tabs>
 <TabItem value="required" label="Required" default>
-
-```
 
 - **symbol** `string`
 
@@ -122,27 +86,20 @@ print(response.text)
 
   Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
 
-```mdx-code-block
 </TabItem>
 <TabItem value="Optional" label="Optional">
-```
 
 - **52week** `boolean`
 
   Enable the output of 52-week high and 52-week low data in the quote output. By default this parameter is `false` if omitted.
 
-```mdx-code-block
 </TabItem>
 </Tabs>
-```
 
 ## Response Attributes
 
-```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
-
-```
 
 - **s** `string`
 
@@ -171,44 +128,44 @@ print(response.text)
 - **mid** `array[number]`
 
   The midpoint price between the ask and the bid.
+
 - **last** `array[number]`
 
   The last price the stock traded at.
+
 - **change** `array[number]`
 
   The difference in price in dollars (or the security's currency if different from dollars) compared to the closing price of the previous day.
+
 - **changepct** `array[number]`
 
   The difference in price in percent compared to the closing price of the previous day.
+
 - **52weekHigh** `array[number]`
 
   The 52-week high for the stock. This parameter is omitted unless the optional 52week request parameter is set to true.
+
 - **52weekLow** `array[number]`
 
   The 52-week low for the stock. This parameter is omitted unless the optional 52week request parameter is set to true.
+
 - **volume** `array[number]`
 
   The number of shares traded during the current session.
+
 - **updated** `array[date]`
 
   The date/time of the current stock quote.
-```mdx-code-block
 
 </TabItem>
 <TabItem value="NoData" label="No Data">
-
-```
 
 - **s** `string`
 
   Status will be `no_data` if no quote can be found for the symbol.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="Error" label="Error">
-
-```
 
 - **s** `string`
 
@@ -217,8 +174,5 @@ print(response.text)
 - **errmsg** `string`
   An error message.
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```

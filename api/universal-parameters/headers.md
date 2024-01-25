@@ -7,7 +7,7 @@ The headers parameter is used to turn off headers when using CSV output.
 
 ## Parameter
 
-    headers=<true|false>
+    headers=\<true\|false\>
 
 ## Use Example
 

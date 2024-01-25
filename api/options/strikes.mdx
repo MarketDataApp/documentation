@@ -11,10 +11,10 @@ import TabItem from "@theme/TabItem";
 ## Endpoint
 
 :::info Endpoint
-/strikes/{underlyingSymbol}
+/strikes/\{underlyingSymbol\}
 :::
 
-    /strikes/{underlyingSymbol}
+    /strikes/\{underlyingSymbol\}
 
 #### Method
 
@@ -22,20 +22,13 @@ import TabItem from "@theme/TabItem";
 
 ## Request Example
 
-```mdx-code-block
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-```
-
 **GET** [https://api.marketdata.app/v1/options/strikes/AAPL?expiration=2023-01-20](https://api.marketdata.app/v1/options/strikes/AAPL?expiration=2023-01-20)
-
-```mdx-code-block
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
-
-```
 
 ```js title="app.js"
 fetch(
@@ -49,11 +42,8 @@ fetch(
   });
 ```
 
-```mdx-code-block
 </TabItem>
 <TabItem value="Python" label="Python">
-
-```
 
 ```python title="app.py"
 import requests
@@ -65,79 +55,29 @@ response = requests.request("GET", url)
 print(response.text)
 ```
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
 
 ## Response Example
 
 ```json
 {
-  "s":"ok",
-  "updated":1663704000,
-  "2023-01-20":[
-    30.0,
-    35.0,
-    40.0,
-    50.0,
-    55.0,
-    60.0,
-    65.0,
-    70.0,
-    75.0,
-    80.0,
-    85.0,
-    90.0,
-    95.0,
-    100.0,
-    105.0,
-    110.0,
-    115.0,
-    120.0,
-    125.0,
-    130.0,
-    135.0,
-    140.0,
-    145.0,
-    150.0,
-    155.0,
-    160.0,
-    165.0,
-    170.0,
-    175.0,
-    180.0,
-    185.0,
-    190.0,
-    195.0,
-    200.0,
-    205.0,
-    210.0,
-    215.0,
-    220.0,
-    225.0,
-    230.0,
-    235.0,
-    240.0,
-    245.0,
-    250.0,
-    260.0,
-    270.0,
-    280.0,
-    290.0,
-    300.0
+  "s": "ok",
+  "updated": 1663704000,
+  "2023-01-20": [
+    30.0, 35.0, 40.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0,
+    95.0, 100.0, 105.0, 110.0, 115.0, 120.0, 125.0, 130.0, 135.0, 140.0, 145.0,
+    150.0, 155.0, 160.0, 165.0, 170.0, 175.0, 180.0, 185.0, 190.0, 195.0, 200.0,
+    205.0, 210.0, 215.0, 220.0, 225.0, 230.0, 235.0, 240.0, 245.0, 250.0, 260.0,
+    270.0, 280.0, 290.0, 300.0
   ]
 }
 ```
 
 ## Request Parameters
 
-```mdx-code-block
 <Tabs>
 <TabItem value="required" label="Required" default>
-
-```
 
 - **underlyingSymbol** `string`
 
@@ -150,12 +90,8 @@ print(response.text)
 
   Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="optional" label="Optional">
-
-```
 
 - **expiration** `date`
 
@@ -163,23 +99,17 @@ print(response.text)
 
 - **date** `date`
 
-  - Use to lookup a historical list of strikes from a specific previous trading day. 
-  - If date is omitted the expiration dates will be from the current trading day during market hours or from the last trading day when the market is closed. 
+  - Use to lookup a historical list of strikes from a specific previous trading day.
+  - If date is omitted the expiration dates will be from the current trading day during market hours or from the last trading day when the market is closed.
   - Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
-
-```mdx-code-block
 
 </TabItem>
 </Tabs>
-```
 
 ## Response Attributes
 
-```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
-
-```
 
 - **s** `string`
 
@@ -194,12 +124,8 @@ print(response.text)
 
   The date and time of this list of options strikes was updated in Unix time. For historical strikes, this number should match the `date` parameter.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="NoData" label="No Data">
-
-```
 
 - **s** `string`
 
@@ -213,12 +139,8 @@ print(response.text)
 
   Unix time of the previous quote if there is no data in the requested period, but there is data in a previous period.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="Error" label="Error">
-
-```
 
 - **s** `string`
 
@@ -227,8 +149,5 @@ print(response.text)
 - **errmsg** `string`
   An error message.
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```

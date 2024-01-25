@@ -1,5 +1,5 @@
 ---
-title: EARNINGS
+title: EARNINGS tg p
 sidebar_position: 3
 ---
 
@@ -22,6 +22,7 @@ Fetches current or historical earnings data for a stock ticker.
 - **symbol** _(REQUIRED)_ The stock’s ticker symbol.
 
 - **[attributes]** _(OPTIONAL)_ Use one or more attributes to customize the response:
+
   - "symbol" – The ticker symbol for the stock.
   - "year" – The fiscal year for the earnings report.
   - "quarter" – The fiscal quarter for the earnings report.

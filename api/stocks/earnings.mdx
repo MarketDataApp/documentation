@@ -20,25 +20,16 @@ https://api.marketdata.app/v1/stocks/earnings/{symbol}/
 
 ## Request Example
 
-```mdx-code-block
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-```
-
 **GET** [https://api.marketdata.app/v1/stocks/earnings/AAPL/](https://api.marketdata.app/v1/stocks/earnings/AAPL/)
-
-```mdx-code-block
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
 
-```
-
 ```js title="app.js"
-fetch(
-  "https://api.marketdata.app/v1/stocks/earnings/AAPL/"
-)
+fetch("https://api.marketdata.app/v1/stocks/earnings/AAPL/")
   .then((res) => {
     console.log(res);
   })
@@ -47,11 +38,8 @@ fetch(
   });
 ```
 
-```mdx-code-block
 </TabItem>
 <TabItem value="Python" label="Python">
-
-```
 
 ```python title="app.py"
 import requests
@@ -63,11 +51,8 @@ response = requests.request("GET", url)
 print(response.text)
 ```
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
 
 ## Response Example
 
@@ -91,12 +76,8 @@ print(response.text)
 
 ## Request Parameters
 
-```mdx-code-block
 <Tabs>
 <TabItem value="required" label="Required" default>
-
-```
-
 
 - **symbol** `string`
 
@@ -106,10 +87,8 @@ print(response.text)
   - Company Identifiers: (`CIK`, `LEI`)
   - Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
 
-```mdx-code-block
 </TabItem>
 <TabItem value="Optional" label="Optional">
-```
 
 - **from** `date`
 
@@ -131,19 +110,13 @@ print(response.text)
 
   Retrieve a specific earnings report by date and quarter. Example: `2023-Q4`. This allows you to retrieve a 4th qurater value without knowing the company's specific fiscal year.
 
-
-```mdx-code-block
 </TabItem>
 </Tabs>
-```
 
 ## Response Attributes
 
-```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
-
-```
 
 - **s** `string`
 
@@ -202,23 +175,15 @@ print(response.text)
 
   The date/time the earnings data for this ticker was last updated.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="NoData" label="No Data">
-
-```
 
 - **s** `string`
 
   Status will be `no_data` if no earnings data can be found for the symbol.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="Error" label="Error">
-
-```
 
 - **s** `string`
 
@@ -227,8 +192,5 @@ print(response.text)
 - **errmsg** `string`
   An error message.
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
