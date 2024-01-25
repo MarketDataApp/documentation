@@ -17,7 +17,7 @@ const config = {
       ? "https://docs.marketdata.app/"
       : "https://docs-staging.marketdata.app/",
 
-  baseUrl: "/docs",
+  baseUrl: "/",
   onBrokenLinks: "ignore",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
