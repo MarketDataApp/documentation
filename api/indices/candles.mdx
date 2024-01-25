@@ -22,20 +22,13 @@ import TabItem from "@theme/TabItem";
 
 ## Request Example
 
-```mdx-code-block
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-```
-
 **GET** [https://api.marketdata.app/v1/indices/candles/D/VIX?from=2022-09-01&to=2022-09-05](https://api.marketdata.app/v1/indices/candles/D/VIX?from=2022-09-01&to=2022-09-05)
-
-```mdx-code-block
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
-
-```
 
 ```js title="app.js"
 fetch(
@@ -47,14 +40,10 @@ fetch(
   .catch((err) => {
     console.log(err);
   });
-
 ```
 
-```mdx-code-block
 </TabItem>
 <TabItem value="Python" label="Python">
-
-```
 
 ```python title="app.py"
 import requests
@@ -66,107 +55,99 @@ response = requests.request("GET", url)
 print(response.text)
 ```
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
 
 ## Response Example
 
 ```json
-
 {
-  "s":"ok",
-  "c":[22.84,23.93,21.95,21.44,21.15],
-  "h":[23.27,24.68,23.92,22.66,22.58],
-  "l":[22.26,22.67,21.68,21.44,20.76],
-  "o":[22.41,24.08,23.86,22.06,21.5],
-  "t":[1659326400,1659412800,1659499200,1659585600,1659672000]
+  "s": "ok",
+  "c": [22.84, 23.93, 21.95, 21.44, 21.15],
+  "h": [23.27, 24.68, 23.92, 22.66, 22.58],
+  "l": [22.26, 22.67, 21.68, 21.44, 20.76],
+  "o": [22.41, 24.08, 23.86, 22.06, 21.5],
+  "t": [1659326400, 1659412800, 1659499200, 1659585600, 1659672000]
 }
 ```
 
 ## Request Parameters
 
-```mdx-code-block
 <Tabs>
 <TabItem value="required" label="Required" default>
-```
+
 - **resolution** `string`
   The duration of each candle.
-  
+
   Minutely Resolutions: (`minutely`, `1`, `3`, `5`, `15`, `30`, `45`, ...)
-  
+
   Hourly Resolutions: (`hourly`, `H`, `1H`, `2H`, ...)
-  
+
   Daily Resolutions: (`daily`, `D`, `1D`, `2D`, ...)
-  
+
   Weekly Resolutions: (`weekly`, `W`, `1W`, `2W`, ...)
-  
+
   Monthly Resolutions: (`monthly`, `M`, `1M`, `2M`, ...)
-  
+
   Yearly Resolutions:(`yearly`, `Y`, `1Y`, `2Y`, ...)
-  
+
 - **symbol** `string`
 
   The index symbol, without any leading or trailing index identifiers. For example, use DJI do not use $DJI, ^DJI, .DJI, DJI.X, etc.
-```mdx-code-block
+
 </TabItem>
 </Tabs>
-```
 
 ## Response Attributes
 
-```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
 
-```
 - **s** `string`
 
   Will always be `ok` when there is data for the candles requested.
-  
+
 - **o** `array[number]`
- 
-  Open price.  
+
+  Open price.
+
 - **h** `array[number]`
- 
+
   High price.
+
 - **l** `array[number]`
- 
+
   Low price.
+
 - **c** `array[number]`
- 
+
   Close price.
+
 - **t** `array[number]`
- 
+
   Candle time (Unix timestamp, UTC). Daily, weekly, monthly, yearly candles are returned without times.
-```mdx-code-block
 
 </TabItem>
 <TabItem value="NoData" label="No Data">
 
-```
 - **s** `string`
- 
+
   Status will be `no_data` if no candles are found for the request.
+
 - **nextTime** `number` optional
- 
+
   Unix time of the next quote if there is no data in the requested period, but there is data in a subsequent period.
-```mdx-code-block
 
 </TabItem>
 <TabItem value="Error" label="Error">
 
-```
 - **s** `string`
- 
+
   Status will be `error` if the request produces an error response.
+
 - **errmsg** `string`
- 
+
   An error message.
-```mdx-code-block
 
 </TabItem>
 </Tabs>
-```

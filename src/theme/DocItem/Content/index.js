@@ -27,8 +27,7 @@ function useSyntheticTitle() {
 }
 export default function DocItemContent({ children }) {
   const syntheticTitle = useSyntheticTitle();
-  const { metadata } = useDoc();
-  let { label, tag } = getLabelAndTag({ label: metadata.title });
+  let { label, tag } = getLabelAndTag({ label: syntheticTitle || "" });
   return (
     <div className={clsx(ThemeClassNames.docs.docMarkdown, "markdown")}>
       {syntheticTitle && (
