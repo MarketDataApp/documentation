@@ -22,8 +22,6 @@ UptimeRobot offers a [JSON file](https://stats.uptimerobot.com/api/getMonitorLis
 
 - JSON Status File: [https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A](https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A)
 
-
-```mdx-code-block
 <Tabs>
 <TabItem value="Bash" label="Bash" default>
 
@@ -34,44 +32,43 @@ awk -F',' '/"monitorId":787721652/ || /"monitorId":790800599/ {getline; if($0 ~ 
 
 ```
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
 
-```
-
 ```js title="status.js"
-const https = require('https');
+const https = require("https");
 
-const url = 'https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A';
+const url = "https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A";
 
-https.get(url, (response) => {
-  let data = '';
+https
+  .get(url, (response) => {
+    let data = "";
 
-  response.on('data', (chunk) => {
-    data += chunk;
-  });
-
-  response.on('end', () => {
-    const jsonData = JSON.parse(data);
-    jsonData.psp.monitors.forEach((monitor) => {
-      if (monitor.monitorId === 787721652 || monitor.monitorId === 790800599) {
-        const status = monitor.statusClass === 'success' ? 'Online' : 'Offline';
-        console.log(`${monitor.name}: ${status}`);
-      }
+    response.on("data", (chunk) => {
+      data += chunk;
     });
+
+    response.on("end", () => {
+      const jsonData = JSON.parse(data);
+      jsonData.psp.monitors.forEach((monitor) => {
+        if (
+          monitor.monitorId === 787721652 ||
+          monitor.monitorId === 790800599
+        ) {
+          const status =
+            monitor.statusClass === "success" ? "Online" : "Offline";
+          console.log(`${monitor.name}: ${status}`);
+        }
+      });
+    });
+  })
+  .on("error", (err) => {
+    console.log("Error:", err.message);
   });
-}).on('error', (err) => {
-  console.log('Error:', err.message);
-});
 ```
 
-```mdx-code-block
 </TabItem>
 <TabItem value="Python" label="Python">
-
-```
 
 ```python title="status.py"
 # Importing the required library
@@ -98,11 +95,8 @@ real_time_status = check_api_status(real_time_data_api_id)
 historical_status, real_time_status
 ```
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
 
 ## What To Do During Downtime
 

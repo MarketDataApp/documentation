@@ -18,20 +18,13 @@ import TabItem from "@theme/TabItem";
 
 ## Request Example
 
-```mdx-code-block
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-```
-
 **GET** [https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31](https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31)
-
-```mdx-code-block
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
-
-```
 
 ```js title="app.js"
 fetch(
@@ -55,11 +48,8 @@ fetch(
   });
 ```
 
-```mdx-code-block
 </TabItem>
 <TabItem value="Python" label="Python">
-
-```
 
 ```python title="app.py"
 import requests
@@ -74,11 +64,8 @@ print(response1.text)
 print(response2.text)
 ```
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
 
 ## Response Example
 
@@ -96,11 +83,8 @@ print(response2.text)
 
 ## Request Parameters
 
-```mdx-code-block
 <Tabs>
 <TabItem value="required" label="Required" default>
-
-```
 
 - **resolution** `string`
 
@@ -133,12 +117,8 @@ print(response2.text)
 
   Countback will fetch a number of candles before (to the left of) to If you use from, countback is not required.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="optional" label="Optional">
-
-```
 
 - **exchange** `string`
 
@@ -170,19 +150,13 @@ Adjusted dividend data is planned for the future, but not yet implemented. All d
   Daily candles default: `true`.
   Intraday candles default: `false`.
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
 
 ## Response Attributes
 
-```mdx-code-block
 <Tabs>
 <TabItem value="Success" label="Success" default>
-
-```
 
 - **s** `string`
 
@@ -211,12 +185,8 @@ Adjusted dividend data is planned for the future, but not yet implemented. All d
 - **t** `array[number]`
   Candle time (Unix timestamp, UTC). Daily, weekly, monthly, yearly candles are returned without times.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="NoData" label="No Data">
-
-```
 
 - **s** `string`
 
@@ -226,12 +196,8 @@ Adjusted dividend data is planned for the future, but not yet implemented. All d
 
   Unix time of the next quote if there is no data in the requested period, but there is data in a subsequent period.
 
-```mdx-code-block
-
 </TabItem>
 <TabItem value="Error" label="Error">
-
-```
 
 - **s** `string`
 
@@ -240,8 +206,5 @@ Adjusted dividend data is planned for the future, but not yet implemented. All d
 - **errmsg** `string`
   An error message.
 
-```mdx-code-block
-
 </TabItem>
 </Tabs>
-```
