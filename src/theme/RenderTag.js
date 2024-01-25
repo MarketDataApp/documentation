@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React from "react";
 
-function RenderTag({ tag, size = "large" }) {
+function RenderTag({ tag, size = "small" }) {
   switch (tag) {
     case "n":
       return (

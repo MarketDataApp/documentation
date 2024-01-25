@@ -32,9 +32,23 @@ export default function DocItemContent({ children }) {
     <div className={clsx(ThemeClassNames.docs.docMarkdown, "markdown")}>
       {syntheticTitle && (
         <header>
-          <Heading as="h1">
+          <Heading
+            as="h1"
+            style={{
+              alignItems: "center",
+              display: "flex",
+            }}>
             {`${label} `}
-            <RenderTag tag={tag} />
+            <div
+              style={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                paddingTop: 7,
+              }}>
+              <RenderTag tag={tag} />
+            </div>
           </Heading>
         </header>
       )}
