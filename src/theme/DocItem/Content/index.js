@@ -4,6 +4,8 @@ import { ThemeClassNames } from "@docusaurus/theme-common";
 import { useDoc } from "@docusaurus/theme-common/internal";
 import Heading from "@theme/Heading";
 import MDXContent from "@theme/MDXContent";
+import RenderTag from "../../RenderTag";
+import { getLabelAndTag } from "@site/src/utils/functions";
 /**
  Title can be declared inside md content or declared through
  front matter and added manually. To make both cases consistent,
@@ -26,32 +28,18 @@ function useSyntheticTitle() {
 export default function DocItemContent({ children }) {
   const syntheticTitle = useSyntheticTitle();
   const { metadata } = useDoc();
+  let { label, tag } = getLabelAndTag({ label: metadata.title });
   return (
     <div className={clsx(ThemeClassNames.docs.docMarkdown, "markdown")}>
       {syntheticTitle && (
         <header>
           <Heading as="h1">
-            {`${syntheticTitle} `}
-            {metadata.tags.length !== 0 && (
-              <RenderTag tag={metadata.tags[0].label} />
-            )}
+            {`${label} `}
+            <RenderTag tag={tag} />
           </Heading>
         </header>
       )}
       <MDXContent>{children}</MDXContent>
     </div>
   );
-}
-
-function RenderTag({ tag }) {
-  switch (tag) {
-    case "new":
-      return <span className="cus-tag tg-n">New</span>;
-    case "premium":
-      return <span className="cus-tag tg-p">Premium</span>;
-    case "high":
-      return <span className="cus-tag tg-h">High Usage</span>;
-    default:
-      return null;
-  }
 }

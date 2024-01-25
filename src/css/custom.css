@@ -113,7 +113,15 @@
   padding-bottom: 4px;
   border-radius: 8px;
 }
-
+.cus-tag-sm {
+  font-size: 12px;
+  margin-left: 6px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  border-radius: 4px;
+}
 .tg-n {
   background-color: blue;
 }
