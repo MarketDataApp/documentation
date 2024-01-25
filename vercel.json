@@ -4,6 +4,10 @@
       "source": "/docs-staging/:subdir*",
       "destination": "https://docs-staging.marketdata.app/:subdir*"
     },
+    {
+      "source": "/docs/:subdir*",
+      "destination": "https://docs.marketdata.app/:subdir*"
+    },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
