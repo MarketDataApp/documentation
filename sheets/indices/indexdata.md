@@ -13,6 +13,14 @@ Fetches a current or historical index price from Market Data.
 =INDEXDATA("SPX", "all", TODAY()-30, 30)
 ```
 
+```excel-formula
+=INT(RAND()*999)
+```
+
+```xls
+=AVERAGE(A4:A13)+N("Average user rating")
+```
+
 ## Syntax
 ```xlsx
 =INDEXDATA(symbol, [historial attribute|quote attribute], startDate, endDate, resolution)
