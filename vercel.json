@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/docs-staging/:subdir*",
-      "destination": "https://docs-staging.marketdata.app/:subdir*"
+      "destination": "https://marketdata.app/docs-staging/:subdir*"
     },
     {
       "source": "/docs/:subdir*",
