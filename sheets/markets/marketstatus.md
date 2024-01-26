@@ -1,19 +1,19 @@
 ---
-title: MARKETSTATUS tg h
+title: MARKETSTATUS
 sidebar_position: 1
 ---
 
 Get the past, present, or future status for a stock market for a single date or multiple dates. The formula will respond with "open" for trading days or "closed" for weekends or market holidays.
 
 ## Sample Usage
-```
+```excel-formula
 MARKETSTATUS()
 MARKETSTATUS("US","all","1/1/2022","12/31/2022")
 MARKETSTATUS("US","status","yesterday")
 ```
 
 ## Syntax
-```
+```excel-formula
 MARKETSTATUS(country, [attributes], start date, end date)
 ```
 

@@ -6,15 +6,15 @@ sidebar_position: 1
 Fetches a current or historical option quote from Market Data.
 
 ## Sample Usage
-```
-OPTIONDATA("AAPL250117C00150000")
-OPTIONDATA("AAPL250117C00150000", "bid")
-OPTIONDATA("AAPL250117C00150000", "date,bid,ask", "9/1/2022", "1/31/2023")
-OPTIONDATA("AAPL250117C00150000", "all", TODAY()-30, 30)
+```excel-formula
+=OPTIONDATA("AAPL250117C00150000")
+=OPTIONDATA("AAPL250117C00150000", "bid")
+=OPTIONDATA("AAPL250117C00150000", "date,bid,ask", "9/1/2022", "1/31/2023")
+=OPTIONDATA("AAPL250117C00150000", "all", TODAY()-30, 30)
 ```
 ## Syntax
-```
-OPTIONDATA(option symbol, [attributes], start date, end date)
+```excel-formula
+=OPTIONDATA(option symbol, [attributes], start date, end date)
 ```
 
 - **option symbol** _(REQUIRED)_ Use the current OCC option symbol format for the option symbol, even for historic options prior to the symbol format change in 2010.

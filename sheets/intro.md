@@ -1,5 +1,5 @@
 ---
-title: Introduction tg n
+title: Introduction
 sidebar_position: 1
 slug: /
 ---

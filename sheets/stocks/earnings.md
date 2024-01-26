@@ -12,15 +12,15 @@ This formula can only be used with paid plans. Free plans or trial plans will no
 Fetches current or historical earnings data for a stock ticker.
 
 ## Sample Usage
-```
-EARNINGS("AAPL")
-EARNINGS("AAPL", "all,noheaders")
-EARNINGS("AAPL", "year,quarter,eps,eps surprise", "1/1/2021", "12/31/2021")
+```excel-formula
+=EARNINGS("AAPL")
+=EARNINGS("AAPL", "all,noheaders")
+=EARNINGS("AAPL", "year,quarter,eps,eps surprise", "1/1/2021", "12/31/2021")
 ```
 
 ## Syntax
-```
-EARNINGS(symbol, [attributes], start date, end date)
+```excel-formula
+=EARNINGS(symbol, [attributes], start date, end date)
 ```
 - **symbol** _(REQUIRED)_ The stock’s ticker symbol.
 

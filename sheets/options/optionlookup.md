@@ -1,5 +1,5 @@
 ---
-title: OPTIONLOOKUP
+title: OPTIONLOOKUP tg n
 sidebar_position: 1
 ---
 
@@ -14,17 +14,17 @@ It is not necessary to know the exact date of the option expiration. The formula
 <iframe width="100%" height="503" src="https://www.youtube.com/embed/RTNAnJhAyf8" title="How To Lookup an OPTION SYMBOL In Google Sheets?" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Sample Usage
-```
-OPTIONLOOKUP("AAPL 7/21/2023 200 Call")
-OPTIONLOOKUP("AAPL 7/2023 $200 Call")
-OPTIONLOOKUP("AAPL July 2023 200 Call")
-OPTIONLOOKUP("AAPL Jan 200 Call")
-OPTIONLOOKUP(A1:D1)
+```excel-formula
+=OPTIONLOOKUP("AAPL 7/21/2023 200 Call")
+=OPTIONLOOKUP("AAPL 7/2023 $200 Call")
+=OPTIONLOOKUP("AAPL July 2023 200 Call")
+=OPTIONLOOKUP("AAPL Jan 200 Call")
+=OPTIONLOOKUP(A1:D1)
 ```
 
 ## Syntax
-```
-OPTIONLOOKUP("text")
+```excel-formula
+=OPTIONLOOKUP("text")
 ```
 
 - **text** _(REQUIRED)_ Text or 4 cell references containing (1) underlying symbol, (2) expiration date, (3) strike, (4) call or put. 

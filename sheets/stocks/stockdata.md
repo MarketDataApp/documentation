@@ -8,23 +8,23 @@ tags:
 Fetches a current stock quote or historical stock candles from Market Data. It can also fetch a single historical candle for multiple stocks.
 
 ## Sample Usage For Quotes
-```
-STOCKDATA("AAPL")
+```excel-formula
+=STOCKDATA("AAPL")
 ```
 ## Sample Usage For Candles
-```
-STOCKDATA("AAPL", "close", "1/1/2021", "1/31/2021", "hourly")
-STOCKDATA("AAPL", "all", TODAY()-30, 30)
+```excel-formula
+=STOCKDATA("AAPL", "close", "1/1/2021", "1/31/2021", "hourly")
+=STOCKDATA("AAPL", "all", TODAY()-30, 30)
 ```
 #### Bulk Candles
-```
-STOCKDATA("AAPL,MSFT,TSLA", "all", "today")
-STOCKDATA("AAPL,MSFT,TSLA", "all", "12/20/2023")
-STOCKDATA(A1:A3, "all", "12/20/2023")
+```excel-formula
+=STOCKDATA("AAPL,MSFT,TSLA", "all", "today")
+=STOCKDATA("AAPL,MSFT,TSLA", "all", "12/20/2023")
+=STOCKDATA(A1:A3, "all", "12/20/2023")
 ```
 ## Syntax
-```
-STOCKDATA(symbol, [historial attribute|quote attribute], start date, end date, resolution)
+```excel-formula
+=STOCKDATA(symbol, [historial attribute|quote attribute], start date, end date, resolution)
 ```
 - **symbol** _(REQUIRED)_ The stock’s ticker symbol.
 
