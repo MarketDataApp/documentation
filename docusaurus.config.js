@@ -14,8 +14,8 @@ const config = {
 
   url:
     process.env.PROD == "true"
-      ? "https://docs.marketdata.app/"
-      : "https://docs-staging.marketdata.app/",
+      ? "https://www.marketdata.app/"
+      : "https://www.marketdata.app/",
 
   baseUrl: process.env.PROD == "true" ? "/docs/" : "/docs-staging/",
   onBrokenLinks: "ignore",
