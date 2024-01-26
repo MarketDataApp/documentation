@@ -1,35 +1,36 @@
 ---
-title: STOCKDATA
+title: STOCKDATA tg h
 sidebar_position: 1
+tags:
+  - "Sheets: High Usage"
 ---
 
 Fetches a current stock quote or historical stock candles from Market Data. It can also fetch a single historical candle for multiple stocks.
 
 ## Sample Usage For Quotes
-
-    STOCKDATA("AAPL")
-
+```excel-formula
+=STOCKDATA("AAPL")
+```
 ## Sample Usage For Candles
-
-    STOCKDATA("AAPL", "close", "1/1/2021", "1/31/2021", "hourly")
-    STOCKDATA("AAPL", "all", TODAY()-30, 30)
-
+```excel-formula
+=STOCKDATA("AAPL", "close", "1/1/2021", "1/31/2021", "hourly")
+=STOCKDATA("AAPL", "all", TODAY()-30, 30)
+```
 #### Bulk Candles
-
-    STOCKDATA("AAPL,MSFT,TSLA", "all", "today")
-    STOCKDATA("AAPL,MSFT,TSLA", "all", "12/20/2023")
-    STOCKDATA(A1:A3, "all", "12/20/2023")
-
+```excel-formula
+=STOCKDATA("AAPL,MSFT,TSLA", "all", "today")
+=STOCKDATA("AAPL,MSFT,TSLA", "all", "12/20/2023")
+=STOCKDATA(A1:A3, "all", "12/20/2023")
+```
 ## Syntax
-
-    STOCKDATA(symbol, [historial attribute|quote attribute], start date, end date, resolution)
-
+```excel-formula
+=STOCKDATA(symbol, [historial attribute|quote attribute], start date, end date, resolution)
+```
 - **symbol** _(REQUIRED)_ The stock’s ticker symbol.
 
 - **[historial attributes | quote attributes]** _(Optional)_ Use a historical or quote attribute:
 
   - **historical attributes** _(OPTIONAL – "close" by default)_ Use one of the following attributes when requesting historical candles:
-
     - "open" – The opening price of the stock.
     - "high" – The high price of the stock.
     - "low" – The low price of the stock.
@@ -37,7 +38,6 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
     - "volume" – The number of shares traded.
     - "all" – Returns all values.
     - "symbol" - The ticker symbol of the stock. _Only returned when using a bulk candles formula._ 
-
 
   - **quote attributes** _(OPTIONAL – "mid" by default)_ Use one of the following attributes when requesting a quote:
     - "price", "mid", "mark" – The midpoint price of the stock.
@@ -62,25 +62,8 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
   - Yearly Resolutions: (_yearly_, _Y_, _1Y_, _2Y_, ...)
 
 ## Notes
-
-:::info Notes
-
-All parameters must be enclosed in quotation marks or be references to cells containing text. A possible exception is when endDate is specified as a number of days.
-
----
-
-Results with a single data point will be returned as a value within a single cell. Multiple data points will be returned as an expanded array with column headers.
-
----
-
-If any date parameters are specified, the request is considered historical and only the historical attributes are allowed.
-
----
-
-Dates and times are returned in the same timezone of the exchange.
-
----
-
-When writing bulk candles formulas, only a single date is allowed. Date ranges are not permitted. Only daily candles are supported for bulk candles.
-
-:::
+- All parameters must be enclosed in quotation marks or be references to cells containing text. A possible exception is when endDate is specified as a number of days.
+- Results with a single data point will be returned as a value within a single cell. Multiple data points will be returned as an expanded array with column headers.
+- If any date parameters are specified, the request is considered historical and only the historical attributes are allowed.
+- Dates and times are returned in the same timezone of the exchange.
+- When writing bulk candles formulas, only a single date is allowed. Date ranges are not permitted. Only daily candles are supported for bulk candles.

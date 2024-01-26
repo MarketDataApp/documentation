@@ -10,15 +10,12 @@ Get historical price candles for an index.
 
 ## Endpoint
 
-:::info Endpoint
-[/candles/\{resolution\}/\{symbol\}](/candles/{resolution}/{symbol})
-:::
-
-    /candles/\{resolution\}/\{symbol\}
+/candles/\{resolution\}/\{symbol\}
 
 #### Method
-
-    GET
+```
+GET
+```
 
 ## Request Example
 
@@ -47,11 +44,8 @@ fetch(
 
 ```python title="app.py"
 import requests
-
 url = "https://api.marketdata.app/v1/indices/candles/D/VIX?from=2022-09-01&to=2022-09-05"
-
 response = requests.request("GET", url)
-
 print(response.text)
 ```
 
@@ -80,15 +74,10 @@ print(response.text)
   The duration of each candle.
 
   Minutely Resolutions: (`minutely`, `1`, `3`, `5`, `15`, `30`, `45`, ...)
-
   Hourly Resolutions: (`hourly`, `H`, `1H`, `2H`, ...)
-
   Daily Resolutions: (`daily`, `D`, `1D`, `2D`, ...)
-
   Weekly Resolutions: (`weekly`, `W`, `1W`, `2W`, ...)
-
   Monthly Resolutions: (`monthly`, `M`, `1M`, `2M`, ...)
-
   Yearly Resolutions:(`yearly`, `Y`, `1Y`, `2Y`, ...)
 
 - **symbol** `string`

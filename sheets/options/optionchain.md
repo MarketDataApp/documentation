@@ -1,24 +1,27 @@
 ---
-title: OPTIONCHAIN
+title: OPTIONCHAIN tg h
 sidebar_position: 3
+tags:
+  - "Sheets: High Usage"
 ---
 
 Fetches a current option chain from Market Data.
 
 ## Video Tutorial
-
 <iframe width="100%" height="503" src="https://www.youtube.com/embed/Pwnsp5SsU3M" title="How To View and Filter The Options Chain" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Sample Usage
-
-    OPTIONCHAIN("AAPL","all","1/17/2025")
-    OPTIONCHAIN("AAPL","side,strike,bid,ask,","1/17/2025")
-    OPTIONCHAIN("AAPL","all,noheaders","60 DTE","150,160)
-    OPTIONCHAIN("AAPL","all","60 DTE","100-200","calls")
+```excel-formula
+=OPTIONCHAIN("AAPL","all","1/17/2025")
+=OPTIONCHAIN("AAPL","side,strike,bid,ask,","1/17/2025")
+=OPTIONCHAIN("AAPL","all,noheaders","60 DTE","150,160)
+=OPTIONCHAIN("AAPL","all","60 DTE","100-200","calls")
+```
 
 ## Syntax
-
-    OPTIONCHAIN(underlying symbol, [attributes], expiration date, [strikes], [filters])
+```excel-formula
+=OPTIONCHAIN(underlying symbol, [attributes], expiration date, [strikes], [filters])
+```
 
 - **underlying symbol** _(REQUIRED)_ Use the stock, etf, or underlying index symbol.
 - **attributes** _(OPTIONAL "all" by default)_ Use one or more of the following attributes; seperate multiple attributes with commas:
@@ -59,11 +62,11 @@ Fetches a current option chain from Market Data.
   - \[range of numbers] - A range of strikes falling between two numbers. Example: `"100-200"`
   - \[range of decimals] - A range of deltas falling between two decimals. Example: `".50-.60"`
   - "delta \[number]" - Use a single number for delta or a cell reference to a number. Example: `"delta .60"`
-  - \{array of numbers\} - Use a one column array containing each strike or a cell reference to the array. Example: `\{1;2;3;4\}`
-  - \{array of decimals\} - Use a one column array containing each delta or a cell reference to the array. Example: `\{.50;.60;.70;.80\}`
+  - \{array of numbers\} - Use a one column array containing each strike or a cell reference to the array. Example: `{1;2;3;4}`
+  - \{array of decimals\} - Use a one column array containing each delta or a cell reference to the array. Example: `{.50;.60;.70;.80}`
   - "string of numbers" - Seperate multiple strikes with commas. Example: `"150,160,170"`
   - "string of decimals" - Seperate multiple deltas with commas. Example: `".50,.60.,70"`
-  - "logical expression" - A logical expression. Example: `"<200"` `"delta <.50"`
+  - "logical expression" - A logical expression. Example: `"<200 delta <.50"`
   - "limit \[number]" - Limit the output to \[number] strikes closest to the money. Example: `"limit 4"`
 - **filters** _(OPTIONAL)_ – Use specific keywords to further filter the option chain.
   - "call", "calls" - Only return calls.
@@ -74,12 +77,5 @@ Fetches a current option chain from Market Data.
 
 ## Notes
 
-:::info Notes
-
-All parameters must be enclosed in quotation marks or be references to cells containing text.
-
----
-
-Dates and times are returned in the same timezone of the exchange.
-
-:::
+- All parameters must be enclosed in quotation marks or be references to cells containing text.
+- Dates and times are returned in the same timezone of the exchange.
