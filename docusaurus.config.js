@@ -84,9 +84,9 @@ const config = {
       "@docusaurus/plugin-content-docs",
       /** @type {import('@docusaurus/plugin-content-docs').Options} */
       {
-        id: "accounts-billing",
-        path: "accounts-billing",
-        routeBasePath: "accounts-billing",
+        id: "accounts",
+        path: "accounts",
+        routeBasePath: "accounts",
         editUrl:
           process.env.PROD == "true"
             ? "https://github.com/MarketDataApp/documentation/tree/main"
@@ -126,7 +126,7 @@ const config = {
             position: "left",
           },
           {
-            to: "/accounts-billing",
+            to: "/accounts",
             label: "Accounts & Billing",
             position: "left",
           },
