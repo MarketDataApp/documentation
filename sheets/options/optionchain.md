@@ -1,5 +1,5 @@
 ---
-title: OPTIONCHAIN
+title: OPTIONCHAIN tg h
 sidebar_position: 3
 tags:
   - "Sheets: High Usage"
@@ -77,12 +77,5 @@ Fetches a current option chain from Market Data.
 
 ## Notes
 
-:::info Notes
-
-All parameters must be enclosed in quotation marks or be references to cells containing text.
-
----
-
-Dates and times are returned in the same timezone of the exchange.
-
-:::
+- All parameters must be enclosed in quotation marks or be references to cells containing text.
+- Dates and times are returned in the same timezone of the exchange.
