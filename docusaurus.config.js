@@ -69,9 +69,9 @@ const config = {
       "@docusaurus/plugin-content-docs",
       /** @type {import('@docusaurus/plugin-content-docs').Options} */
       {
-        id: "sheets-add-on",
-        path: "sheets-add-on",
-        routeBasePath: "sheets-add-on",
+        id: "sheets",
+        path: "sheets",
+        routeBasePath: "sheets",
         editUrl:
           process.env.PROD == "true"
             ? "https://github.com/MarketDataApp/documentation/tree/main"
@@ -121,7 +121,7 @@ const config = {
             position: "left",
           },
           {
-            to: "/sheets-add-on",
+            to: "/sheets",
             label: "Sheets Add-On",
             position: "left",
           },
