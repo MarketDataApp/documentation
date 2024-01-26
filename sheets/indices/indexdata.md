@@ -6,7 +6,7 @@ sidebar_position: 1
 Fetches a current or historical index price from Market Data.
 
 ## Sample Usage
-```excel-formula
+```xlsx
 =INDEXDATA("SPX")
 =INDEXDATA("SPX", "all")
 =INDEXDATA("SPX", "close", "9/23/2022", "10/23/2022", "hourly")
@@ -14,7 +14,7 @@ Fetches a current or historical index price from Market Data.
 ```
 
 ## Syntax
-```excel-formula
+```xlsx
 =INDEXDATA(symbol, [historial attribute|quote attribute], startDate, endDate, resolution)
 ```
 
