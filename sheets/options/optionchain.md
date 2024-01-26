@@ -62,11 +62,11 @@ Fetches a current option chain from Market Data.
   - \[range of numbers] - A range of strikes falling between two numbers. Example: `"100-200"`
   - \[range of decimals] - A range of deltas falling between two decimals. Example: `".50-.60"`
   - "delta \[number]" - Use a single number for delta or a cell reference to a number. Example: `"delta .60"`
-  - \{array of numbers\} - Use a one column array containing each strike or a cell reference to the array. Example: `\{1;2;3;4\}`
-  - \{array of decimals\} - Use a one column array containing each delta or a cell reference to the array. Example: `\{.50;.60;.70;.80\}`
+  - \{array of numbers\} - Use a one column array containing each strike or a cell reference to the array. Example: `{1;2;3;4}`
+  - \{array of decimals\} - Use a one column array containing each delta or a cell reference to the array. Example: `{.50;.60;.70;.80}`
   - "string of numbers" - Seperate multiple strikes with commas. Example: `"150,160,170"`
   - "string of decimals" - Seperate multiple deltas with commas. Example: `".50,.60.,70"`
-  - "logical expression" - A logical expression. Example: `"<200"` `"delta <.50"`
+  - "logical expression" - A logical expression. Example: `"<200 delta <.50"`
   - "limit \[number]" - Limit the output to \[number] strikes closest to the money. Example: `"limit 4"`
 - **filters** _(OPTIONAL)_ – Use specific keywords to further filter the option chain.
   - "call", "calls" - Only return calls.

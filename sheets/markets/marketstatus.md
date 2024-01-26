@@ -7,14 +7,14 @@ Get the past, present, or future status for a stock market for a single date or 
 
 ## Sample Usage
 ```excel-formula
-MARKETSTATUS()
-MARKETSTATUS("US","all","1/1/2022","12/31/2022")
-MARKETSTATUS("US","status","yesterday")
+=MARKETSTATUS()
+=MARKETSTATUS("US","all","1/1/2022","12/31/2022")
+=MARKETSTATUS("US","status","yesterday")
 ```
 
 ## Syntax
 ```excel-formula
-MARKETSTATUS(country, [attributes], start date, end date)
+=MARKETSTATUS(country, [attributes], start date, end date)
 ```
 
 - **country** _(OPTIONAL)_ The two-letter country code. Currently only the US is supported.
