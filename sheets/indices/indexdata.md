@@ -7,15 +7,15 @@ Fetches a current or historical index price from Market Data.
 
 ## Sample Usage
 ```excel-formula
-INDEXDATA("SPX")
-INDEXDATA("SPX", "all")
-INDEXDATA("SPX", "close", "9/23/2022", "10/23/2022", "hourly")
-INDEXDATA("SPX", "all", TODAY()-30, 30)
+=INDEXDATA("SPX")
+=INDEXDATA("SPX", "all")
+=INDEXDATA("SPX", "close", "9/23/2022", "10/23/2022", "hourly")
+=INDEXDATA("SPX", "all", TODAY()-30, 30)
 ```
 
 ## Syntax
 ```excel-formula
-INDEXDATA(symbol, [historial attribute|quote attribute], startDate, endDate, resolution)
+=INDEXDATA(symbol, [historial attribute|quote attribute], startDate, endDate, resolution)
 ```
 
 - **symbol** _(REQUIRED)_ The index symbol, without any leading or trailing index identifiers. For example, use DJI do not use $DJI, ^DJI, .DJI, DJI.X, etc.
