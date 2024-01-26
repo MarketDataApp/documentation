@@ -1,24 +1,27 @@
 ---
 title: OPTIONCHAIN
 sidebar_position: 3
+tags:
+  - "Sheets: High Usage"
 ---
 
 Fetches a current option chain from Market Data.
 
 ## Video Tutorial
-
 <iframe width="100%" height="503" src="https://www.youtube.com/embed/Pwnsp5SsU3M" title="How To View and Filter The Options Chain" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Sample Usage
-
+```
     OPTIONCHAIN("AAPL","all","1/17/2025")
     OPTIONCHAIN("AAPL","side,strike,bid,ask,","1/17/2025")
     OPTIONCHAIN("AAPL","all,noheaders","60 DTE","150,160)
     OPTIONCHAIN("AAPL","all","60 DTE","100-200","calls")
+```
 
 ## Syntax
-
+```
     OPTIONCHAIN(underlying symbol, [attributes], expiration date, [strikes], [filters])
+```
 
 - **underlying symbol** _(REQUIRED)_ Use the stock, etf, or underlying index symbol.
 - **attributes** _(OPTIONAL "all" by default)_ Use one or more of the following attributes; seperate multiple attributes with commas:

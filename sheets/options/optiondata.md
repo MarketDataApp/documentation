@@ -6,15 +6,16 @@ sidebar_position: 1
 Fetches a current or historical option quote from Market Data.
 
 ## Sample Usage
-
-    OPTIONDATA("AAPL250117C00150000")
-    OPTIONDATA("AAPL250117C00150000", "bid")
-    OPTIONDATA("AAPL250117C00150000", "date,bid,ask", "9/1/2022", "1/31/2023")
-    OPTIONDATA("AAPL250117C00150000", "all", TODAY()-30, 30)
-
+```
+OPTIONDATA("AAPL250117C00150000")
+OPTIONDATA("AAPL250117C00150000", "bid")
+OPTIONDATA("AAPL250117C00150000", "date,bid,ask", "9/1/2022", "1/31/2023")
+OPTIONDATA("AAPL250117C00150000", "all", TODAY()-30, 30)
+```
 ## Syntax
-
-    OPTIONDATA(option symbol, [attributes], start date, end date)
+```
+OPTIONDATA(option symbol, [attributes], start date, end date)
+```
 
 - **option symbol** _(REQUIRED)_ Use the current OCC option symbol format for the option symbol, even for historic options prior to the symbol format change in 2010.
 - **attribute** _(OPTIONAL "price" by default)_ Use at least one of the following attributes; seperate multiple attributes with commas:
@@ -45,16 +46,6 @@ Fetches a current or historical option quote from Market Data.
 
 ## Notes
 
-:::info Notes
-
-All parameters must be enclosed in quotation marks or be references to cells containing text. A possible exception is when end date is specified as a number of days.
-
----
-
-Results will be returned as a value within a single cell if a single attribute is requested. Multiple attributes or multi-day results will be returned with column headers.
-
----
-
-Dates and times are returned in the same timezone of the exchange.
-
-:::
+- All parameters must be enclosed in quotation marks or be references to cells containing text. A possible exception is when end date is specified as a number of days.
+- Results will be returned as a value within a single cell if a single attribute is requested. Multiple attributes or multi-day results will be returned with column headers.
+- Dates and times are returned in the same timezone of the exchange.
