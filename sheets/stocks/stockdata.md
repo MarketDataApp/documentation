@@ -2,7 +2,7 @@
 title: STOCKDATA tg h
 sidebar_position: 1
 tags:
-  - Sheets: High Usage
+  - "Sheets: High Usage"
 ---
 
 Fetches a current stock quote or historical stock candles from Market Data. It can also fetch a single historical candle for multiple stocks.
