@@ -3,7 +3,7 @@ title: Feature Requests
 sidebar_position: 5
 ---
 
-Market Data is extremly customer-focused and we want our products and services to satisfy our users. Please make sure to visit our [Product Roadmap](https://roadmap.marketdata.app/) to see what we have planned along with our [Feature Request Board](https://roadmap.marketdata.app/features) to submit or upvote your own ideas.
+Market Data is _extremly_ customer-focused and we want our products and services to satisfy our users. Please make sure to visit our [Product Roadmap](https://roadmap.marketdata.app/) to see what we have planned along with our [Feature Request Board](https://roadmap.marketdata.app/features) to submit or upvote your own ideas.
 
 ## Feature Request Procedure
 

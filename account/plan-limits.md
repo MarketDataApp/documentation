@@ -6,9 +6,7 @@ sidebar_position: 2
 Each Market Data plan comes with certain limitations to allow for shared use of our servers. We offer several plans with different price points depending on the quantity of data needed.
 
 :::tip
-
 Most users don't run into trouble with our limits. However, if our standard plans do not fit your use-case, please do not hesitate to speak with sales. We'd be happy to provide you with a custom plan that meets your needs.
-
 :::
 
 ## Standard Plans
