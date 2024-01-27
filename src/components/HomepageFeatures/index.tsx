@@ -36,7 +36,7 @@ const FeatureList: FeatureItem[] = [
       </>
     ),
     darkImage: require("@site/static/img/pngs/sheets-darkmode.png").default,
-    link: "/sheets-add-on",
+    link: "/sheets",
   },
   {
     title: "Accounts & Billing",
@@ -48,7 +48,7 @@ const FeatureList: FeatureItem[] = [
       </>
     ),
     darkImage: require("@site/static/img/pngs/billing-darkmode.png").default,
-    link: "/accounts-billing",
+    link: "/account",
   },
 ];
 
