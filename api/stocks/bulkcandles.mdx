@@ -9,13 +9,13 @@ import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
 ## Endpoint
-
-    https://api.marketdata.app/v1/stocks/bulkcandles/{resolution}/
-
+```
+https://api.marketdata.app/v1/stocks/bulkcandles/{resolution}/
+```
 #### Method
-
-    GET
-
+```
+GET
+```
 ## Request Example
 
 <Tabs>
@@ -45,7 +45,6 @@ fetch(
 import requests
 
 url = "https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT"
-
 response = requests.request("GET", url)
 
 print(response.text)
@@ -64,10 +63,9 @@ print(response.text)
   "h": [196.95, 353.6, 373.26],
   "l": [195.89, 345.12, 369.84],
   "c": [196.94, 350.36, 373.26],
-  "v": [40714051, 17729362, 20593658]
+  "v": [40714051, 17729362, 20593658],
   "t": [1703048400,1703048400,1703048400]
 }
-
 ```
 
 ## Request Parameters

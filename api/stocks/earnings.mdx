@@ -9,15 +9,14 @@ import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
 ## Endpoint
-
-:::info Endpoint
+```
 https://api.marketdata.app/v1/stocks/earnings/{symbol}/
-:::
+```
 
 #### Method
-
-    GET
-
+```
+GET
+```
 ## Request Example
 
 <Tabs>
@@ -45,7 +44,6 @@ fetch("https://api.marketdata.app/v1/stocks/earnings/AAPL/")
 import requests
 
 url = "https://api.marketdata.app/v1/stocks/earnings/AAPL/"
-
 response = requests.request("GET", url)
 
 print(response.text)
@@ -60,16 +58,16 @@ print(response.text)
 {
   "s":"ok",
   "symbol": "AAPL",
-  "fiscalYear": 2023
-  "fiscalQuarter": 1
-  "date": 1672462800
+  "fiscalYear": 2023,
+  "fiscalQuarter": 1,
+  "date": 1672462800,
   "reportDate": 1675314000,
   "reportTime": "before market open",
   "currency": "USD",
   "reportedEPS": 1.88,
   "estimatedEPS": 1.94,
   "surpriseEPS": -0.06,
-  "surpriseEPSpct": -3.0928
+  "surpriseEPSpct": -3.0928,
   "updated": 1701690000
 }
 ```
