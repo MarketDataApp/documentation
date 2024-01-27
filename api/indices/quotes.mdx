@@ -9,15 +9,13 @@ import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
 ## Endpoint
-
-:::info Endpoint
+```
 https://api.marketdata.app/v1/indices/quotes/{symbol}/
-:::
-
+```
 #### Method
-
-    GET
-
+```
+GET
+```
 ## Request Example
 
 <Tabs>
@@ -45,7 +43,6 @@ fetch("https://api.marketdata.app/v1/indices/quotes/VIX/")
 import requests
 
 url = "https://api.marketdata.app/v1/indices/quotes/VIX/"
-
 response = requests.request("GET", url)
 
 print(response.text)

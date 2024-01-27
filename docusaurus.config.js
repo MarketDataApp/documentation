@@ -147,8 +147,8 @@ const config = {
         <p>© ${new Date().getFullYear()} Market Data. All Rights Reserved</p>
         <div class="footer-custom">
         <a target="_blank" style="font-size:15px" href="https://www.trustpilot.com/review/www.marketdata.app">See our Reviews On TrustPilot</a>
-        <a target="_blank" style="font-size:15px" href="https://www.marketdata.app/privacy">Privacy Policy</a>
-        <a target="_blank" style="font-size:15px" href="https://www.marketdata.app/terms">Terms & Conditions</a>
+        <a target="_blank" style="font-size:15px" href="https://www.marketdata.app/privacy/">Privacy Policy</a>
+        <a target="_blank" style="font-size:15px" href="https://www.marketdata.app/terms/">Terms & Conditions</a>
         <a target="_blank" style="font-size:15px" href="https://stats.uptimerobot.com/6Kv3zIow0A">System Status</a>
         </div>
         </div>`,

@@ -9,13 +9,13 @@ import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
 ## Endpoint
-
-    https://api.marketdata.app/v1/options/quotes/{optionSymbol}
-
+```
+https://api.marketdata.app/v1/options/quotes/{optionSymbol}/
+```
 #### Method
-
-    GET
-
+```
+GET
+```
 ## Request Example
 
 <Tabs>
@@ -43,7 +43,6 @@ fetch("https://api.marketdata.app/v1/options/quotes/AAPL250117C00150000/")
 import requests
 
 url = "https://api.marketdata.app/v1/options/quotes/AAPL250117C00150000/"
-
 response = requests.request("GET", url)
 
 print(response.text)
@@ -89,12 +88,8 @@ print(response.text)
 
   The option symbol (as defined by the OCC) for the option you wish to lookup. Use the current OCC option symbol format, even for historic options that quoted before the format change in 2010.
 
-
-
 </TabItem>
 <TabItem value="optional" label="Optional">
-
-
 
 - **date** `date`
 
