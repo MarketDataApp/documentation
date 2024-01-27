@@ -9,13 +9,13 @@ import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
 ## Endpoint
-
-    https://api.marketdata.app/v1/options/lookup/{userInput}
-
+```
+https://api.marketdata.app/v1/options/lookup/{userInput}
+```
 #### Method
-
-    GET
-
+```
+GET
+```
 ## Request Example
 
 <Tabs>
@@ -45,7 +45,6 @@ fetch(
 import requests
 
 url = "https://api.marketdata.app/v1/options/lookup/AAPL%207/28/2023%20200%20Call"
-
 response = requests.request("GET", url)
 
 print(response.text)
@@ -100,3 +99,7 @@ print(response.text)
 
 </TabItem>
 </Tabs>
+
+## Notes
+
+- This endpoint will return an error if the option symbol that would be formed by the user's input does not exist.

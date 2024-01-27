@@ -9,13 +9,13 @@ import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
 ## Endpoint
-
-    https://api.marketdata.app/v1/options/expirations/{underlyingSymbol}
-
+```
+https://api.marketdata.app/v1/options/expirations/{underlyingSymbol}/
+```
 #### Method
-
-    GET
-
+```
+GET
+```
 ## Request Example
 
 <Tabs>
@@ -43,7 +43,6 @@ fetch("https://api.marketdata.app/v1/options/expirations/AAPL")
 import requests
 
 url = "https://api.marketdata.app/v1/options/expirations/AAPL"
-
 response = requests.request("GET", url)
 
 print(response.text)
