@@ -45,7 +45,7 @@ If you make a habit of using Copy & Paste Values for your historical outputs, yo
 
 ### Use A Single Formula For All Your Real-Time Quotes
 
-Instead of using multiple [`STOCKDATA`](/docs/sheets/stockdata) formulas in your spreadsheet, use a single formula and send all the tickers you need at once. Not only will this use just one urlfetch call, but it will also speed up the loading process of your spreadsheet.
+Instead of using multiple [`STOCKDATA`](/sheets/stockdata) formulas in your spreadsheet, use a single formula and send all the tickers you need at once. Not only will this use just one urlfetch call, but it will also speed up the loading process of your spreadsheet.
 
 ### Refresh Prices Less Often
 
