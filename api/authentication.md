@@ -14,7 +14,7 @@ We recommend using header-based authentication to ensure your token is not store
 Add the token to the ```Authorization``` header using the word ```Token```. For example:
 
 ```http
-GET /v1/stocks/quotes/SPY/ HTTP/1.1
+GET /v1/stocks/quotes/AAPL/ HTTP/1.1
 Host: api.marketdata.app
 Accept: application/json
 Authorization: Token {token}
