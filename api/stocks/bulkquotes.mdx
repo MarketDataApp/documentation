@@ -1,16 +1,16 @@
 ---
-title: Quotes
-sidebar_position: 3
+title: Bulk Quotes
+sidebar_position: 4
 ---
 
-Get a real-time price quote for a stock.
+Get a real-time price quote for a multiple stocks in a single API request.
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
 ## Endpoint
 ```
-https://api.marketdata.app/v1/stocks/quotes/{symbol}/
+https://api.marketdata.app/v1/stocks/quotes/
 ```
 #### Method
 ```
@@ -21,13 +21,13 @@ GET
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-**GET** [https://api.marketdata.app/v1/stocks/quotes/AAPL/](https://api.marketdata.app/v1/stocks/quotes/AAPL/)
+**GET** [https://api.marketdata.app/v1/stocks/bulkquotes/?symbols=AAPL,META,MSFT](https://api.marketdata.app/v1/stocks/bulkquotes/?symbols=AAPL,META,MSFT)
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
 
 ```js title="app.js"
-fetch("https://api.marketdata.app/v1/stocks/quotes/AAPL/")
+fetch("https://api.marketdata.app/v1/stocks/bulkquotes/?symbols=AAPL,META,MSFT")
   .then((res) => {
     console.log(res);
   })
@@ -42,7 +42,7 @@ fetch("https://api.marketdata.app/v1/stocks/quotes/AAPL/")
 ```python title="app.py"
 import requests
 
-url = "https://api.marketdata.app/v1/stocks/quotes/AAPL/"
+url = "https://api.marketdata.app/v1/stocks/bulkquotes/?symbols=AAPL,META,MSFT"
 response = requests.request("GET", url)
 
 print(response.text)
@@ -55,41 +55,34 @@ print(response.text)
 
 ```json
 {
-  "s": "ok",
-  "symbol": ["AAPL"],
-  "ask": [149.08],
-  "askSize": [200],
-  "bid": [149.07],
-  "bidSize": [600],
-  "mid": [149.07],
-  "last": [149.09],
-  "volume": [66959442],
-  "updated": [1663958092]
+    "s": "ok",
+    "symbol": ["AAPL", "META", "MSFT"],
+    "ask": [187.67, 396.9, 407.0],
+    "askSize": [1, 6, 1],
+    "bid": [187.65, 396.8, 406.97],
+    "bidSize": [1, 3, 3],
+    "mid": [187.66, 396.85, 406.985],
+    "last": [187.65, 396.85, 407.0],
+    "change": [-4.079999999999984, -4.169999999999959, -2.7200000000000273],
+    "changepct": [-0.021279924894382643, -0.010398483866141239, -0.006638680074197078],
+    "volume": [55299411, 18344385, 29269513],
+    "updated": [1706650085, 1706650085, 1706650085]
 }
 ```
 
 ## Request Parameters
 
 <Tabs>
-<TabItem value="required" label="Required" default>
+<TabItem value="Required" label="Required" default>
+- **symbols** `string`
 
-- **symbol** `string`
-
-  The company's ticker symbol. If no exchange is specified, by default a US exchange will be assumed. You may embed the exchange in the ticker symbol using the Yahoo Finance or TradingView formats. A company or securities identifier can also be used instead of a ticker symbol.
-
-  Ticker Formats: (`TICKER`, `TICKER.EX`, `EXCHANGE:TICKER`)
-
-  Company Identifiers: (`CIK`, `LEI`)
-
-  Securities Identifiers: (`CUSIP`, `SEDOL`, `ISIN`, `FIGI`)
-
+  The ticker symbols to return in the response, separated by commas. The symbols parameter may be omitted if the `snapshot` parameter is set to true.
 </TabItem>
+
 <TabItem value="Optional" label="Optional">
+- **snapshot** `boolean`
 
-- **52week** `boolean`
-
-  Enable the output of 52-week high and 52-week low data in the quote output. By default this parameter is `false` if omitted.
-
+  Returns a full market snapshot with quotes for all symbols when set to `true`. The `symbols` parameter may be omitted if the `snapshot` parameter is set.
 </TabItem>
 </Tabs>
 
@@ -169,7 +162,12 @@ print(response.text)
   Status will be `error` if the request produces an error response.
 
 - **errmsg** `string`
+
   An error message.
 
 </TabItem>
 </Tabs>
+
+## Notes
+
+- The bulkquotes endpoint will consume one request for each symbol returned in the response.

@@ -11,12 +11,19 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
 ```excel-formula
 =STOCKDATA("AAPL")
 ```
+### Bulk Quotes
+```excel-formula
+=STOCKDATA("AAPL,MSFT,TSLA")
+=STOCKDATA("AAPL,MSFT,TSLA", "all")
+=STOCKDATA("A1:A500", "bid,ask,last")
+```
+
 ## Sample Usage For Candles
 ```excel-formula
 =STOCKDATA("AAPL", "close", "1/1/2021", "1/31/2021", "hourly")
 =STOCKDATA("AAPL", "all", TODAY()-30, 30)
 ```
-#### Bulk Candles
+### Bulk Candles
 ```excel-formula
 =STOCKDATA("AAPL,MSFT,TSLA", "all", "today")
 =STOCKDATA("AAPL,MSFT,TSLA", "all", "12/20/2023")
@@ -24,9 +31,9 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
 ```
 ## Syntax
 ```excel-formula
-=STOCKDATA(symbol, [historial attribute|quote attribute], start date, end date, resolution)
+=STOCKDATA(symbol(s), [historial attribute|quote attribute], start date, end date, resolution)
 ```
-- **symbol** _(REQUIRED)_ The stock’s ticker symbol.
+- **symbol(s)** _(REQUIRED)_ One or more ticker symbols for the stock(s).
 
 - **[historial attributes | quote attributes]** _(Optional)_ Use a historical or quote attribute:
 
@@ -47,6 +54,7 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
     - "bidSize" – The quantity of shares offered at the bid price.
     - "askSize" – The quantity of shares offered at the ask price.
     - "volume" – The quantity of shares traded.
+    - "symbol" - The ticker symbol of the stock. _Only returned when using a bulk candles formula._ 
     - "all" – Returns all values.
 
 - **startDate** _(OPTIONAL)_ The start date when fetching historical data. If start date is specified, but endDate is not, only the single day’s data is returned. Multiple tickers may be used if only a single day's data is being returned.
