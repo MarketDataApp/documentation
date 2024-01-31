@@ -79,12 +79,16 @@ print(response.text)
 
   - Daily Resolutions: (`daily`, `D`, `1D`)
 
+- **symbols** `string`
+
+  The ticker symbols to return in the response, separated by commas. The symbols parameter may be omitted if the `snapshot` parameter is set to `true`.
+
 </TabItem>
 <TabItem value="Optional" label="Optional">
 
-- **symbols** `string`
+- **snapshot** `boolean`
 
-  The ticker symbols to return in the response, separated by commas. If the symbols parameter is not provided, a full market response that includes all symbols will be returned.
+  Returns candles for all available symbols for the date indicated. The `symbols` parameter can be omitted if `snapshot` is set to true.
 
 - **date** `date`
 
@@ -94,7 +98,6 @@ print(response.text)
 
   Adjust historical data for for historical splits and reverse splits. Market Data uses the CRSP methodology for adjustment.
   Daily candles default: `true`.
-  Intraday candles default: `false`.
 
 </TabItem>
 </Tabs>
@@ -157,5 +160,9 @@ print(response.text)
 </Tabs>
 
 :::info
-Please note that only stocks, ETFs, and closed-end funds are available via the bulk candles endpoint. Mutual fund data is not avaialble via this endpoint.
 :::
+
+## Notes
+
+- Only stocks, ETFs, and closed-end funds are available via the bulkcandles endpoint. Mutual fund data is not avaialble via this endpoint.
+- The bulkcandles endpoint will consume one request for each symbol returned in the response.
