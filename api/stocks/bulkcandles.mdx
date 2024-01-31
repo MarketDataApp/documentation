@@ -103,42 +103,53 @@ print(response.text)
 <TabItem value="Success" label="Success" default>
 
 - **s** `string`
+
   Will always be `ok` when there is data for the candles requested.
 
 - **symbol** `string`
+
   The ticker symbol of the stock.
 
 - **o** `array[number]`
+
   Open price.
 
 - **h** `array[number]`
+
   High price.
 
 - **l** `array[number]`
+
   Low price.
 
 - **c** `array[number]`
+
   Close price.
 
 - **v** `array[number]`
+
   Volume.
 
 - **t** `array[number]`
+
   Candle time (Unix timestamp, Exchange Timezone). Daily candles are returned at 00:00:00 without times.
 
 </TabItem>
 <TabItem value="NoData" label="No Data">
 
 - **s** `string`
+
   Status will be `no_data` if no candles are found for the request.
 
 </TabItem>
 <TabItem value="Error" label="Error">
 
 - **s** `string`
+
   Status will be `error` if the request produces an error response.
 
 - **errmsg** `string`
+
   An error message.
 
 </TabItem>

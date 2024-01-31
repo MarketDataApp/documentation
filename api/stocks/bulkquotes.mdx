@@ -92,60 +92,77 @@ print(response.text)
 <TabItem value="Success" label="Success" default>
 
 - **s** `string`
+
   Will always be `ok` when there is data for the symbol requested.
 
 - **symbol** `array[string]`
+
   The symbol of the stock.
 
 - **ask** `array[number]`
+
   The ask price of the stock.
 
 - **askSize** `array[number]`
+
   The number of shares offered at the ask price.
 
 - **bid** `array[number]`
+
   The bid price.
 
 - **bidSize** `array[number]`
+
   The number of shares that may be sold at the bid price.
 
 - **mid** `array[number]`
+
   The midpoint price between the ask and the bid.
 
 - **last** `array[number]`
+
   The last price the stock traded at.
 
 - **change** `array[number]`
+
   The difference in price in dollars (or the security's currency if different from dollars) compared to the closing price of the previous day.
 
 - **changepct** `array[number]`
+
   The difference in price in percent compared to the closing price of the previous day.
 
 - **52weekHigh** `array[number]`
+
   The 52-week high for the stock. This parameter is omitted unless the optional 52week request parameter is set to true.
 
 - **52weekLow** `array[number]`
+
   The 52-week low for the stock. This parameter is omitted unless the optional 52week request parameter is set to true.
 
 - **volume** `array[number]`
+
   The number of shares traded during the current session.
 
 - **updated** `array[date]`
+
   The date/time of the current stock quote.
 
 </TabItem>
 <TabItem value="NoData" label="No Data">
 
 - **s** `string`
+
   Status will be `no_data` if no quote can be found for the symbol.
 
 </TabItem>
 <TabItem value="Error" label="Error">
 
 - **s** `string`
+
   Status will be `error` if the request produces an error response.
 
 - **errmsg** `string`
+
   An error message.
 
 </TabItem>
