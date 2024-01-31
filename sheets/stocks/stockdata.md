@@ -23,7 +23,7 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
 =STOCKDATA("AAPL", "close", "1/1/2021", "1/31/2021", "hourly")
 =STOCKDATA("AAPL", "all", TODAY()-30, 30)
 ```
-#### Bulk Candles
+### Bulk Candles
 ```excel-formula
 =STOCKDATA("AAPL,MSFT,TSLA", "all", "today")
 =STOCKDATA("AAPL,MSFT,TSLA", "all", "12/20/2023")
