@@ -74,13 +74,11 @@ print(response.text)
 <TabItem value="required" label="Required" default>
 
 - **resolution** `string`
-
   The duration of each candle. Only daily candles are supported at this time.
 
   - Daily Resolutions: (`daily`, `D`, `1D`)
 
 - **symbols** `string`
-
   The ticker symbols to return in the response, separated by commas. The symbols parameter may be omitted if the `snapshot` parameter is set to `true`.
 
 </TabItem>
@@ -105,49 +103,39 @@ print(response.text)
 <TabItem value="Success" label="Success" default>
 
 - **s** `string`
-
   Will always be `ok` when there is data for the candles requested.
 
 - **symbol** `string`
-
   The ticker symbol of the stock.
 
 - **o** `array[number]`
-
   Open price.
 
 - **h** `array[number]`
-
   High price.
 
 - **l** `array[number]`
-
   Low price.
 
 - **c** `array[number]`
-
   Close price.
 
 - **v** `array[number]`
-
   Volume.
 
 - **t** `array[number]`
-
   Candle time (Unix timestamp, Exchange Timezone). Daily candles are returned at 00:00:00 without times.
 
 </TabItem>
 <TabItem value="NoData" label="No Data">
 
 - **s** `string`
-
   Status will be `no_data` if no candles are found for the request.
 
 </TabItem>
 <TabItem value="Error" label="Error">
 
 - **s** `string`
-
   Status will be `error` if the request produces an error response.
 
 - **errmsg** `string`
