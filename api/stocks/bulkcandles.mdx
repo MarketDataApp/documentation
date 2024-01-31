@@ -87,15 +87,12 @@ print(response.text)
 <TabItem value="Optional" label="Optional">
 
 - **snapshot** `boolean`
-
   Returns candles for all available symbols for the date indicated. The `symbols` parameter can be omitted if `snapshot` is set to true.
 
 - **date** `date`
-
   The date of the candles to be returned. If no date is specified, during market hours the candles returned will be from the current session. If the market is closed the candles will be from the most recent session. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
 
 - **adjustsplits** `boolean`
-
   Adjust historical data for for historical splits and reverse splits. Market Data uses the CRSP methodology for adjustment.
   Daily candles default: `true`.
 
@@ -158,9 +155,6 @@ print(response.text)
 
 </TabItem>
 </Tabs>
-
-:::info
-:::
 
 ## Notes
 
