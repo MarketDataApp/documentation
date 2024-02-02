@@ -109,15 +109,15 @@ print(response2.text)
 
 - **from** `date`
 
-  The leftmost candle on a chart (inclusive). If you use countback, to is not required. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+  The leftmost candle on a chart (inclusive). If you use `countback`, `to` is not required. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
 
 - **to** `date`
 
-  The rightmost candle on a chart (not inclusive). Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+  The rightmost candle on a chart (inclusive). Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
 
 - **countback** `number`
 
-  Countback will fetch a number of candles before (to the left of) to If you use from, countback is not required.
+  Will fetch a number of candles before (to the left of) `to`. If you use `from`, `countback` is not required.
 
 </TabItem>
 <TabItem value="optional" label="Optional">
