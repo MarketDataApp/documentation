@@ -5,6 +5,10 @@ sidebar_position: 4
 
 Get a real-time price quote for a multiple stocks in a single API request.
 
+:::tip
+The bulkquotes endpoint is designed to return hundreds of symbols at once or full market snapshots. Response times for less than 50 symbols will be quicker using the standard [quotes endpoint](/api/stocks/quotes/) and sending your requests in parallel.
+:::
+
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
