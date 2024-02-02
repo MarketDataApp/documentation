@@ -13,15 +13,15 @@ Most users don't run into trouble with our limits. However, if our standard plan
 
 |                       | Free Forever | Starter   | Trader    | Commercial Plans |
 |-----------------------|--------------|-----------|-----------|------------------|
-| Daily Requests        | 100          | 10,000    | 100,000   | No Limit         |
+| Daily Credits         | 100          | 10,000    | 100,000   | No Limit         |
 | Daily Backtests       | 1            | 100       | 1000      | No Limit *       |
 | Brokerage Connections | 0            | 1         | No Limit  | No Limit         |
-| Historical Data       | 1 Year       | 5 Years   | 50 Years  | No Limit         |
+| Historical Data       | 1 Year       | 5 Years   | No Limit  | No Limit         |
 | Data Type             | Delayed      | Real-time | Real-time | Real-time        |
 | API Endpoints         | Standard     | Premium   | Premium   | Premium + Custom |
 
-## Requests Limit
-Each time you make a request to the API, the system will increase your counter. Normally each successful response will increase your counter by 1 and each call to our API will be counted once. However, **if you request prices for multiple symbols in a single API call using the option chain endpoint, a request will be used for each option symbol that is included in the response**. 
+## Credits
+Each time you make a request to the API, the system will increase your credits counter. Normally each successful response will increase your counter by 1 and each call to our API will be counted once. However, **if you request multiple symbols in a single API call using the bulkquotes, bulkcandles, or option chain endpoint, a request will be used for each symbol that is included in the response**. 
 
 :::caution 
 For users working with options, take care before repeatly requesting quotes for an entire option chain. **Each option symbol included in the response will consume a request**. If you were to download the entire SPX option chain (which has 20,000+ option symbols), you would exhaust your request limit very quickly. Use our extensive option chain filtering parameters to request only the strikes/expirations you need. 
@@ -29,7 +29,7 @@ For users working with options, take care before repeatly requesting quotes for 
 
 #### Throttling
 
-Plans with unlimited daily API calls are subject to throttling and can receive a total of 1000 prices per second. If this throttling is unacceptable for your use case, please let us know how we can meet your needs. The Starter and Trader plans (and any plan with a published daily request limit has no per second throttling.
+Plans with unlimited daily API calls are subject to throttling and can spend a total of 60,000 credits per minute. If this throttling is unacceptable for your use case, please let us know how we can meet your needs. The Starter and Trader plans (and any plan with a published daily request limit) has no per minute throttling.
 
 ## Daily Backtests Limit
 

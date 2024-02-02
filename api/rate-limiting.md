@@ -1,14 +1,13 @@
 ---
-title: Rate Limiting
+title: Rate Limits
 sidebar_position: 3
 ---
 
-We enforce rate limits to ensure our API remains accessible and efficient for all users. Normally each API call consumes a single request. However, **if the response includes more than a single symbol, it can consume multiple requests**. Often, users can navigate around a rate limit by making the most of the diverse filters we provide (e.g., instead of retrieving an entire option chain, apply specific filters to narrow down the results).
+We enforce rate limits to ensure our API remains accessible and efficient for all users. Normally each API call consumes a single credit. However, **if the response includes more than a single symbol, it can consume multiple credits**. Often, users can navigate around a rate limit by making the most of the diverse filters we provide (e.g., instead of retrieving an entire option chain, apply specific filters to narrow down the results).
 
 **The rate limit is a hard limit. Once the limit has been reached, you will no longer be able to make requests until the request counter resets.** Requests in excess of the rate limit will generate 429 responses.
 
 ## Rate Limits By Plan
-
 Different plans have specific rate limits, with most plans enforcing a daily rate limit while our Commercial Plan uses a per minute rate limit.
 
 |                  | Free Forever | Starter   | Trader    | Commercial Plans |
@@ -16,18 +15,17 @@ Different plans have specific rate limits, with most plans enforcing a daily rat
 | Daily Limit      | 100          | 10,000    | 100,000   | No Limit         |
 | Per Minute Limit | No Limit     | No Limit  | No Limit  | 60,000           |
 
-
 #### Summary
 
-- **Free Forever Plan:** 100 requests/prices per day.
-- **Starter Plan:** 10,000 requests/prices per day.
-- **Trader Plan:** 100,000 requests/prices per day.
-- **Commercial Plan:** 60,000 requests/prices per minute.
+- **Free Forever Plan:** 100 credits per day.
+- **Starter Plan:** 10,000 credits per day.
+- **Trader Plan:** 100,000 credits per day.
+- **Commercial Plan:** 60,000 credits per minute.
 
-The usage counter for all plans with a daily limit are reset at 9:30 AM Eastern Time (NYSE opening bell).
+The usage counter for all plans with a daily limit are reset at **9:30 AM Eastern Time** (NYSE opening bell).
 
-## Requests vs Prices
-Each time you make a request to the API, the system will increase your counter. Normally each successful response will increase your counter by 1 and each call to our API will be counted once. However, **if you request prices for multiple symbols in a single API call using the option chain endpoint, a request will be used for each option symbol that is included in the response**. 
+## Credits
+Each time you make a request to the API, the system will increase your credits counter. Normally each successful response will increase your counter by 1 and each call to our API will be counted as a single credit. However, **if you request multiple symbols in a single API call using the bulkquotes, the bulkcandles, or the option chain endpoint, a request will be used for each symbol that is included in the response**.
 
 :::caution 
 For users working with options, take care before repeatly requesting quotes for an entire option chain. **Each option symbol included in the response will consume a request**. If you were to download the entire SPX option chain (which has 20,000+ option symbols), you would exhaust your request limit very quickly. Use our extensive option chain filtering parameters to request only the strikes/expirations you need. 
@@ -41,16 +39,15 @@ We provide the following headers in our responses to help you manage the rate li
 - `X-Api-RateLimit-Reset`: The time at which the current rate limit window resets in UTC epoch seconds.
 - `X-Api-RateLimit-Consumed`: The quantity of requests that were consumed in the current request.
 
-## Detailed Rules
+## Detailed Rate Limit Rules
 - Each successful response increases the counter by a minimum of 1 request.
 - Only status 200/203 responses consume requests.
 - NULL responses are not counted.
 - Error responses are not counted.
 - Responses may consume more than 1 request if the response includes prices for more than 1 symbol (e.g. an OPTIONCHAIN endpoint).
-- Responses that include more than one symbol, but do not include the bid, ask, or mid columns **do not** consume prices and are counted as a single request.
+- Responses that include more than one symbol, but do not include the **bid**, **ask**, **mid**, or **last** columns _**do not**_ consume multiple credits and are counted as a single request.
 - Certain free trial symbols like AAPL stock, AAPL options, or the VIX index do not consume requests.
 
 ## Strategies To Avoid Rate Limiting
-
-- Exclude the bid, ask, mid symbols from your option chain requests if the current price is not needed.
+- Exclude the bid, ask, mid, and last columns from your option chain requests if the current price is not needed.
 - Use the extensive option chain filters such as `strikeLimit` to exclude unnecessary strikes from your requests.
