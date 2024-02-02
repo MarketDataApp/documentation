@@ -26,11 +26,11 @@ function RenderTag({ tag, size = "small" }) {
           Premium
         </span>
       );
-    case "b": // For "Best Seller" tag, currently styled same as "Premium"
+    case "b": // For "Beta" tag
       return (
         <span
           className={clsx("cus-tag tg-b", size === "small" && "cus-tag-sm")}>
-          Best Seller
+          Beta
         </span>
       );
     case "h": // For "High Usage" tag

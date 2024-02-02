@@ -124,7 +124,7 @@
 }
 /* Background colors for tags */
 .tg-n {
-  background-color: #0f9d58; /* New: Green */
+  background-color: #0f9d58; /* New: Google Sheets Green */
 }
 .tg-p {
   background-color: #e83155; /* Premium: Red */
@@ -133,5 +133,5 @@
   background-color: #003286; /* High Usage: Blue */
 }
 .tg-b {
-  background-color: #003286; /* Best Seller: Blue */
+  background-color: #E65100; /* Beta: Orange */
 }
