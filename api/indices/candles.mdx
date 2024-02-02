@@ -86,6 +86,18 @@ print(response.text)
 
   The index symbol, without any leading or trailing index identifiers. For example, use DJI do not use $DJI, ^DJI, .DJI, DJI.X, etc.
 
+- **from** `date`
+
+  The leftmost candle on a chart (inclusive). If you use `countback`, `to` is not required. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+
+- **to** `date`
+
+  The rightmost candle on a chart (inclusive). Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+
+- **countback** `number`
+
+  Will fetch a number of candles before (to the left of) `to`. If you use `from`, `countback` is not required.
+
 </TabItem>
 </Tabs>
 
