@@ -122,13 +122,16 @@
   padding-bottom: 3px;
   border-radius: 4px;
 }
+/* Background colors for tags */
 .tg-n {
-  background-color: #0f9d58;
+  background-color: #0f9d58; /* New: Green */
 }
 .tg-p {
-  background-color: #e83155;
+  background-color: #e83155; /* Premium: Red */
 }
-
 .tg-h {
-  background-color: #003286;
+  background-color: #003286; /* High Usage: Blue */
+}
+.tg-b {
+  background-color: #003286; /* Best Seller: Blue */
 }
