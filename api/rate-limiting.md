@@ -7,6 +7,16 @@ We enforce rate limits to ensure our API remains accessible and efficient for al
 
 **The rate limit is a hard limit. Once the limit has been reached, you will no longer be able to make requests until the request counter resets.** Requests in excess of the rate limit will generate 429 responses.
 
+## Usage Counter Reset Time
+
+The usage counter for all plans with a daily limit resets at **9:30 AM Eastern Time** (NYSE opening bell). This reset timing is crucial for users to understand so they can plan their API usage efficiently without hitting the rate limit unexpectedly.
+
+:::tip Managing Timezone Changes
+To handle the reset time accurately regardless of your local timezone, it's recommended to use the `America/New_York` timezone identifier. This ensures that your application adjusts for any changes in Eastern Time, including daylight saving shifts, automatically.
+
+By aligning your application's timing functions with the `America/New_York` timezone, you can ensure that your usage of the API remains within the allocated rate limits, taking into account the precise reset timing at 9:30 AM Eastern Time.
+:::
+
 ## Rate Limits By Plan
 Different plans have specific rate limits, with most plans enforcing a daily rate limit while our Commercial Plan uses a per minute rate limit.
 
@@ -21,8 +31,6 @@ Different plans have specific rate limits, with most plans enforcing a daily rat
 - **Starter Plan:** 10,000 credits per day.
 - **Trader Plan:** 100,000 credits per day.
 - **Commercial Plan:** 60,000 credits per minute.
-
-The usage counter for all plans with a daily limit are reset at **9:30 AM Eastern Time** (NYSE opening bell).
 
 ## Credits
 Each time you make a request to the API, the system will increase your credits counter. Normally each successful response will increase your counter by 1 and each call to our API will be counted as a single credit. However, **if you request multiple symbols in a single API call using the bulkquotes, the bulkcandles, or the option chain endpoint, a request will be used for each symbol that is included in the response**.
