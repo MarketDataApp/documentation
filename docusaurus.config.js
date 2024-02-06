@@ -69,6 +69,21 @@ const config = {
       "@docusaurus/plugin-content-docs",
       /** @type {import('@docusaurus/plugin-content-docs').Options} */
       {
+        id: "sdk",
+        path: "sdk",
+        routeBasePath: "sdk",
+        editUrl:
+          process.env.PROD == "true"
+            ? "https://github.com/MarketDataApp/documentation/tree/main"
+            : "https://github.com/MarketDataApp/documentation/tree/dev",
+
+        sidebarPath: require.resolve("./sidebars.js"),
+      },
+    ],
+    [
+      "@docusaurus/plugin-content-docs",
+      /** @type {import('@docusaurus/plugin-content-docs').Options} */
+      {
         id: "sheets",
         path: "sheets",
         routeBasePath: "sheets",
