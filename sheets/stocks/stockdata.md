@@ -37,6 +37,10 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
 
 - **[historial attributes | quote attributes]** _(Optional)_ Use a historical or quote attribute:
 
+  - **"price"** _(OPTIONAL)_ Special dual-mode quote/candle attribute.
+    - Displays the midpoint price during market hours.
+    - Displays the closing price of the last session outside of market hours.
+
   - **historical attributes** _(OPTIONAL – "close" by default)_ Use one of the following attributes when requesting historical candles:
     - "open" – The opening price of the stock.
     - "high" – The high price of the stock.
@@ -47,7 +51,7 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
     - "symbol" - The ticker symbol of the stock. _Only returned when using a bulk candles formula._ 
 
   - **quote attributes** _(OPTIONAL – "mid" by default)_ Use one of the following attributes when requesting a quote:
-    - "price", "mid", "mark" – The midpoint price of the stock.
+    - "mid", "mark" – The midpoint price of the stock.
     - "bid" – The bid price of the stock.
     - "ask" – The ask price of the stock.
     - "last" – The last price of the stock.
