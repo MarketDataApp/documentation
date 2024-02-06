@@ -121,6 +121,11 @@ const config = {
             position: "left",
           },
           {
+            to: "/sdk",
+            label: "SDKs",
+            position: "left",
+          },
+          {
             to: "/sheets",
             label: "Sheets Add-On",
             position: "left",
