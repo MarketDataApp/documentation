@@ -111,20 +111,24 @@
 }
 
 .sdk-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* This will push the text to the bottom */
   flex: 1;
-  min-width: 200px; /* Minimum width of each SDK item */
-  max-width: 300px; /* Maximum width of each SDK item */
-  border: 1px solid #ddd; /* Optional border */
+  min-width: 200px;
+  max-width: 300px;
+  border: 1px solid #ddd;
   padding: 20px;
-  border-radius: 8px; /* Rounded corners */
-  text-align: center; /* Center the text and image */
-  background-color: #f9f9f9; /* Light background for each item */
+  border-radius: 8px;
+  text-align: center;
+  background-color: #f9f9f9;
 }
 
 .sdk-logo {
   width: 100px; /* Adjust the logo size */
   height: auto;
   margin-bottom: 10px; /* Space between logo and text */
+  align-self: center; /* Center the image in the flex container */
 }
 
 .cus-tag {
