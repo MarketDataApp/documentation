@@ -1,6 +1,6 @@
 ---
 title: Rate Limits
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 We enforce rate limits to ensure our API remains accessible and efficient for all users. Normally each API call consumes a single credit. However, **if the response includes more than a single symbol, it can consume multiple credits**. Often, users can navigate around a rate limit by making the most of the diverse filters we provide (e.g., instead of retrieving an entire option chain, apply specific filters to narrow down the results).

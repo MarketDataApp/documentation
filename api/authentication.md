@@ -1,6 +1,6 @@
 ---
 title: Authentication
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 The Market Data API uses a token for authentication. The token is required for each request and it can be added to the request's authorization header or supplied or as a parameter in the URL.
