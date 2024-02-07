@@ -125,9 +125,9 @@
   text-decoration: none; /* Remove underline from links */
 }
 
-.sdk-logo {
-  width: 100px; /* Adjust the logo size */
-  height: auto;
+.sdk-item p img {
+  width: auto; /* Adjust the logo size */
+  height: 80px;
   margin-bottom: 10px; /* Space between logo and text */
   align-self: center; /* Center the image in the flex container */
 }
