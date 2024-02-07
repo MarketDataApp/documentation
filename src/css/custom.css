@@ -108,6 +108,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 20px; /* Adjust the space between items */
+  margin-bottom: 20px; /* Added margin on the bottom */
 }
 
 .sdk-item {
