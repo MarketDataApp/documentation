@@ -59,15 +59,15 @@ import (
   api "github.com/MarketDataApp/sdk-go"
 )
 
-func ExampleOptionsExpirationsResponse_get() {
-	resp, err := OptionsExpirations().UnderlyingSymbol("AAPL").Get()
+func ExampleOptionsExpirationsRequest() {
+	expirations, err := OptionsExpirations().UnderlyingSymbol("AAPL").Get()
 	if err != nil {
 		fmt.Print(err)
 		return
 	}
 
-	for _, expirations := range resp {
-		fmt.Println(expirations)
+	for _, expiration := range expirations {
+		fmt.Println(expiration)
 	}
 }
 ```

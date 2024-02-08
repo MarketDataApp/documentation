@@ -68,6 +68,7 @@ func ExampleBulkStockCandlesRequest_get() {
 		fmt.Print(err)
 		return
 	}
+  
 	for _, candle := range candles {
 		fmt.Println(candle)
 	}

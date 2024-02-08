@@ -67,7 +67,7 @@ import (
 )
 
 func ExampleStockNewsRequest_get() {
-	news, err := StockNews().Symbol("AAPL").Date("2023-01-01").Get()
+	news, err := StockNews().Symbol("AAPL").Get()
 	if err != nil {
 		fmt.Print(err)
 		return

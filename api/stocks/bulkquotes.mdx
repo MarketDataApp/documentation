@@ -63,7 +63,7 @@ import (
   api "github.com/MarketDataApp/sdk-go"
 )
 
-func ExampleBulkStockCandlesRequest() {
+func ExampleBulkStockQuotesRequest() {
 	symbols := []string{"AAPL", "META", "MSFT"}
 	quotes, err := BulkStockQuotes().Symbols(symbols).Get()
 	if err != nil {
