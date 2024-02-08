@@ -49,6 +49,29 @@ print(response.text)
 ```
 
 </TabItem>
+<TabItem value="Go" label="Go">
+
+```go title="optionExpirations.go"
+
+import (
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func ExampleOptionsExpirationsResponse_get() {
+	resp, err := OptionsExpirations().UnderlyingSymbol("AAPL").Get()
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+
+	for _, expirations := range resp {
+		fmt.Println(expirations)
+	}
+}
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

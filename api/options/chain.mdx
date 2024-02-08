@@ -49,6 +49,28 @@ print(response.text)
 ```
 
 </TabItem>
+<TabItem value="Go" label="Go">
+
+```go title="optionChain.go"
+
+import (
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func ExampleOptionChainRequest() {
+	AAPL, err := OptionChain().UnderlyingSymbol("AAPL").Get()
+	if err != nil {
+		fmt.Println("Error fetching option chain:", err)
+		return
+	}
+	for _, contract := range AAPL {
+		fmt.Println(contract)
+	}
+}
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

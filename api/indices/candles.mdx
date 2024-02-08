@@ -52,6 +52,30 @@ print(response.text)
 ```
 
 </TabItem>
+<TabItem value="Go" label="Go">
+
+```go title="indexCandles.go"
+
+import (
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func ExampleIndicesCandlesRequest_get() {
+	vix, err := IndexCandles().Symbol("VIX").Resolution("D").From("2022-09-01").To("2022-09-05").Get()
+	if err != nil {
+		fmt.Println("Error retrieving VIX index candles:", err.Error())
+		return
+	}
+
+	for _, candle := range vix {
+		fmt.Println(candle)
+	}
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

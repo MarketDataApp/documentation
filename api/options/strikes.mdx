@@ -21,14 +21,14 @@ GET
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-**GET** [https://api.marketdata.app/v1/options/strikes/AAPL?expiration=2023-01-20](https://api.marketdata.app/v1/options/strikes/AAPL?expiration=2023-01-20)
+**GET** [https://api.marketdata.app/v1/options/strikes/AAPL/?date=2023-01-03&expiration=2023-01-20](https://api.marketdata.app/v1/options/strikes/AAPL/?date=2023-01-03&expiration=2023-01-20)
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
 
 ```js title="app.js"
 fetch(
-  "https://api.marketdata.app/v1/options/strikes/AAPL?expiration=2023-01-20"
+  "https://api.marketdata.app/v1/options/strikes/AAPL/?date=2023-01-03&expiration=2023-01-20"
 )
   .then((res) => {
     console.log(res);
@@ -44,13 +44,37 @@ fetch(
 ```python title="app.py"
 import requests
 
-url = "https://api.marketdata.app/v1/options/strikes/AAPL?expiration=2023-01-20"
+url = "https://api.marketdata.app/v1/options/strikes/AAPL/?date=2023-01-03&expiration=2023-01-20"
 
 response = requests.request("GET", url)
 
 print(response.text)
 ```
 
+</TabItem>
+<TabItem value="Go" label="Go">
+
+```go title="optionStrikes.go"
+
+import (
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func ExampleOptionsStrikesRequest() {
+	expirations, err := OptionsStrikes().UnderlyingSymbol("AAPL").Date("2023-01-03").Expiration("2023-01-20").Get()
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+
+	for _, expiration := range expirations {
+		fmt.Println(expiration)
+	}
+}
+
+```
 </TabItem>
 </Tabs>
 

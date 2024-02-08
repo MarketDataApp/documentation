@@ -49,6 +49,29 @@ print(response.text)
 ```
 
 </TabItem>
+<TabItem value="Go" label="Go">
+
+```go title="stockQuote.go"
+
+import (
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func ExampleStockQuoteRequest() {
+	quotes, err := StockQuote().Symbol("AAPL").Get()
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+
+	for _, quote := range quotes {
+    fmt.Println(quote)
+	}
+}
+```
+</TabItem>
 </Tabs>
 
 ## Response Example
