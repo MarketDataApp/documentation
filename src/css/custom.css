@@ -141,7 +141,7 @@
 }
 
 [data-theme="dark"] .sdk-item a {
-  color: #9ad1f2; /* Lighter link color for better visibility */
+  color: #eb5c6d; /* Lighter link color for better visibility */
   text-decoration: none; /* Maintain consistency with light mode links */
 }
 
