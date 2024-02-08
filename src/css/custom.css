@@ -134,6 +134,17 @@
   align-self: center; /* Center the image in the flex container */
 }
 
+[data-theme="dark"] .sdk-item {
+  background-color: #1e1e1e; /* Dark background for the items */
+  color: #ffffff; /* Light text color for readability */
+  border: 1px solid #3c3c3c; /* Darker border color */
+}
+
+[data-theme="dark"] .sdk-item a {
+  color: #9ad1f2; /* Lighter link color for better visibility */
+  text-decoration: none; /* Maintain consistency with light mode links */
+}
+
 .cus-tag {
   font-size: 28px;
   color: white;
