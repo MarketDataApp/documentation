@@ -26,7 +26,7 @@ The system currently validates that the sidebar has been opened before allowing 
 
     =DEBUG("disable_sidebar_check")
 
-Please be aware that command will stop the sidebar check when running your custom formulas. If you leave your spreadsheet open for an extended period of time formulas will continue to execute and you may run into [urlfetch errors](https://docs.marketdata.app/sheets-add-on/troubleshooting/urlfetch). If you find yourself running into urlfetch errors, enable the sidebar check again using the following command (type it into any cell):
+Please be aware that command will stop the sidebar check when running your custom formulas. If you leave your spreadsheet open for an extended period of time formulas will continue to execute and you may run into [urlfetch errors](/sheets/troubleshooting/urlfetch). If you find yourself running into urlfetch errors, enable the sidebar check again using the following command (type it into any cell):
 
     =DEBUG("enable_sidebar_check")
 
