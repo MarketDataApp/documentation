@@ -3,7 +3,7 @@ title: Mobile Devices
 sidebar_position: 5
 ---
 
-Google Workspace Add-ons are not supported on mobile devices yet. This means there is no way to launch the Market Data sidebar on your mobile device. However, if you would like to use our service on your mobile device there are several workarounds you can try. Our custom formulas like [STOCKDATA](https://docs.marketdata.app/sheets-add-on/formulas/stockdata) and [OPTIONDATA](https://docs.marketdata.app/sheets-add-on/formulas/optiondata) will work on your mobile device.
+Google Workspace Add-ons are not supported on mobile devices yet. This means there is no way to launch the Market Data sidebar on your mobile device. However, if you would like to use our service on your mobile device there are several workarounds you can try. Our custom formulas like [STOCKDATA](/sheets/stocks/stockdata) and [OPTIONDATA](/sheets/options/optiondata) will work on your mobile device.
 
 :::caution
 The following recommendations are only for users who want to experiment with Market Data on their mobile device. We do not officially support mobile devices with our add-on.
