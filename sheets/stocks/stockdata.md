@@ -31,9 +31,9 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
 ```
 ## Syntax
 ```excel-formula
-=STOCKDATA(symbol(s), [historial attributes|quote attributes], start date, end date, resolution)
+=STOCKDATA(symbols, [historial attributes|quote attributes], start date, end date, resolution)
 ```
-- **symbol(s)** _(REQUIRED)_ One or more ticker symbols for the stock(s).
+- **symbols** _(REQUIRED)_ One or more ticker symbols for the stocks.
 
 - **[historial attributes | quote attributes]** _(Optional)_ Use a historical or quote attribute:
 
@@ -61,9 +61,9 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
     - "symbol" - The ticker symbol of the stock. _Only returned when using a bulk quotes formula._ 
     - "all" – Returns all values.
 
-- **startDate** _(OPTIONAL)_ The start date when fetching historical data. If start date is specified, but endDate is not, only the single day’s data is returned. Multiple tickers may be used if only a single day's data is being returned.
+- **start date** _(OPTIONAL)_ The start date when fetching historical data. If start date is specified, but endDate is not, only the single day’s data is returned. Multiple tickers may be used if only a single day's data is being returned.
 
-- **endDate** _(OPTIONAL)_ The end date when fetching historical data, or the number of calendar days (not trading days) from startDate for which to return data.
+- **end date** _(OPTIONAL)_ The end date when fetching historical data, or the number of calendar days (not trading days) from startDate for which to return data.
 
 - **resolution** _(OPTIONAL)_ The duration of each candle when fetching historical candles. Daily resolution is default if no value is specified. Use one of the following resolutions:
   - Minutely Resolutions: (_minutely_, _1_, _3_, _5_, _15_, _30_, _45_, ...)
