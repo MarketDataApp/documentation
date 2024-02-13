@@ -31,7 +31,7 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
 ```
 ## Syntax
 ```excel-formula
-=STOCKDATA(symbol(s), [historial attribute|quote attribute], start date, end date, resolution)
+=STOCKDATA(symbol(s), [historial attributes|quote attributes], start date, end date, resolution)
 ```
 - **symbol(s)** _(REQUIRED)_ One or more ticker symbols for the stock(s).
 
@@ -58,7 +58,7 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
     - "bidSize" – The quantity of shares offered at the bid price.
     - "askSize" – The quantity of shares offered at the ask price.
     - "volume" – The quantity of shares traded.
-    - "symbol" - The ticker symbol of the stock. _Only returned when using a bulk candles formula._ 
+    - "symbol" - The ticker symbol of the stock. _Only returned when using a bulk quotes formula._ 
     - "all" – Returns all values.
 
 - **startDate** _(OPTIONAL)_ The start date when fetching historical data. If start date is specified, but endDate is not, only the single day’s data is returned. Multiple tickers may be used if only a single day's data is being returned.
@@ -75,7 +75,7 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
 
 ## Price vs Close vs Last vs Mid
 
-Depending on what data you're looking for and what data you would like the formula to return during the extended session (or when the market it closed) it may make sense to use "close", "last", or "mid" instead of STOCKDATA's default "price" attribute.
+When you are looking for a single price for a stock, depending on what data you would like the `STOCKDATA` formula to return during the extended session (or when the market is closed), it may make sense to use the "close", "last", or "mid" attributes instead of STOCKDATA's default "price" attribute.
 
 | Function Call                     | During The Regular Session               | During The Extended Session              | Market Closed, Holidays, etc.                 |
 |-----------------------------------|------------------------------------------|------------------------------------------|-----------------------------------------------|
