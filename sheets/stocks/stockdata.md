@@ -38,8 +38,8 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
 - **[historial attributes | quote attributes]** _(Optional)_ Use a historical or quote attribute:
 
   - **"price"** _(OPTIONAL)_ Special dual-mode quote/candle attribute.
-    - Displays the midpoint price during market hours.
-    - Displays the closing price of the last session outside of market hours.
+    - Displays the midpoint price during the regular and sessions.
+    - Displays the closing price of the previous session outside of market hours.
 
   - **historical attributes** _(OPTIONAL – "close" by default)_ Use one of the following attributes when requesting historical candles:
     - "open" – The opening price of the stock.
@@ -72,6 +72,18 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
   - Weekly Resolutions: (_weekly_, _W_, _1W_, _2W_, ...)
   - Monthly Resolutions: (_monthly_, _M_, _1M_, _2M_, ...)
   - Yearly Resolutions: (_yearly_, _Y_, _1Y_, _2Y_, ...)
+
+## Price vs Close vs Last vs Mid
+
+Depending on what data you're looking for and what data you would like the formula to return during the extended session (or when the market it closed) it may make sense to use "close", "last", or "mid" instead of STOCKDATA's default "price" attribute.
+
+| Function Call                     | During The Regular Session               | During The Extended Session              | Market Closed, Holidays, etc.                 |
+|-----------------------------------|------------------------------------------|------------------------------------------|-----------------------------------------------|
+| `=STOCKDATA("AAPL")`              | Midpoint bid/ask of the regular session  | Midpoint bid/ask of the extended session | Closing price of the previous regular session |
+| `=STOCKDATA("AAPL", "PRICE")`     | Midpoint bid/ask of the regular session  | Midpoint bid/ask of the extended session | Closing price of the previous regular session |
+| `=STOCKDATA("AAPL", "CLOSE")`     | Last trade of the regular session        | Closing price of the previous session    | Closing price of the previous regular session |
+| `=STOCKDATA("AAPL", "LAST")`      | Last trade of the regular session        | Last trade of the extended session       | Last trade of the previous extended session   |
+| `=STOCKDATA("AAPL", "MID")`       | Midpoint bid/ask of the regular session  | Midpoint bid/ask of the extended session | No data                                       |
 
 ## Notes
 - All parameters must be enclosed in quotation marks or be references to cells containing text. A possible exception is when endDate is specified as a number of days.
