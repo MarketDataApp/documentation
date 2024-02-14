@@ -10,11 +10,15 @@ import TabItem from "@theme/TabItem";
 
 
 
-Package client also includes types for managing index requests.
+Package client includes types and methods to access the Index Candles endpoint.
 
-### Index Candles
+### Making Index Candle Requests
 
-There are a varity of types and methods that can be useful in index candle reqeusts. [IndicesCandlesRequest](<#IndicesCandlesRequest>) will generate \[IndicesCandlesResponse\] which is then unpacked into \[models.Candle\]
+Get historical price candles for an index. Use [IndicesCandlesRequest](<#IndicesCandlesRequest>) to make requests to the endpoint using any of the three supported execution methods:
+
+1. [IndicesCandlesRequest.Get](<#IndicesCandlesRequest.Get>) returns a slice of \[\]Candle.
+2. [IndicesCandlesRequest.Packed](<#IndicesCandlesRequest.Packed>) will generate a IndicesCandlesResponse which can then be unpacked using the IndicesCandlesResponse.Unpack\(\) method into a slice of \[\]Candle.
+3. \[IndicesCandlesRequest.Raw\] will give you access to the raw resty.Response and you can access the raw JSON or the \[http.Response\] using any of the resty library's methods.
 
 
 <a name="IndicesCandlesRequest"></a>
