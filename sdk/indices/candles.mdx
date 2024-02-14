@@ -268,9 +268,9 @@ Get sends the [IndicesCandlesRequest](<#IndicesCandlesRequest>), unpacks the \[I
 
 #### Returns
 
-- `[]models.IndexCandle`
+- `[]Candle`
 
-  A slice of \[IndexCandle\] containing the unpacked candle data from the response.
+  A slice of \[\]Candle containing the unpacked candle data from the response.
 
 - `error`
 
@@ -524,7 +524,13 @@ Unpack converts the IndicesCandlesResponse into a slice of IndexCandle.
 
 #### Returns
 
-- `A slice of IndexCandle, error if there's an inconsistency in the data slices.
+- `[]Candle`
+
+  A slice of \[Candle\] that holds the OHLC data.
+
+- `error`
+
+  An error object that indicates a failure in unpacking the response.
 
 
 <a name="IndicesCandlesResponse.Validate"></a>
