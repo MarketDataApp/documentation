@@ -157,7 +157,7 @@ fmt.Println(vix)
 </Tabs>
 
 <a name="IndexCandles"></a>
-### func IndexCandles
+#### func IndexCandles
 
 ```go
 func IndexCandles(client ...*MarketDataClient) *IndicesCandlesRequest
@@ -178,10 +178,10 @@ IndexCandles creates a new [IndicesCandlesRequest](<#IndicesCandlesRequest>) and
 
   A pointer to the newly created \*IndicesCandlesRequest with default parameters and associated client.
 
-### IndicesCandlesRequest Setter Methods
+### Setter Methods
 
 <a name="IndicesCandlesRequest.Countback"></a>
-### func \(\*IndicesCandlesRequest\) Countback
+#### func \(\*IndicesCandlesRequest\) Countback
 
 ```go
 func (icr *IndicesCandlesRequest) Countback(q int) *IndicesCandlesRequest
@@ -204,7 +204,7 @@ Countback sets the countback parameter for the IndicesCandlesRequest. It specifi
 
 
 <a name="IndicesCandlesRequest.Date"></a>
-### func \(\*IndicesCandlesRequest\) Date
+#### func \(\*IndicesCandlesRequest\) Date
 
 ```go
 func (icr *IndicesCandlesRequest) Date(q interface{}) *IndicesCandlesRequest
@@ -231,7 +231,7 @@ Date sets the date parameter for the IndicesCandlesRequest. This method is used 
 - If an error occurs while setting the date \(e.g., if the date value is not supported\), the Error field of the request is set with the encountered error, but the method still returns the \*IndicesCandlesRequest instance to allow for further method calls.
 
 <a name="IndicesCandlesRequest.From"></a>
-### func \(\*IndicesCandlesRequest\) From
+#### func \(\*IndicesCandlesRequest\) From
 
 ```go
 func (icr *IndicesCandlesRequest) From(q interface{}) *IndicesCandlesRequest
@@ -254,7 +254,7 @@ From sets the 'from' date parameter for the IndicesCandlesRequest. It configures
 
 
 <a name="IndicesCandlesRequest.Resolution"></a>
-### func \(\*IndicesCandlesRequest\) Resolution
+#### func \(\*IndicesCandlesRequest\) Resolution
 
 ```go
 func (icr *IndicesCandlesRequest) Resolution(q string) *IndicesCandlesRequest
@@ -281,7 +281,7 @@ Resolution sets the resolution parameter for the [IndicesCandlesRequest](<#Indic
 - If an error occurs while setting the resolution \(e.g., if the resolution value is not supported\), the Error field of the \*IndicesCandlesRequest is set with the encountered error, but the method still returns the IndicesCandlesRequest instance to allow for further method calls by the caller.
 
 <a name="IndicesCandlesRequest.Symbol"></a>
-### func \(\*IndicesCandlesRequest\) Symbol
+#### func \(\*IndicesCandlesRequest\) Symbol
 
 ```go
 func (icr *IndicesCandlesRequest) Symbol(q string) *IndicesCandlesRequest
@@ -308,7 +308,7 @@ Symbol sets the symbol parameter for the [IndicesCandlesRequest](<#IndicesCandle
 - If an error occurs while setting the symbol \(e.g., if the symbol value is not supported\), the Error field of the IndicesCandlesRequest is set with the encountered error, but the method still returns the IndicesCandlesRequest instance to allow for further method calls or error handling by the caller.
 
 <a name="IndicesCandlesRequest.To"></a>
-### func \(\*IndicesCandlesRequest\) To
+#### func \(\*IndicesCandlesRequest\) To
 
 ```go
 func (icr *IndicesCandlesRequest) To(q interface{}) *IndicesCandlesRequest
@@ -331,9 +331,9 @@ To sets the 'to' date parameter for the IndicesCandlesRequest. It configures the
 
 
 
-### IndicesCandlesRequest Execution Methods
+### Execution Methods
 <a name="IndicesCandlesRequest.Get"></a>
-### func \(\*IndicesCandlesRequest\) Get
+#### func \(\*IndicesCandlesRequest\) Get
 
 ```go
 func (icr *IndicesCandlesRequest) Get(optionalClients ...*MarketDataClient) ([]models.Candle, error)
@@ -361,7 +361,7 @@ Get sends the [IndicesCandlesRequest](<#IndicesCandlesRequest>), unpacks the \[I
 
 
 <a name="IndicesCandlesRequest.Packed"></a>
-### func \(\*IndicesCandlesRequest\) Packed
+#### func \(\*IndicesCandlesRequest\) Packed
 
 ```go
 func (icr *IndicesCandlesRequest) Packed(optionalClients ...*MarketDataClient) (*models.IndicesCandlesResponse, error)
@@ -388,7 +388,6 @@ Packed sends the IndicesCandlesRequest and returns the IndicesCandlesResponse. T
 
 
 
-###  Execution Methods
 
 
 
@@ -441,7 +440,7 @@ Close: 104
 </Tabs>
 
 <a name="ByClose.Len"></a>
-### func \(ByClose\) Len
+#### func \(ByClose\) Len
 
 ```go
 func (a ByClose) Len() int
@@ -450,7 +449,7 @@ func (a ByClose) Len() int
 
 
 <a name="ByClose.Less"></a>
-### func \(ByClose\) Less
+#### func \(ByClose\) Less
 
 ```go
 func (a ByClose) Less(i, j int) bool
@@ -459,7 +458,7 @@ func (a ByClose) Less(i, j int) bool
 
 
 <a name="ByClose.Swap"></a>
-### func \(ByClose\) Swap
+#### func \(ByClose\) Swap
 
 ```go
 func (a ByClose) Swap(i, j int)
@@ -514,7 +513,7 @@ for _, candle := range candles {
 </Tabs>
 
 <a name="ByDate.Len"></a>
-### func \(ByDate\) Len
+#### func \(ByDate\) Len
 
 ```go
 func (a ByDate) Len() int
@@ -523,7 +522,7 @@ func (a ByDate) Len() int
 
 
 <a name="ByDate.Less"></a>
-### func \(ByDate\) Less
+#### func \(ByDate\) Less
 
 ```go
 func (a ByDate) Less(i, j int) bool
@@ -532,7 +531,7 @@ func (a ByDate) Less(i, j int) bool
 
 
 <a name="ByDate.Swap"></a>
-### func \(ByDate\) Swap
+#### func \(ByDate\) Swap
 
 ```go
 func (a ByDate) Swap(i, j int)
@@ -587,7 +586,7 @@ for _, candle := range candles {
 </Tabs>
 
 <a name="ByHigh.Len"></a>
-### func \(ByHigh\) Len
+#### func \(ByHigh\) Len
 
 ```go
 func (a ByHigh) Len() int
@@ -596,7 +595,7 @@ func (a ByHigh) Len() int
 
 
 <a name="ByHigh.Less"></a>
-### func \(ByHigh\) Less
+#### func \(ByHigh\) Less
 
 ```go
 func (a ByHigh) Less(i, j int) bool
@@ -605,7 +604,7 @@ func (a ByHigh) Less(i, j int) bool
 
 
 <a name="ByHigh.Swap"></a>
-### func \(ByHigh\) Swap
+#### func \(ByHigh\) Swap
 
 ```go
 func (a ByHigh) Swap(i, j int)
@@ -660,7 +659,7 @@ for _, candle := range candles {
 </Tabs>
 
 <a name="ByLow.Len"></a>
-### func \(ByLow\) Len
+#### func \(ByLow\) Len
 
 ```go
 func (a ByLow) Len() int
@@ -669,7 +668,7 @@ func (a ByLow) Len() int
 
 
 <a name="ByLow.Less"></a>
-### func \(ByLow\) Less
+#### func \(ByLow\) Less
 
 ```go
 func (a ByLow) Less(i, j int) bool
@@ -678,7 +677,7 @@ func (a ByLow) Less(i, j int) bool
 
 
 <a name="ByLow.Swap"></a>
-### func \(ByLow\) Swap
+#### func \(ByLow\) Swap
 
 ```go
 func (a ByLow) Swap(i, j int)
@@ -733,7 +732,7 @@ for _, candle := range candles {
 </Tabs>
 
 <a name="ByN.Len"></a>
-### func \(ByN\) Len
+#### func \(ByN\) Len
 
 ```go
 func (a ByN) Len() int
@@ -742,7 +741,7 @@ func (a ByN) Len() int
 
 
 <a name="ByN.Less"></a>
-### func \(ByN\) Less
+#### func \(ByN\) Less
 
 ```go
 func (a ByN) Less(i, j int) bool
@@ -751,7 +750,7 @@ func (a ByN) Less(i, j int) bool
 
 
 <a name="ByN.Swap"></a>
-### func \(ByN\) Swap
+#### func \(ByN\) Swap
 
 ```go
 func (a ByN) Swap(i, j int)
@@ -806,7 +805,7 @@ for _, candle := range candles {
 </Tabs>
 
 <a name="ByOpen.Len"></a>
-### func \(ByOpen\) Len
+#### func \(ByOpen\) Len
 
 ```go
 func (a ByOpen) Len() int
@@ -815,7 +814,7 @@ func (a ByOpen) Len() int
 
 
 <a name="ByOpen.Less"></a>
-### func \(ByOpen\) Less
+#### func \(ByOpen\) Less
 
 ```go
 func (a ByOpen) Less(i, j int) bool
@@ -824,7 +823,7 @@ func (a ByOpen) Less(i, j int) bool
 
 
 <a name="ByOpen.Swap"></a>
-### func \(ByOpen\) Swap
+#### func \(ByOpen\) Swap
 
 ```go
 func (a ByOpen) Swap(i, j int)
@@ -879,7 +878,7 @@ Symbol: MSFT, Close: 252.00
 </Tabs>
 
 <a name="BySymbol.Len"></a>
-### func \(BySymbol\) Len
+#### func \(BySymbol\) Len
 
 ```go
 func (a BySymbol) Len() int
@@ -888,7 +887,7 @@ func (a BySymbol) Len() int
 
 
 <a name="BySymbol.Less"></a>
-### func \(BySymbol\) Less
+#### func \(BySymbol\) Less
 
 ```go
 func (a BySymbol) Less(i, j int) bool
@@ -897,7 +896,7 @@ func (a BySymbol) Less(i, j int) bool
 
 
 <a name="BySymbol.Swap"></a>
-### func \(BySymbol\) Swap
+#### func \(BySymbol\) Swap
 
 ```go
 func (a BySymbol) Swap(i, j int)
@@ -952,7 +951,7 @@ for _, candle := range candles {
 </Tabs>
 
 <a name="ByVWAP.Len"></a>
-### func \(ByVWAP\) Len
+#### func \(ByVWAP\) Len
 
 ```go
 func (a ByVWAP) Len() int
@@ -961,7 +960,7 @@ func (a ByVWAP) Len() int
 
 
 <a name="ByVWAP.Less"></a>
-### func \(ByVWAP\) Less
+#### func \(ByVWAP\) Less
 
 ```go
 func (a ByVWAP) Less(i, j int) bool
@@ -970,7 +969,7 @@ func (a ByVWAP) Less(i, j int) bool
 
 
 <a name="ByVWAP.Swap"></a>
-### func \(ByVWAP\) Swap
+#### func \(ByVWAP\) Swap
 
 ```go
 func (a ByVWAP) Swap(i, j int)
@@ -1025,7 +1024,7 @@ for _, candle := range candles {
 </Tabs>
 
 <a name="ByVolume.Len"></a>
-### func \(ByVolume\) Len
+#### func \(ByVolume\) Len
 
 ```go
 func (a ByVolume) Len() int
@@ -1034,7 +1033,7 @@ func (a ByVolume) Len() int
 
 
 <a name="ByVolume.Less"></a>
-### func \(ByVolume\) Less
+#### func \(ByVolume\) Less
 
 ```go
 func (a ByVolume) Less(i, j int) bool
@@ -1043,7 +1042,7 @@ func (a ByVolume) Less(i, j int) bool
 
 
 <a name="ByVolume.Swap"></a>
-### func \(ByVolume\) Swap
+#### func \(ByVolume\) Swap
 
 ```go
 func (a ByVolume) Swap(i, j int)
@@ -1113,7 +1112,7 @@ Candle represents a single candle in a stock candlestick chart, encapsulating th
 
 
 <a name="Candle.Clone"></a>
-### func \(Candle\) Clone
+#### func \(Candle\) Clone
 
 ```go
 func (c Candle) Clone() Candle
@@ -1129,7 +1128,7 @@ Clones the current Candle instance, creating a new instance with the same values
 
 
 <a name="Candle.Equals"></a>
-### func \(Candle\) Equals
+#### func \(Candle\) Equals
 
 ```go
 func (c Candle) Equals(other Candle) bool
@@ -1156,7 +1155,7 @@ Equals compares the current Candle instance with another Candle instance to dete
 - This method performs a deep equality check on all Candle properties, including date/time which is compared using the Equal method from the time package to account for potential timezone differences.
 
 <a name="Candle.IsAfter"></a>
-### func \(Candle\) IsAfter
+#### func \(Candle\) IsAfter
 
 ```go
 func (c Candle) IsAfter(other Candle) bool
@@ -1179,7 +1178,7 @@ IsAfter determines if the current Candle instance occurred after another specifi
 
 
 <a name="Candle.IsBefore"></a>
-### func \(Candle\) IsBefore
+#### func \(Candle\) IsBefore
 
 ```go
 func (c Candle) IsBefore(other Candle) bool
@@ -1206,7 +1205,7 @@ IsBefore determines whether the current Candle instance occurred before another 
 - This method only compares the dates of the Candle instances, ignoring other fields such as Open, Close, High, Low, etc.
 
 <a name="Candle.IsValid"></a>
-### func \(Candle\) IsValid
+#### func \(Candle\) IsValid
 
 ```go
 func (c Candle) IsValid() bool
@@ -1222,7 +1221,7 @@ IsValid evaluates the financial data of a Candle to determine its validity. This
 
 
 <a name="Candle.MarshalJSON"></a>
-### func \(Candle\) MarshalJSON
+#### func \(Candle\) MarshalJSON
 
 ```go
 func (c Candle) MarshalJSON() ([]byte, error)
@@ -1246,7 +1245,7 @@ MarshalJSON customizes the JSON output of the Candle struct, primarily used for 
 - The Date field of the Candle is converted to a Unix timestamp to facilitate easier handling of date and time in JSON.
 
 <a name="Candle.String"></a>
-### func \(Candle\) String
+#### func \(Candle\) String
 
 ```go
 func (c Candle) String() string
@@ -1267,7 +1266,7 @@ String provides a textual representation of the Candle instance. This method is 
 - Fields that are not applicable or not set \(e.g., VWAP, N, Volume for Index Candles\) are omitted from the output.
 
 <a name="Candle.UnmarshalJSON"></a>
-### func \(\*Candle\) UnmarshalJSON
+#### func \(\*Candle\) UnmarshalJSON
 
 ```go
 func (c *Candle) UnmarshalJSON(data []byte) error
@@ -1347,7 +1346,7 @@ IndicesCandlesResponse represents the response structure for indices candles dat
 
 
 <a name="IndicesCandlesResponse.IsValid"></a>
-### func \(\*IndicesCandlesResponse\) IsValid
+#### func \(\*IndicesCandlesResponse\) IsValid
 
 ```go
 func (icr *IndicesCandlesResponse) IsValid() bool
@@ -1361,7 +1360,7 @@ func (icr *IndicesCandlesResponse) IsValid() bool
 
 
 <a name="IndicesCandlesResponse.MarshalJSON"></a>
-### func \(\*IndicesCandlesResponse\) MarshalJSON
+#### func \(\*IndicesCandlesResponse\) MarshalJSON
 
 ```go
 func (icr *IndicesCandlesResponse) MarshalJSON() ([]byte, error)
@@ -1381,7 +1380,7 @@ MarshalJSON marshals the IndicesCandlesResponse struct into a JSON object, ensur
 
 
 <a name="IndicesCandlesResponse.String"></a>
-### func \(\*IndicesCandlesResponse\) String
+#### func \(\*IndicesCandlesResponse\) String
 
 ```go
 func (icr *IndicesCandlesResponse) String() string
@@ -1397,7 +1396,7 @@ String provides a formatted string representation of the IndicesCandlesResponse 
 
 
 <a name="IndicesCandlesResponse.UnmarshalJSON"></a>
-### func \(\*IndicesCandlesResponse\) UnmarshalJSON
+#### func \(\*IndicesCandlesResponse\) UnmarshalJSON
 
 ```go
 func (icr *IndicesCandlesResponse) UnmarshalJSON(data []byte) error
@@ -1420,7 +1419,7 @@ UnmarshalJSON custom unmarshals a JSON object into the IndicesCandlesResponse, i
 
 
 <a name="IndicesCandlesResponse.Unpack"></a>
-### func \(\*IndicesCandlesResponse\) Unpack
+#### func \(\*IndicesCandlesResponse\) Unpack
 
 ```go
 func (icr *IndicesCandlesResponse) Unpack() ([]Candle, error)
@@ -1440,7 +1439,7 @@ Unpack converts the IndicesCandlesResponse into a slice of IndexCandle.
 
 
 <a name="IndicesCandlesResponse.Validate"></a>
-### func \(\*IndicesCandlesResponse\) Validate
+#### func \(\*IndicesCandlesResponse\) Validate
 
 ```go
 func (icr *IndicesCandlesResponse) Validate() error
