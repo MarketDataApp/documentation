@@ -16,17 +16,15 @@ Get historical price candles for any supported stock index.
 
 Use [IndicesCandlesRequest](<#IndicesCandlesRequest>) to make requests to the endpoint using any of the three supported execution methods:
 
-```
 | Method     | Execution     | Return Type                | Description                                                                                               |
 |------------|---------------|----------------------------|-----------------------------------------------------------------------------------------------------------|
 | **Get**    | Direct        | `[]Candle`                 | Directly returns a slice of `[]Candle`, making it straightforward to access each candle individually.     |
 | **Packed** | Intermediate  | `IndicesCandlesResponse`   | Returns a packed `IndicesCandlesResponse` object. Must be unpacked to access the `[]Candle` slice.        |
 | **Raw**    | Low-level     | `resty.Response`           | Provides the raw `resty.Response` for maximum flexibility. Direct access to raw JSON or `*http.Response`. |
-```
 
 
 <a name="IndicesCandlesRequest"></a>
-# type IndicesCandlesRequest
+## type IndicesCandlesRequest
 
 ```go
 type IndicesCandlesRequest struct {
@@ -395,7 +393,7 @@ Packed sends the IndicesCandlesRequest and returns the IndicesCandlesResponse. T
 
 
 <a name="ByClose"></a>
-# type ByClose
+## type ByClose
 
 ```go
 type ByClose []Candle
@@ -468,7 +466,7 @@ func (a ByClose) Swap(i, j int)
 
 
 <a name="ByDate"></a>
-# type ByDate
+## type ByDate
 
 ```go
 type ByDate []Candle
@@ -541,7 +539,7 @@ func (a ByDate) Swap(i, j int)
 
 
 <a name="ByHigh"></a>
-# type ByHigh
+## type ByHigh
 
 ```go
 type ByHigh []Candle
@@ -614,7 +612,7 @@ func (a ByHigh) Swap(i, j int)
 
 
 <a name="ByLow"></a>
-# type ByLow
+## type ByLow
 
 ```go
 type ByLow []Candle
@@ -687,7 +685,7 @@ func (a ByLow) Swap(i, j int)
 
 
 <a name="ByN"></a>
-# type ByN
+## type ByN
 
 ```go
 type ByN []Candle
@@ -760,7 +758,7 @@ func (a ByN) Swap(i, j int)
 
 
 <a name="ByOpen"></a>
-# type ByOpen
+## type ByOpen
 
 ```go
 type ByOpen []Candle
@@ -833,7 +831,7 @@ func (a ByOpen) Swap(i, j int)
 
 
 <a name="BySymbol"></a>
-# type BySymbol
+## type BySymbol
 
 ```go
 type BySymbol []Candle
@@ -906,7 +904,7 @@ func (a BySymbol) Swap(i, j int)
 
 
 <a name="ByVWAP"></a>
-# type ByVWAP
+## type ByVWAP
 
 ```go
 type ByVWAP []Candle
@@ -979,7 +977,7 @@ func (a ByVWAP) Swap(i, j int)
 
 
 <a name="ByVolume"></a>
-# type ByVolume
+## type ByVolume
 
 ```go
 type ByVolume []Candle
@@ -1052,7 +1050,7 @@ func (a ByVolume) Swap(i, j int)
 
 
 <a name="Candle"></a>
-# type Candle
+## type Candle
 
 ```go
 type Candle struct {
@@ -1296,7 +1294,7 @@ UnmarshalJSON customizes the JSON input processing for the Candle struct, allowi
 - The Date field in the JSON is expected to be a Unix timestamp \(integer\). This method converts it back to a time.Time object, ensuring the Candle struct's Date field is correctly populated.
 
 <a name="IndicesCandlesResponse"></a>
-# type IndicesCandlesResponse
+## type IndicesCandlesResponse
 
 ```go
 type IndicesCandlesResponse struct {
