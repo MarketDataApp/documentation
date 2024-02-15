@@ -101,7 +101,7 @@ for _, candle := range vix {
 }
 ```
 
-#### Output
+##### Output
 
 ```
 Candle{Date: 2022-01-03, Open: 17.6, High: 18.54, Low: 16.56, Close: 16.6}
@@ -125,7 +125,7 @@ if err != nil {
 fmt.Println(vix)
 ```
 
-#### Output
+##### Output
 
 ```
 IndicesCandlesResponse{Time: [1641186000 1641272400 1641358800], Open: [17.6 16.57 17.07], High: [18.54 17.81 20.17], Low: [16.56 16.34 16.58], Close: [16.6 16.91 19.73]}
@@ -147,7 +147,7 @@ if err != nil {
 fmt.Println(vix)
 ```
 
-#### Output
+##### Output
 
 ```
 {"s":"ok","t":[1641186000,1641272400,1641358800],"o":[17.6,16.57,17.07],"h":[18.54,17.81,20.17],"l":[16.56,16.34,16.58],"c":[16.6,16.91,19.73]}
@@ -226,7 +226,7 @@ Date sets the date parameter for the IndicesCandlesRequest. This method is used 
   This method returns a pointer to the \*IndicesCandlesRequest instance it was called on. This allows for method chaining, where multiple setter methods can be called in a single statement.
 
 
-#### Notes
+##### Notes
 
 - If an error occurs while setting the date \(e.g., if the date value is not supported\), the Error field of the request is set with the encountered error, but the method still returns the \*IndicesCandlesRequest instance to allow for further method calls.
 
@@ -276,7 +276,7 @@ Resolution sets the resolution parameter for the [IndicesCandlesRequest](<#Indic
   This method returns a pointer to the \*IndicesCandlesRequest instance it was called on. This allows for method chaining, where multiple setter methods can be called in a single statement. If the receiver \(\*IndicesCandlesRequest\) is nil, it returns nil to prevent a panic.
 
 
-#### Notes
+##### Notes
 
 - If an error occurs while setting the resolution \(e.g., if the resolution value is not supported\), the Error field of the \*IndicesCandlesRequest is set with the encountered error, but the method still returns the IndicesCandlesRequest instance to allow for further method calls by the caller.
 
@@ -303,7 +303,7 @@ Symbol sets the symbol parameter for the [IndicesCandlesRequest](<#IndicesCandle
   This method returns a pointer to the \*IndicesCandlesRequest instance it was called on. This allows for method chaining, where multiple setter methods can be called in a single statement. If the receiver \(\*IndicesCandlesRequest\) is nil, it returns nil to prevent a panic.
 
 
-#### Notes
+##### Notes
 
 - If an error occurs while setting the symbol \(e.g., if the symbol value is not supported\), the Error field of the IndicesCandlesRequest is set with the encountered error, but the method still returns the IndicesCandlesRequest instance to allow for further method calls or error handling by the caller.
 
@@ -429,7 +429,7 @@ for _, candle := range candles {
 
 ```
 
-#### Output
+##### Output
 
 ```
 Close: 100
@@ -502,7 +502,7 @@ for _, candle := range candles {
 
 ```
 
-#### Output
+##### Output
 
 ```
 2023-01-05
@@ -575,7 +575,7 @@ for _, candle := range candles {
 
 ```
 
-#### Output
+##### Output
 
 ```
 11.4
@@ -648,7 +648,7 @@ for _, candle := range candles {
 
 ```
 
-#### Output
+##### Output
 
 ```
 5.5
@@ -721,7 +721,7 @@ for _, candle := range candles {
 
 ```
 
-#### Output
+##### Output
 
 ```
 1
@@ -794,7 +794,7 @@ for _, candle := range candles {
 
 ```
 
-#### Output
+##### Output
 
 ```
 8.2
@@ -867,7 +867,7 @@ for _, candle := range candles {
 
 ```
 
-#### Output
+##### Output
 
 ```
 Symbol: AAPL, Close: 152.00
@@ -940,7 +940,7 @@ for _, candle := range candles {
 
 ```
 
-#### Output
+##### Output
 
 ```
 8.2
@@ -1013,7 +1013,7 @@ for _, candle := range candles {
 
 ```
 
-#### Output
+##### Output
 
 ```
 100
@@ -1151,7 +1151,7 @@ Equals compares the current Candle instance with another Candle instance to dete
   Indicates whether the two Candle instances are identical. True if all properties match, false otherwise.
 
 
-#### Notes
+##### Notes
 
 - This method performs a deep equality check on all Candle properties, including date/time which is compared using the Equal method from the time package to account for potential timezone differences.
 
@@ -1201,7 +1201,7 @@ IsBefore determines whether the current Candle instance occurred before another 
   Returns true if the date of the current Candle instance is before the date of the 'other' Candle instance; otherwise, returns false.
 
 
-#### Notes
+##### Notes
 
 - This method only compares the dates of the Candle instances, ignoring other fields such as Open, Close, High, Low, etc.
 
@@ -1241,7 +1241,7 @@ MarshalJSON customizes the JSON output of the Candle struct, primarily used for 
   An error if the JSON marshaling fails.
 
 
-#### Notes
+##### Notes
 
 - The Date field of the Candle is converted to a Unix timestamp to facilitate easier handling of date and time in JSON.
 
@@ -1261,7 +1261,7 @@ String provides a textual representation of the Candle instance. This method is 
   A string that represents the Candle instance, including its symbol, date/time, open, high, low, close prices, volume, VWAP, and number of trades, if available.
 
 
-#### Notes
+##### Notes
 
 - The output format is designed to be easily readable, with each field labeled and separated by commas.
 - Fields that are not applicable or not set \(e.g., VWAP, N, Volume for Index Candles\) are omitted from the output.
@@ -1291,7 +1291,7 @@ UnmarshalJSON customizes the JSON input processing for the Candle struct, allowi
   An error if the JSON unmarshaling fails, nil otherwise.
 
 
-#### Notes
+##### Notes
 
 - The Date field in the JSON is expected to be a Unix timestamp \(integer\). This method converts it back to a time.Time object, ensuring the Candle struct's Date field is correctly populated.
 
