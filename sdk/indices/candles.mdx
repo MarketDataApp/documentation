@@ -12,19 +12,21 @@ import TabItem from "@theme/TabItem";
 
 Get historical price candles for any supported stock index.
 
-## Making Requests
+# Making Requests
 
 Use [IndicesCandlesRequest](<#IndicesCandlesRequest>) to make requests to the endpoint using any of the three supported execution methods:
 
+```
 | Method     | Execution     | Return Type                | Description                                                                                               |
 |------------|---------------|----------------------------|-----------------------------------------------------------------------------------------------------------|
 | **Get**    | Direct        | `[]Candle`                 | Directly returns a slice of `[]Candle`, making it straightforward to access each candle individually.     |
 | **Packed** | Intermediate  | `IndicesCandlesResponse`   | Returns a packed `IndicesCandlesResponse` object. Must be unpacked to access the `[]Candle` slice.        |
 | **Raw**    | Low-level     | `resty.Response`           | Provides the raw `resty.Response` for maximum flexibility. Direct access to raw JSON or `*http.Response`. |
+```
 
 
 <a name="IndicesCandlesRequest"></a>
-## type IndicesCandlesRequest
+# type IndicesCandlesRequest
 
 ```go
 type IndicesCandlesRequest struct {
@@ -176,6 +178,7 @@ IndexCandles creates a new [IndicesCandlesRequest](<#IndicesCandlesRequest>) and
 
   A pointer to the newly created \*IndicesCandlesRequest with default parameters and associated client.
 
+## IndicesCandlesRequest Setter Methods
 
 <a name="IndicesCandlesRequest.Countback"></a>
 ### func \(\*IndicesCandlesRequest\) Countback
@@ -248,60 +251,6 @@ From sets the 'from' date parameter for the IndicesCandlesRequest. It configures
 - `*IndicesCandlesRequest`
 
   A pointer to the \*IndicesCandlesRequest instance to allow for method chaining.
-
-
-<a name="IndicesCandlesRequest.Get"></a>
-### func \(\*IndicesCandlesRequest\) Get
-
-```go
-func (icr *IndicesCandlesRequest) Get(optionalClients ...*MarketDataClient) ([]models.Candle, error)
-```
-
-Get sends the [IndicesCandlesRequest](<#IndicesCandlesRequest>), unpacks the \[IndicesCandlesResponse\], and returns a slice of \[IndexCandle\]. It returns an error if the request or unpacking fails. This method is crucial for obtaining the actual candle data from the indices candles request. The method first checks if the IndicesCandlesRequest receiver is nil, which would result in an error as the request cannot be sent. It then proceeds to send the request using the Packed method. Upon receiving the response, it unpacks the data into a slice of IndexCandle using the Unpack method from the response. An optional MarketDataClient can be passed to replace the client used in the request.
-
-#### Parameters
-
-- `...*MarketDataClient`
-
-  A variadic parameter that can accept zero or one \*MarketDataClient pointer. If a client is provided, it replaces the current client for this request.
-
-
-#### Returns
-
-- `[]Candle`
-
-  A slice of \[\]Candle containing the unpacked candle data from the response.
-
-- `error`
-
-  An error object that indicates a failure in sending the request or unpacking the response.
-
-
-<a name="IndicesCandlesRequest.Packed"></a>
-### func \(\*IndicesCandlesRequest\) Packed
-
-```go
-func (icr *IndicesCandlesRequest) Packed(optionalClients ...*MarketDataClient) (*models.IndicesCandlesResponse, error)
-```
-
-Packed sends the IndicesCandlesRequest and returns the IndicesCandlesResponse. This method checks if the IndicesCandlesRequest receiver is nil, returning an error if true. An optional MarketDataClient can be passed to replace the client used in the request. Otherwise, it proceeds to send the request and returns the IndicesCandlesResponse along with any error encountered during the request.
-
-#### Parameters
-
-- `...*MarketDataClient`
-
-  A variadic parameter that can accept zero or one \*MarketDataClient pointer. If a client is provided, it replaces the current client for this request.
-
-
-#### Returns
-
-- `*models.IndicesCandlesResponse`
-
-  A pointer to the \*IndicesCandlesResponse obtained from the request.
-
-- `error`
-
-  An error object that indicates a failure in sending the request.
 
 
 <a name="IndicesCandlesRequest.Resolution"></a>
@@ -382,15 +331,71 @@ To sets the 'to' date parameter for the IndicesCandlesRequest. It configures the
 
 
 
+## IndicesCandlesRequest Execution Methods
+<a name="IndicesCandlesRequest.Get"></a>
+### func \(\*IndicesCandlesRequest\) Get
+
+```go
+func (icr *IndicesCandlesRequest) Get(optionalClients ...*MarketDataClient) ([]models.Candle, error)
+```
+
+Get sends the [IndicesCandlesRequest](<#IndicesCandlesRequest>), unpacks the \[IndicesCandlesResponse\], and returns a slice of \[IndexCandle\]. It returns an error if the request or unpacking fails. This method is crucial for obtaining the actual candle data from the indices candles request. The method first checks if the IndicesCandlesRequest receiver is nil, which would result in an error as the request cannot be sent. It then proceeds to send the request using the Packed method. Upon receiving the response, it unpacks the data into a slice of IndexCandle using the Unpack method from the response. An optional MarketDataClient can be passed to replace the client used in the request.
+
+#### Parameters
+
+- `...*MarketDataClient`
+
+  A variadic parameter that can accept zero or one \*MarketDataClient pointer. If a client is provided, it replaces the current client for this request.
 
 
+#### Returns
+
+- `[]Candle`
+
+  A slice of \[\]Candle containing the unpacked candle data from the response.
+
+- `error`
+
+  An error object that indicates a failure in sending the request or unpacking the response.
+
+
+
+<a name="IndicesCandlesRequest.Packed"></a>
+### func \(\*IndicesCandlesRequest\) Packed
+
+```go
+func (icr *IndicesCandlesRequest) Packed(optionalClients ...*MarketDataClient) (*models.IndicesCandlesResponse, error)
+```
+
+Packed sends the IndicesCandlesRequest and returns the IndicesCandlesResponse. This method checks if the IndicesCandlesRequest receiver is nil, returning an error if true. An optional MarketDataClient can be passed to replace the client used in the request. Otherwise, it proceeds to send the request and returns the IndicesCandlesResponse along with any error encountered during the request.
+
+#### Parameters
+
+- `...*MarketDataClient`
+
+  A variadic parameter that can accept zero or one \*MarketDataClient pointer. If a client is provided, it replaces the current client for this request.
+
+
+#### Returns
+
+- `*models.IndicesCandlesResponse`
+
+  A pointer to the \*IndicesCandlesResponse obtained from the request.
+
+- `error`
+
+  An error object that indicates a failure in sending the request.
+
+
+
+##  Execution Methods
 
 
 
 
 
 <a name="ByClose"></a>
-## type ByClose
+# type ByClose
 
 ```go
 type ByClose []Candle
@@ -463,7 +468,7 @@ func (a ByClose) Swap(i, j int)
 
 
 <a name="ByDate"></a>
-## type ByDate
+# type ByDate
 
 ```go
 type ByDate []Candle
@@ -536,7 +541,7 @@ func (a ByDate) Swap(i, j int)
 
 
 <a name="ByHigh"></a>
-## type ByHigh
+# type ByHigh
 
 ```go
 type ByHigh []Candle
@@ -609,7 +614,7 @@ func (a ByHigh) Swap(i, j int)
 
 
 <a name="ByLow"></a>
-## type ByLow
+# type ByLow
 
 ```go
 type ByLow []Candle
@@ -682,7 +687,7 @@ func (a ByLow) Swap(i, j int)
 
 
 <a name="ByN"></a>
-## type ByN
+# type ByN
 
 ```go
 type ByN []Candle
@@ -755,7 +760,7 @@ func (a ByN) Swap(i, j int)
 
 
 <a name="ByOpen"></a>
-## type ByOpen
+# type ByOpen
 
 ```go
 type ByOpen []Candle
@@ -828,7 +833,7 @@ func (a ByOpen) Swap(i, j int)
 
 
 <a name="BySymbol"></a>
-## type BySymbol
+# type BySymbol
 
 ```go
 type BySymbol []Candle
@@ -901,7 +906,7 @@ func (a BySymbol) Swap(i, j int)
 
 
 <a name="ByVWAP"></a>
-## type ByVWAP
+# type ByVWAP
 
 ```go
 type ByVWAP []Candle
@@ -974,7 +979,7 @@ func (a ByVWAP) Swap(i, j int)
 
 
 <a name="ByVolume"></a>
-## type ByVolume
+# type ByVolume
 
 ```go
 type ByVolume []Candle
@@ -1047,7 +1052,7 @@ func (a ByVolume) Swap(i, j int)
 
 
 <a name="Candle"></a>
-## type Candle
+# type Candle
 
 ```go
 type Candle struct {
@@ -1161,9 +1166,9 @@ IsAfter determines if the current Candle instance occurred after another specifi
 
 #### Parameters
 
-- `other Candle`
+- `Candle`
 
-  The Candle instance to compare with the current Candle instance.
+  The other Candle instance to compare with the current Candle instance.
 
 
 #### Returns
@@ -1184,9 +1189,9 @@ IsBefore determines whether the current Candle instance occurred before another 
 
 #### Parameters
 
-- `other Candle`
+- `Candle`
 
-  The Candle instance to compare with the current Candle instance.
+  The other Candle instance to compare with the current Candle instance.
 
 
 #### Returns
@@ -1291,7 +1296,7 @@ UnmarshalJSON customizes the JSON input processing for the Candle struct, allowi
 - The Date field in the JSON is expected to be a Unix timestamp \(integer\). This method converts it back to a time.Time object, ensuring the Candle struct's Date field is correctly populated.
 
 <a name="IndicesCandlesResponse"></a>
-## type IndicesCandlesResponse
+# type IndicesCandlesResponse
 
 ```go
 type IndicesCandlesResponse struct {
