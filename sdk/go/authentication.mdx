@@ -1,0 +1,96 @@
+---
+title: Authentication
+sidebar_position: 1
+---
+
+The Market Data API uses a **Bearer Token** for authentication. The token is required for each request you make to the API. Your token should have been e-mailed to you when you first signed up for an account.  If you do not have a token or have lost your sign-up email, request a new token from the [Market Data Dashboard](https://www.marketdata.app/dashboard/). 
+
+There are two ways to set your token when using the Go SDK:
+
+1. Set it from an environment variable _(recommended)_
+2. Hardcode it in your code
+
+On startup, the SDK will look for the environment variable. If found, it will create a new default client and use the token for all requests. If the environment variable is not found on start-up, you will need to create a client manually and set the token at runtime.
+
+:::tip
+When your code is running in a production environment, we recommend using an environment variable to ensure your token is not stored with your code. This is the most secure way to set your token.
+:::
+
+## How To Set-Up The Environment Variable
+
+Set the token in the environment variable `MARKETDATA_TOKEN`. Alternatively, you can hardcode it in your code, but please be aware that this is not secure and could pose a risk if your code is shared.
+
+```bash
+export MARKETDATA_TOKEN="your_api_token"   # mac/linux
+setx MARKETDATA_TOKEN "your_api_token"     # windows
+```
+
+### Make A Test Request
+
+Test that your authentication is working by making a test request to SPY or any other symbol that requires authentication. Do not use AAPL to test your authentication because AAPL is a free symbol.
+
+```go
+
+import (
+  "fmt"
+  "log"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func main() {
+  // Initialize a new request, set the symbol parameter, make the request.
+	quotes, err := api.StockQuote().Symbol("SPY").Get() 
+	if err != nil {
+		log.Fatalf("Failed to get stock quotes: %v", err)
+	}
+
+  // Loop over the quotes and print them out.
+  for _, quote := range quotes {
+		fmt.Println(quote)
+	}
+}
+
+```
+
+## How To Create a Client Manually and Assign a Token
+
+If you decide to create a client manually and assign a token at runtime, you simply embed the token in your code somewhere and pass it to the GetClient function. This is not recommended for production code.
+
+### Example Code
+
+```go
+
+package main
+
+import (
+  "log"
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func main() {
+	// replace with your token
+	token := "your_token_here"		
+
+	// create a new client and set the token
+	client, err := api.GetClient(token) 
+	if err != nil {
+		log.Fatalf("Failed to get client: %v", err)
+	}
+
+	// make a test request to SPY
+	quotes, err := api.StockQuote().Symbol("SPY").Get() 
+	if err != nil {
+		log.Fatalf("Failed to get stock quotes: %v", err)
+	}
+	
+	// print out the response
+    for _, quote := range quotes {
+		fmt.Println(quote)
+	}
+}
+
+```
+
