@@ -18,7 +18,7 @@ Utilize [MarketStatusRequest](<#MarketStatusRequest>) to make requests to the en
 
 | Method     | Execution     | Return Type                | Description                                                                                               |
 |------------|---------------|----------------------------|-----------------------------------------------------------------------------------------------------------|
-| **Get**    | Direct        | `[]MarketStatus`           | Directly returns a slice of `[]MarketStatus`, facilitating individual access to each market status entry. |
+| **Get**    | Direct        | `[]MarketStatusReport`     | Directly returns a slice of `[]MarketStatus`, facilitating individual access to each market status entry. |
 | **Packed** | Intermediate  | `MarketStatusResponse`     | Returns a packed `MarketStatusResponse` object. Must be unpacked to access the `[]MarketStatus` slice.    |
 | **Raw**    | Low-level     | `resty.Response`           | Offers the raw `resty.Response` for utmost flexibility. Direct access to raw JSON or `*http.Response`.    |
 
