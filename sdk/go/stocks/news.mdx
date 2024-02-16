@@ -16,11 +16,11 @@ Retrieve news articles for any supported stock symbol.
 
 Use [StockNewsRequest](<#StockNewsRequest>) to make requests to the endpoint using any of the three supported execution methods:
 
-| Method     | Execution     | Return Type                | Description                                                                                               |
-|------------|---------------|----------------------------|-----------------------------------------------------------------------------------------------------------|
-| **Get**    | Direct        | `[]StockNews  `            | Directly returns a slice of `[]StockNews`, facilitating individual access to each news article.           |
-| **Packed** | Intermediate  | `StockNewsResponse`        | Returns a packed `StockNewsResponse` object. Must be unpacked to access the `[]StockNews` slice.          |
-| **Raw**    | Low-level     | `resty.Response`           | Provides the raw `resty.Response` for maximum flexibility. Direct access to raw JSON or `*http.Response`. |
+| Method     | Execution     | Return Type                 | Description                                                                                                |
+|------------|---------------|-----------------------------|------------------------------------------------------------------------------------------------------------|
+| **Get**    | Direct        | `[]StockNews  `             | Directly returns a slice of `[]StockNews`, facilitating individual access to each news article.            |
+| **Packed** | Intermediate  | `*StockNewsResponse`        | Returns a packed `*StockNewsResponse` object. Must be unpacked to access the `[]StockNews` slice.          |
+| **Raw**    | Low-level     | `*resty.Response`           | Provides the raw `*resty.Response` for maximum flexibility. Direct access to raw JSON or `*http.Response`. |
 
 
 <a name="StockNewsRequest"></a>
@@ -46,17 +46,17 @@ Setter Methods
 
 These methods are used to send the request in different formats or retrieve the data. They handle the actual communication with the API endpoint.
 
-- <a href="#StockNewsRequest.Raw">`Raw() (*resty.Response, error)`</a>
+- <a href="#StockNewsRequest.Get">`Get(...*MarketDataClient) ([]StockNews, error)`</a>
 
-  Sends the request as is and returns the raw HTTP response.
+  Initiates the request, processes the response, and provides an slice of \`StockNews\` objects for straightforward access to news articles.
 
-- <a href="#StockNewsRequest.Packed">`Packed() (*IndicesCandlesResponse, error)`</a>
+- <a href="#StockNewsRequest.Packed">`Packed(...*MarketDataClient) (*StockNewsResponse, error)`</a>
 
-  Packs the request parameters and sends the request, returning a structured response.
+  Delivers a packed \`StockNewsResponse\` object containing slices of data that directly correspond to the JSON structure returned by the Market Data API.
 
-- <a href="#StockNewsRequest.Get">`Get() ([]Candle, error)`</a>
+- <a href="#StockNewsRequest.Raw">`Raw(...*MarketDataClient) (*resty.Response, error)`</a>
 
-  Sends the request, unpacks the response, and returns the data in a user\-friendly format.
+  Executes the request in its raw form and retrieves the raw HTTP response for maximum flexibility.
 
 
 

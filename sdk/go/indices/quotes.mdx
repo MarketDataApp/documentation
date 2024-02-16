@@ -13,11 +13,11 @@ Retrieve real\-time quotes for any supported index.
 
 Utilize [IndexQuoteRequest](<#IndexQuoteRequest>) to make requests to the endpoint through one of the three supported execution methods:
 
-| Method     | Execution     | Return Type                | Description                                                                                               |
-|------------|---------------|----------------------------|-----------------------------------------------------------------------------------------------------------|
-| **Get**    | Direct        | `[]IndexQuote`             | Directly returns a slice of `[]IndexQuote`, facilitating individual access to each quote.                 |
-| **Packed** | Intermediate  | `IndexQuotesResponse`      | Returns a packed `IndexQuotesResponse` object. Must be unpacked to access the `[]IndexQuote` slice.       |
-| **Raw**    | Low-level     | `resty.Response`           | Offers the raw `resty.Response` for utmost flexibility. Direct access to raw JSON or `*http.Response`.    |
+| Method     | Execution     | Return Type                 | Description                                                                                                |
+|------------|---------------|-----------------------------|------------------------------------------------------------------------------------------------------------|
+| **Get**    | Direct        | `[]IndexQuote`              | Directly returns a slice of `[]IndexQuote`, facilitating individual access to each quote.                  |
+| **Packed** | Intermediate  | `*IndexQuotesResponse`      | Returns a packed `*IndexQuotesResponse` object. Must be unpacked to access the `[]IndexQuote` slice.       |
+| **Raw**    | Low-level     | `*resty.Response`           | Offers the raw `*resty.Response` for utmost flexibility. Direct access to raw JSON or `*http.Response`.    |
 
 
 <a name="IndexQuoteRequest"></a>
@@ -55,17 +55,17 @@ These methods are used to set the parameters of the request. They allow for meth
 
 These methods are used to send the request in different formats or retrieve the data. They handle the actual communication with the API endpoint.
 
-- <a href="#IndexQuoteRequest.Raw">`Raw() (*resty.Response, error)`</a>
-
-  Sends the request as is and returns the raw HTTP response.
-
-- <a href="#IndexQuoteRequest.Packed">`Packed() (*IndexQuotesResponse, error)`</a>
-
-  Packs the request parameters and sends the request, returning a structured response.
-
-- <a href="#IndexQuoteRequest.Get">`Get() ([]IndexQuote, error)`</a>
+- <a href="#IndexQuoteRequest.Get">`Get(...*MarketDataClient) ([]IndexQuote, error)`</a>
 
   Sends the request, unpacks the response, and returns the data in a user\-friendly format.
+
+- <a href="#IndexQuoteRequest.Packed">`Packed(...*MarketDataClient) (*IndexQuotesResponse, error)`</a>
+
+  Returns a struct that contains equal\-length slices of primitives. This packed response mirrors Market Data's JSON response.
+
+- <a href="#IndexQuoteRequest.Raw">`Raw(...*MarketDataClient) (*resty.Response, error)`</a>
+
+  Sends the request as is and returns the raw HTTP response.
 
 
 

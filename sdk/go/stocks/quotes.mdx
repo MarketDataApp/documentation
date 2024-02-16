@@ -46,17 +46,17 @@ StockQuoteRequest represents a request to the [/v1/stocks/quotes/](<https://www.
 
 These methods are used to send the request in different formats or retrieve the data. They handle the actual communication with the API endpoint.
 
-- <a href="#StockQuoteRequest.Raw">`Raw() (*resty.Response, error)`</a>
-
-  Sends the request as is and returns the raw HTTP response.
-
-- <a href="#StockQuoteRequest.Packed">`Packed() (*IndicesCandlesResponse, error)`</a>
-
-  Packs the request parameters and sends the request, returning a structured response.
-
-- <a href="#StockQuoteRequest.Get">`Get() ([]Candle, error)`</a>
+- <a href="#StockQuoteRequest.Get">`Get(...*MarketDataClient) ([]Candle, error)`</a>
 
   Sends the request, unpacks the response, and returns the data in a user\-friendly format.
+
+- <a href="#StockQuoteRequest.Packed">`Packed(...*MarketDataClient) (*IndicesCandlesResponse, error)`</a>
+
+  Returns a struct that contains equal\-length slices of primitives. This packed response mirrors Market Data's JSON response.
+
+- <a href="#StockQuoteRequest.Raw">`Raw(...*MarketDataClient) (*resty.Response, error)`</a>
+
+  Sends the request as is and returns the raw HTTP response.
 
 
 

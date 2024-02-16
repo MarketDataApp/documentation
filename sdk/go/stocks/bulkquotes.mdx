@@ -13,11 +13,11 @@ Retrieve real\-time quotes for multiple stocks symbols in a single request or ev
 
 Utilize [BulkStockQuotesRequest](<#BulkStockQuotesRequest>) to make requests to the endpoint through one of the three supported execution methods:
 
-| Method     | Execution     | Return Type                | Description                                                                                               |
-|------------|---------------|----------------------------|-----------------------------------------------------------------------------------------------------------|
-| **Get**    | Direct        | `[]StockQuote`             | Directly returns a slice of `[]StockQuote`, facilitating individual access to each stock quote.           |
-| **Packed** | Intermediate  | `StockQuotesResponse`      | Returns a packed `StockQuotesResponse` object. Must be unpacked to access the `[]StockQuote` slice.       |
-| **Raw**    | Low-level     | `resty.Response`           | Offers the raw `resty.Response` for utmost flexibility. Direct access to raw JSON or `*http.Response`.    |
+| Method     | Execution     | Return Type                 | Description                                                                                                |
+|------------|---------------|-----------------------------|------------------------------------------------------------------------------------------------------------|
+| **Get**    | Direct        | `[]StockQuote`              | Directly returns a slice of `[]StockQuote`, facilitating individual access to each stock quote.            |
+| **Packed** | Intermediate  | `*StockQuotesResponse`      | Returns a packed `*StockQuotesResponse` object. Must be unpacked to access the `[]StockQuote` slice.       |
+| **Raw**    | Low-level     | `*resty.Response`           | Offers the raw `*resty.Response` for utmost flexibility. Direct access to raw JSON or `*http.Response`.    |
 
 
 <a name="BulkStockQuotesRequest"></a>
@@ -53,17 +53,17 @@ BulkStockQuotesRequest represents a request to the [v1/stocks/bulkquotes/](<http
 
 These methods are used to send the request in different formats or retrieve the data. They handle the actual communication with the API endpoint.
 
-- <a href="#BulkStockQuotesRequest.Raw">`Raw() (*resty.Response, error)`</a>
-
-  Sends the request as is and returns the raw HTTP response.
-
-- <a href="#BulkStockQuotesRequest.Packed">`Packed() (*StockQuotesResponse, error)`</a>
-
-  Packs the request parameters and sends the request, returning a structured response.
-
-- <a href="#BulkStockQuotesRequest.Get">`Get() ([]Candle, error)`</a>
+- <a href="#BulkStockQuotesRequest.Get">`Get(...*MarketDataClient) ([]Candle, error)`</a>
 
   Sends the request, unpacks the response, and returns the data in a user\-friendly format.
+
+- <a href="#BulkStockQuotesRequest.Packed">`Packed(...*MarketDataClient) (*StockQuotesResponse, error)`</a>
+
+  Returns a struct that contains equal\-length slices of primitives. This packed response mirrors Market Data's JSON response.
+
+- <a href="#BulkStockQuotesRequest.Raw">`Raw(...*MarketDataClient) (*resty.Response, error)`</a>
+
+  Sends the request as is and returns the raw HTTP response.
 
 
 

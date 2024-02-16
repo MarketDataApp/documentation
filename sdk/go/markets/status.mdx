@@ -16,11 +16,11 @@ Retrieve current, future, and historical open / closed status information.
 
 Utilize [MarketStatusRequest](<#MarketStatusRequest>) to make requests to the endpoint through one of the three supported execution methods:
 
-| Method     | Execution     | Return Type                | Description                                                                                               |
-|------------|---------------|----------------------------|-----------------------------------------------------------------------------------------------------------|
-| **Get**    | Direct        | `[]MarketStatusReport`     | Directly returns a slice of `[]MarketStatus`, facilitating individual access to each market status entry. |
-| **Packed** | Intermediate  | `MarketStatusResponse`     | Returns a packed `MarketStatusResponse` object. Must be unpacked to access the `[]MarketStatus` slice.    |
-| **Raw**    | Low-level     | `resty.Response`           | Offers the raw `resty.Response` for utmost flexibility. Direct access to raw JSON or `*http.Response`.    |
+| Method     | Execution     | Return Type                 | Description                                                                                                     |
+|------------|---------------|-----------------------------|-----------------------------------------------------------------------------------------------------------------|
+| **Get**    | Direct        | `[]MarketStatusReport`      | Directly returns a slice of `[]MarketStatusReport`, facilitating individual access to each market status entry. |
+| **Packed** | Intermediate  | `*MarketStatusResponse`     | Returns a packed `*MarketStatusResponse` object. Must be unpacked to access the `[]MarketStatusReport` slice.   |
+| **Raw**    | Low-level     | `*resty.Response`           | Offers the raw `*resty.Response` for utmost flexibility. Direct access to raw JSON or `*http.Response`.         |
 
 
 <a name="MarketStatusRequest"></a>
@@ -68,17 +68,17 @@ MarketStatusRequest represents a request to the [/v1/markets/status/](<https://w
 
 These methods are used to send the request in different formats or retrieve the data. They handle the actual communication with the API endpoint.
 
-- <a href="#MarketStatusRequest.Raw">`Raw() (*resty.Response, error)`</a>
-
-  Sends the request as is and returns the raw HTTP response.
-
-- <a href="#MarketStatusRequest.Packed">`Packed() (*IndicesCandlesResponse, error)`</a>
-
-  Packs the request parameters and sends the request, returning a structured response.
-
-- <a href="#MarketStatusRequest.Get">`Get() ([]Candle, error)`</a>
+- <a href="#MarketStatusRequest.Get">`Get(...*MarketDataClient) ([]MarketStatusReport, error)`</a>
 
   Sends the request, unpacks the response, and returns the data in a user\-friendly format.
+
+- <a href="#MarketStatusRequest.Packed">`Packed(...*MarketDataClient) (*MarketStatusResponse, error)`</a>
+
+  Returns a struct that contains equal\-length slices of primitives. This packed response mirrors Market Data's JSON response.
+
+- <a href="#MarketStatusRequest.Raw">`Raw(...*MarketDataClient) (*resty.Response, error)`</a>
+
+  Sends the request as is and returns the raw HTTP response.
 
 
 

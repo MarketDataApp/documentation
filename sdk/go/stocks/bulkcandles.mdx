@@ -16,11 +16,11 @@ Get bulk historical price data for many stock symbols at once or even obtain a f
 
 Utilize the [BulkStockCandlesRequest](<#BulkStockCandlesRequest>) for querying the endpoint through one of the three available methods:
 
-| Method     | Execution Level | Return Type                | Description                                                                                                            |
-|------------|-----------------|----------------------------|------------------------------------------------------------------------------------------------------------------------|
-| **Get**    | Direct          | `[]Candle`                 | Immediately fetches and returns a slice of `[]Candle`, allowing direct access to each candle's data.                   |
-| **Packed** | Intermediate    | `BulkStockCandlesResponse` | Delivers a `StockCandlesResponse` object containing the data, which requires unpacking to access the `[]Candle` slice. |
-| **Raw**    | Low-level       | `resty.Response`           | Offers the unprocessed `resty.Response` for those seeking full control and access to the raw JSON or `*http.Response`. |
+| Method     | Execution Level | Return Type                 | Description                                                                                                             |
+|------------|-----------------|-----------------------------|-------------------------------------------------------------------------------------------------------------------------|
+| **Get**    | Direct          | `[]Candle`                  | Immediately fetches and returns a slice of `[]Candle`, allowing direct access to each candle's data.                    |
+| **Packed** | Intermediate    | `*BulkStockCandlesResponse` | Delivers a `*StockCandlesResponse` object containing the data, which requires unpacking to access the `[]Candle` slice. |
+| **Raw**    | Low-level       | `*resty.Response`           | Offers the unprocessed `*resty.Response` for those seeking full control and access to the raw JSON or `*http.Response`. |
 
 
 <a name="BulkStockCandlesRequest"></a>
@@ -76,17 +76,17 @@ BulkStockCandlesRequest represents a request to the [/v1/stocks/bulkcandles/](<h
 
 These methods are used to send the request in different formats or retrieve the data. They handle the actual communication with the API endpoint.
 
-- <a href="#BulkStockCandlesRequest.Raw">`Raw() (*resty.Response, error)`</a>
-
-  Sends the request as is and returns the raw HTTP response.
-
-- <a href="#BulkStockCandlesRequest.Packed">`Packed() (*BulkStockCandlesResponse, error)`</a>
-
-  Packs the request parameters and sends the request, returning a structured response.
-
-- <a href="#BulkStockCandlesRequest.Get">`Get() ([]Candle, error)`</a>
+- <a href="#BulkStockCandlesRequest.Get">`Get(...*MarketDataClient) ([]Candle, error)`</a>
 
   Sends the request, unpacks the response, and returns the data in a user\-friendly format.
+
+- <a href="#BulkStockCandlesRequest.Packed">`Packed(...*MarketDataClient) (*BulkStockCandlesResponse, error)`</a>
+
+  Returns a struct that contains equal\-length slices of primitives. This packed response mirrors Market Data's JSON response.
+
+- <a href="#BulkStockCandlesRequest.Raw">`Raw(...*MarketDataClient) (*resty.Response, error)`</a>
+
+  Sends the request as is and returns the raw HTTP response.
 
 
 
