@@ -10,19 +10,17 @@ import TabItem from "@theme/TabItem";
 
 
 
-The client package provides functionalities to interact with the Bulk Stock Candles endpoint. Get bulk historical price data for many stock symbols at once or even obtain a full market snapshot.
+Get bulk historical price data for many stock symbols at once or even obtain a full market snapshot.
 
-### Requesting Data
+## Making Requests
 
 Utilize the [BulkStockCandlesRequest](<#BulkStockCandlesRequest>) for querying the endpoint through one of the three available methods:
 
-```
 | Method     | Execution Level | Return Type                | Description                                                                                                            |
 |------------|-----------------|----------------------------|------------------------------------------------------------------------------------------------------------------------|
 | **Get**    | Direct          | `[]Candle`                 | Immediately fetches and returns a slice of `[]Candle`, allowing direct access to each candle's data.                   |
 | **Packed** | Intermediate    | `BulkStockCandlesResponse` | Delivers a `StockCandlesResponse` object containing the data, which requires unpacking to access the `[]Candle` slice. |
 | **Raw**    | Low-level       | `resty.Response`           | Offers the unprocessed `resty.Response` for those seeking full control and access to the raw JSON or `*http.Response`. |
-```
 
 
 <a name="BulkStockCandlesRequest"></a>

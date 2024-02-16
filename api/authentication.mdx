@@ -37,8 +37,8 @@ Authorization: Bearer {token}
 ```javascript
 const https = require('https');
 
-// Your API token
-const apiToken = 'your_api_token_here';
+// Your token
+const token = 'your_token_here';
 
 // The API endpoint for retrieving stock quotes for SPY
 const url = 'https://api.marketdata.app/v1/stocks/quotes/SPY/';
@@ -47,7 +47,7 @@ const url = 'https://api.marketdata.app/v1/stocks/quotes/SPY/';
 https.get(url, {
     headers: {
         'Accept': 'application/json',
-        'Authorization': `Bearer ${apiToken}`
+        'Authorization': `Bearer ${token}`
     }
 }, (response) => {
     let data = '';
@@ -76,8 +76,8 @@ https.get(url, {
 ```python
 import requests
 
-# Your API token
-api_token = 'your_api_token_here'
+# Your token
+token = 'your_token_here'
 
 # The API endpoint for retrieving stock quotes for SPY
 url = 'https://api.marketdata.app/v1/stocks/quotes/SPY/'
@@ -85,7 +85,7 @@ url = 'https://api.marketdata.app/v1/stocks/quotes/SPY/'
 # Setting up the headers for authentication
 headers = {
     'Accept': 'application/json',
-    'Authorization': f'Bearer {api_token}'
+    'Authorization': f'Bearer {token}'
 }
 
 # Making the GET request to the API
