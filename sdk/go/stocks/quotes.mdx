@@ -3,6 +3,9 @@ title: Quotes
 sidebar_position: 3
 ---
 
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
 
 
 
@@ -60,6 +63,66 @@ These methods are used to send the request in different formats or retrieve the 
 
 
 
+
+<Tabs>
+<TabItem value="Example (Get)" label="Example (Get)">
+
+
+
+
+```go
+// This example demonstrates how to create a StockQuoteRequest, set its parameters,
+// and perform an actual request to fetch stock quotes for the "AAPL" symbol.
+
+// Initialize a new StockQuoteRequest and fetch a stock quote.
+sqr, err := StockQuote().Symbol("AAPL").Get()
+if err != nil {
+	log.Fatalf("Failed to get stock quotes: %v", err)
+}
+
+// Check if the response contains the "AAPL" symbol.
+for _, quote := range sqr {
+	fmt.Printf("Symbol: %s\n", quote.Symbol)
+}
+```
+
+#### Output
+
+```
+Symbol: AAPL
+```
+
+</TabItem>
+
+<TabItem value="Example (Packed)" label="Example (Packed)">
+
+
+
+
+```go
+// This example demonstrates how to create a StockQuoteRequest, set its parameters,
+// and perform an actual request to fetch stock quotes for the "AAPL" symbol.
+
+// Initialize a new StockQuoteRequest and fetch a stock quote.
+sqr, err := StockQuote().Symbol("AAPL").Get()
+if err != nil {
+	log.Fatalf("Failed to get stock quotes: %v", err)
+}
+
+// Check if the response contains the "AAPL" symbol.
+for _, quote := range sqr {
+	fmt.Printf("Symbol: %s\n", quote.Symbol)
+}
+```
+
+#### Output
+
+```
+Symbol: AAPL
+```
+
+</TabItem>
+</Tabs>
 
 <a name="StockQuote"></a>
 ### StockQuote

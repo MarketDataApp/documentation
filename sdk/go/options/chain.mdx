@@ -18,8 +18,8 @@ Utilize [OptionChainRequest](<#OptionChainRequest>) for querying the endpoint th
 
 | Method     | Execution Level | Return Type                  | Description                                                                                                                      |
 |------------|-----------------|------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| **Get**    | Direct          | `[]OptionQuote`              | Immediately fetches a slice of `[]models.OptionQuote`, allowing direct access to the options chain data.                         |
-| **Packed** | Intermediate    | `*OptionQuotesResponse`      | Delivers a `*models.OptionQuotesResponse` object containing the data, which requires unpacking to access the `OptionQuote` data. |
+| **Get**    | Direct          | `[]OptionQuote`              | Immediately fetches a slice of `[]OptionQuote`, allowing direct access to the options chain data.                                |
+| **Packed** | Intermediate    | `*OptionQuotesResponse`      | Delivers a `*OptionQuotesResponse` object containing the data, which requires unpacking to access the `OptionQuote` data.        |
 | **Raw**    | Low-level       | `*resty.Response`            | Offers the unprocessed `*resty.Response` for those seeking full control and access to the raw JSON or `*http.Response`.          |
 
 

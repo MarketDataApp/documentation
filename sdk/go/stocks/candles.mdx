@@ -154,6 +154,29 @@ StockCandlesResponse{Date: [1672756200 1672770600 1672842600 1672857000], Open: 
 ```
 
 </TabItem>
+
+<TabItem value="Example (Raw)" label="Example (Raw)">
+
+
+
+
+```go
+scr, err := StockCandles().Resolution("4H").Symbol("AAPL").From("2023-01-01").To("2023-01-04").Raw()
+if err != nil {
+	fmt.Print(err)
+	return
+}
+fmt.Println(scr)
+
+```
+
+#### Output
+
+```
+{"s":"ok","t":[1672756200,1672770600,1672842600,1672857000],"o":[130.28,124.6699,126.89,127.265],"h":[130.9,125.42,128.6557,127.87],"l":[124.19,124.17,125.08,125.28],"c":[124.6499,125.05,127.2601,126.38],"v":[64411753,30727802,49976607,28870878]}
+```
+
+</TabItem>
 </Tabs>
 
 <a name="StockCandles"></a>
@@ -473,14 +496,14 @@ Packed sends the StockCandlesRequest and returns the StockCandlesResponse. An op
 
 ```go
 type StockCandlesResponse struct {
-    Date   []int64    `json:"t" human:"Date"`                              // Date holds UNIX timestamps for each candle.
-    Open   []float64  `json:"o" human:"Open"`                              // Open holds the opening prices for each candle.
-    High   []float64  `json:"h" human:"High"`                              // High holds the highest prices reached in each candle.
-    Low    []float64  `json:"l" human:"Low"`                               // Low holds the lowest prices reached in each candle.
-    Close  []float64  `json:"c" human:"Close"`                             // Close holds the closing prices for each candle.
-    Volume []int64    `json:"v" human:"Volume"`                            // Volume represents the trading volume in each candle.
-    VWAP   *[]float64 `json:"vwap,omitempty" human:"VWAP,omitempty"`       // VWAP holds the Volume Weighted Average Price for each candle, optional.
-    N      *[]int64   `json:"n,omitempty" human:"No. of Trades,omitempty"` // N holds the number of trades for each candle, optional.
+    Date   []int64    `json:"t"`              // Date holds UNIX timestamps for each candle.
+    Open   []float64  `json:"o"`              // Open holds the opening prices for each candle.
+    High   []float64  `json:"h"`              // High holds the highest prices reached in each candle.
+    Low    []float64  `json:"l"`              // Low holds the lowest prices reached in each candle.
+    Close  []float64  `json:"c"`              // Close holds the closing prices for each candle.
+    Volume []int64    `json:"v"`              // Volume represents the trading volume in each candle.
+    VWAP   *[]float64 `json:"vwap,omitempty"` // VWAP holds the Volume Weighted Average Price for each candle, optional.
+    N      *[]int64   `json:"n,omitempty"`    // N holds the number of trades for each candle, optional.
 }
 ```
 
