@@ -141,6 +141,29 @@ BulkStockCandlesResponse{Symbol: [AAPL META MSFT], Date: [1707195600 1707195600 
 ```
 
 </TabItem>
+
+<TabItem value="Example (Raw)" label="Example (Raw)">
+
+
+
+
+```go
+symbols := []string{"AAPL", "META", "MSFT"}
+bscr, err := BulkStockCandles().Resolution("D").Symbols(symbols).Date("2024-02-06").Raw()
+if err != nil {
+	fmt.Print(err)
+	return
+}
+fmt.Println(bscr)
+```
+
+#### Output
+
+```
+{"s":"ok","symbol":["AAPL","META","MSFT"],"o":[186.86,464.0,405.88],"h":[189.31,467.12,407.97],"l":[186.7695,453.0,402.91],"c":[189.3,454.72,405.49],"v":[43490759,21653114,18382624],"t":[1707195600,1707195600,1707195600]}
+```
+
+</TabItem>
 </Tabs>
 
 <a name="BulkStockCandles"></a>
@@ -338,6 +361,58 @@ Packed sends the BulkStockCandlesRequest and returns the StockCandlesResponse. A
 
   An error object that indicates a failure in sending the request.
 
+
+<a name="BulkStockCandlesRequest.Raw"></a>
+### Raw
+
+```go
+func (bscr *BulkStockCandlesRequest) Raw(optionalClients ...*MarketDataClient) (*resty.Response, error)
+```
+
+Raw executes the request and returns the raw \*resty.Response. This method allows for an optional MarketDataClient to be passed which, if provided, replaces the client that is currently attached to the request. Using the \*resty.Response, it is possible to obtain the raw JSON or \*http.Response.
+
+#### Parameters
+
+- `...*MarketDataClient`
+
+  A variadic parameter that can accept an optional \*MarketDataClient pointer. If provided, it replaces the current \*MarketDataClient for this request.
+
+
+#### Returns
+
+- `*resty.Response`
+
+  The raw response from the executed request.
+
+- `error`
+
+  An error object if the request is nil, the MarketDataClient is nil, or if an error occurs during the request execution.
+
+
+<Tabs>
+<TabItem value="Example" label="Example">
+
+
+
+
+```go
+symbols := []string{"AAPL", "META", "MSFT"}
+bscr, err := BulkStockCandles().Resolution("D").Symbols(symbols).Date("2024-02-06").Raw()
+if err != nil {
+	fmt.Print(err)
+	return
+}
+fmt.Println(bscr)
+```
+
+#### Output
+
+```
+{"s":"ok","symbol":["AAPL","META","MSFT"],"o":[186.86,464.0,405.88],"h":[189.31,467.12,407.97],"l":[186.7695,453.0,402.91],"c":[189.3,454.72,405.49],"v":[43490759,21653114,18382624],"t":[1707195600,1707195600,1707195600]}
+```
+
+</TabItem>
+</Tabs>
 
 
 <a name="StockCandlesResponse"></a>
