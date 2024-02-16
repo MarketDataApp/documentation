@@ -218,6 +218,33 @@ Packed sends the OptionsExpirationsRequest and returns the OptionsExpirationsRes
   An error object that indicates a failure in sending the request.
 
 
+<a name="OptionsExpirationsRequest.Raw"></a>
+### Raw
+
+```go
+func (oer *OptionsExpirationsRequest) Raw(optionalClients ...*MarketDataClient) (*resty.Response, error)
+```
+
+Raw executes the OptionsExpirationsRequest and returns the raw \*resty.Response. This method allows for an optional MarketDataClient to be passed. If provided, it replaces the default client used for this request. The \*resty.Response can be used to directly access the raw JSON or \*http.Response.
+
+#### Parameters
+
+- `...*MarketDataClient`
+
+  A variadic parameter that can accept an optional \*MarketDataClient pointer. If provided, this client is used for the request instead of the default.
+
+
+#### Returns
+
+- `*resty.Response`
+
+  The raw HTTP response from the executed OptionsExpirationsRequest.
+
+- `error`
+
+  An error object if the OptionsExpirationsRequest is nil, the MarketDataClient is nil, or if an error occurs during the request execution.
+
+
 
 <a name="OptionsExpirationsResponse"></a>
 ## OptionsExpirationsResponse

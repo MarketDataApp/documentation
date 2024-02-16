@@ -219,6 +219,33 @@ Packed sends the OptionLookupRequest and returns the OptionsLookupResponse. An o
   An error object that indicates a failure in sending the request.
 
 
+<a name="OptionLookupRequest.Raw"></a>
+### Raw
+
+```go
+func (olr *OptionLookupRequest) Raw(optionalClients ...*MarketDataClient) (*resty.Response, error)
+```
+
+Raw executes the OptionLookupRequest and returns the raw \*resty.Response. This method optionally accepts a \*MarketDataClient to use for the request, replacing the default client if provided. The \*resty.Response allows access to the raw JSON or \*http.Response for further processing.
+
+#### Parameters
+
+- `...*MarketDataClient`
+
+  An optional variadic parameter that can accept a \*MarketDataClient pointer. If provided, this client is used for the request instead of the default.
+
+
+#### Returns
+
+- `*resty.Response`
+
+  The raw HTTP response from the executed OptionLookupRequest.
+
+- `error`
+
+  An error object if the request fails due to being nil, the MarketDataClient being nil, or other execution errors.
+
+
 
 <a name="OptionLookupResponse"></a>
 ## OptionLookupResponse
