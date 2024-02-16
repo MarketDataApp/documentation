@@ -3,7 +3,10 @@ title: Authentication
 sidebar_position: 3
 ---
 
-The Market Data API uses a token for authentication. The token is required for each request and it can be added to the request's authorization header or supplied or as a parameter in the URL.
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Market Data API uses a bearer token for authentication. The token is required for each request you make to the API. You may use header authentication or url parameter authentication.
 
 :::tip
 We recommend using header-based authentication to ensure your token is not stored or cached. While Market Data makes a conscientious effort to delete tokens from our own server logs, we cannot guarantee that your token will not be stored by any of our third party cloud infrastructure partners.
