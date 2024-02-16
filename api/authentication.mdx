@@ -6,7 +6,10 @@ sidebar_position: 3
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-The Market Data API uses a bearer token for authentication. The token is required for each request you make to the API. You may use header authentication or url parameter authentication.
+The Market Data API uses a **Bearer Token** for authentication. The token is required for each request you make to the API. There are two ways to pass this token to the API with your requests:
+
+1. Header Authentication
+2. URL Parameter Authentication
 
 :::tip
 We recommend using header-based authentication to ensure your token is not stored or cached. While Market Data makes a conscientious effort to delete tokens from our own server logs, we cannot guarantee that your token will not be stored by any of our third party cloud infrastructure partners.
@@ -14,7 +17,7 @@ We recommend using header-based authentication to ensure your token is not store
 
 ## Header Authentication
 
-Add the token to the ```Authorization``` header using the word ```Token```. 
+Add the token to the ```Authorization``` header using the word ```Bearer```. 
 
 ### Code Examples
 
@@ -25,7 +28,7 @@ Add the token to the ```Authorization``` header using the word ```Token```.
 GET /v1/stocks/quotes/SPY/ HTTP/1.1
 Host: api.marketdata.app
 Accept: application/json
-Authorization: Token {token}
+Authorization: Bearer {token}
 ```
 
 </TabItem>
@@ -44,7 +47,7 @@ const url = 'https://api.marketdata.app/v1/stocks/quotes/SPY/';
 https.get(url, {
     headers: {
         'Accept': 'application/json',
-        'Authorization': `Token ${apiToken}`
+        'Authorization': `Bearer ${apiToken}`
     }
 }, (response) => {
     let data = '';
@@ -82,7 +85,7 @@ url = 'https://api.marketdata.app/v1/stocks/quotes/SPY/'
 # Setting up the headers for authentication
 headers = {
     'Accept': 'application/json',
-    'Authorization': f'Token {api_token}'
+    'Authorization': f'Bearer {api_token}'
 }
 
 # Making the GET request to the API
