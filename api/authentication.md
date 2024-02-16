@@ -11,14 +11,125 @@ We recommend using header-based authentication to ensure your token is not store
 
 ## Header Authentication
 
-Add the token to the ```Authorization``` header using the word ```Token```. For example:
+Add the token to the ```Authorization``` header using the word ```Token```. 
+
+### Code Examples
+
+<Tabs>
+<TabItem value="HTTP" label="HTTP" default>
 
 ```http
-GET /v1/stocks/quotes/AAPL/ HTTP/1.1
+GET /v1/stocks/quotes/SPY/ HTTP/1.1
 Host: api.marketdata.app
 Accept: application/json
 Authorization: Token {token}
 ```
+
+</TabItem>
+<TabItem value="Node.js" label="Node.js">
+
+```javascript
+const https = require('https');
+
+// Your API token
+const apiToken = 'your_api_token_here';
+
+// The API endpoint for retrieving stock quotes for SPY
+const url = 'https://api.marketdata.app/v1/stocks/quotes/SPY/';
+
+// Making the GET request to the API
+https.get(url, {
+    headers: {
+        'Accept': 'application/json',
+        'Authorization': `Token ${apiToken}`
+    }
+}, (response) => {
+    let data = '';
+
+    // A chunk of data has been received.
+    response.on('data', (chunk) => {
+        data += chunk;
+    });
+
+    // The whole response has been received. Print out the result.
+    response.on('end', () => {
+        if (response.statusCode === 200 || response.statusCode === 203) {
+            console.log(JSON.parse(data));
+        } else {
+            console.log(`Failed to retrieve data: ${response.statusCode}`);
+        }
+    });
+}).on("error", (err) => {
+    console.log("Error: " + err.message);
+});
+```
+
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```python
+import requests
+
+# Your API token
+api_token = 'your_api_token_here'
+
+# The API endpoint for retrieving stock quotes for SPY
+url = 'https://api.marketdata.app/v1/stocks/quotes/SPY/'
+
+# Setting up the headers for authentication
+headers = {
+    'Accept': 'application/json',
+    'Authorization': f'Token {api_token}'
+}
+
+# Making the GET request to the API
+response = requests.get(url, headers=headers)
+
+# Checking if the request was successful
+if response. status_code in (200, 203):
+    # Parsing the JSON response
+    data = response.json()
+    print(data)
+else:
+    print(f'Failed to retrieve data: {response.status_code}')
+```
+
+</TabItem>
+
+
+<TabItem value="Go" label="Go">
+
+```go
+// Import the Market Data SDK
+import api "github.com/MarketDataApp/sdk-go"
+
+func main() {
+    // Create a new Market Data client instance
+    marketDataClient := api.New()
+
+    // Set the token for authentication
+    // Replace "your_token_here" with your actual token
+    marketDataClient.Token("your_token_here")
+
+    // Now the client is ready to make authenticated requests to the Market Data API
+    
+    // Use the client to create a StockQuoteRequest
+	sqr, err := api.StockQuote(marketDataClient).Symbol("SPY").Get()
+    if err != nil {
+		fmt.Println("Error fetching stock quotes:", err)
+		return
+	}
+
+	// Process the retrieved quote
+	for _, quote := range quotes {
+		fmt.Printf(quote)
+	}
+}
+```
+
+</TabItem>
+</Tabs>
+
 
 ## URL Parameter Authentication
 
