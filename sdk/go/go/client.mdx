@@ -1,0 +1,240 @@
+---
+title: Client
+sidebar_position: 3
+---
+
+
+
+
+
+The \[Market Data Go Client\] includes functionality for making API requests, handling responses, managing rate limits, and logging. The SDK supports various data types including stocks, options, indices, and market status information.
+
+### Get Started Quickly with the MarketDataClient
+
+1. Use [GetClient](<#GetClient>) to fetch the [MarketDataClient](<#MarketDataClient>) instance and set the API token. 2. Turn on Debug mode to log detailed request and response information to disk as you learn how to use the SDK. 3. Make a test request. 4. Check the rate limit in the client to keep track of your requests. 5. Check the in\-memory logs to see the raw request and response details.
+
+\# \[Market Data Go Client\]: https://www.marketdata.app/docs/sdk/go/client
+
+
+<a name="GetLogs"></a>
+## GetLogs
+
+```go
+func GetLogs() *logging.HttpRequestLogs
+```
+
+GetLogs retrieves a pointer to the HttpRequestLogs instance, allowing access to the logs collected during HTTP requests. This method is primarily used for debugging and monitoring purposes, providing insights into the HTTP request lifecycle and any issues that may have occurred.
+
+### Returns
+
+- \*logging.HttpRequestLogs: A pointer to the HttpRequestLogs instance containing logs of HTTP requests.
+
+<a name="MarketDataClient"></a>
+## MarketDataClient
+
+```go
+type MarketDataClient struct {
+    *resty.Client                // Embedding resty.Client to utilize its HTTP client functionalities.
+    RateLimitLimit     int       // RateLimitLimit represents the maximum number of requests that can be made in a rate limit window.
+    RateLimitRemaining int       // RateLimitRemaining tracks the number of requests that can still be made before hitting the rate limit.
+    RateLimitReset     time.Time // RateLimitReset indicates the time when the rate limit will be reset.
+
+    Error error // Error captures any errors that occur during the execution of API calls.
+    // contains filtered or unexported fields
+}
+```
+
+MarketDataClient struct defines the structure for the MarketData client instance. It embeds the resty.Client to inherit the HTTP client functionalities. Additionally, it includes fields for managing rate limits and synchronization, as well as an error field for capturing any errors that occur during API calls. The debug field is used to control logging verbosity.
+
+#### Setter Methods
+
+- <a href="#MarketDataClient.Debug">`Debug(bool) *MarketDataClient`</a>
+
+  Enables or disables debug mode for logging detailed request and response information.
+
+- <a href="#MarketDataClient.Environment">`Environment(string) *MarketDataClient`</a>
+
+  Sets the environment for the MarketDataClient.
+
+- <a href="#MarketDataClient.Timeout">`Timeout(int) *MarketDataClient`</a>
+
+  Sets the request timeout for the MarketDataClient.
+
+- <a href="#MarketDataClient.Token">`Token(string) *MarketDataClient`</a>
+
+  Sets the authentication token for the MarketDataClient.
+
+
+#### Methods
+
+- <a href="#MarketDataClient.RateLimitExceeded">`RateLimitExceeded() bool`</a>
+
+  Checks if the rate limit for API requests has been exceeded.
+
+- <a href="#MarketDataClient.String">`String() string`</a>
+
+  Generates a formatted string that represents the MarketDataClient instance.
+
+
+
+
+<a name="GetClient"></a>
+### GetClient
+
+```go
+func GetClient(token ...string) (*MarketDataClient, error)
+```
+
+GetClient initializes and returns a singleton instance of MarketDataClient. If a token is provided as an argument, it creates a new client instance with that token. If no token is provided, it attempts to use a token from the environment variable "MARKETDATA\_TOKEN". This function ensures that only one instance of the client is active at any time, reusing the existing instance if no new token is provided and no errors are present in the current client.
+
+#### Parameters
+
+- `...string`
+
+  A variadic string parameter where the first element, if provided, is used as the authentication token for the [MarketDataClient](<#MarketDataClient>). If not provided, the function looks for a token in the "MARKETDATA\_TOKEN" environment variable.
+
+
+#### Returns
+
+- `*MarketDataClient`
+
+  A pointer to the initialized MarketDataClient instance. This client is configured with the provided or environment\-sourced token.
+
+- `error`
+
+  An error object that indicates a failure in client initialization. Possible errors include missing token \(if no token is provided and none is found in the environment\) and any errors encountered during the client's token configuration process.
+
+
+<a name="MarketDataClient.Debug"></a>
+### Debug
+
+```go
+func (c *MarketDataClient) Debug(enable bool) *MarketDataClient
+```
+
+Debug is a method that enables or disables the debug mode of the client. Debug mode will result in the request and response headers being printed to the terminal with each request.
+
+#### Parameters
+
+- `enable`
+
+  A boolean value indicating whether to enable or disable debug mode. By default, debug mode is disabled.
+
+
+#### Returns
+
+- `*MarketDataClient`
+
+  A pointer to the MarketDataClient instance, allowing for method chaining.
+
+
+<a name="MarketDataClient.Environment"></a>
+### Environment
+
+```go
+func (c *MarketDataClient) Environment(env string) *MarketDataClient
+```
+
+Environment configures the base URL of the MarketDataClient based on the provided environment string. This method allows the client to switch between different environments such as production, testing, and development.
+
+#### Parameters
+
+- `string`
+
+  A string representing the environment to configure. Accepted values are "prod", "test", and "dev".
+
+
+#### Returns
+
+- `*MarketDataClient`
+
+  A pointer to the \*MarketDataClient instance with the configured environment. This allows for method chaining.
+
+
+If an invalid environment is provided, the client's Error field is set, and the same instance is returned.
+
+<a name="MarketDataClient.RateLimitExceeded"></a>
+### RateLimitExceeded
+
+```go
+func (c *MarketDataClient) RateLimitExceeded() bool
+```
+
+RateLimitExceeded checks if the rate limit for API requests has been exceeded. It returns true if the number of remaining requests is less than or equal to zero and the current time is before the rate limit reset time, indicating that the client must wait before making further requests. Otherwise, it returns false, indicating that the client can continue making requests.
+
+#### Returns
+
+- `bool`
+
+  A boolean value indicating whether the rate limit has been exceeded.
+
+
+<a name="MarketDataClient.String"></a>
+### String
+
+```go
+func (c *MarketDataClient) String() string
+```
+
+String generates a formatted string that represents the MarketDataClient instance, including its environment, rate limit information, and the rate limit reset time. This method is useful for quickly obtaining a textual summary of the client's current state, particularly for logging or debugging purposes.
+
+#### Returns
+
+- `string`
+
+  A formatted string containing the client's environment, rate limit information, and rate limit reset time.
+
+
+<a name="MarketDataClient.Timeout"></a>
+### Timeout
+
+```go
+func (c *MarketDataClient) Timeout(seconds int) *MarketDataClient
+```
+
+Timeout sets the request timeout for the MarketDataClient.
+
+This method allows users to specify a custom timeout duration for all HTTP requests made by the client. The timeout duration is specified in seconds. Setting a timeout helps in preventing indefinitely hanging requests in case of network issues or slow server responses.
+
+#### Parameters
+
+- `int`
+
+  The timeout duration in seconds. A duration of 0 means no timeout. By default the client has a timeout of 95 seconds.
+
+
+#### Returns
+
+- `*MarketDataClient`
+
+  A pointer to the MarketDataClient instance, allowing for method chaining.
+
+
+<a name="MarketDataClient.Token"></a>
+### Token
+
+```go
+func (c *MarketDataClient) Token(bearerToken string) *MarketDataClient
+```
+
+Token configures the authentication token for the MarketDataClient. This method sets the authentication scheme to "Bearer" and assigns the provided bearerToken for subsequent requests. It also makes an initial request to the MarketData API to authorize the token and fetch rate limit information.
+
+#### Parameters
+
+- `string`
+
+  A string representing the bearer token to be used for API requests.
+
+
+#### Returns
+
+- `*MarketDataClient`
+
+  A pointer to the MarketDataClient instance with the configured authentication token, which allows for method chaining.
+
+
+If an error occurs during the initial request or if the response indicates a failure, the client's Error field is set, and the same instance is returned.
+
+
+
+

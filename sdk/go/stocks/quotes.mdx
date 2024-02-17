@@ -49,15 +49,15 @@ StockQuoteRequest represents a request to the [/v1/stocks/quotes/](<https://www.
 
 These methods are used to send the request in different formats or retrieve the data. They handle the actual communication with the API endpoint.
 
-- <a href="#StockQuoteRequest.Get">`Get(...*MarketDataClient) ([]Candle, error)`</a>
+- <a href="#StockQuoteRequest.Get">`Get() ([]Candle, error)`</a>
 
   Sends the request, unpacks the response, and returns the data in a user\-friendly format.
 
-- <a href="#StockQuoteRequest.Packed">`Packed(...*MarketDataClient) (*IndicesCandlesResponse, error)`</a>
+- <a href="#StockQuoteRequest.Packed">`Packed() (*IndicesCandlesResponse, error)`</a>
 
   Returns a struct that contains equal\-length slices of primitives. This packed response mirrors Market Data's JSON response.
 
-- <a href="#StockQuoteRequest.Raw">`Raw(...*MarketDataClient) (*resty.Response, error)`</a>
+- <a href="#StockQuoteRequest.Raw">`Raw() (*resty.Response, error)`</a>
 
   Sends the request as is and returns the raw HTTP response.
 
@@ -167,17 +167,10 @@ Symbol: AAPL
 ### StockQuote
 
 ```go
-func StockQuote(client ...*MarketDataClient) *StockQuoteRequest
+func StockQuote() *StockQuoteRequest
 ```
 
-StockQuote creates a new StockQuoteRequest and associates it with the provided client. If no client is provided, it uses the default client. This function initializes the request with default parameters for symbol and fifty\-two\-week data, and sets the request path based on the predefined endpoints for stock quotes.
-
-#### Parameters
-
-- `...*MarketDataClient`
-
-  A variadic parameter that can accept zero or one MarketDataClient pointer. If no client is provided, the default client is used.
-
+StockQuote creates a new StockQuoteRequest and associates it with the default client. This function initializes the request with default parameters for symbol and fifty\-two\-week data, and sets the request path based on the predefined endpoints for stock quotes.
 
 #### Returns
 
@@ -239,17 +232,10 @@ Symbol sets the symbol parameter for the StockQuoteRequest. This method is used 
 ### Get
 
 ```go
-func (sqr *StockQuoteRequest) Get(optionalClients ...*MarketDataClient) ([]models.StockQuote, error)
+func (sqr *StockQuoteRequest) Get() ([]models.StockQuote, error)
 ```
 
-Get sends the StockQuoteRequest, unpacks the StockQuotesResponse, and returns a slice of StockQuote. It returns an error if the request or unpacking fails. An optional MarketDataClient can be passed to replace the client used in the request.
-
-#### Parameters
-
-- `...*MarketDataClient`
-
-  A variadic parameter that can accept zero or one MarketDataClient pointer. If a client is provided, it replaces the current client for this request.
-
+Get sends the StockQuoteRequest, unpacks the StockQuotesResponse, and returns a slice of StockQuote. It returns an error if the request or unpacking fails.
 
 #### Returns
 
@@ -267,17 +253,10 @@ Get sends the StockQuoteRequest, unpacks the StockQuotesResponse, and returns a 
 ### Packed
 
 ```go
-func (sqr *StockQuoteRequest) Packed(optionalClients ...*MarketDataClient) (*models.StockQuotesResponse, error)
+func (sqr *StockQuoteRequest) Packed() (*models.StockQuotesResponse, error)
 ```
 
-Packed sends the StockQuoteRequest and returns the StockQuotesResponse. An optional MarketDataClient can be passed to replace the client used in the request.
-
-#### Parameters
-
-- `...*MarketDataClient`
-
-  A variadic parameter that can accept zero or one MarketDataClient pointer. If a client is provided, it replaces the current client for this request.
-
+Packed sends the StockQuoteRequest and returns the StockQuotesResponse.
 
 #### Returns
 
@@ -294,17 +273,10 @@ Packed sends the StockQuoteRequest and returns the StockQuotesResponse. An optio
 ### Raw
 
 ```go
-func (sqr *StockQuoteRequest) Raw(optionalClients ...*MarketDataClient) (*resty.Response, error)
+func (sqr *StockQuoteRequest) Raw() (*resty.Response, error)
 ```
 
-Raw executes the StockQuoteRequest and returns the raw \*resty.Response. This method optionally accepts a \*MarketDataClient to use for the request, replacing the default client if provided. The \*resty.Response allows access to the raw JSON or \*http.Response for further processing.
-
-#### Parameters
-
-- `...*MarketDataClient`
-
-  An optional variadic parameter that can accept a \*MarketDataClient pointer. If provided, this client is used for the request instead of the default.
-
+Raw executes the StockQuoteRequest and returns the raw \*resty.Response. This method returns the raw HTTP response from the executed request.
 
 #### Returns
 
@@ -314,7 +286,7 @@ Raw executes the StockQuoteRequest and returns the raw \*resty.Response. This me
 
 - `error`
 
-  An error object if the request fails due to being nil, the MarketDataClient being nil, or other execution errors.
+  An error object if the request fails due to being nil, or other execution errors.
 
 
 

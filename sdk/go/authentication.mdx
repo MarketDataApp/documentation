@@ -20,14 +20,17 @@ When your code is running in a production environment, we recommend using an env
 
 Set the token in the environment variable `MARKETDATA_TOKEN`. Alternatively, you can hardcode it in your code, but please be aware that this is not secure and could pose a risk if your code is shared.
 
+### Set The Variable In The Console
 ```bash
 export MARKETDATA_TOKEN="your_api_token"   # mac/linux
 setx MARKETDATA_TOKEN "your_api_token"     # windows
 ```
 
+After setting the variable, build and run your code to make a test request. If you have set the variable correctly, you should see the output of the test request. If you see an error, double-check that you have set the variable correctly.
+
 ### Make A Test Request
 
-Test that your authentication is working by making a test request to SPY or any other symbol that requires authentication. Do not use AAPL to test your authentication because AAPL is a free symbol.
+Use the following test code to verify that your authentication is working by making a test request to SPY or any other symbol that requires authentication. Do not use AAPL to test your authentication because AAPL is a free test symbol and will return data even if you are not authenticated properly.
 
 ```go
 
@@ -52,6 +55,8 @@ func main() {
 }
 
 ```
+
+If your token is set correctly, you should see the output of the test request.
 
 ## How To Create a Client Manually and Assign a Token
 
@@ -93,4 +98,8 @@ func main() {
 }
 
 ```
+
+## Next Steps
+
+After successful authentication, you will be able to begin making requests to the Market Data API. We recommend reading the brief overview of how the client works, so you can get familiar with interacting with the SDK. The SDK includes structs for each endpoint as well as methods that allow you to retrieve data. Use any of the endpoints in the SDK to make requests to the API.
 

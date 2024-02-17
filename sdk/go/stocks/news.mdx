@@ -46,15 +46,15 @@ Setter Methods
 
 These methods are used to send the request in different formats or retrieve the data. They handle the actual communication with the API endpoint.
 
-- <a href="#StockNewsRequest.Get">`Get(...*MarketDataClient) ([]StockNews, error)`</a>
+- <a href="#StockNewsRequest.Get">`Get() ([]StockNews, error)`</a>
 
   Initiates the request, processes the response, and provides an slice of \`StockNews\` objects for straightforward access to news articles.
 
-- <a href="#StockNewsRequest.Packed">`Packed(...*MarketDataClient) (*StockNewsResponse, error)`</a>
+- <a href="#StockNewsRequest.Packed">`Packed() (*StockNewsResponse, error)`</a>
 
   Delivers a packed \`StockNewsResponse\` object containing slices of data that directly correspond to the JSON structure returned by the Market Data API.
 
-- <a href="#StockNewsRequest.Raw">`Raw(...*MarketDataClient) (*resty.Response, error)`</a>
+- <a href="#StockNewsRequest.Raw">`Raw() (*resty.Response, error)`</a>
 
   Executes the request in its raw form and retrieves the raw HTTP response for maximum flexibility.
 
@@ -143,17 +143,10 @@ fmt.Println(resp)
 ### StockNews
 
 ```go
-func StockNews(client ...*MarketDataClient) *StockNewsRequest
+func StockNews() *StockNewsRequest
 ```
 
-StockNews creates a new StockNewsRequest and associates it with the provided client. If no client is provided, it uses the default client. This function initializes the request with default parameters for symbol, date, and additional news\-specific parameters, and sets the request path based on the predefined endpoints for stock news.
-
-#### Parameters
-
-- `...*MarketDataClient`
-
-  A variadic parameter that can accept zero or one MarketDataClient pointer. If no client is provided, the default client is used.
-
+StockNews creates a new StockNewsRequest and associates it with the default client. This function initializes the request with default parameters for symbol, date, and additional news\-specific parameters, and sets the request path based on the predefined endpoints for stock news.
 
 #### Returns
 
@@ -284,17 +277,10 @@ To sets the 'to' date parameter for the StockNewsRequest. This method is used to
 ### Get
 
 ```go
-func (snr *StockNewsRequest) Get(optionalClients ...*MarketDataClient) ([]models.StockNews, error)
+func (snr *StockNewsRequest) Get() ([]models.StockNews, error)
 ```
 
-Get sends the StockNewsRequest, unpacks the StockNewsResponse, and returns a slice of StockNews. It returns an error if the request or unpacking fails. An optional MarketDataClient can be passed to replace the client used in the request.
-
-#### Parameters
-
-- `...*MarketDataClient`
-
-  A variadic parameter that can accept zero or one MarketDataClient pointer. If a client is provided, it replaces the current client for this request.
-
+Get sends the StockNewsRequest, unpacks the StockNewsResponse, and returns a slice of StockNews. It returns an error if the request or unpacking fails.
 
 #### Returns
 
@@ -312,17 +298,10 @@ Get sends the StockNewsRequest, unpacks the StockNewsResponse, and returns a sli
 ### Packed
 
 ```go
-func (snr *StockNewsRequest) Packed(optionalClients ...*MarketDataClient) (*models.StockNewsResponse, error)
+func (snr *StockNewsRequest) Packed() (*models.StockNewsResponse, error)
 ```
 
-Packed sends the StockNewsRequest and returns the StockNewsResponse. An optional MarketDataClient can be passed to replace the client used in the request.
-
-#### Parameters
-
-- `...*MarketDataClient`
-
-  A variadic parameter that can accept zero or one MarketDataClient pointer. If a client is provided, it replaces the current client for this request.
-
+Packed sends the StockNewsRequest and returns the StockNewsResponse.
 
 #### Returns
 
@@ -339,17 +318,10 @@ Packed sends the StockNewsRequest and returns the StockNewsResponse. An optional
 ### Raw
 
 ```go
-func (snr *StockNewsRequest) Raw(optionalClients ...*MarketDataClient) (*resty.Response, error)
+func (snr *StockNewsRequest) Raw() (*resty.Response, error)
 ```
 
-Raw executes the StockNewsRequest and returns the raw \*resty.Response. This method optionally accepts a \*MarketDataClient to use for the request, replacing the default client if provided. The \*resty.Response allows access to the raw JSON or \*http.Response for further processing.
-
-#### Parameters
-
-- `...*MarketDataClient`
-
-  An optional variadic parameter that can accept a \*MarketDataClient pointer. If provided, this client is used for the request instead of the default.
-
+Raw executes the StockNewsRequest and returns the raw \*resty.Response. This method retrieves the raw HTTP response for further processing.
 
 #### Returns
 
@@ -359,7 +331,7 @@ Raw executes the StockNewsRequest and returns the raw \*resty.Response. This met
 
 - `error`
 
-  An error object if the request fails due to being nil, the MarketDataClient being nil, or other execution errors.
+  An error object if the request fails due to being nil or other execution errors.
 
 
 
