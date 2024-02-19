@@ -24,19 +24,6 @@ After you initialize it for the first time, it is not neccessary to reinitialize
 5. Check the in\-memory logs to see the raw request and response details.
 
 
-<a name="NewClient"></a>
-## NewClient
-
-```go
-func NewClient(token string) error
-```
-
-NewClient creates and configures a new MarketDataClient instance with default settings. This method is primarily used to initialize a client with predefined configurations such as the default rate limit reset time, production environment setup, and common HTTP headers and hooks. It's the starting point for interacting with the [MarketDataClient](<#MarketDataClient>) functionalities.
-
-### Returns
-
-- error: An error if the token failed to authorize with the Market Data API.
-
 <a name="Environment"></a>
 ## Environment
 
@@ -136,6 +123,26 @@ GetClient checks for an existing instance of MarketDataClient and returns it. If
 - `error`
 
   An error object if the client cannot be initialized.
+
+
+<a name="NewClient"></a>
+### NewClient
+
+```go
+func NewClient(token string) (*MarketDataClient, error)
+```
+
+NewClient creates and configures a new MarketDataClient instance with default settings. This method is primarily used to initialize a client with predefined configurations such as the default rate limit reset time, production environment setup, and common HTTP headers and hooks. It's the starting point for interacting with the [MarketDataClient](<#MarketDataClient>) functionalities.
+
+#### Returns
+
+- `*MarketDataClient`
+
+  A pointer to the MarketDataClient instance.
+
+- `error`
+
+  An error if the token failed to authorize with the Market Data API or nil if authorization was successful.
 
 
 <a name="MarketDataClient.Debug"></a>
