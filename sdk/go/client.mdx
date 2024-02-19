@@ -31,6 +31,53 @@ GetLogs retrieves a pointer to the HttpRequestLogs instance, allowing access to 
 
 - \*logging.HttpRequestLogs: A pointer to the HttpRequestLogs instance containing logs of HTTP requests.
 
+<a name="NewClient"></a>
+## NewClient
+
+```go
+func NewClient(token string) error
+```
+
+New creates and configures a new MarketDataClient instance with default settings. This method is primarily used to initialize a client with predefined configurations such as the default rate limit reset time, production environment setup, and common HTTP headers and hooks. It's the starting point for interacting with the MarketDataClient functionalities.
+
+### Returns
+
+- \*MarketDataClient: A pointer to the newly created MarketDataClient instance with default configurations applied.
+
+<a name="Environment"></a>
+## Environment
+
+```go
+type Environment string
+```
+
+Environment represents the type for different environments in which the MarketDataClient can operate. Customers do not need to set the environment. The [MarketDataClient](<#MarketDataClient>) will automatically be initialized with a Production environment if no environment is set.
+
+Market Data's Go Client supports three environments:
+
+1. Production
+2. Test
+3. Development.
+
+It is used to configure the client to point to the appropriate base URL depending on the environment. This is used for development or testing by Market Data employees.
+
+
+
+<a name="Production"></a>
+
+```go
+const (
+    // Production specifies the production environment. It is used when the client is interacting with the live Market Data API.
+    Production Environment = "prod"
+
+    // Test specifies the testing environment. It is used for testing purposes, allowing interaction with a sandbox version of the Market Data API.
+    Test Environment = "test"
+
+    // Development specifies the development environment. It is typically used during the development phase, pointing to a local or staged version of the Market Data API.
+    Development Environment = "dev"
+)
+```
+
 <a name="MarketDataClient"></a>
 ## MarketDataClient
 
@@ -40,8 +87,6 @@ type MarketDataClient struct {
     RateLimitLimit     int       // RateLimitLimit represents the maximum number of requests that can be made in a rate limit window.
     RateLimitRemaining int       // RateLimitRemaining tracks the number of requests that can still be made before hitting the rate limit.
     RateLimitReset     time.Time // RateLimitReset indicates the time when the rate limit will be reset.
-
-    Error error // Error captures any errors that occur during the execution of API calls.
     // contains filtered or unexported fields
 }
 ```
@@ -50,19 +95,19 @@ MarketDataClient struct defines the structure for the MarketData client instance
 
 #### Setter Methods
 
-- <a href="#MarketDataClient.Debug">`Debug(bool) *MarketDataClient`</a>
+- <a href="#MarketDataClient.Debug">`Debug(bool)`</a>
 
   Enables or disables debug mode for logging detailed request and response information.
 
-- <a href="#MarketDataClient.Environment">`Environment(string) *MarketDataClient`</a>
+- <a href="#MarketDataClient.Environment">`Environment(Environment)`</a>
 
   Sets the environment for the MarketDataClient.
 
-- <a href="#MarketDataClient.Timeout">`Timeout(int) *MarketDataClient`</a>
+- <a href="#MarketDataClient.Timeout">`Timeout(int)`</a>
 
   Sets the request timeout for the MarketDataClient.
 
-- <a href="#MarketDataClient.Token">`Token(string) *MarketDataClient`</a>
+- <a href="#MarketDataClient.Token">`Token(string) error`</a>
 
   Sets the authentication token for the MarketDataClient.
 
@@ -84,57 +129,43 @@ MarketDataClient struct defines the structure for the MarketData client instance
 ### GetClient
 
 ```go
-func GetClient(token ...string) (*MarketDataClient, error)
+func GetClient() (*MarketDataClient, error)
 ```
 
-GetClient initializes and returns a singleton instance of MarketDataClient. If a token is provided as an argument, it creates a new client instance with that token. If no token is provided, it attempts to use a token from the environment variable "MARKETDATA\_TOKEN". This function ensures that only one instance of the client is active at any time, reusing the existing instance if no new token is provided and no errors are present in the current client.
-
-#### Parameters
-
-- `...string`
-
-  A variadic string parameter where the first element, if provided, is used as the authentication token for the [MarketDataClient](<#MarketDataClient>). If not provided, the function looks for a token in the "MARKETDATA\_TOKEN" environment variable.
-
+GetClient checks for an existing instance of MarketDataClient and returns it. If the client is not already initialized, it attempts to initialize it.
 
 #### Returns
 
 - `*MarketDataClient`
 
-  A pointer to the initialized MarketDataClient instance. This client is configured with the provided or environment\-sourced token.
+  A pointer to the existing or newly initialized MarketDataClient instance.
 
 - `error`
 
-  An error object that indicates a failure in client initialization. Possible errors include missing token \(if no token is provided and none is found in the environment\) and any errors encountered during the client's token configuration process.
+  An error object if the client cannot be initialized.
 
 
 <a name="MarketDataClient.Debug"></a>
 ### Debug
 
 ```go
-func (c *MarketDataClient) Debug(enable bool) *MarketDataClient
+func (c *MarketDataClient) Debug(enable bool)
 ```
 
-Debug is a method that enables or disables the debug mode of the client. Debug mode will result in the request and response headers being printed to the terminal with each request.
+Debug enables or disables debug mode for the MarketDataClient. When debug mode is enabled, the client logs detailed request and response information, which can be useful for development and troubleshooting.
 
 #### Parameters
 
-- `enable`
+- `bool`
 
-  A boolean value indicating whether to enable or disable debug mode. By default, debug mode is disabled.
-
-
-#### Returns
-
-- `*MarketDataClient`
-
-  A pointer to the MarketDataClient instance, allowing for method chaining.
+  A boolean value indicating whether to enable or disable debug mode.
 
 
 <a name="MarketDataClient.Environment"></a>
 ### Environment
 
 ```go
-func (c *MarketDataClient) Environment(env string) *MarketDataClient
+func (c *MarketDataClient) Environment(env Environment) error
 ```
 
 Environment configures the base URL of the MarketDataClient based on the provided environment string. This method allows the client to switch between different environments such as production, testing, and development.
@@ -216,7 +247,7 @@ This method allows users to specify a custom timeout duration for all HTTP reque
 ### Token
 
 ```go
-func (c *MarketDataClient) Token(bearerToken string) *MarketDataClient
+func (c *MarketDataClient) Token(bearerToken string) error
 ```
 
 Token configures the authentication token for the MarketDataClient. This method sets the authentication scheme to "Bearer" and assigns the provided bearerToken for subsequent requests. It also makes an initial request to the MarketData API to authorize the token and fetch rate limit information.
@@ -230,12 +261,14 @@ Token configures the authentication token for the MarketDataClient. This method 
 
 #### Returns
 
-- `*MarketDataClient`
+- `error`
 
-  A pointer to the MarketDataClient instance with the configured authentication token, which allows for method chaining.
+  An error if the authorization was not successful or nil if it was.
 
 
-If an error occurs during the initial request or if the response indicates a failure, the client's Error field is set, and the same instance is returned.
+#### Notes
+
+If an error occurs during the initial authorization request or if the response indicates a failure, the client remains unmodified. The token will only be set if authorization is successful.
 
 
 

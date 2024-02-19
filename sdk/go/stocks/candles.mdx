@@ -456,25 +456,10 @@ Get sends the StockCandlesRequest, unpacks the StockCandlesResponse, and returns
 func (scr *StockCandlesRequest) Packed() (*models.StockCandlesResponse, error)
 ```
 
-Packed sends the StockCandlesRequest and returns the StockCandlesResponse. An optional MarketDataClient can be passed to replace the client used in the request.
+Packed sends the StockCandlesRequest and returns the StockCandlesResponse. // \# Returns
 
-#### Parameters
-
-- `...*MarketDataClient`
-
-  A variadic parameter that can accept zero or one MarketDataClient pointer. If a client is provided, it replaces the current client for this request.
-
-
-#### Returns
-
-- `*models.StockCandlesResponse`
-
-  A pointer to the StockCandlesResponse obtained from the request.
-
-- `error`
-
-  An error object that indicates a failure in sending the request.
-
+- \*models.StockCandlesResponse: A pointer to the StockCandlesResponse obtained from the request.
+- error: An error object that indicates a failure in sending the request.
 
 <a name="StockCandlesRequest.Raw"></a>
 ### Raw
