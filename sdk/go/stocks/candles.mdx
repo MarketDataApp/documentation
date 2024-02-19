@@ -439,7 +439,7 @@ Get sends the StockCandlesRequest, unpacks the StockCandlesResponse, and returns
 
 #### Returns
 
-- `[]models.StockCandle`
+- `[]Candle`
 
   A slice of \[\]Candle containing the unpacked candle data from the response.
 
@@ -458,7 +458,7 @@ func (scr *StockCandlesRequest) Packed() (*models.StockCandlesResponse, error)
 
 Packed sends the StockCandlesRequest and returns the StockCandlesResponse. // \# Returns
 
-- \*models.StockCandlesResponse: A pointer to the StockCandlesResponse obtained from the request.
+- \*StockCandlesResponse: A pointer to the StockCandlesResponse obtained from the request.
 - error: An error object that indicates a failure in sending the request.
 
 <a name="StockCandlesRequest.Raw"></a>
