@@ -128,8 +128,16 @@ String returns a string representation of all HTTP request logs.
 
 - `string`
 
-  A string representing all log entries.
+  A string representing all log entries, with log entry numbers starting at 0.
 
+
+#### Example
+
+```
+MarketDataLogs{
+  LogEntry[0]: {Timestamp: 2024-02-19 15:16:30 -05:00, Status: 200, Request: https://api.marketdata.app/v1/stocks/candles/4H/AAPL/?from=2023-01-01&to=2023-01-04, RequestHeaders: map[Authorization:[Bearer **********************************************************8IH6] User-Agent:[sdk-go/1.1.0]], RayID: 8581301bc9e974ca-MIA, RateLimitConsumed: 0, Delay: 1002ms, Response Headers: map[Allow:[GET, HEAD, OPTIONS] Alt-Svc:[h3=":443"; ma=86400] Cf-Cache-Status:[DYNAMIC] Cf-Ray:[8581301bc9e974ca-MIA] Content-Type:[application/json] Cross-Origin-Opener-Policy:[same-origin] Date:[Mon, 19 Feb 2024 20:16:30 GMT] Nel:[{"success_fraction":0,"report_to":"cf-nel","max_age":604800}] Referrer-Policy:[same-origin] Report-To:[{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=ar7qRMEAxiHJcyRqlRlZvfzqv80inCp91LwdsxTfo51%2FSmdqz6NoadysPyFlMZKtDMG1IsDllX0GXXPjNsvjg4gQBr%2FLJ8G5Ad1z5lDXfhqrSee7umXzVf7dYmAFwq4x4sPMANE%3D"}],"group":"cf-nel","max_age":604800}] Server:[cloudflare] Vary:[Accept, Origin] X-Api-Ratelimit-Consumed:[0] X-Api-Ratelimit-Limit:[100000] X-Api-Ratelimit-Remaining:[99973] X-Api-Ratelimit-Reset:[1708439400] X-Api-Response-Log-Id:[88078705] X-Content-Type-Options:[nosniff] X-Frame-Options:[DENY]], Response: {"s":"ok","t":[1672756200,1672770600,1672842600,1672857000],"o":[130.28,124.6699,126.89,127.265],"h":[130.9,125.42,128.6557,127.87],"l":[124.19,124.17,125.08,125.28],"c":[124.6499,125.05,127.2601,126.38],"v":[64411753,30727802,49976607,28870878]}}
+}
+```
 
 
 
@@ -166,61 +174,6 @@ LogEntry represents a single HTTP request log entry. It includes detailed inform
 
 
 
-<a name="NewLogEntry"></a>
-### NewLogEntry
-
-```go
-func NewLogEntry(timestamp time.Time, rayID string, request string, rateLimitConsumed int, delay int64, status int, body string, reqHeaders http.Header, resHeaders http.Header) LogEntry
-```
-
-NewLogEntry creates a new instance of LogEntry with the provided parameters. This function initializes the log entry with details of the HTTP request and response, including timestamps, request and response headers, and other relevant information.
-
-#### Parameters
-
-- `time.Time`
-
-  The time at which the HTTP request was made.
-
-- `string`
-
-  The rayID is a unique identifier for the request, typically used for tracing requests.
-
-- `string`
-
-  The raw HTTP request URL as a string.
-
-- `int`
-
-  rateLimitConsumed represents the amount of rate limit quota consumed by this request.
-
-- `int64`
-
-  The delay experienced during the processing of the request, in milliseconds.
-
-- `int`
-
-  The HTTP status code returned in the response.
-
-- `string`
-
-  The body of the HTTP response in string format.
-
-- `http.Header`
-
-  The HTTP headers of the request as http.Header.
-
-- `http.Header`
-
-  The HTTP headers of the response as http.Header.
-
-
-#### Returns
-
-- `LogEntry`
-
-  An instance of LogEntry populated with the provided parameters and calculated memory usage.
-
-
 <a name="LogEntry.PrettyPrint"></a>
 ### PrettyPrint
 
@@ -245,5 +198,11 @@ String returns a string representation of the HTTP request log entry.
 
   A string representing the log entry.
 
+
+#### Example
+
+```
+LogEntry{Timestamp: 2024-02-19 14:53:34 -05:00, Status: 200, Request: https://api.marketdata.app/v1/stocks/candles/4H/AAPL/?from=2023-01-01&to=2023-01-04, RequestHeaders: map[Authorization:[Bearer **********************************************************L06F] User-Agent:[sdk-go/1.1.0]], RayID: 85810e82de8e7438-MIA, RateLimitConsumed: 0, Delay: 893ms, Response Headers: map[Allow:[GET, HEAD, OPTIONS] Alt-Svc:[h3=":443"; ma=86400] Cf-Cache-Status:[DYNAMIC] Cf-Ray:[85810e82de8e7438-MIA] Content-Type:[application/json] Cross-Origin-Opener-Policy:[same-origin] Date:[Mon, 19 Feb 2024 19:53:34 GMT] Nel:[{"success_fraction":0,"report_to":"cf-nel","max_age":604800}] Referrer-Policy:[same-origin] Report-To:[{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=r18O66yjJ%2FxXqOnCb3a76wBgpZaCbhJcot%2Bfgl1oHna2LigHHAYRaXg8dNLiJYHes0ezAaIdXLhVNGQBo%2FBAte6%2ByNcaZku5cV19FPyiD2%2BKXJeEtnFN6pJUsUA77sxk%2FfWxOFU%3D"}],"group":"cf-nel","max_age":604800}] Server:[cloudflare] Vary:[Accept, Origin] X-Api-Ratelimit-Consumed:[0] X-Api-Ratelimit-Limit:[100000] X-Api-Ratelimit-Remaining:[99973] X-Api-Ratelimit-Reset:[1708439400] X-Api-Response-Log-Id:[88061028] X-Content-Type-Options:[nosniff] X-Frame-Options:[DENY]], Response: {"s":"ok","t":[1672756200,1672770600,1672842600,1672857000],"o":[130.28,124.6699,126.89,127.265],"h":[130.9,125.42,128.6557,127.87],"l":[124.19,124.17,125.08,125.28],"c":[124.6499,125.05,127.2601,126.38],"v":[64411753,30727802,49976607,28870878]}}
+```
 
 
