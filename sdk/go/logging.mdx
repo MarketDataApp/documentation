@@ -1,0 +1,243 @@
+---
+title: Logging
+sidebar_position: 3
+---
+
+
+
+
+
+The Market Data Go SDK provides a [comprehensive logging framework](<https://www.marketdata.app/docs/sdk/go/logging>) tailored for HTTP request and response tracking. It facilitates detailed logging of HTTP interactions, including request details, response data, error handling, and rate limit monitoring. The logging functionality is designed to support a wide range of market data types such as stocks, options, indices, and market status information, making it an essential tool for developers integrating market data into their applications.
+
+### Key Features
+
+- Detailed Logging: Captures and logs comprehensive details of HTTP requests and responses, including headers, status codes, and body content.
+- Error Handling: Distinguishes between client\-side and server\-side errors, logging them appropriately to aid in debugging and monitoring.
+- Rate Limit Management: Tracks and logs rate limit consumption for each request, helping to avoid rate limit breaches.
+- Debug Mode: Offers a debug mode that logs additional details for in\-depth analysis during development and troubleshooting.
+- In\-Memory Log Storage: Maintains the last log entries in memory with configurable limits on entries and memory usage, ensuring efficient log management.
+- Structured Logging: Utilizes the zap logging library for structured, high\-performance logging.
+
+### Getting Started With Logging
+
+1. Initialize the MarketDataClient with your API token.
+2. Enable Debug mode for verbose logging during development.
+3. Perform HTTP requests and utilize the logging features to monitor request details, responses, and rate limit usage.
+4. Review the in\-memory logs or structured log files to analyze HTTP interactions and troubleshoot issues.
+
+
+<a name="MarketDataLogs"></a>
+## MarketDataLogs
+
+```go
+type MarketDataLogs struct {
+    // MaxLogEntries defines the maximum number of log entries that will be stored in memory.
+    // Beyond this limit, older entries may be evicted or ignored.
+    MaxEntries int
+
+    // MemoryLimit specifies the maximum amount of memory (in bytes) that can be used for storing log entries.
+    // This helps in preventing excessive memory usage by in-memory log storage.
+    MemoryLimit int64
+
+    // SuccessLogger is a zap logger used for logging successful operations.
+    SuccessLogger *zap.Logger
+
+    // ClientErrorLogger is a zap logger used for logging client-side errors.
+    ClientErrorLogger *zap.Logger
+
+    // ServerErrorLogger is a zap logger used for logging server-side errors.
+    ServerErrorLogger *zap.Logger
+
+    // Logs is the slice of LogEntry that contain all the request logs.
+    Logs []LogEntry
+}
+```
+
+MarketDataLogs represents a collection of HTTP request logs. It provides methods to manipulate and retrieve log entries.
+
+#### Methods
+
+- <a href="#LogEntry.String">`String() string`</a>
+
+  Returns a string representation of all HTTP request logs.
+
+- <a href="#MarketDataLogs.PrintLatest">`PrintLatest()`</a>
+
+  Prints the latest HTTP request log entry.
+
+- <a href="#MarketDataLogs.LatestString">`LatestString() string `</a>
+
+  Gets the HTTP body response of the last log entry in string format.
+
+
+
+
+<a name="GetLogs"></a>
+### GetLogs
+
+```go
+func GetLogs() *MarketDataLogs
+```
+
+GetLogs retrieves a pointer to the MarketDataLogs instance, allowing access to the logs collected during HTTP requests. This method is primarily used for debugging and monitoring purposes, providing insights into the HTTP request lifecycle and any issues that may have occurred.
+
+#### Returns
+
+- `*MarketDataLogs`
+
+  A pointer to the MarketDataLogs instance containing logs of HTTP requests.
+
+
+<a name="MarketDataLogs.LatestString"></a>
+### LatestString
+
+```go
+func (h *MarketDataLogs) LatestString() string
+```
+
+LatestString returns the response of the last log entry in the MarketDataLogs.
+
+This method checks if there are any logs present. If there are no logs, it returns a message indicating that no logs are available. If logs are present, it calculates the index of the last log entry, accesses it, and returns its response.
+
+#### Returns
+
+- `A string representing the response of the last log entry. If no logs are available, returns "No logs available".
+
+
+<a name="MarketDataLogs.PrintLatest"></a>
+### PrintLatest
+
+```go
+func (h *MarketDataLogs) PrintLatest()
+```
+
+PrintLatest prints the latest HTTP request log entry.
+
+<a name="MarketDataLogs.String"></a>
+### String
+
+```go
+func (h *MarketDataLogs) String() string
+```
+
+String returns a string representation of all HTTP request logs.
+
+#### Returns
+
+- `A string representing all log entries.
+
+
+
+
+<a name="LogEntry"></a>
+## LogEntry
+
+```go
+type LogEntry struct {
+    Timestamp         time.Time
+    RequestHeaders    http.Header // The Request Headers
+    ResponseHeaders   http.Header // The Response Headers
+    RayID             string      // The Ray ID from the HTTP response
+    Request           string      // The URL of the HTTP Request
+    Status            int         // The status code of the response
+    RateLimitConsumed int         // The number of requests consumed from the rate limit
+    Delay             int64       // The time (in miliseconds) between the request and the server's response
+    Response          string      // The server response
+    // contains filtered or unexported fields
+}
+```
+
+LogEntry represents a single HTTP request log entry. It includes detailed information about the request and response, such as headers, status code, and response body.
+
+#### Methods
+
+- <a href="#LogEntry.String">`String() string`</a>
+
+  Returns a string representation of the HTTP request log entry.
+
+- <a href="#LogEntry.PrettyPrint">`PrettyPrint()`</a>
+
+  Prints a formatted representation of the HTTP request log entry.
+
+
+
+
+<a name="NewLogEntry"></a>
+### NewLogEntry
+
+```go
+func NewLogEntry(timestamp time.Time, rayID string, request string, rateLimitConsumed int, delay int64, status int, body string, reqHeaders http.Header, resHeaders http.Header) LogEntry
+```
+
+NewLogEntry creates a new instance of LogEntry with the provided parameters. This function initializes the log entry with details of the HTTP request and response, including timestamps, request and response headers, and other relevant information.
+
+#### Parameters
+
+- `time.Time`
+
+  The time at which the HTTP request was made.
+
+- `string`
+
+  The rayID is a unique identifier for the request, typically used for tracing requests.
+
+- `string`
+
+  The raw HTTP request URL as a string.
+
+- `int`
+
+  rateLimitConsumed represents the amount of rate limit quota consumed by this request.
+
+- `int64`
+
+  The delay experienced during the processing of the request, in milliseconds.
+
+- `int`
+
+  The HTTP status code returned in the response.
+
+- `string`
+
+  The body of the HTTP response in string format.
+
+- `http.Header`
+
+  The HTTP headers of the request as http.Header.
+
+- `http.Header`
+
+  The HTTP headers of the response as http.Header.
+
+
+#### Returns
+
+- `LogEntry`
+
+  An instance of LogEntry populated with the provided parameters and calculated memory usage.
+
+
+<a name="LogEntry.PrettyPrint"></a>
+### PrettyPrint
+
+```go
+func (h LogEntry) PrettyPrint()
+```
+
+PrettyPrint prints a formatted representation of the HTTP request log entry.
+
+<a name="LogEntry.String"></a>
+### String
+
+```go
+func (h LogEntry) String() string
+```
+
+String returns a string representation of the HTTP request log entry.
+
+#### Returns
+
+- `A string representing the log entry.
+
+
+

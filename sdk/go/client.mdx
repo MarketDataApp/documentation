@@ -1,6 +1,6 @@
 ---
 title: Client
-sidebar_position: 3
+sidebar_position: 2
 ---
 
 
@@ -17,19 +17,6 @@ The [Market Data Go Client](<https://www.marketdata.app/docs/sdk/go/client>) inc
 4. Check the rate limit in the client to keep track of your requests.
 5. Check the in\-memory logs to see the raw request and response details.
 
-
-<a name="GetLogs"></a>
-## GetLogs
-
-```go
-func GetLogs() *logging.HttpRequestLogs
-```
-
-GetLogs retrieves a pointer to the HttpRequestLogs instance, allowing access to the logs collected during HTTP requests. This method is primarily used for debugging and monitoring purposes, providing insights into the HTTP request lifecycle and any issues that may have occurred.
-
-### Returns
-
-- \*logging.HttpRequestLogs: A pointer to the HttpRequestLogs instance containing logs of HTTP requests.
 
 <a name="NewClient"></a>
 ## NewClient
