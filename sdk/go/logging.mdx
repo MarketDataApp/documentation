@@ -35,8 +35,9 @@ type MarketDataLogs struct {
     // Beyond this limit, older entries may be evicted or ignored.
     MaxEntries int
 
-    // MemoryLimit specifies the maximum amount of memory (in bytes) that can be used for storing log entries.
-    // This helps in preventing excessive memory usage by in-memory log storage.
+    // MemoryLimit specifies the maximum amount of memory (in bytes) that can be used for
+    // storing log entries.  This helps in preventing excessive memory usage by in-memory
+    // log storage.
     MemoryLimit int64
 
     // SuccessLogger is a zap logger used for logging successful operations.
@@ -92,7 +93,7 @@ GetLogs retrieves a pointer to the MarketDataLogs instance, allowing access to t
 ### LatestString
 
 ```go
-func (h *MarketDataLogs) LatestString() string
+func (l *MarketDataLogs) LatestString() string
 ```
 
 LatestString returns the response of the last log entry in the MarketDataLogs.
@@ -110,7 +111,7 @@ This method checks if there are any logs present. If there are no logs, it retur
 ### PrintLatest
 
 ```go
-func (h *MarketDataLogs) PrintLatest()
+func (l *MarketDataLogs) PrintLatest()
 ```
 
 PrintLatest prints the latest HTTP request log entry.
@@ -119,7 +120,7 @@ PrintLatest prints the latest HTTP request log entry.
 ### String
 
 ```go
-func (h *MarketDataLogs) String() string
+func (l *MarketDataLogs) String() string
 ```
 
 String returns a string representation of all HTTP request logs.
@@ -178,7 +179,7 @@ LogEntry represents a single HTTP request log entry. It includes detailed inform
 ### PrettyPrint
 
 ```go
-func (h LogEntry) PrettyPrint()
+func (l LogEntry) PrettyPrint()
 ```
 
 PrettyPrint prints a formatted representation of the HTTP request log entry.
@@ -187,7 +188,7 @@ PrettyPrint prints a formatted representation of the HTTP request log entry.
 ### String
 
 ```go
-func (h LogEntry) String() string
+func (l LogEntry) String() string
 ```
 
 String returns a string representation of the HTTP request log entry.
