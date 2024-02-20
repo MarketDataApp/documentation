@@ -20,13 +20,78 @@ When your code is running in a production environment, we recommend using an env
 
 Set the token in the environment variable `MARKETDATA_TOKEN`. Alternatively, you can hardcode it in your code, but please be aware that this is not secure and could pose a risk if your code is shared.
 
-### Set The Variable In The Console
-```bash
-export MARKETDATA_TOKEN="your_api_token"   # mac/linux
-setx MARKETDATA_TOKEN "your_api_token"     # windows
-```
+### Set The Environment Variable In The Console
 
 After setting the variable, build and run your code to make a test request. If you have set the variable correctly, you should see the output of the test request. If you see an error, double-check that you have set the variable correctly.
+
+<Tabs>
+<TabItem value=">MacLinux" label="Mac / Linux">
+
+```bash
+export MARKETDATA_TOKEN="your_api_token"   # Mac OS / Linux
+```
+
+This command should be run in the terminal. It sets the environment variable for the current session only. If you open a new terminal window or restart your computer, the environment variable will not persist. To make the environment variable persistent across sessions, you need to add the export command to your shell's profile script (e.g., `~/.bash_profile`, `~/.bashrc`, `~/.zshrc`, etc.) depending on the shell you are using.
+
+:::tip
+
+To find out what shell you are using, you can open your terminal and enter the following command: `echo $SHELL`
+
+This command will output the path to the current shell being used, such as /bin/bash, /bin/zsh, or another shell. The last part of the path indicates the shell type (e.g., bash, zsh).
+
+:::
+
+After adding the command to the appropriate profile script, you will need to either restart your terminal or source the profile script with a command like `source ~/.bash_profile` (adjusting the file name as necessary for your shell) to apply the changes.
+
+#### Verify the Variable
+
+To verify that the MARKETDATA_TOKEN environment variable has been set properly on Mac OS or Linux, users can follow these steps:
+
+1. Open a terminal.
+2. Type the following command and press Enter:
+
+```bash
+echo $MARKETDATA_TOKEN
+```
+
+3. If the environment variable has been set correctly, this command will output the value of MARKETDATA_TOKEN to the terminal. If the variable has not been set or an error occurred, the output will be blank, indicating that the variable is not set.
+
+#### Verify Variable Persistence
+
+If you have made the environment variable persistent by adding it to your shell's profile script (e.g., ~/.bash_profile, ~/.bashrc, ~/.zshrc), you can verify that the variable persists across sessions by:
+
+1. Closing the current terminal.
+2. Opening a new terminal.
+3. Running the `echo $MARKETDATA_TOKEN` command again to check if the variable is still set.
+
+If the variable is not present after restarting the terminal, ensure you have correctly added the export command to the appropriate profile script and that you have either restarted the terminal or sourced the profile script with a command like `source ~/.bash_profile` (adjusting the file name as necessary for your shell).
+
+</TabItem>
+<TabItem value="Windows" label="Windows">
+
+```bash
+setx MARKETDATA_TOKEN "your_api_token"     # Windows
+```
+
+This command should be run in the Command Prompt on Windows. Note that after using setx, the environment variable will be set permanently but will not be available in the current Command Prompt session. You will need to start a new session to see the change.
+
+#### Verify The Variable
+
+To verify that the MARKETDATA_TOKEN environment variable has been set properly on Windows, the follow these steps:
+
+1. Open a new Command Prompt session (since the setx command does not affect the current session where it was run).
+2. Type the following command and press Enter: 
+
+```bash
+echo %MARKETDATA_TOKEN%
+```
+
+3. If the environment variable has been set correctly, this command will output the value of MARKETDATA_TOKEN to the console. If the variable has not been set or an error occurred, it will likely output `%MARKETDATA_TOKEN%` indicating that the variable substitution did not happen.
+
+4. The next step is to ensure the SDK is correctly utilizing the token. To do this, the use the provided test code to make a request to the Market Data API. If the request is successful and returns the expected data, it confirms that the SDK is correctly reading and using the MARKETDATA_TOKEN environment variable.
+
+</TabItem>
+</Tabs>
 
 ### Make A Test Request
 
@@ -42,7 +107,9 @@ import (
 )
 
 func main() {
-  // Initialize a new request, set the symbol parameter, make the request.
+    // No need to set a token here, the SDK will read it from the environment variable on startup.
+
+    // Initialize a new request, set the symbol parameter, make the request.
 	quotes, err := api.StockQuote().Symbol("SPY").Get() 
 	if err != nil {
 		log.Fatalf("Failed to get stock quotes: %v", err)
@@ -56,11 +123,11 @@ func main() {
 
 ```
 
-If your token is set correctly, you should see the output of the test request.
+If your token is set correctly, you should see the output of the test request. If you see an error, double-check that you have set the token correctly.
 
 ## How To Create a Client Manually and Assign a Token
 
-If you decide to create a client manually and assign a token at runtime, you simply embed the token in your code somewhere and pass it to the GetClient function. This is not recommended for production code.
+If you decide to create a client manually and assign a token at runtime, you simply embed the token in your code somewhere and pass it to the NewClient function. This is not recommended for production code.
 
 ### Example Code
 
@@ -80,9 +147,9 @@ func main() {
 	token := "your_token_here"		
 
 	// create a new client and set the token
-	client, err := api.GetClient(token) 
+	client, err := api.NewClient(token) 
 	if err != nil {
-		log.Fatalf("Failed to get client: %v", err)
+		log.Fatalf("Failed to create client: %v", err)
 	}
 
 	// make a test request to SPY
