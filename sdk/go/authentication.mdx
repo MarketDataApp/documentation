@@ -30,19 +30,11 @@ After setting the variable, build and run your code to make a test request. If y
 <Tabs>
 <TabItem value=">MacLinux" label="Mac / Linux">
 
+This command should be run in the terminal. It sets the environment variable for the current session only. If you open a new terminal window or restart your computer, the environment variable will not persist.
+
 ```bash
 export MARKETDATA_TOKEN="your_api_token"   # Mac OS / Linux
 ```
-
-This command should be run in the terminal. It sets the environment variable for the current session only. If you open a new terminal window or restart your computer, the environment variable will not persist. To make the environment variable persistent across sessions, you need to add the export command to your shell's profile script (e.g., `~/.bash_profile`, `~/.bashrc`, `~/.zshrc`, etc.) depending on the shell you are using.
-
-:::tip
-
-To find out what shell you are using, you can open your terminal and enter the following command: `echo $SHELL` This command will output the path to the current shell being used, such as `/bin/bash`, `/bin/zsh`, or another shell. The last part of the path indicates the shell type (e.g., bash, zsh).
-
-:::
-
-After adding the command to the appropriate profile script, you will need to either restart your terminal or source the profile script with a command like `source ~/.bash_profile` (adjusting the file name as necessary for your shell) to apply the changes.
 
 #### Verify the Variable
 
@@ -52,7 +44,19 @@ To verify that the MARKETDATA_TOKEN environment variable has been set properly o
 2. Type the following command and press Enter: `echo $MARKETDATA_TOKEN`
 3. If the environment variable has been set correctly, this command will output the value of MARKETDATA_TOKEN to the terminal. If the variable has not been set or an error occurred, the output will be blank, indicating that the variable is not set.
 
-#### Verify Variable Persistence
+#### Make The Variable Persistent
+
+To make the environment variable persistent across sessions, you need to add the export command to your shell's profile script (e.g., `~/.bash_profile`, `~/.bashrc`, `~/.zshrc`, etc.) depending on the shell you are using.
+
+:::tip
+
+To find out what shell you are using, you can open your terminal and enter the following command: `echo $SHELL` This command will output the path to the current shell being used, such as `/bin/bash`, `/bin/zsh`, or another shell. The last part of the path indicates the shell type (e.g., bash, zsh).
+
+:::
+
+After adding the command to the appropriate profile script, you will need to either restart your terminal or source the profile script with a command like `source ~/.bash_profile` (adjusting the file name as necessary for your shell) to apply the changes.
+
+##### Verify Variable Persistence
 
 If you have made the environment variable persistent by adding it to your shell's profile script (e.g., ~/.bash_profile, ~/.bashrc, ~/.zshrc), you can verify that the variable persists across sessions by:
 
