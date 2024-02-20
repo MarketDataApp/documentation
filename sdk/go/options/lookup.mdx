@@ -16,7 +16,7 @@ Lookup the OCC\-formatted option symbol based on user input.
 
 Utilize \[OptionsLookupRequest\] for querying the endpoint through one of the three available methods:
 
-| Method     | Execution Level | Return Type                  | Description                                                                                                             |
+| Method     | Execution       | Return Type                  | Description                                                                                                             |
 |------------|-----------------|------------------------------|-------------------------------------------------------------------------------------------------------------------------|
 | **Get**    | Direct          | `string`                     | Immediately fetches and `string`, allowing direct access to the option symbol.                                          |
 | **Packed** | Intermediate    | `*OptionLookupResponse`      | Delivers a `*OptionLookupResponse` object containing the data, which requires unpacking to access the `string` data.    |

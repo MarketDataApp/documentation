@@ -16,7 +16,7 @@ Retrieve an option quote for a given option symbol.
 
 Utilize [OptionQuoteRequest](<#OptionQuoteRequest>) for querying the endpoint through one of the three available methods:
 
-| Method     | Execution Level | Return Type                  | Description                                                                                                                |
+| Method     | Execution       | Return Type                  | Description                                                                                                                |
 |------------|-----------------|------------------------------|----------------------------------------------------------------------------------------------------------------------------|
 | **Get**    | Direct          | `[]OptionQuote`              | Immediately fetches a slice of `[]OptionQuote`, allowing direct access to the quote data.                                  |
 | **Packed** | Intermediate    | `*OptionQuotesResponse`      | Delivers a `*OptionQuotesResponse` object containing the data, which requires unpacking to access the `OptionQuote` data.  |
