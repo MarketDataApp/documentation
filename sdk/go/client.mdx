@@ -77,7 +77,7 @@ MarketDataClient struct defines the structure for the MarketData client instance
 func GetClient() (*MarketDataClient, error)
 ```
 
-GetClient checks for an existing instance of MarketDataClient and returns it. If the client is not already initialized, it attempts to initialize it.
+GetClient checks for an existing instance of MarketDataClient and returns it. It is the starting point to interact with [MarketDataClient](<#MarketDataClient>) when using environment variables. GetClient is only needed if you need to change some parameter of the client, like the timeout or you wish to access the Rate Limit information. If you just want to make requests, you can use the request initialization functions directly.
 
 #### Returns
 
@@ -97,7 +97,7 @@ GetClient checks for an existing instance of MarketDataClient and returns it. If
 func NewClient(token string) (*MarketDataClient, error)
 ```
 
-NewClient creates and configures a new MarketDataClient instance with default settings. This method is primarily used to initialize a client with predefined configurations such as the default rate limit reset time, production environment setup, and common HTTP headers and hooks. It's the starting point for interacting with the [MarketDataClient](<#MarketDataClient>) functionalities.
+NewClient creates and configures a new MarketDataClient instance with default settings. This method is primarily used to initialize a client when you are not using environment variables to store your token. NewClient sets the token and initializes the client with predefined configurations such as the default rate limit reset time, and common HTTP headers and hooks. It's the starting point for interacting with [MarketDataClient](<#MarketDataClient>) when you do not use environment variables.
 
 #### Returns
 

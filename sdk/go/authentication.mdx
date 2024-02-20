@@ -38,7 +38,7 @@ export MARKETDATA_TOKEN="your_api_token"
 
 #### Verify the Variable
 
-To verify that the MARKETDATA_TOKEN environment variable has been set properly on Mac OS or Linux, users can follow these steps:
+To verify that the MARKETDATA_TOKEN environment variable has been set properly on Mac OS or Linux, follow these steps:
 
 1. Open a terminal.
 2. Type the following command and press Enter: `echo $MARKETDATA_TOKEN`
@@ -101,7 +101,8 @@ import (
 )
 
 func main() {
-    // No need to set a token here, the SDK will read it from the environment variable on startup.
+    // No need to set a token here, the SDK will read it
+	// from the environment variable on startup.
 
     // Initialize a new request, set the symbol parameter, make the request.
 	quotes, err := api.StockQuote().Symbol("SPY").Get() 
