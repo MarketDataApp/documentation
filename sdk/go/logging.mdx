@@ -1,0 +1,209 @@
+---
+title: Logging
+sidebar_position: 3
+---
+
+
+
+
+
+The Market Data Go SDK provides a [comprehensive logging framework](<https://www.marketdata.app/docs/sdk/go/logging>) tailored for HTTP request and response tracking. It facilitates detailed logging of HTTP interactions, including request details, response data, error handling, and rate limit monitoring. The logging functionality is designed to support a wide range of market data types such as stocks, options, indices, and market status information, making it an essential tool for developers integrating market data into their applications.
+
+### Key Features
+
+- Detailed Logging: Captures and logs comprehensive details of HTTP requests and responses, including headers, status codes, and body content.
+- Error Handling: Distinguishes between client\-side and server\-side errors, logging them appropriately to aid in debugging and monitoring.
+- Rate Limit Management: Tracks and logs rate limit consumption for each request, helping to avoid rate limit breaches.
+- Debug Mode: Offers a debug mode that logs additional details for in\-depth analysis during development and troubleshooting.
+- In\-Memory Log Storage: Maintains the last log entries in memory with configurable limits on entries and memory usage, ensuring efficient log management.
+- Structured Logging: Utilizes the zap logging library for structured, high\-performance logging.
+
+### Getting Started With Logging
+
+1. Initialize the MarketDataClient with your API token.
+2. Enable Debug mode for verbose logging during development.
+3. Perform HTTP requests and utilize the logging features to monitor request details, responses, and rate limit usage.
+4. Review the in\-memory logs or structured log files to analyze HTTP interactions and troubleshoot issues.
+
+
+<a name="MarketDataLogs"></a>
+## MarketDataLogs
+
+```go
+type MarketDataLogs struct {
+    // MaxLogEntries defines the maximum number of log entries that will be stored in memory.
+    // Beyond this limit, older entries may be evicted or ignored.
+    MaxEntries int
+
+    // MemoryLimit specifies the maximum amount of memory (in bytes) that can be used for
+    // storing log entries.  This helps in preventing excessive memory usage by in-memory
+    // log storage.
+    MemoryLimit int64
+
+    // SuccessLogger is a zap logger used for logging successful operations.
+    SuccessLogger *zap.Logger
+
+    // ClientErrorLogger is a zap logger used for logging client-side errors.
+    ClientErrorLogger *zap.Logger
+
+    // ServerErrorLogger is a zap logger used for logging server-side errors.
+    ServerErrorLogger *zap.Logger
+
+    // Logs is the slice of LogEntry that contain all the request logs.
+    Logs []LogEntry
+}
+```
+
+MarketDataLogs represents a collection of HTTP request logs. It provides methods to manipulate and retrieve log entries.
+
+#### Methods
+
+- <a href="#LogEntry.String">`String() string`</a>
+
+  Returns a string representation of all HTTP request logs.
+
+- <a href="#MarketDataLogs.PrintLatest">`PrintLatest()`</a>
+
+  Prints the latest HTTP request log entry.
+
+- <a href="#MarketDataLogs.LatestString">`LatestString() string `</a>
+
+  Gets the HTTP body response of the last log entry in string format.
+
+
+
+
+<a name="GetLogs"></a>
+### GetLogs
+
+```go
+func GetLogs() *MarketDataLogs
+```
+
+GetLogs retrieves a pointer to the MarketDataLogs instance, allowing access to the logs collected during HTTP requests. This method is primarily used for debugging and monitoring purposes, providing insights into the HTTP request lifecycle and any issues that may have occurred.
+
+#### Returns
+
+- `*MarketDataLogs`
+
+  A pointer to the MarketDataLogs instance containing logs of HTTP requests.
+
+
+<a name="MarketDataLogs.LatestString"></a>
+### LatestString
+
+```go
+func (l *MarketDataLogs) LatestString() string
+```
+
+LatestString returns the response of the last log entry in the MarketDataLogs.
+
+This method checks if there are any logs present. If there are no logs, it returns a message indicating that no logs are available. If logs are present, it calculates the index of the last log entry, accesses it, and returns its response.
+
+#### Returns
+
+- `string`
+
+  A string representing the response of the last log entry. If no logs are available, returns "No logs available".
+
+
+<a name="MarketDataLogs.PrintLatest"></a>
+### PrintLatest
+
+```go
+func (l *MarketDataLogs) PrintLatest()
+```
+
+PrintLatest prints the latest HTTP request log entry.
+
+<a name="MarketDataLogs.String"></a>
+### String
+
+```go
+func (l *MarketDataLogs) String() string
+```
+
+String returns a string representation of all HTTP request logs.
+
+#### Returns
+
+- `string`
+
+  A string representing all log entries, with log entry numbers starting at 0.
+
+
+#### Example
+
+```
+MarketDataLogs{
+  LogEntry[0]: {Timestamp: 2024-02-19 15:16:30 -05:00, Status: 200, Request: https://api.marketdata.app/v1/stocks/candles/4H/AAPL/?from=2023-01-01&to=2023-01-04, RequestHeaders: map[Authorization:[Bearer **********************************************************8IH6] User-Agent:[sdk-go/1.1.0]], RayID: 8581301bc9e974ca-MIA, RateLimitConsumed: 0, Delay: 1002ms, Response Headers: map[Allow:[GET, HEAD, OPTIONS] Alt-Svc:[h3=":443"; ma=86400] Cf-Cache-Status:[DYNAMIC] Cf-Ray:[8581301bc9e974ca-MIA] Content-Type:[application/json] Cross-Origin-Opener-Policy:[same-origin] Date:[Mon, 19 Feb 2024 20:16:30 GMT] Nel:[{"success_fraction":0,"report_to":"cf-nel","max_age":604800}] Referrer-Policy:[same-origin] Report-To:[{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=ar7qRMEAxiHJcyRqlRlZvfzqv80inCp91LwdsxTfo51%2FSmdqz6NoadysPyFlMZKtDMG1IsDllX0GXXPjNsvjg4gQBr%2FLJ8G5Ad1z5lDXfhqrSee7umXzVf7dYmAFwq4x4sPMANE%3D"}],"group":"cf-nel","max_age":604800}] Server:[cloudflare] Vary:[Accept, Origin] X-Api-Ratelimit-Consumed:[0] X-Api-Ratelimit-Limit:[100000] X-Api-Ratelimit-Remaining:[99973] X-Api-Ratelimit-Reset:[1708439400] X-Api-Response-Log-Id:[88078705] X-Content-Type-Options:[nosniff] X-Frame-Options:[DENY]], Response: {"s":"ok","t":[1672756200,1672770600,1672842600,1672857000],"o":[130.28,124.6699,126.89,127.265],"h":[130.9,125.42,128.6557,127.87],"l":[124.19,124.17,125.08,125.28],"c":[124.6499,125.05,127.2601,126.38],"v":[64411753,30727802,49976607,28870878]}}
+}
+```
+
+
+
+<a name="LogEntry"></a>
+## LogEntry
+
+```go
+type LogEntry struct {
+    Timestamp         time.Time
+    RequestHeaders    http.Header // The Request Headers
+    ResponseHeaders   http.Header // The Response Headers
+    RayID             string      // The Ray ID from the HTTP response
+    Request           string      // The URL of the HTTP Request
+    Status            int         // The status code of the response
+    RateLimitConsumed int         // The number of requests consumed from the rate limit
+    Delay             int64       // The time (in miliseconds) between the request and the server's response
+    Response          string      // The server response
+    // contains filtered or unexported fields
+}
+```
+
+LogEntry represents a single HTTP request log entry. It includes detailed information about the request and response, such as headers, status code, and response body.
+
+#### Methods
+
+- <a href="#LogEntry.String">`String() string`</a>
+
+  Returns a string representation of the HTTP request log entry.
+
+- <a href="#LogEntry.PrettyPrint">`PrettyPrint()`</a>
+
+  Prints a formatted representation of the HTTP request log entry.
+
+
+
+
+<a name="LogEntry.PrettyPrint"></a>
+### PrettyPrint
+
+```go
+func (l LogEntry) PrettyPrint()
+```
+
+PrettyPrint prints a formatted representation of the HTTP request log entry.
+
+<a name="LogEntry.String"></a>
+### String
+
+```go
+func (l LogEntry) String() string
+```
+
+String returns a string representation of the HTTP request log entry.
+
+#### Returns
+
+- `string`
+
+  A string representing the log entry.
+
+
+#### Example
+
+```
+LogEntry{Timestamp: 2024-02-19 14:53:34 -05:00, Status: 200, Request: https://api.marketdata.app/v1/stocks/candles/4H/AAPL/?from=2023-01-01&to=2023-01-04, RequestHeaders: map[Authorization:[Bearer **********************************************************L06F] User-Agent:[sdk-go/1.1.0]], RayID: 85810e82de8e7438-MIA, RateLimitConsumed: 0, Delay: 893ms, Response Headers: map[Allow:[GET, HEAD, OPTIONS] Alt-Svc:[h3=":443"; ma=86400] Cf-Cache-Status:[DYNAMIC] Cf-Ray:[85810e82de8e7438-MIA] Content-Type:[application/json] Cross-Origin-Opener-Policy:[same-origin] Date:[Mon, 19 Feb 2024 19:53:34 GMT] Nel:[{"success_fraction":0,"report_to":"cf-nel","max_age":604800}] Referrer-Policy:[same-origin] Report-To:[{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=r18O66yjJ%2FxXqOnCb3a76wBgpZaCbhJcot%2Bfgl1oHna2LigHHAYRaXg8dNLiJYHes0ezAaIdXLhVNGQBo%2FBAte6%2ByNcaZku5cV19FPyiD2%2BKXJeEtnFN6pJUsUA77sxk%2FfWxOFU%3D"}],"group":"cf-nel","max_age":604800}] Server:[cloudflare] Vary:[Accept, Origin] X-Api-Ratelimit-Consumed:[0] X-Api-Ratelimit-Limit:[100000] X-Api-Ratelimit-Remaining:[99973] X-Api-Ratelimit-Reset:[1708439400] X-Api-Response-Log-Id:[88061028] X-Content-Type-Options:[nosniff] X-Frame-Options:[DENY]], Response: {"s":"ok","t":[1672756200,1672770600,1672842600,1672857000],"o":[130.28,124.6699,126.89,127.265],"h":[130.9,125.42,128.6557,127.87],"l":[124.19,124.17,125.08,125.28],"c":[124.6499,125.05,127.2601,126.38],"v":[64411753,30727802,49976607,28870878]}}
+```
+
+

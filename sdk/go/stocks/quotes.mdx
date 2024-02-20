@@ -1,0 +1,455 @@
+---
+title: Quotes
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+
+
+
+
+Retrieve live quotes for any supported stock symbol.
+
+## Making Requests
+
+Utilize [StockQuoteRequest](<#StockQuoteRequest>) to make requests to the endpoint through one of the three supported execution methods:
+
+| Method     | Execution     | Return Type                | Description                                                                                               |
+|------------|---------------|----------------------------|-----------------------------------------------------------------------------------------------------------|
+| **Get**    | Direct        | `[]StockQuote`             | Directly returns a slice of `[]StockQuote`, facilitating individual access to each stock quote.           |
+| **Packed** | Intermediate  | `StockQuotesResponse`      | Returns a packed `StockQuotesResponse` object. Must be unpacked to access the `[]StockQuote` slice.       |
+| **Raw**    | Low-level     | `resty.Response`           | Offers the raw `resty.Response` for utmost flexibility. Direct access to raw JSON or `*http.Response`.    |
+
+
+<a name="StockQuoteRequest"></a>
+## StockQuoteRequest
+
+```go
+type StockQuoteRequest struct {
+    // contains filtered or unexported fields
+}
+```
+
+StockQuoteRequest represents a request to the [/v1/stocks/quotes/](<https://www.marketdata.app/docs/api/stocks/quotes>) endpoint. It encapsulates parameters for symbol and fifty\-two\-week data to be used in the request. This struct provides methods such as Symbol\(\) and FiftyTwoWeek\(\) to set these parameters respectively.
+
+#### Setter Methods
+
+- <a href="#StockQuoteRequest.Symbol">`Symbol(string) *StockQuoteRequest`</a>
+
+  Sets the symbol parameter for the request.
+
+- <a href="#StockQuoteRequest.FiftyTwoWeek">`FiftyTwoWeek(bool) *StockQuoteRequest`</a>
+
+  Sets the fifty\-two\-week data parameter for the request.
+
+
+#### Execution Methods
+
+These methods are used to send the request in different formats or retrieve the data. They handle the actual communication with the API endpoint.
+
+- <a href="#StockQuoteRequest.Get">`Get() ([]Candle, error)`</a>
+
+  Sends the request, unpacks the response, and returns the data in a user\-friendly format.
+
+- <a href="#StockQuoteRequest.Packed">`Packed() (*IndicesCandlesResponse, error)`</a>
+
+  Returns a struct that contains equal\-length slices of primitives. This packed response mirrors Market Data's JSON response.
+
+- <a href="#StockQuoteRequest.Raw">`Raw() (*resty.Response, error)`</a>
+
+  Sends the request as is and returns the raw HTTP response.
+
+
+
+
+<Tabs>
+<TabItem value="Example (Get)" label="Example (Get)">
+
+
+
+
+```go
+// This example demonstrates how to create a StockQuoteRequest, set its parameters,
+// and perform an actual request to fetch stock quotes for the "AAPL" symbol.
+
+// Initialize a new StockQuoteRequest and fetch a stock quote.
+sqr, err := StockQuote().Symbol("AAPL").Get()
+if err != nil {
+	log.Fatalf("Failed to get stock quotes: %v", err)
+}
+
+// Check if the response contains the "AAPL" symbol.
+for _, quote := range sqr {
+	fmt.Printf("Symbol: %s\n", quote.Symbol)
+}
+```
+
+#### Output
+
+```
+Symbol: AAPL
+```
+
+</TabItem>
+
+<TabItem value="Example (Packed)" label="Example (Packed)">
+
+
+
+
+```go
+// This example demonstrates how to create a StockQuoteRequest, set its parameters,
+// and perform an actual request to fetch stock quotes for the "AAPL" symbol.
+
+// Initialize a new StockQuoteRequest and fetch a stock quote.
+sqr, err := StockQuote().Symbol("AAPL").Packed()
+if err != nil {
+	log.Fatalf("Failed to get stock quotes: %v", err)
+}
+
+// Iterate and print all the symbols in the slice.
+for _, symbol := range sqr.Symbol {
+	fmt.Printf("Symbol: %s\n", symbol)
+}
+```
+
+#### Output
+
+```
+Symbol: AAPL
+```
+
+</TabItem>
+
+<TabItem value="Example (Raw)" label="Example (Raw)">
+
+
+
+
+```go
+// This example demonstrates how to create a StockQuoteRequest, set its parameters,
+// and perform an actual request to fetch stock quotes for the "AAPL" symbol.
+// The response is converted to a raw string and we print out the string at the end of the test.
+
+// Initialize a new StockQuoteRequest and fetch a stock quote.
+sqr, err := StockQuote().Symbol("AAPL").Raw()
+if err != nil {
+	log.Fatalf("Failed to get stock quotes: %v", err)
+}
+
+// Convert the response to a string.
+sqrStr := sqr.String()
+
+// Use regex to find the symbol in the response string.
+re := regexp.MustCompile(`"symbol":\["(.*?)"\]`)
+matches := re.FindStringSubmatch(sqrStr)
+
+if len(matches) < 2 {
+	log.Fatalf("Failed to extract symbol from response")
+}
+
+// Print the extracted symbol.
+fmt.Printf("Symbol: %s\n", matches[1])
+```
+
+#### Output
+
+```
+Symbol: AAPL
+```
+
+</TabItem>
+</Tabs>
+
+<a name="StockQuote"></a>
+### StockQuote
+
+```go
+func StockQuote() *StockQuoteRequest
+```
+
+StockQuote creates a new StockQuoteRequest and associates it with the default client. This function initializes the request with default parameters for symbol and fifty\-two\-week data, and sets the request path based on the predefined endpoints for stock quotes.
+
+#### Returns
+
+- `*StockQuoteRequest`
+
+  A pointer to the newly created StockQuoteRequest with default parameters and associated client.
+
+## StockQuoteRequest Setter Methods
+
+<a name="StockQuoteRequest.FiftyTwoWeek"></a>
+### FiftyTwoWeek
+
+```go
+func (sqr *StockQuoteRequest) FiftyTwoWeek(q bool) *StockQuoteRequest
+```
+
+FiftyTwoWeek sets the fifty\-two\-week data parameter for the StockQuoteRequest. This method indicates whether to include fifty\-two\-week high and low data in the quote.
+
+#### Parameters
+
+- `bool`
+
+  A bool indicating whether to include fifty\-two\-week data.
+
+
+#### Returns
+
+- `*StockQuoteRequest`
+
+  This method returns a pointer to the \*StockQuoteRequest instance it was called on. This allows for method chaining.
+
+
+<a name="StockQuoteRequest.Symbol"></a>
+### Symbol
+
+```go
+func (sqr *StockQuoteRequest) Symbol(q string) *StockQuoteRequest
+```
+
+Symbol sets the symbol parameter for the StockQuoteRequest. This method is used to specify the stock symbol for which quote data is requested.
+
+#### Parameters
+
+- `string`
+
+  A string representing the stock symbol to be set.
+
+
+#### Returns
+
+- `*StockQuoteRequest`
+
+  This method returns a pointer to the \*StockQuoteRequest instance it was called on. This allows for method chaining.
+
+
+
+## StockQuoteRequest Execution Methods
+<a name="StockQuoteRequest.Get"></a>
+### Get
+
+```go
+func (sqr *StockQuoteRequest) Get() ([]models.StockQuote, error)
+```
+
+Get sends the StockQuoteRequest, unpacks the StockQuotesResponse, and returns a slice of StockQuote. It returns an error if the request or unpacking fails.
+
+#### Returns
+
+- `[]models.StockQuote`
+
+  A slice of StockQuote containing the unpacked quote data from the response.
+
+- `error`
+
+  An error object that indicates a failure in sending the request or unpacking the response.
+
+
+
+<a name="StockQuoteRequest.Packed"></a>
+### Packed
+
+```go
+func (sqr *StockQuoteRequest) Packed() (*models.StockQuotesResponse, error)
+```
+
+Packed sends the StockQuoteRequest and returns the StockQuotesResponse.
+
+#### Returns
+
+- `*models.StockQuotesResponse`
+
+  A pointer to the StockQuotesResponse obtained from the request.
+
+- `error`
+
+  An error object that indicates a failure in sending the request.
+
+
+<a name="StockQuoteRequest.Raw"></a>
+### Raw
+
+```go
+func (sqr *StockQuoteRequest) Raw() (*resty.Response, error)
+```
+
+Raw executes the StockQuoteRequest and returns the raw \*resty.Response. This method returns the raw HTTP response from the executed request.
+
+#### Returns
+
+- `*resty.Response`
+
+  The raw HTTP response from the executed request.
+
+- `error`
+
+  An error object if the request fails due to being nil, or other execution errors.
+
+
+
+<a name="StockQuotesResponse"></a>
+## StockQuotesResponse
+
+```go
+type StockQuotesResponse struct {
+    Symbol    []string   `json:"symbol"`               // Symbol holds the stock symbols.
+    Ask       []float64  `json:"ask"`                  // Ask holds the asking prices for the stocks.
+    AskSize   []int64    `json:"askSize"`              // AskSize holds the sizes (quantities) of the asks.
+    Bid       []float64  `json:"bid"`                  // Bid holds the bidding prices for the stocks.
+    BidSize   []int64    `json:"bidSize"`              // BidSize holds the sizes (quantities) of the bids.
+    Mid       []float64  `json:"mid"`                  // Mid holds the mid prices calculated between the ask and bid prices.
+    Last      []float64  `json:"last"`                 // Last holds the last traded prices for the stocks.
+    Change    []*float64 `json:"change,omitempty"`     // Change holds the price changes, can be nil if not applicable.
+    ChangePct []*float64 `json:"changepct,omitempty"`  // ChangePct holds the percentage changes in prices, can be nil if not applicable.
+    High52    *[]float64 `json:"52weekHigh,omitempty"` // High52 holds the 52-week high prices, can be nil if not applicable.
+    Low52     *[]float64 `json:"52weekLow,omitempty"`  // Low52 holds the 52-week low prices, can be nil if not applicable.
+    Volume    []int64    `json:"volume"`               // Volume holds the trading volumes for the stocks.
+    Updated   []int64    `json:"updated"`              // Updated holds the UNIX timestamps for when the quotes were last updated.
+}
+```
+
+StockQuotesResponse encapsulates the data structure for responses received from stock quote requests. It contains arrays for various stock attributes such as symbols, prices, volumes, and timestamps.
+
+#### Generated By
+
+- <a href="#StockQuoteRequest.Packed">`StockQuoteRequest.Packed()`</a>
+
+  Makes a StoStockQuoteRequest and returns a StockQuotesResponse.
+
+
+#### Methods
+
+- <a href="#StockQuote.String">`String()`</a>
+
+  Returns a string representation of the StockQuotesResponse.
+
+- <a href="#StockQuotesResponse.Unpack">`Unpack()`</a>
+
+  Transforms the StockQuotesResponse into a slice of StockQuote structs.
+
+
+#### Notes
+
+- The Change, ChangePct, High52, and Low52 fields are pointers to accommodate nil values, indicating that the data may not be applicable or available for some stocks.
+
+
+
+<a name="StockQuotesResponse.String"></a>
+### String
+
+```go
+func (sqr *StockQuotesResponse) String() string
+```
+
+String constructs and returns a string representation of a StockQuotesResponse, encapsulating all relevant details of stock quotes including symbol, ask, bid, mid, last, change, change percentage, 52\-week high, 52\-week low, volume, and updated time. This method is primarily used for generating a human\-readable summary of stock quotes response, which can be useful for logging, debugging, or displaying stock information in a textual format.
+
+#### Returns
+
+- `string`
+
+  A comprehensive, human\-readable string representation of the stock quotes response.
+
+
+#### Notes
+
+- Optional fields such as change, change percentage, 52\-week high, and 52\-week low are included in the string only if they are available.
+
+<a name="StockQuotesResponse.Unpack"></a>
+### Unpack
+
+```go
+func (sqr *StockQuotesResponse) Unpack() ([]StockQuote, error)
+```
+
+Unpack transforms a StockQuotesResponse into a slice of StockQuote structs, effectively unpacking the bulk response into individual stock quotes. This method is primarily used to convert a grouped response of stock quotes into a more accessible format, where each stock quote is represented as a separate struct. It is particularly useful for scenarios where individual stock details need to be accessed or manipulated.
+
+#### Returns
+
+- `[]StockQuote`
+
+  A slice of StockQuote structs representing the unpacked stock quotes.
+
+- `error`
+
+  An error if any issues occur during the unpacking process. Currently, this implementation always returns nil for error.
+
+
+#### Notes
+
+- This method handles optional fields such as Change, ChangePct, High52, and Low52 by checking for their existence before assignment, allowing for a flexible unpacking process that accommodates incomplete data.
+
+
+
+
+
+
+
+
+<a name="StockQuote"></a>
+## StockQuote
+
+```go
+type StockQuote struct {
+    Symbol    string    // Symbol is the stock symbol.
+    Ask       float64   // Ask is the asking price for the stock.
+    AskSize   int64     // AskSize is the size (quantity) of the ask.
+    Bid       float64   // Bid is the bidding price for the stock.
+    BidSize   int64     // BidSize is the size (quantity) of the bid.
+    Mid       float64   // Mid is the mid price calculated between the ask and bid prices.
+    Last      float64   // Last is the last traded price for the stock.
+    Change    *float64  // Change is the price change, can be nil if not applicable.
+    ChangePct *float64  // ChangePct is the percentage change in price, can be nil if not applicable.
+    High52    *float64  // High52 is the 52-week high price, can be nil if not applicable.
+    Low52     *float64  // Low52 is the 52-week low price, can be nil if not applicable.
+    Volume    int64     // Volume is the trading volume for the stock.
+    Updated   time.Time // Updated is the time when the quote was last updated.
+}
+```
+
+StockQuote represents a single stock quote, encapsulating various details such as prices, volumes, and timestamps.
+
+#### Generated By
+
+- <a href="#StockQuotesResponse.Unpack">`StockQuotesResponse.Unpack()`</a>
+
+  Transforms a StockQuotesResponse into a slice of StockQuote structs.
+
+
+#### Methods
+
+- <a href="#StockQuote.String">`String()`</a>
+
+  Generates a string representation of the StockQuote struct.
+
+
+#### Notes
+
+- The Change, ChangePct, High52, and Low52 fields are pointers to accommodate nil values, indicating that the data may not be applicable or available.
+
+
+
+<a name="StockQuote.String"></a>
+### String
+
+```go
+func (sq StockQuote) String() string
+```
+
+String generates a string representation of the StockQuote struct, providing a human\-readable summary of a stock's details. This method is particularly useful for displaying stock information in a format that is easy to read and understand. It accounts for optional fields by conditionally including High52, Low52, Change, and ChangePct in the output, and formats the updated time to the America/New\_York timezone.
+
+#### Returns
+
+- `string`
+
+  A string representation of the StockQuote struct.
+
+
+#### Notes
+
+- Optional fields \(High52, Low52, Change, and ChangePct\) are displayed as "nil" if they are not available, ensuring clarity in the output.
+- The updated time is converted to the America/New\_York timezone for consistency in display.
+
+

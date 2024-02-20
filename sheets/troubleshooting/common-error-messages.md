@@ -58,4 +58,4 @@ These issues relate to general Market Data technical or service issues. The only
 These issues relate to problems with your Google account. Google places strict limits on the use of Add-ons for free (@gmail.com accounts). If you exceed those limits, an error message will be shown and your account will be throttled.
 
 - `Your Google account has exceeded the minute request limit.` - Your account was throttled by Google for making too many requests. Try refreshing your cells using Market Data's refresh options, which are calibrated to avoid throttling issues.
-- [`Your Google account has exceeded the urlfetch limit.`](/sheets-add-on/troubleshooting/urlfetch) - You have exceeded Google's urlfetch limit. For 24 hours your account will be blocked from using all Google Workspace Add-ons, including Market Data. Please try again 24 hours from now.
+- [`Your Google account has exceeded the urlfetch limit.`](/sheets/troubleshooting/urlfetch) - You have exceeded Google's urlfetch limit. For 24 hours your account will be blocked from using all Google Workspace Add-ons, including Market Data. Please try again 24 hours from now.

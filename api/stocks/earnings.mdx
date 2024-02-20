@@ -52,6 +52,29 @@ print(response.text)
 ```
 
 </TabItem>
+<TabItem value="Go" label="Go">
+
+```go title="stockEarnings.go"
+
+import (
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func ExampleStockEarningsRequest() {
+	earningsReports, err := StockEarnings().Symbol("AAPL").Get()
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+
+	for _, report := range earningsReports {
+		fmt.Println(report)
+	}
+}
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

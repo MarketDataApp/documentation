@@ -65,6 +65,42 @@ print(response2.text)
 ```
 
 </TabItem>
+<TabItem value="Go" label="Go">
+
+```go title="marketstatus.go"
+
+import (
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func ExampleMarketStatus() {
+	msr, err := api.MarketStatus().From("2020-01-01").To("2020-12-31").Get()
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+
+	for _, report := range msr {
+		fmt.Println(report)
+	}
+}
+
+func ExampleMarketStatus_relativeDates() {
+	msr, err := api.MarketStatus().Date("yesterday").Get()
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+
+	for _, report := range msr {
+		fmt.Println(report)
+	}
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

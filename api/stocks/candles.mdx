@@ -39,15 +39,6 @@ fetch(
     console.log(err);
   });
 
-fetch(
-  "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-12-31&countback=252"
-)
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
 ```
 
 </TabItem>
@@ -56,16 +47,36 @@ fetch(
 ```python title="app.py"
 import requests
 
-url1 = "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31"
-url2 = "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-12-31&countback=252"
+url = "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31"
 
-response1 = requests.request("GET", url1)
-response2 = requests.request("GET", url2)
+response = requests.request("GET", url)
 
-print(response1.text)
-print(response2.text)
+print(response.text)
 ```
+</TabItem>
+<TabItem value="Go" label="Go">
 
+```go title="stockCandles.go"
+
+import (
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func ExampleStockCandlesRequest() {
+	candles, err := StockCandles().Resolution("D").Symbol("AAPL").From("2020-01-01").To("2020-12-31").Get()
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+
+	for _, candle := range candles {
+		fmt.Println(candle)
+	}
+}
+
+```
 </TabItem>
 </Tabs>
 

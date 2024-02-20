@@ -1,0 +1,481 @@
+---
+title: News
+sidebar_position: 6
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+
+
+
+
+Retrieve news articles for any supported stock symbol.
+
+## Making Requests
+
+Use [StockNewsRequest](<#StockNewsRequest>) to make requests to the endpoint using any of the three supported execution methods:
+
+| Method     | Execution     | Return Type                 | Description                                                                                                |
+|------------|---------------|-----------------------------|------------------------------------------------------------------------------------------------------------|
+| **Get**    | Direct        | `[]StockNews  `             | Directly returns a slice of `[]StockNews`, facilitating individual access to each news article.            |
+| **Packed** | Intermediate  | `*StockNewsResponse`        | Returns a packed `*StockNewsResponse` object. Must be unpacked to access the `[]StockNews` slice.          |
+| **Raw**    | Low-level     | `*resty.Response`           | Provides the raw `*resty.Response` for maximum flexibility. Direct access to raw JSON or `*http.Response`. |
+
+
+<a name="StockNewsRequest"></a>
+## StockNewsRequest
+
+```go
+type StockNewsRequest struct {
+    // contains filtered or unexported fields
+}
+```
+
+StockNewsRequest represents a request to the [/v1/stocks/news/](<https://www.marketdata.app/docs/api/stocks/news>) endpoint. It encapsulates parameters for symbol, date, and additional news\-specific parameters to be used in the request. This struct provides methods such as Symbol\(\), Date\(\), From\(\), To\(\), and Countback\(\) to set these parameters respectively.
+
+Setter Methods
+
+- Symbol\(string\) \*StockNewsRequest: Sets the symbol parameter for the request.
+- Date\(interface\{\}\) \*StockNewsRequest: Sets the date parameter for the request.
+- From\(interface\{\}\) \*StockNewsRequest: Sets the 'from' date parameter for the request.
+- To\(interface\{\}\) \*StockNewsRequest: Sets the 'to' date parameter for the request.
+- Countback\(int\) \*StockNewsRequest: Sets the countback parameter for the request.
+
+#### Execution Methods
+
+These methods are used to send the request in different formats or retrieve the data. They handle the actual communication with the API endpoint.
+
+- <a href="#StockNewsRequest.Get">`Get() ([]StockNews, error)`</a>
+
+  Initiates the request, processes the response, and provides an slice of \`StockNews\` objects for straightforward access to news articles.
+
+- <a href="#StockNewsRequest.Packed">`Packed() (*StockNewsResponse, error)`</a>
+
+  Delivers a packed \`StockNewsResponse\` object containing slices of data that directly correspond to the JSON structure returned by the Market Data API.
+
+- <a href="#StockNewsRequest.Raw">`Raw() (*resty.Response, error)`</a>
+
+  Executes the request in its raw form and retrieves the raw HTTP response for maximum flexibility.
+
+
+
+
+<Tabs>
+<TabItem value="Example (Get)" label="Example (Get)">
+
+
+
+
+```go
+resp, err := StockNews().Symbol("AAPL").Date("2023-01-01").Get()
+if err != nil {
+	fmt.Print(err)
+	return
+}
+
+for _, news := range resp {
+	fmt.Println(news)
+}
+```
+
+#### Output
+
+```
+StockNews{Symbol: "AAPL", Headline: "Lessons Learned From Visa and Mastercard in a Year of Crypto News", Content: "How Visa and Mastercard fared in a year dominated by crypto news. Why fortress-like balance sheets will be an even bigger asset in the new year. To catch full episodes of all The Motley Fool's free podcasts, check out our podcast center.<br /><br />Continue reading", Source: "https://finance.yahoo.com/m/4b9f894a-9854-3caf-8775-c7e9f9d4ce90/lessons-learned-from-visa-and.html", PublicationDate: "2023-01-01"}
+StockNews{Symbol: "AAPL", Headline: "Down 28% in 2022, Is Apple Stock a Buy for 2023?", Content: "Apple (NASDAQ: AAPL) has benefited from robust consumer demand and hopes that easing supply chain constraints will boost the tech giant's prospects. *Stock prices used were the afternoon prices of Dec.<br /><br />Continue reading", Source: "https://finance.yahoo.com/m/457b8480-3b01-3a94-9273-54aaf80906a8/down-28%25-in-2022%2C-is-apple.html", PublicationDate: "2023-01-01"}
+StockNews{Symbol: "AAPL", Headline: "80% of Warren Buffett's Portfolio Is Invested in These 7 Stocks as 2023 Begins", Content: "Two of these stocks were especially big winners for Buffett in 2022.", Source: "https://www.fool.com/investing/2023/01/01/80-of-warren-buffetts-portfolio-is-invested-in-the/", PublicationDate: "2023-01-01"}
+StockNews{Symbol: "AAPL", Headline: "2 Beaten-Down Warren Buffett Stocks to Buy in 2023", Content: "These are high-conviction stocks for the Oracle of Omaha but they're trading at knocked-down prices.<br /><br />Continue reading", Source: "https://finance.yahoo.com/m/cc37d40a-9068-3de1-9dd3-a6a71da3aa75/2-beaten-down-warren-buffett.html", PublicationDate: "2023-01-01"}
+StockNews{Symbol: "AAPL", Headline: "2023 Dividend Growth Portfolio Review And Look Ahead", Content: "I review my current holdings and sectors in the portfolio and how it has changed over the years. See my income projections for 2023 and potential pitfalls.", Source: "https://seekingalpha.com/article/4567219-2023-dividend-growth-portfolio-review-and-look-ahead", PublicationDate: "2023-01-01"}
+StockNews{Symbol: "AAPL", Headline: "The Fall Of Tesla And The Rise of Exxon Amid The Energy Crisis", Content: "Growth stocks have been thoroughly hammered this year, with high inflation and rising interest rates pinching growth equities of all stripes. But few stocks exemplify the dramatic shake-up at the top, like leading EV maker Tesla Inc. (NASDAQ: TSLA). TSLA stock has tanked 69.5% in the year-to-date, wiping off a staggering $877 billion from its market cap. In comparison, the S&P 500 has declined a more modest 19.7% over the timeframe. Tesla has gone from being the fifth most valuable public company and now ranks just thirteenth with a market cap of $385 billion.<br /><br />Tesla’s woes are well documented, including Musk's Twitter takeover and related distractions; worries that high inflation and rising interest rates will dampen consumers' enthusiasm for EVs, as well as investor jitters about growth assets. TSLA shareholders are furious at CEO Elon Musk, The Wall Street Journal reports, for his Twitter antics and tomfoolery, which has led to several downgrades for the stock. Meanwhile, hordes of customers are canceling their Tesla orders, \"His personality is absolutely tanking the Tesla brand. I'm looking forward to having an Elon-free existence,’’ a biotech exec with a Model S lease has told CNET. \"There is no Tesla CEO today,\" tweeted Gary Black, a hedge fund manager with ~$50 million worth of TSLA stock told Futurism.<br /><br />Related: U.S. Oil, Gas Rigs Up 193 This Year<br /><br />But Tesla is hardly alone here: most EV stocks have had a year to forget with rising costs, supply chain issues, increasing competition, and the threat of a potential recession causing many to sell off heavily.<br /><br />Surprisingly, some Wall Street pundits have not given up on TSLA stock and are urging investors to use the selloff as a buying opportunity. To wit, Citi has tapped TSLA as a bullish contrarian stock for 2023, while Baird analyst Ben Kallo still sees Tesla as a “Best Idea” stock in 2023. Meanwhile, Morgan Stanley says Tesla could extend its lead over its EV rivals in the coming year, and has cited “valuation, cash flow, innovation and cost leadership” as key reasons to maintain a Buy-equivalent rating. Meanwhile, famed contrarian investor Cathie Wood, known for betting big on former growth stocks as they fall, recently loaded up on more than 25K shares of the EV giant.<br /><br />Story continues<br /><br />In sharp contrast, things could not have gone differently for Tesla’s biggest fossil fuel rival, Exxon Mobil Corp. (NYSE: XOM). Exxon Mobil has enjoyed the biggest rise in the S&P 500 this year, with the energy giant jumping almost like technology stocks did in the tech boom thanks to high oil and gas prices triggered by the energy crisis. XOM shares have soared 72% this year, adding $190 billion to the company’s market value. Exxon’s increase in market value surpasses any company in the S&P 500, making Exxon Mobil the eighth most valuable stock in the S&P 500. That’s a remarkable jump considering that it only ranked 27th most valuable in the S&P 500 a year ago. Exxon was the most valuable S&P 500 company in 2011 until Apple Inc. (NASDAQ: AAPL) surpassed it in 2012.<br /><br />Whereas Citi has picked XOM as one of its bearish contrarian stocks for 2023, the stock is viewed favorably by most Wall Street analysts, as evidenced by its $118.89 average price target, good for a 10% upside. The energy sector in general is expected to outperform the market again in 2023, and XOM should be just fine, considering it’s still cheap with a PE (Fwd) of 7.9. Back in October, Exxon raised its quarterly dividend by $0.03 per share to $0.91 per share marking the company's 40th straight year of increasing its dividend, keeping it in the elite group of Dividend Aristocrats. XOM shares now yield 3.3%.<br /><br />The outlook for the energy sector remains bright. According to a recent Moody's research report, industry earnings will stabilize overall in 2023, though they will come in slightly below levels reached by recent peaks.<br /><br />The analysts note that commodity prices have declined from very high levels earlier in 2022, but have predicted that prices are likely to remain cyclically strong through 2023. This, combined with modest growth in volumes, will support strong cash flow generation for oil and gas producers. Moody’s estimates that the U.S. energy sector’s EBITDA for 2022 will clock in at $623B but fall slightly to $585B in 2023.<br /><br />The analysts say that low capex, rising uncertainty about the expansion of future supplies, and high geopolitical risk premium will, however, continue to support cyclically high oil prices. Meanwhile, strong export demand for U.S. LNG will continue supporting high natural gas prices.<br /><br />The combined dividend and buyback yield for the energy sector is now approaching 8%, which is high by historical standards. Similarly elevated levels occurred in 2020 and 2009, which preceded periods of strength. In comparison, the combined dividend and buyback yield for the S&P 500 is closer to five percent, which makes for one of the largest gaps in favor of the energy sector on record.<br /><br />In other words, there simply aren’t better places for people investing in the U.S. stock market to park their money if they are looking for serious earnings growth.<br /><br />By Alex Kimani for Oilprice.com<br /><br />More Top Reads from Oilprice.com:<br /><br />A New Type Of Oil And Gas Funding Is Booming What is Crude Oil? A Detailed Explanation on this Essential Fossil Fuel Chevron Sending Tanker To Venezuela To Load Oil<br /><br />Read this article on OilPrice.com", Source: "https://finance.yahoo.com/news/fall-tesla-rise-exxon-amid-000000565.html", PublicationDate: "2023-01-01"}
+```
+
+</TabItem>
+
+<TabItem value="Example (Packed)" label="Example (Packed)">
+
+
+
+
+```go
+resp, err := StockNews().Symbol("AAPL").Date("2023-01-01").Packed()
+if err != nil {
+	fmt.Print(err)
+	return
+}
+
+fmt.Println(resp)
+```
+
+#### Output
+
+```
+StockNewsResponse{Symbol: "AAPL", Headline: "Lessons Learned From Visa and Mastercard in a Year of Crypto News", Content: "How Visa and Mastercard fared in a year dominated by crypto news. Why fortress-like balance sheets will be an even bigger asset in the new year. To catch full episodes of all The Motley Fool's free podcasts, check out our podcast center.<br /><br />Continue reading", Source: "https://finance.yahoo.com/m/4b9f894a-9854-3caf-8775-c7e9f9d4ce90/lessons-learned-from-visa-and.html", PublicationDate: 1672549200; Symbol: "AAPL", Headline: "Down 28% in 2022, Is Apple Stock a Buy for 2023?", Content: "Apple (NASDAQ: AAPL) has benefited from robust consumer demand and hopes that easing supply chain constraints will boost the tech giant's prospects. *Stock prices used were the afternoon prices of Dec.<br /><br />Continue reading", Source: "https://finance.yahoo.com/m/457b8480-3b01-3a94-9273-54aaf80906a8/down-28%25-in-2022%2C-is-apple.html", PublicationDate: 1672549200; Symbol: "AAPL", Headline: "80% of Warren Buffett's Portfolio Is Invested in These 7 Stocks as 2023 Begins", Content: "Two of these stocks were especially big winners for Buffett in 2022.", Source: "https://www.fool.com/investing/2023/01/01/80-of-warren-buffetts-portfolio-is-invested-in-the/", PublicationDate: 1672549200; Symbol: "AAPL", Headline: "2 Beaten-Down Warren Buffett Stocks to Buy in 2023", Content: "These are high-conviction stocks for the Oracle of Omaha but they're trading at knocked-down prices.<br /><br />Continue reading", Source: "https://finance.yahoo.com/m/cc37d40a-9068-3de1-9dd3-a6a71da3aa75/2-beaten-down-warren-buffett.html", PublicationDate: 1672549200; Symbol: "AAPL", Headline: "2023 Dividend Growth Portfolio Review And Look Ahead", Content: "I review my current holdings and sectors in the portfolio and how it has changed over the years. See my income projections for 2023 and potential pitfalls.", Source: "https://seekingalpha.com/article/4567219-2023-dividend-growth-portfolio-review-and-look-ahead", PublicationDate: 1672549200; Symbol: "AAPL", Headline: "The Fall Of Tesla And The Rise of Exxon Amid The Energy Crisis", Content: "Growth stocks have been thoroughly hammered this year, with high inflation and rising interest rates pinching growth equities of all stripes. But few stocks exemplify the dramatic shake-up at the top, like leading EV maker Tesla Inc. (NASDAQ: TSLA). TSLA stock has tanked 69.5% in the year-to-date, wiping off a staggering $877 billion from its market cap. In comparison, the S&P 500 has declined a more modest 19.7% over the timeframe. Tesla has gone from being the fifth most valuable public company and now ranks just thirteenth with a market cap of $385 billion.<br /><br />Tesla’s woes are well documented, including Musk's Twitter takeover and related distractions; worries that high inflation and rising interest rates will dampen consumers' enthusiasm for EVs, as well as investor jitters about growth assets. TSLA shareholders are furious at CEO Elon Musk, The Wall Street Journal reports, for his Twitter antics and tomfoolery, which has led to several downgrades for the stock. Meanwhile, hordes of customers are canceling their Tesla orders, \"His personality is absolutely tanking the Tesla brand. I'm looking forward to having an Elon-free existence,’’ a biotech exec with a Model S lease has told CNET. \"There is no Tesla CEO today,\" tweeted Gary Black, a hedge fund manager with ~$50 million worth of TSLA stock told Futurism.<br /><br />Related: U.S. Oil, Gas Rigs Up 193 This Year<br /><br />But Tesla is hardly alone here: most EV stocks have had a year to forget with rising costs, supply chain issues, increasing competition, and the threat of a potential recession causing many to sell off heavily.<br /><br />Surprisingly, some Wall Street pundits have not given up on TSLA stock and are urging investors to use the selloff as a buying opportunity. To wit, Citi has tapped TSLA as a bullish contrarian stock for 2023, while Baird analyst Ben Kallo still sees Tesla as a “Best Idea” stock in 2023. Meanwhile, Morgan Stanley says Tesla could extend its lead over its EV rivals in the coming year, and has cited “valuation, cash flow, innovation and cost leadership” as key reasons to maintain a Buy-equivalent rating. Meanwhile, famed contrarian investor Cathie Wood, known for betting big on former growth stocks as they fall, recently loaded up on more than 25K shares of the EV giant.<br /><br />Story continues<br /><br />In sharp contrast, things could not have gone differently for Tesla’s biggest fossil fuel rival, Exxon Mobil Corp. (NYSE: XOM). Exxon Mobil has enjoyed the biggest rise in the S&P 500 this year, with the energy giant jumping almost like technology stocks did in the tech boom thanks to high oil and gas prices triggered by the energy crisis. XOM shares have soared 72% this year, adding $190 billion to the company’s market value. Exxon’s increase in market value surpasses any company in the S&P 500, making Exxon Mobil the eighth most valuable stock in the S&P 500. That’s a remarkable jump considering that it only ranked 27th most valuable in the S&P 500 a year ago. Exxon was the most valuable S&P 500 company in 2011 until Apple Inc. (NASDAQ: AAPL) surpassed it in 2012.<br /><br />Whereas Citi has picked XOM as one of its bearish contrarian stocks for 2023, the stock is viewed favorably by most Wall Street analysts, as evidenced by its $118.89 average price target, good for a 10% upside. The energy sector in general is expected to outperform the market again in 2023, and XOM should be just fine, considering it’s still cheap with a PE (Fwd) of 7.9. Back in October, Exxon raised its quarterly dividend by $0.03 per share to $0.91 per share marking the company's 40th straight year of increasing its dividend, keeping it in the elite group of Dividend Aristocrats. XOM shares now yield 3.3%.<br /><br />The outlook for the energy sector remains bright. According to a recent Moody's research report, industry earnings will stabilize overall in 2023, though they will come in slightly below levels reached by recent peaks.<br /><br />The analysts note that commodity prices have declined from very high levels earlier in 2022, but have predicted that prices are likely to remain cyclically strong through 2023. This, combined with modest growth in volumes, will support strong cash flow generation for oil and gas producers. Moody’s estimates that the U.S. energy sector’s EBITDA for 2022 will clock in at $623B but fall slightly to $585B in 2023.<br /><br />The analysts say that low capex, rising uncertainty about the expansion of future supplies, and high geopolitical risk premium will, however, continue to support cyclically high oil prices. Meanwhile, strong export demand for U.S. LNG will continue supporting high natural gas prices.<br /><br />The combined dividend and buyback yield for the energy sector is now approaching 8%, which is high by historical standards. Similarly elevated levels occurred in 2020 and 2009, which preceded periods of strength. In comparison, the combined dividend and buyback yield for the S&P 500 is closer to five percent, which makes for one of the largest gaps in favor of the energy sector on record.<br /><br />In other words, there simply aren’t better places for people investing in the U.S. stock market to park their money if they are looking for serious earnings growth.<br /><br />By Alex Kimani for Oilprice.com<br /><br />More Top Reads from Oilprice.com:<br /><br />A New Type Of Oil And Gas Funding Is Booming What is Crude Oil? A Detailed Explanation on this Essential Fossil Fuel Chevron Sending Tanker To Venezuela To Load Oil<br /><br />Read this article on OilPrice.com", Source: "https://finance.yahoo.com/news/fall-tesla-rise-exxon-amid-000000565.html", PublicationDate: 1672549200}
+```
+
+</TabItem>
+
+<TabItem value="Example (Raw)" label="Example (Raw)">
+
+
+
+
+```go
+resp, err := StockNews().Symbol("AAPL").Date("2023-01-01").Raw()
+if err != nil {
+	fmt.Print(err)
+	return
+}
+
+fmt.Println(resp)
+```
+
+#### Output
+
+```
+{"s":"ok","symbol":["AAPL","AAPL","AAPL","AAPL","AAPL","AAPL"],"headline":["Lessons Learned From Visa and Mastercard in a Year of Crypto News","Down 28% in 2022, Is Apple Stock a Buy for 2023?","80% of Warren Buffett's Portfolio Is Invested in These 7 Stocks as 2023 Begins","2 Beaten-Down Warren Buffett Stocks to Buy in 2023","2023 Dividend Growth Portfolio Review And Look Ahead","The Fall Of Tesla And The Rise of Exxon Amid The Energy Crisis"],"content":["How Visa and Mastercard fared in a year dominated by crypto news. Why fortress-like balance sheets will be an even bigger asset in the new year. To catch full episodes of all The Motley Fool's free podcasts, check out our podcast center.<br /><br />Continue reading","Apple (NASDAQ: AAPL) has benefited from robust consumer demand and hopes that easing supply chain constraints will boost the tech giant's prospects. *Stock prices used were the afternoon prices of Dec.<br /><br />Continue reading","Two of these stocks were especially big winners for Buffett in 2022.","These are high-conviction stocks for the Oracle of Omaha but they're trading at knocked-down prices.<br /><br />Continue reading","I review my current holdings and sectors in the portfolio and how it has changed over the years. See my income projections for 2023 and potential pitfalls.","Growth stocks have been thoroughly hammered this year, with high inflation and rising interest rates pinching growth equities of all stripes. But few stocks exemplify the dramatic shake-up at the top, like leading EV maker Tesla Inc. (NASDAQ: TSLA). TSLA stock has tanked 69.5% in the year-to-date, wiping off a staggering $877 billion from its market cap. In comparison, the S&P 500 has declined a more modest 19.7% over the timeframe. Tesla has gone from being the fifth most valuable public company and now ranks just thirteenth with a market cap of $385 billion.<br /><br />Tesla’s woes are well documented, including Musk's Twitter takeover and related distractions; worries that high inflation and rising interest rates will dampen consumers' enthusiasm for EVs, as well as investor jitters about growth assets. TSLA shareholders are furious at CEO Elon Musk, The Wall Street Journal reports, for his Twitter antics and tomfoolery, which has led to several downgrades for the stock. Meanwhile, hordes of customers are canceling their Tesla orders, \"His personality is absolutely tanking the Tesla brand. I'm looking forward to having an Elon-free existence,’’ a biotech exec with a Model S lease has told CNET. \"There is no Tesla CEO today,\" tweeted Gary Black, a hedge fund manager with ~$50 million worth of TSLA stock told Futurism.<br /><br />Related: U.S. Oil, Gas Rigs Up 193 This Year<br /><br />But Tesla is hardly alone here: most EV stocks have had a year to forget with rising costs, supply chain issues, increasing competition, and the threat of a potential recession causing many to sell off heavily.<br /><br />Surprisingly, some Wall Street pundits have not given up on TSLA stock and are urging investors to use the selloff as a buying opportunity. To wit, Citi has tapped TSLA as a bullish contrarian stock for 2023, while Baird analyst Ben Kallo still sees Tesla as a “Best Idea” stock in 2023. Meanwhile, Morgan Stanley says Tesla could extend its lead over its EV rivals in the coming year, and has cited “valuation, cash flow, innovation and cost leadership” as key reasons to maintain a Buy-equivalent rating. Meanwhile, famed contrarian investor Cathie Wood, known for betting big on former growth stocks as they fall, recently loaded up on more than 25K shares of the EV giant.<br /><br />Story continues<br /><br />In sharp contrast, things could not have gone differently for Tesla’s biggest fossil fuel rival, Exxon Mobil Corp. (NYSE: XOM). Exxon Mobil has enjoyed the biggest rise in the S&P 500 this year, with the energy giant jumping almost like technology stocks did in the tech boom thanks to high oil and gas prices triggered by the energy crisis. XOM shares have soared 72% this year, adding $190 billion to the company’s market value. Exxon’s increase in market value surpasses any company in the S&P 500, making Exxon Mobil the eighth most valuable stock in the S&P 500. That’s a remarkable jump considering that it only ranked 27th most valuable in the S&P 500 a year ago. Exxon was the most valuable S&P 500 company in 2011 until Apple Inc. (NASDAQ: AAPL) surpassed it in 2012.<br /><br />Whereas Citi has picked XOM as one of its bearish contrarian stocks for 2023, the stock is viewed favorably by most Wall Street analysts, as evidenced by its $118.89 average price target, good for a 10% upside. The energy sector in general is expected to outperform the market again in 2023, and XOM should be just fine, considering it’s still cheap with a PE (Fwd) of 7.9. Back in October, Exxon raised its quarterly dividend by $0.03 per share to $0.91 per share marking the company's 40th straight year of increasing its dividend, keeping it in the elite group of Dividend Aristocrats. XOM shares now yield 3.3%.<br /><br />The outlook for the energy sector remains bright. According to a recent Moody's research report, industry earnings will stabilize overall in 2023, though they will come in slightly below levels reached by recent peaks.<br /><br />The analysts note that commodity prices have declined from very high levels earlier in 2022, but have predicted that prices are likely to remain cyclically strong through 2023. This, combined with modest growth in volumes, will support strong cash flow generation for oil and gas producers. Moody’s estimates that the U.S. energy sector’s EBITDA for 2022 will clock in at $623B but fall slightly to $585B in 2023.<br /><br />The analysts say that low capex, rising uncertainty about the expansion of future supplies, and high geopolitical risk premium will, however, continue to support cyclically high oil prices. Meanwhile, strong export demand for U.S. LNG will continue supporting high natural gas prices.<br /><br />The combined dividend and buyback yield for the energy sector is now approaching 8%, which is high by historical standards. Similarly elevated levels occurred in 2020 and 2009, which preceded periods of strength. In comparison, the combined dividend and buyback yield for the S&P 500 is closer to five percent, which makes for one of the largest gaps in favor of the energy sector on record.<br /><br />In other words, there simply aren’t better places for people investing in the U.S. stock market to park their money if they are looking for serious earnings growth.<br /><br />By Alex Kimani for Oilprice.com<br /><br />More Top Reads from Oilprice.com:<br /><br />A New Type Of Oil And Gas Funding Is Booming What is Crude Oil? A Detailed Explanation on this Essential Fossil Fuel Chevron Sending Tanker To Venezuela To Load Oil<br /><br />Read this article on OilPrice.com"],"source":["https://finance.yahoo.com/m/4b9f894a-9854-3caf-8775-c7e9f9d4ce90/lessons-learned-from-visa-and.html","https://finance.yahoo.com/m/457b8480-3b01-3a94-9273-54aaf80906a8/down-28%25-in-2022%2C-is-apple.html","https://www.fool.com/investing/2023/01/01/80-of-warren-buffetts-portfolio-is-invested-in-the/","https://finance.yahoo.com/m/cc37d40a-9068-3de1-9dd3-a6a71da3aa75/2-beaten-down-warren-buffett.html","https://seekingalpha.com/article/4567219-2023-dividend-growth-portfolio-review-and-look-ahead","https://finance.yahoo.com/news/fall-tesla-rise-exxon-amid-000000565.html"],"publicationDate":[1672549200,1672549200,1672549200,1672549200,1672549200,1672549200]}
+```
+
+</TabItem>
+</Tabs>
+
+<a name="StockNews"></a>
+### StockNews
+
+```go
+func StockNews() *StockNewsRequest
+```
+
+StockNews creates a new StockNewsRequest and associates it with the default client. This function initializes the request with default parameters for symbol, date, and additional news\-specific parameters, and sets the request path based on the predefined endpoints for stock news.
+
+#### Returns
+
+- `*StockNewsRequest`
+
+  A pointer to the newly created \*StockNewsRequest with default parameters and associated client.
+
+## StockNewsRequest Setter Methods
+
+<a name="StockNewsRequest.Countback"></a>
+### Countback
+
+```go
+func (snr *StockNewsRequest) Countback(q int) *StockNewsRequest
+```
+
+Countback sets the countback parameter for the StockNewsRequest. This method specifies the number of news items to return, counting backwards from the 'to' date.
+
+#### Parameters
+
+- `int`
+
+  The number of news items to return.
+
+
+#### Returns
+
+- `*StockNewsRequest`
+
+  This method returns a pointer to the \*StockNewsRequest instance it was called on. This allows for method chaining.
+
+
+<a name="StockNewsRequest.Date"></a>
+### Date
+
+```go
+func (snr *StockNewsRequest) Date(q interface{}) *StockNewsRequest
+```
+
+Date sets the date parameter for the StockNewsRequest. This method is used to specify the date for which the stock news data is requested.
+
+#### Parameters
+
+- `interface{}`
+
+  An interface\{\} representing the date to be set. It can be a string, a time.Time object, a Unix int, or any other type that the underlying dates package method can process.
+
+
+#### Returns
+
+- `*StockNewsRequest`
+
+  This method returns a pointer to the StockNewsRequest instance it was called on. This allows for method chaining.
+
+
+<a name="StockNewsRequest.From"></a>
+### From
+
+```go
+func (snr *StockNewsRequest) From(q interface{}) *StockNewsRequest
+```
+
+From sets the 'from' date parameter for the StockNewsRequest. This method is used to specify the starting point of the date range for which the stock news data is requested.
+
+#### Parameters
+
+- `interface{}`
+
+  An interface\{\} representing the date to be set. It can be a string, a time.Time object, a Unix int, or any other type that the underlying dates package method can process.
+
+
+#### Returns
+
+- `*StockNewsRequest`
+
+  This method returns a pointer to the StockNewsRequest instance it was called on. This allows for method chaining.
+
+
+<a name="StockNewsRequest.Symbol"></a>
+### Symbol
+
+```go
+func (snr *StockNewsRequest) Symbol(q string) *StockNewsRequest
+```
+
+Symbol sets the symbol parameter for the StockNewsRequest. This method is used to specify the stock symbol for which news data is requested.
+
+#### Parameters
+
+- `string`
+
+  A string representing the stock symbol to be set.
+
+
+#### Returns
+
+- `*StockNewsRequest`
+
+  This method returns a pointer to the StockNewsRequest instance it was called on. This allows for method chaining.
+
+
+<a name="StockNewsRequest.To"></a>
+### To
+
+```go
+func (snr *StockNewsRequest) To(q interface{}) *StockNewsRequest
+```
+
+To sets the 'to' date parameter for the StockNewsRequest. This method is used to specify the ending point of the date range for which the stock news data is requested.
+
+#### Parameters
+
+- `interface{}`
+
+  An interface\{\} representing the date to be set. It can be a string, a time.Time object, a Unix int, or any other type that the underlying dates package method can process.
+
+
+#### Returns
+
+- `*StockNewsRequest`
+
+  This method returns a pointer to the StockNewsRequest instance it was called on. This allows for method chaining.
+
+
+
+## StockNewsRequest Execution Methods
+<a name="StockNewsRequest.Get"></a>
+### Get
+
+```go
+func (snr *StockNewsRequest) Get() ([]models.StockNews, error)
+```
+
+Get sends the StockNewsRequest, unpacks the StockNewsResponse, and returns a slice of StockNews. It returns an error if the request or unpacking fails.
+
+#### Returns
+
+- `[]models.StockNews`
+
+  A slice of StockNews containing the unpacked news data from the response.
+
+- `error`
+
+  An error object that indicates a failure in sending the request or unpacking the response.
+
+
+
+<a name="StockNewsRequest.Packed"></a>
+### Packed
+
+```go
+func (snr *StockNewsRequest) Packed() (*models.StockNewsResponse, error)
+```
+
+Packed sends the StockNewsRequest and returns the StockNewsResponse.
+
+#### Returns
+
+- `*models.StockNewsResponse`
+
+  A pointer to the StockNewsResponse obtained from the request.
+
+- `error`
+
+  An error object that indicates a failure in sending the request.
+
+
+<a name="StockNewsRequest.Raw"></a>
+### Raw
+
+```go
+func (snr *StockNewsRequest) Raw() (*resty.Response, error)
+```
+
+Raw executes the StockNewsRequest and returns the raw \*resty.Response. This method retrieves the raw HTTP response for further processing.
+
+#### Returns
+
+- `*resty.Response`
+
+  The raw HTTP response from the executed request.
+
+- `error`
+
+  An error object if the request fails due to being nil or other execution errors.
+
+
+
+<a name="StockNewsResponse"></a>
+## StockNewsResponse
+
+```go
+type StockNewsResponse struct {
+    Symbol          []string `json:"symbol"`          // Symbol contains the stock symbols associated with the news.
+    Headline        []string `json:"headline"`        // Headline contains the headlines of the news articles.
+    Content         []string `json:"content"`         // Content contains the full text content of the news articles.
+    Source          []string `json:"source"`          // Source contains the sources from which the news articles were obtained.
+    PublicationDate []int64  `json:"publicationDate"` // PublicationDate contains the publication dates of the news articles as UNIX timestamps.
+    Updated         int64    `json:"updated"`         // Updated contains the timestamp of the last update to the news data.
+}
+```
+
+StockNewsResponse encapsulates the data structure for a response containing news articles related to stock symbols. It includes arrays for symbols, headlines, content, sources, and publication dates, along with a timestamp for the last update.
+
+#### Generated By
+
+- <a href="#StockNewsRequest.Packed">`StockNewsRequest.Packed()`</a>
+
+  Generates a StockNewsResponse from a request to the /stocks/news endpoint.
+
+
+#### Methods
+
+- <a href="#StockNews.String">`String()`</a>
+
+  Returns a string representation of the StockNewsResponse.
+
+- <a href="#StockNewsResponse.Unpack">`Unpack()`</a>
+
+  Transforms the StockNewsResponse into a slice of StockNews structs.
+
+
+#### Notes
+
+- The PublicationDate field uses UNIX timestamps to represent the publication dates of the news articles.
+- This struct is primarily used to unpack and process JSON responses from stock news API endpoints.
+
+
+
+<a name="StockNewsResponse.String"></a>
+### String
+
+```go
+func (snr *StockNewsResponse) String() string
+```
+
+String generates a string representation of the StockNewsResponse struct, primarily used for logging or debugging purposes. This method iterates over each news article contained within the StockNewsResponse, constructing a formatted string for each article and appending it to a strings.Builder instance. If the 'Updated' field within the struct is non\-zero, indicating that the response has been updated, an "Updated" field is also appended to the final string representation. This method is useful for developers who need a quick, readable overview of the news articles contained within a StockNewsResponse, including any updates.
+
+#### Returns
+
+- `string`
+
+  A comprehensive string representation of the StockNewsResponse struct, including details of each news article and any updates.
+
+
+<a name="StockNewsResponse.Unpack"></a>
+### Unpack
+
+```go
+func (snr *StockNewsResponse) Unpack() ([]StockNews, error)
+```
+
+Unpack transforms the StockNewsResponse struct into a slice of StockNews structs, allowing for easy access and manipulation of individual news articles contained within the response. This method is primarily used when one needs to process or display the news articles represented by a StockNewsResponse in a more granular or article\-by\-article basis.
+
+#### Returns
+
+- `[]StockNews`
+
+  A slice of StockNews structs representing the unpacked news articles.
+
+- `error`
+
+  An error if any issues occur during the unpacking process. This implementation always returns nil for error.
+
+
+#### Notes
+
+- This method assumes that the slices within the StockNewsResponse struct are all of equal length, corresponding to the number of news articles contained in the response.
+
+
+
+
+
+
+
+
+<a name="StockNews"></a>
+## StockNews
+
+```go
+type StockNews struct {
+    Symbol          string    // Symbol is the stock symbol associated with the news article.
+    Headline        string    // Headline is the headline of the news article.
+    Content         string    // Content is the full text content of the news article.
+    Source          string    // Source is the source from which the news article was obtained.
+    PublicationDate time.Time // PublicationDate is the publication date of the news article.
+}
+```
+
+StockNews represents a single news article related to a stock, encapsulating details such as the stock symbol, headline, content, source, and publication date.
+
+#### Generated By
+
+- <a href="#StockNewsResponse.Unpack">`StockNewsResponse.Unpack()`</a>
+
+  Unpacks the StockNewsResponse into a slice of StockNews.
+
+
+#### Methods
+
+- <a href="#StockNews.String">`String()`</a>
+
+  Returns a formatted string representation of the StockNews struct.
+
+
+#### Notes
+
+- The PublicationDate field is of type time.Time, ensuring that the date and time information is accurately represented according to Go's standard time package.
+
+
+
+<a name="StockNews.String"></a>
+### String
+
+```go
+func (sn StockNews) String() string
+```
+
+String\(\) method formats and returns a string representation of the StockNews struct, making it easier to read and understand the news article's details. It is particularly useful for logging or displaying the article's information in a human\-readable format. If the publication date is at the start of the day, it simplifies the date to a YYYY\-MM\-DD format, omitting time and timezone information for clarity.
+
+#### Returns
+
+- `string`
+
+  A formatted string representation of the StockNews struct.
+
+
+#### Notes
+
+- If the publication date is exactly at the start of a day \(00:00:00\), only the date part \(YYYY\-MM\-DD\) is included in the output string.
+
+

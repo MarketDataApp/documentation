@@ -51,6 +51,27 @@ print(response.text)
 ```
 
 </TabItem>
+<TabItem value="Go" label="Go">
+
+```go title="optionLookup.go"
+
+import (
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func ExampleOptionLookupRequest() {
+	optionSymbol, err := OptionLookup().UserInput("AAPL 7/28/2023 200 Call").Get()
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+
+	fmt.Println(optionSymbol)
+}
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

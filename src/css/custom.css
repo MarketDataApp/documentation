@@ -104,6 +104,47 @@
   border-radius: 8px;
 }
 
+.sdk-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Adjust the space between items */
+  margin-bottom: 20px; /* Added margin on the bottom */
+}
+
+.sdk-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* This will push the text to the bottom */
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+  border: 1px solid #ddd;
+  padding: 20px 20px 20px 20px; /* Adjusted padding */
+  padding-top: 40px; /* Added 20px padding at the top */
+  border-radius: 8px;
+  text-align: center;
+  background-color: #f9f9f9;
+  text-decoration: none; /* Remove underline from links */
+}
+
+.sdk-item p img {
+  width: auto; /* Adjust the logo size */
+  height: 80px;
+  margin-bottom: 10px; /* Space between logo and text */
+  align-self: center; /* Center the image in the flex container */
+}
+
+[data-theme="dark"] .sdk-item {
+  background-color: #1e1e1e; /* Dark background for the items */
+  color: #ffffff; /* Light text color for readability */
+  border: 1px solid #3c3c3c; /* Darker border color */
+}
+
+[data-theme="dark"] .sdk-item a {
+  color: #eb5c6d; /* Lighter link color for better visibility */
+  text-decoration: none; /* Maintain consistency with light mode links */
+}
+
 .cus-tag {
   font-size: 28px;
   color: white;

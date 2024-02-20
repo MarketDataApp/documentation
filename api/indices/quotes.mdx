@@ -49,6 +49,29 @@ print(response.text)
 ```
 
 </TabItem>
+<TabItem value="Go" label="Go">
+
+```go title="indexQuote.go"
+
+import (
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func ExampleIndexQuoteRequest() {
+	vix, err := IndexQuotes().Symbol("VIX").Get()
+	if err != nil {
+    fmt.Println("Error retrieving VIX index candles:", err)
+		return
+	}
+
+	for _, quote := range vix {
+		fmt.Println(quote)
+	}
+}
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

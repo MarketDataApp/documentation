@@ -51,6 +51,31 @@ print(response.text)
 ```
 
 </TabItem>
+<TabItem value="Go" label="Go">
+
+```go title="bulkStockCandles.go"
+
+import (
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func ExampleBulkStockCandlesRequest_get() {
+	symbols := []string{"AAPL", "META", "MSFT"}
+	candles, err := BulkStockCandles().Resolution("D").Symbols(symbols).Get()
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+  
+	for _, candle := range candles {
+		fmt.Println(candle)
+	}
+}
+
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

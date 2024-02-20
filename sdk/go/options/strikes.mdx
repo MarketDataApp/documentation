@@ -1,0 +1,491 @@
+---
+title: Strikes
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+
+
+
+
+Retrieve a complete or filtered list of option strike prices for a given underlying symbol. Both real\-time and historical requests are possible.
+
+## Making Requests
+
+Utilize [OptionStrikesRequest](<#OptionStrikesRequest>) for querying the endpoint through one of the three available methods:
+
+| Method     | Execution       | Return Type                  | Description                                                                                                                      |
+|------------|-----------------|------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| **Get**    | Direct          | `[]OptionStrikes`           | Immediately fetches a slice of `[]OptionStrikes`, allowing direct access to the options strikes data.                           |
+| **Packed** | Intermediate    | `*OptionStrikesResponse`    | Delivers a `*OptionStrikesResponse` object containing the data, which requires unpacking to access the `[]OptionStrikes` slice.|
+| **Raw**    | Low-level       | `*resty.Response`            | Offers the unprocessed `*resty.Response` for those seeking full control and access to the raw JSON or `*http.Response`.          |
+
+
+<a name="OptionStrikesRequest"></a>
+## OptionStrikesRequest
+
+```go
+type OptionStrikesRequest struct {
+    // contains filtered or unexported fields
+}
+```
+
+OptionStrikesRequest represents a request to the [/v1/options/strikes/](<https://www.marketdata.app/docs/api/options/strikes>) endpoint. It encapsulates parameters for underlying symbol, expiration, and date to be used in the request. This struct provides methods such as UnderlyingSymbol\(\), Expiration\(\), and Date\(\) to set these parameters respectively.
+
+#### Setter Methods
+
+- <a href="#OptionStrikesRequest.UnderlyingSymbol">`UnderlyingSymbol(string) *OptionStrikesRequest`</a>
+
+  Sets the underlying symbol parameter for the request.
+
+- <a href="#OptionStrikesRequest.Expiration">`Expiration(string) *OptionStrikesRequest`</a>
+
+  Sets the expiration parameter for the request.
+
+- <a href="#OptionStrikesRequest.Date">`Date(interface{}) *OptionStrikesRequest`</a>
+
+  Sets the date parameter for the request.
+
+
+#### Execution Methods
+
+These methods are used to send the request in different formats or retrieve the data. They handle the actual communication with the API endpoint.
+
+- <a href="#OptionStrikesRequest.Get">`Get() ([]OptionStrikes, error)`</a>
+
+  Sends the request, unpacks the response, and returns the data in a user\-friendly format.
+
+- <a href="#OptionStrikesRequest.Packed">`Packed() (*OptionStrikesResponse, error)`</a>
+
+  Returns a struct that contains equal\-length slices of primitives. This packed response mirrors Market Data's JSON response.
+
+- <a href="#OptionStrikesRequest.Raw">`Raw() (*resty.Response, error)`</a>
+
+  Sends the request as is and returns the raw HTTP response.
+
+
+
+
+<Tabs>
+<TabItem value="Example (Get)" label="Example (Get)">
+
+
+
+
+```go
+resp, err := OptionStrikes().UnderlyingSymbol("AAPL").Date("2009-02-09").Get()
+if err != nil {
+	fmt.Print(err)
+	return
+}
+
+for _, expiration := range resp {
+	fmt.Println(expiration)
+}
+```
+
+#### Output
+
+```
+OptionStrikes{Expiration: 2009-02-21, Strikes: [40.00 45.00 50.00 55.00 60.00 65.00 70.00 75.00 80.00 85.00 90.00 95.00 100.00 105.00 110.00 115.00 120.00 125.00 130.00 135.00 140.00]}
+OptionStrikes{Expiration: 2009-03-21, Strikes: [35.00 40.00 45.00 50.00 55.00 60.00 65.00 70.00 75.00 80.00 85.00 90.00 95.00 100.00 105.00 110.00 115.00 120.00 125.00 130.00 135.00]}
+OptionStrikes{Expiration: 2009-04-18, Strikes: [15.00 17.50 20.00 22.50 25.00 30.00 35.00 40.00 45.00 50.00 55.00 60.00 65.00 70.00 75.00 80.00 85.00 90.00 95.00 100.00 105.00 110.00 115.00 120.00 125.00 130.00 135.00 140.00 145.00 150.00 155.00 160.00 165.00 170.00 175.00 180.00 185.00 190.00 195.00 200.00 210.00 220.00 230.00 240.00 250.00 260.00 270.00 280.00 290.00 300.00]}
+OptionStrikes{Expiration: 2009-07-18, Strikes: [12.50 15.00 17.50 20.00 22.50 25.00 30.00 35.00 40.00 45.00 50.00 55.00 60.00 65.00 70.00 75.00 80.00 85.00 90.00 95.00 100.00 105.00 110.00 115.00 120.00 125.00 130.00 135.00 140.00 145.00 150.00 155.00 160.00 165.00 170.00 175.00 180.00 185.00 190.00]}
+OptionStrikes{Expiration: 2010-01-16, Strikes: [22.50 25.00 30.00 35.00 40.00 45.00 50.00 55.00 60.00 65.00 70.00 75.00 80.00 85.00 90.00 95.00 100.00 105.00 110.00 120.00 125.00 130.00 135.00 140.00 145.00 150.00 155.00 160.00 170.00 180.00 190.00 200.00 210.00 220.00 230.00 240.00 250.00 260.00 270.00 280.00 290.00 300.00 310.00 320.00 330.00 340.00 350.00 360.00 370.00 380.00 390.00 400.00]}
+OptionStrikes{Expiration: 2011-01-22, Strikes: [20.00 30.00 40.00 50.00 60.00 70.00 80.00 85.00 90.00 95.00 100.00 110.00 120.00 125.00 130.00 140.00 150.00 160.00 170.00 180.00 190.00 200.00 210.00 220.00 230.00 240.00]}
+```
+
+</TabItem>
+
+<TabItem value="Example (Packed)" label="Example (Packed)">
+
+
+
+
+```go
+resp, err := OptionStrikes().UnderlyingSymbol("AAPL").Date("2009-02-09").Packed()
+if err != nil {
+	fmt.Print(err)
+	return
+}
+
+fmt.Println(resp)
+```
+
+#### Output
+
+```
+OptionStrikesResponse{Strikes: [2009-02-21:[40.00 45.00 50.00 55.00 60.00 65.00 70.00 75.00 80.00 85.00 90.00 95.00 100.00 105.00 110.00 115.00 120.00 125.00 130.00 135.00 140.00], 2009-03-21:[35.00 40.00 45.00 50.00 55.00 60.00 65.00 70.00 75.00 80.00 85.00 90.00 95.00 100.00 105.00 110.00 115.00 120.00 125.00 130.00 135.00], 2009-04-18:[15.00 17.50 20.00 22.50 25.00 30.00 35.00 40.00 45.00 50.00 55.00 60.00 65.00 70.00 75.00 80.00 85.00 90.00 95.00 100.00 105.00 110.00 115.00 120.00 125.00 130.00 135.00 140.00 145.00 150.00 155.00 160.00 165.00 170.00 175.00 180.00 185.00 190.00 195.00 200.00 210.00 220.00 230.00 240.00 250.00 260.00 270.00 280.00 290.00 300.00], 2009-07-18:[12.50 15.00 17.50 20.00 22.50 25.00 30.00 35.00 40.00 45.00 50.00 55.00 60.00 65.00 70.00 75.00 80.00 85.00 90.00 95.00 100.00 105.00 110.00 115.00 120.00 125.00 130.00 135.00 140.00 145.00 150.00 155.00 160.00 165.00 170.00 175.00 180.00 185.00 190.00], 2010-01-16:[22.50 25.00 30.00 35.00 40.00 45.00 50.00 55.00 60.00 65.00 70.00 75.00 80.00 85.00 90.00 95.00 100.00 105.00 110.00 120.00 125.00 130.00 135.00 140.00 145.00 150.00 155.00 160.00 170.00 180.00 190.00 200.00 210.00 220.00 230.00 240.00 250.00 260.00 270.00 280.00 290.00 300.00 310.00 320.00 330.00 340.00 350.00 360.00 370.00 380.00 390.00 400.00], 2011-01-22:[20.00 30.00 40.00 50.00 60.00 70.00 80.00 85.00 90.00 95.00 100.00 110.00 120.00 125.00 130.00 140.00 150.00 160.00 170.00 180.00 190.00 200.00 210.00 220.00 230.00 240.00]], Updated: 1234155600}
+```
+
+</TabItem>
+</Tabs>
+
+<a name="OptionStrikes"></a>
+### OptionStrikes
+
+```go
+func OptionStrikes() *OptionStrikesRequest
+```
+
+OptionStrikes creates a new OptionStrikesRequest and uses the default client. This function initializes the request with default parameters for underlying symbol, expiration, and date, and sets the request path based on the predefined endpoints for options strikes.
+
+#### Returns
+
+- `*OptionStrikesRequest`
+
+  A pointer to the newly created OptionStrikesRequest with default parameters.
+
+## OptionStrikesRequest Setter Methods
+
+<a name="OptionStrikesRequest.Date"></a>
+### Date
+
+```go
+func (o *OptionStrikesRequest) Date(date interface{}) *OptionStrikesRequest
+```
+
+Date sets the date parameter for the OptionStrikesRequest. This is used to make a historical request. This method is used to specify the date for which the options strikes data is requested.
+
+#### Parameters
+
+- `interface{}`
+
+  An interface\{\} representing the date to be set. It can be a string, a time.Time object, a Unix int, or any other type that the underlying dates package method can process.
+
+
+#### Returns
+
+- `*OptionStrikesRequest`
+
+  This method returns a pointer to the OptionStrikesRequest instance it was called on. This allows for method chaining.
+
+
+<a name="OptionStrikesRequest.Expiration"></a>
+### Expiration
+
+```go
+func (o *OptionStrikesRequest) Expiration(expiration string) *OptionStrikesRequest
+```
+
+Expiration sets the expiration parameter for the OptionStrikesRequest. This method is used to specify the expiration date of the options for which strikes data is requested.
+
+#### Parameters
+
+- `expiration`
+
+  A string representing the expiration date to be set.
+
+
+#### Returns
+
+- `*OptionStrikesRequest`
+
+  This method returns a pointer to the OptionStrikesRequest instance it was called on. This allows for method chaining.
+
+
+<a name="OptionStrikesRequest.UnderlyingSymbol"></a>
+### UnderlyingSymbol
+
+```go
+func (o *OptionStrikesRequest) UnderlyingSymbol(underlyingSymbol string) *OptionStrikesRequest
+```
+
+UnderlyingSymbol sets the underlying symbol parameter for the OptionStrikesRequest. This method is used to specify the symbol of the underlying asset for which options strikes data is requested.
+
+#### Parameters
+
+- `underlyingSymbol`
+
+  A string representing the symbol to be set.
+
+
+#### Returns
+
+- `*OptionStrikesRequest`
+
+  This method returns a pointer to the OptionStrikesRequest instance it was called on. This allows for method chaining.
+
+
+
+## OptionStrikesRequest Execution Methods
+<a name="OptionStrikesRequest.Get"></a>
+### Get
+
+```go
+func (osr *OptionStrikesRequest) Get() ([]models.OptionStrikes, error)
+```
+
+Get sends the OptionStrikesRequest, unpacks the OptionStrikesResponse, and returns a slice of OptionStrikes. It returns an error if the request or unpacking fails.
+
+#### Returns
+
+- `[]models.OptionStrikes`
+
+  A slice of OptionStrikes containing the unpacked options strikes data from the response.
+
+- `error`
+
+  An error object that indicates a failure in sending the request or unpacking the response.
+
+
+
+<a name="OptionStrikesRequest.Packed"></a>
+### Packed
+
+```go
+func (osr *OptionStrikesRequest) Packed() (*models.OptionStrikesResponse, error)
+```
+
+Packed sends the OptionStrikesRequest and returns the OptionStrikesResponse.
+
+#### Returns
+
+- `*models.OptionStrikesResponse`
+
+  A pointer to the OptionStrikesResponse obtained from the request.
+
+- `error`
+
+  An error object that indicates a failure in sending the request.
+
+
+<a name="OptionStrikesRequest.Raw"></a>
+### Raw
+
+```go
+func (osr *OptionStrikesRequest) Raw() (*resty.Response, error)
+```
+
+Raw executes the OptionStrikesRequest and returns the raw \*resty.Response. This method returns the \*resty.Response which can be used to directly access the raw JSON or \*http.Response.
+
+#### Returns
+
+- `*resty.Response`
+
+  The raw HTTP response from the executed OptionStrikesRequest.
+
+- `error`
+
+  An error object if the OptionStrikesRequest is nil or if an error occurs during the request execution.
+
+
+
+<a name="OptionStrikesResponse"></a>
+## OptionStrikesResponse
+
+```go
+type OptionStrikesResponse struct {
+    Updated int                    `json:"updated"` // Updated is a UNIX timestamp indicating when the data was last updated.
+    Strikes *orderedmap.OrderedMap `json:"-"`       // Strikes is a map where each key is a date string and the value is a slice of strike prices for that date.
+}
+```
+
+OptionStrikesResponse encapsulates the response structure for a request to retrieve option strikes, including the last update timestamp and a map of strikes organized by expiration date. The map uses ordered keys to maintain the chronological order of expiration dates.
+
+#### Generated By
+
+- <a href="#OptionStrikesRequest.Packed">`OptionStrikesRequest.Packed()`</a>
+
+  Makes the OptionStrikesRequest and unmarshals JSON data into the OptionStrikesResponse struct.
+
+
+#### Methods
+
+- <a href="#OptionStrikesResponse.UnmarshalJSON">`UnmarshalJSON(data []byte) error`</a>
+
+  Custom unmarshals JSON data, initializing the Strikes map with ordered expiration dates and their corresponding strike prices.
+
+- <a href="#OptionStrikesResponse.IsValid">`IsValid() bool`</a>
+
+  Checks if the OptionStrikesResponse contains valid data.
+
+- <a href="#OptionStrikesResponse.Validate">`Validate() error`</a>
+
+  Validates the integrity of the OptionStrikesResponse, ensuring it contains valid strikes data.
+
+- <a href="#OptionStrikes.String">`String() string`</a>
+
+  Returns a string representation of the OptionStrikesResponse, detailing strikes and their prices.
+
+- <a href="#OptionStrikesResponse.Unpack">`Unpack() ([]OptionStrikes, error)`</a>
+
+  Converts the ordered map of strikes into a slice of OptionStrikes, each representing a set of strikes and their corresponding expiration date.
+
+
+#### Notes
+
+- The Strikes field is represented as an ordered map to maintain the order of dates, which is crucial.
+- The Updated field uses a UNIX timestamp to indicate the last time the data was updated.
+
+
+
+<a name="OptionStrikesResponse.IsValid"></a>
+### IsValid
+
+```go
+func (osr *OptionStrikesResponse) IsValid() bool
+```
+
+IsValid determines the validity of the OptionStrikesResponse object by invoking the Validate method. This method is primarily used to quickly assess whether the response received from an options strikes request adheres to the expected structure and contains valid data. It simplifies error handling by providing a boolean indicator of validity, which can be particularly useful in conditional logic where a binary valid/invalid decision is required.
+
+#### Returns
+
+- `bool`
+
+  Indicates whether the OptionStrikesResponse is valid. A return value of true signifies a valid response, while false indicates an invalid response.
+
+
+#### Notes
+
+- This method is a convenience wrapper around the Validate method, offering a simplified interface for validity checking.
+
+<a name="OptionStrikesResponse.String"></a>
+### String
+
+```go
+func (osr *OptionStrikesResponse) String() string
+```
+
+String returns a string representation of the OptionStrikesResponse struct, encapsulating the details of strikes and their corresponding prices in a human\-readable format. This method is primarily used for logging, debugging, or any scenario where a textual representation of the OptionStrikesResponse data is necessary for understanding or analysis.
+
+#### Returns
+
+- `string`
+
+  The string representation of the OptionStrikesResponse, detailing the strikes and their prices.
+
+
+#### Notes
+
+- This method formats the strikes data into a string, making it easier to visualize the structure and content of the OptionStrikesResponse.
+
+<a name="OptionStrikesResponse.UnmarshalJSON"></a>
+### UnmarshalJSON
+
+```go
+func (osr *OptionStrikesResponse) UnmarshalJSON(data []byte) error
+```
+
+UnmarshalJSON custom unmarshals the JSON data into the OptionStrikesResponse struct.
+
+#### Parameters
+
+- `data []byte`
+
+  The JSON data to be unmarshaled.
+
+
+#### Returns
+
+- `error`
+
+  An error if unmarshaling fails, nil otherwise.
+
+
+<a name="OptionStrikesResponse.Unpack"></a>
+### Unpack
+
+```go
+func (osr *OptionStrikesResponse) Unpack() ([]OptionStrikes, error)
+```
+
+Unpack converts the ordered map of strikes contained within the OptionStrikesResponse into a slice of OptionStrikes. This method is primarily used when a user needs to work with a structured list of strikes and their expiration dates, rather than dealing with the map data structure. It simplifies the process of iterating over strikes and performing operations on them.
+
+#### Returns
+
+- `[]OptionStrikes`
+
+  A slice of OptionStrikes, each representing a set of strikes and their corresponding expiration date.
+
+- `error`
+
+  An error if the validation of the OptionStrikesResponse fails or if there are issues parsing the dates.
+
+
+#### Notes
+
+- This method first validates the OptionStrikesResponse to ensure it contains valid data before attempting to unpack the strikes.
+
+<a name="OptionStrikesResponse.Validate"></a>
+### Validate
+
+```go
+func (osr *OptionStrikesResponse) Validate() error
+```
+
+Validate assesses the integrity of the OptionStrikesResponse object. It is primarily used to ensure that the response received from an options strikes request contains valid and expected data, such as non\-empty strikes data. This method is crucial for error handling and data validation in financial market data applications, preventing the further processing of invalid responses.
+
+#### Returns
+
+- `error`
+
+  An error indicating that the OptionStrikesResponse is invalid, typically due to missing strikes data, or nil if the response is valid.
+
+
+#### Notes
+
+- This method is a fundamental part of the data validation process, ensuring that only responses with valid strikes data are processed.
+
+
+
+
+
+
+
+
+<a name="OptionStrikes"></a>
+## OptionStrikes
+
+```go
+type OptionStrikes struct {
+    Expiration time.Time // Expiration is the date and time when the option expires.
+    Strikes    []float64 // Strikes is a slice of strike prices available for the option.
+}
+```
+
+OptionStrikes encapsulates the expiration date and available strike prices for an option contract.
+
+#### Generated By
+
+- <a href="#OptionStrikesResponse.Unpack">`OptionStrikesResponse.Unpack()`</a>
+
+  Converts an ordered map of strikes into a slice of OptionStrikes.
+
+
+#### Methods
+
+- <a href="#OptionStrikes.String">`String() string`</a>
+
+  Returns a string representation of the OptionStrikes, detailing its expiration and formatted strike prices.
+
+
+#### Notes
+
+- This struct is primarily used to represent the structured data of option strikes and their expiration dates after unpacking from a JSON response.
+
+
+
+<a name="OptionStrikes.String"></a>
+### String
+
+```go
+func (os OptionStrikes) String() string
+```
+
+String provides a human\-readable representation of the OptionStrikes struct, including its expiration and strike prices. This method is primarily used for logging, debugging, or displaying the OptionStrikes in a format that is easy to read and understand.
+
+#### Returns
+
+- `string`
+
+  A formatted string encapsulating the details of the OptionStrikes, particularly its expiration and formatted strike prices.
+
+
+#### Notes
+
+- This method formats strike prices to two decimal places and joins them with a space for readability.
+
+
