@@ -92,7 +92,6 @@ To verify that the MARKETDATA_TOKEN environment variable has been set properly o
 Use the following test code to verify that your authentication is working by making a test request to SPY or any other symbol that requires authentication. Do not use AAPL to test your authentication because AAPL is a free test symbol and will return data even if you are not authenticated properly.
 
 ```go
-
 import (
   "fmt"
   "log"
@@ -102,18 +101,18 @@ import (
 
 func main() {
     // No need to set a token here, the SDK will read it
-	// from the environment variable on startup.
+    // from the environment variable on startup.
 
     // Initialize a new request, set the symbol parameter, make the request.
-	quotes, err := api.StockQuote().Symbol("SPY").Get() 
-	if err != nil {
-		log.Fatalf("Failed to get stock quotes: %v", err)
-	}
+    quotes, err := api.StockQuote().Symbol("SPY").Get() 
+    if err != nil {
+        log.Fatalf("Failed to get stock quotes: %v", err)
+    }
 
   // Loop over the quotes and print them out.
   for _, quote := range quotes {
-		fmt.Println(quote)
-	}
+        fmt.Println(quote)
+    }
 }
 
 ```
@@ -138,25 +137,25 @@ import (
 )
 
 func main() {
-	// replace with your token
-	token := "your_token_here"		
+    // replace with your token
+    token := "your_token_here"
 
-	// create a new client and set the token
-	client, err := api.NewClient(token) 
-	if err != nil {
-		log.Fatalf("Failed to create client: %v", err)
-	}
+    // create a new client and set the token
+    client, err := api.NewClient(token)
+    if err != nil {
+        log.Fatalf("Failed to create client: %v", err)
+    }
 
-	// make a test request to SPY
-	quotes, err := api.StockQuote().Symbol("SPY").Get() 
-	if err != nil {
-		log.Fatalf("Failed to get stock quotes: %v", err)
-	}
-	
-	// print out the response
+    // make a test request to SPY
+    quotes, err := api.StockQuote().Symbol("SPY").Get()
+    if err != nil {
+        log.Fatalf("Failed to get stock quotes: %v", err)
+    }
+    
+    // print out the response
     for _, quote := range quotes {
-		fmt.Println(quote)
-	}
+        fmt.Println(quote)
+    }
 }
 
 ```
