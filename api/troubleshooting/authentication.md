@@ -27,7 +27,7 @@ https://api.marketdata.app/v1/stocks/quotes/SPY/?token=token1234&dateformat=time
 
 Note how the token is separated from the path by a `?` and the dateformat parameter is separated from the token by a `&`. The ordering of the parameters is not important. Token does not need to be used as the first parameter. It would also be perfectly valid to use the URL:
 
-```
+```http
 https://api.marketdata.app/v1/stocks/quotes/SPY/?dateformat=iso8601&token=token1234
 ```
 

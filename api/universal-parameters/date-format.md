@@ -1,6 +1,6 @@
 ---
 title: Date Format
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 The dateformat parameter allows you specify the format you wish to receive date and time information in.

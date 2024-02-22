@@ -1,6 +1,6 @@
 ---
 title: Offset
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 The offset parameter is used together with limit to allow you to implement pagination in your application. Offset will allow you to return values starting at a certain value.

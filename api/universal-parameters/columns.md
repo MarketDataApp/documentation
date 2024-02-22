@@ -1,6 +1,6 @@
 ---
 title: Columns
-sidebar_position: 7
+sidebar_position: 6
 ---
 
 The columns parameter is used to limit the results of any endpoint to only the columns you need.
