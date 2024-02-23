@@ -145,8 +145,9 @@
   text-decoration: none; /* Maintain consistency with light mode links */
 }
 
-/* Target links inside the main container */
-.theme-doc-markdown.markdown p a {
+/* Target main content links inside the main container in both p and li tags */
+.theme-doc-markdown.markdown p a,
+.theme-doc-markdown.markdown li a {
   text-decoration: underline;
   text-decoration-skip-ink: none;
 }
