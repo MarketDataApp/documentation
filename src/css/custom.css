@@ -183,3 +183,8 @@
 .tg-b {
   background-color: #E65100; /* Beta: Orange */
 }
+
+/* CSS Styling for Images */
+img[alt="Pull Request in Postman"] {
+  max-width: 735px;
+}
