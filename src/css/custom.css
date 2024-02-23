@@ -13,7 +13,6 @@
   --ifm-color-primary-light: #33925d;
   --ifm-color-primary-lighter: #359962;
   --ifm-color-primary-lightest: #3cad6e; */
-  --ifm-link-decoration: underline;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
   --ifm-color-primary: #00419a;
@@ -144,6 +143,12 @@
 [data-theme="dark"] .sdk-item a {
   color: #eb5c6d; /* Lighter link color for better visibility */
   text-decoration: none; /* Maintain consistency with light mode links */
+}
+
+/* Target links inside the main container */
+.theme-doc-markdown.markdown p a {
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
 }
 
 .cus-tag {
