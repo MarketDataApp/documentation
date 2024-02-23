@@ -116,7 +116,7 @@
   flex-direction: column;
   justify-content: space-between; /* This will push the text to the bottom */
   flex: 1;
-  min-width: 200px;
+  min-width: 300px;
   max-width: 300px;
   border: 1px solid #ddd;
   padding: 20px 20px 20px 20px; /* Adjusted padding */
