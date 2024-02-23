@@ -187,4 +187,6 @@
 /* CSS Styling for Images */
 img[alt="Pull Request in Postman"] {
   max-width: 735px;
+  width: 100%;
+  height: auto;
 }
