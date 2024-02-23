@@ -1,6 +1,6 @@
 ---
 title: Format
-sidebar_position: 5
+sidebar_position: 2
 ---
 
 The format parameter is used to specify the format for your data. We support JSON and CSV formats. The default format is JSON.

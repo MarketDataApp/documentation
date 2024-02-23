@@ -1,6 +1,6 @@
 ---
 title: Limit
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 The `limit` parameter allows you to limit the number of results for a particular API call or override an endpoint’s default limits to get more data.
