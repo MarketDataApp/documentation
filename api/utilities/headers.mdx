@@ -1,0 +1,98 @@
+---
+title: Headers tg n
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+This endpoint allows users to retrieve a JSON response of the headers their application is sending, aiding in troubleshooting authentication issues, particularly with the Authorization header. 
+
+:::tip
+The values in sensitive headers such as `Authorization` are partially redacted in the response for security purposes.
+:::
+
+## Endpoint
+
+```
+https://api.marketdata.app/headers/
+```
+#### Method
+```
+GET
+```
+## Request Example
+
+<Tabs>
+<TabItem value="HTTP" label="HTTP" default>
+
+**GET** [https://api.marketdata.app/headers/](https://api.marketdata.app/headers/)
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
+```js title="headersCheck.js"
+fetch("https://api.marketdata.app/headers/")
+  .then((res) => res.json())
+  .then((json) => console.log(json))
+  .catch((err) => console.log(err));
+```
+
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```python title="headersCheck.py"
+import requests
+
+url = "https://api.marketdata.app/headers/"
+response = requests.get(url)
+
+print(response.text)
+```
+
+</TabItem>
+</Tabs>
+
+## Response Example
+
+```json
+{
+    "accept": "*/*",
+    "accept-encoding": "gzip",
+    "authorization": "Bearer *******************************************************YKT0",
+    "cache-control": "no-cache",
+    "cf-connecting-ip": "132.43.100.7",
+    "cf-ipcountry": "US",
+    "cf-ray": "85bc0c2bef389lo9",
+    "cf-visitor": "{\"scheme\":\"https\"}",
+    "connection": "Keep-Alive",
+    "host": "api.marketdata.app",
+    "postman-token": "09efc901-97q5-46h0-930a-7618d910b9f8",
+    "user-agent": "PostmanRuntime/7.36.3",
+    "x-forwarded-proto": "https",
+    "x-real-ip": "53.43.221.49"
+}
+```
+
+## Response Attributes
+
+<Tabs>
+<TabItem value="Success" label="Success" default>
+
+- **Headers** `object`
+
+  A JSON object representing the headers received from the user's request. This object includes standard and custom headers along with their respective values.
+</TabItem>
+<TabItem value="Error" label="Error">
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+</TabItem>
+</Tabs>
+
+This endpoint is particularly useful for debugging issues related to authentication by allowing users to see exactly what headers are being sent to the API.
