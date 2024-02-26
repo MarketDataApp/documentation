@@ -16,59 +16,60 @@ We highly encourage users with mission critical applications to have a backup pr
 
 ## How To Confirm Downtime
 
-We utilize the service UptimeRobot to independently monitor our real-time and historical APIs and the results of this monitoring is made available to the public at our [status page](https://stats.uptimerobot.com/6Kv3zIow0A).
+We utilize the service UptimeRobot to independently monitor our real-time and historical APIs and the results of this monitoring is made available to the public at our [status page](https://www.marketdata.app/status/).
 
-- Status Page: [https://stats.uptimerobot.com/6Kv3zIow0A](https://stats.uptimerobot.com/6Kv3zIow0A)
+- Status Page: [https://www.marketdata.app/status/](https://www.marketdata.app/status/)
 
 ### Confirm Downtime Programmatically
 
-UptimeRobot offers a [JSON file](https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A) that is updated every 5 minutes with the uptime status of each of our APIs. If you need to monitor the uptime status of our API, we encourage you to use this file.
+Use the [/utilities/status/ endpoint](/api/utilities/status) to confirm the status of all Market Data services, including our APIs. This endpoint will remain online during outages and will a JSON response that includes the status of all Market Data services. 
 
-- JSON Status File: [https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A](https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A)
+:::tip
+This endpoint is ideal to allow for automatic switching between Market Data and your backup provider.
+:::
 
 <Tabs>
-<TabItem value="Bash" label="Bash" default>
-
-```bash title="status.sh"
-
-curl -s "https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A" | \
-awk -F',' '/"monitorId":787721652/ || /"monitorId":790800599/ {getline; if($0 ~ /"statusClass":"success"/) print "Online"; else print "Offline"}'
-
-```
-
-</TabItem>
 <TabItem value="NodeJS" label="NodeJS">
 
 ```js title="status.js"
-const https = require("https");
+// Importing the required library
+const axios = require('axios');
 
-const url = "https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A";
+// URL to the new JSON data
+const url = "https://api.marketdata.app/status/";
 
-https
-  .get(url, (response) => {
-    let data = "";
+// Service names for Historical Data API and Real-time Data API
+const historicalDataApiName = "Historical Data API";
+const realTimeDataApiName = "Real-time Data API";
 
-    response.on("data", (chunk) => {
-      data += chunk;
-    });
+// Function to check the status of the given service name
+async function checkApiStatus(serviceName) {
+    try {
+        const response = await axios.get(url);
+        const jsonData = response.data;
 
-    response.on("end", () => {
-      const jsonData = JSON.parse(data);
-      jsonData.psp.monitors.forEach((monitor) => {
-        if (
-          monitor.monitorId === 787721652 ||
-          monitor.monitorId === 790800599
-        ) {
-          const status =
-            monitor.statusClass === "success" ? "Online" : "Offline";
-          console.log(`${monitor.name}: ${status}`);
+        if (jsonData.service.includes(serviceName)) {
+            const index = jsonData.service.indexOf(serviceName);
+            return jsonData.online[index] ? "Online" : "Offline";
+        } else {
+            return "Service name not found";
         }
-      });
-    });
-  })
-  .on("error", (err) => {
-    console.log("Error:", err.message);
-  });
+    } catch (error) {
+        console.error("Error fetching API status:", error);
+        return "Failed to fetch API status";
+    }
+}
+
+// Checking the status of Historical Data API and Real-time Data API
+async function checkStatuses() {
+    const historicalStatus = await checkApiStatus(historicalDataApiName);
+    const realTimeStatus = await checkApiStatus(realTimeDataApiName);
+
+    console.log(`Historical Data API: ${historicalStatus}`);
+    console.log(`Real-time Data API: ${realTimeStatus}`);
+}
+
+checkStatuses();
 ```
 
 </TabItem>
@@ -78,25 +79,28 @@ https
 # Importing the required library
 import requests
 
-# URL to the JSON data
-url = "https://stats.uptimerobot.com/api/getMonitorList/6Kv3zIow0A"
+# URL to the new JSON data
+url = "https://api.marketdata.app/status/"
 json_data = requests.get(url).json()
 
-# Monitor IDs for Historical Data API and Real-time Data API
-historical_data_api_id = 787721652
-real_time_data_api_id = 790800599
+# Service names for Historical Data API and Real-time Data API
+historical_data_api_name = "Historical Data API"
+real_time_data_api_name = "Real-time Data API"
 
-# Function to check the status of the given monitor ID
-def check_api_status(monitor_id):
-    for monitor in json_data["psp"]["monitors"]:
-        if monitor["monitorId"] == monitor_id:
-            return "Online" if monitor["statusClass"] == "success" else "Offline"
+# Function to check the status of the given service name
+def check_api_status(service_name):
+    if service_name in json_data["service"]:
+        index = json_data["service"].index(service_name)
+        return "Online" if json_data["online"][index] else "Offline"
+    else:
+        return "Service name not found"
 
 # Checking the status of Historical Data API and Real-time Data API
-historical_status = check_api_status(historical_data_api_id)
-real_time_status = check_api_status(real_time_data_api_id)
+historical_status = check_api_status(historical_data_api_name)
+real_time_status = check_api_status(real_time_data_api_name)
 
-historical_status, real_time_status
+print(f"Historical Data API: {historical_status}")
+print(f"Real-time Data API: {real_time_status}")
 ```
 
 </TabItem>
