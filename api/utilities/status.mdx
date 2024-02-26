@@ -1,0 +1,114 @@
+---
+title: API Status tg n
+sidebar_position: 1
+---
+
+Check the current status of Market Data services and historical uptime. The status of the Market Data API is updated every 5 minutes. Historical uptime is available for the last 30 and 90 days.
+
+:::tip
+This endpoint will continue to respond with the current status of the Market Data API, even if the API is offline. If the API is offline, the response will include the last known status and uptime percentages. This endpoint is public and does not require a token.
+:::
+
+## Endpoint
+
+```
+https://api.marketdata.app/status/
+```
+#### Method
+```
+GET
+```
+## Request Example
+
+<Tabs>
+<TabItem value="HTTP" label="HTTP" default>
+
+**GET** [https://api.marketdata.app/status/](https://api.marketdata.app/status/)
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
+```js title="statusCheck.js"
+fetch("https://api.marketdata.app/status/")
+  .then((res) => res.json())
+  .then((json) => console.log(json))
+  .catch((err) => console.log(err));
+```
+
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```python title="statusCheck.py"
+import requests
+
+url = "https://api.marketdata.app/status/"
+response = requests.get(url)
+
+print(response.text)
+```
+
+</TabItem>
+
+</Tabs>
+
+## Response Example
+
+```json
+{
+  "s": "ok",
+  "service": ["Customer Dashboard", "Historical Data API", "Real-time Data API", "Website"],
+  "status": ["online", "online", "online", "online"],
+  "online": [true, true, true, true],
+  "uptimePct30d": [1, 0.99769, 0.99804, 1],
+  "uptimePct90d": [1, 0.99866, 0.99919, 1],
+  "updated": [1708972840, 1708972840, 1708972840, 1708972840]
+}
+```
+
+## Response Attributes
+
+<Tabs>
+<TabItem value="Success" label="Success" default>
+
+- **s** `string`
+
+  Will always be `ok` when the status information is successfully retrieved.
+
+- **service** `array[string]`
+
+  The list of services being monitored.
+
+- **status** `array[string]`
+
+  The current status of each service (`online` or `offline`).
+
+- **online** `array[boolean]`
+
+  Boolean indicators for the online status of each service.
+
+- **uptimePct30d** `array[number]`
+
+  The uptime percentage of each service over the last 30 days.
+
+- **uptimePct90d** `array[number]`
+
+  The uptime percentage of each service over the last 90 days.
+
+- **updated** `array[date]`
+
+  The timestamp of the last update for each service's status.
+
+</TabItem>
+<TabItem value="Error" label="Error">
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+</TabItem>
+</Tabs>
+
+For more details on the API's status, visit the [Market Data API Status Page](https://www.marketdata.app/status/).
