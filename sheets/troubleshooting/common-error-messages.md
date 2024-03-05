@@ -9,6 +9,8 @@ From time to time you may encounter different error messages while using the Goo
 
 Sometimes you may get an error when you open your spreadsheet. These errors are usually related to Add-on authorization issues.
 
+- `#NAME?` - This error in your formulas indicates the Add-on is not loaded properly in the current sheet. Open the sidebar in Extensions > Market Data > Start to load the Add-on in the current sheet.
+- `Error: Unable to start a Market Data session with sidebar closed.` - This error occurs when you first open your sheet for the day. Open the sidebar in Extensions > Market Data > Start. Refresh your data using one of the refresh options provided.
 - `ScriptError: Authorization is required to perform that action.` - The Market Data Add-on is not installed correctly in this spreadsheet or in your Google account. This typically occurs when customers are logged into multiple Google accounts at the same time.
 
 ## Errors in Market Data Sidebar
@@ -21,7 +23,13 @@ The Market Data sidebar can detect service outages and other problems with your 
 
 ## Errors in Formulas
 
-Formulas will give errors in their output due for three reasons: (1) incorrect user input, (2) problems or issues with Market Data or your Market Data account, and (3) limits or throttling placed by Google on your Google account. You can see the complete list of error messages for each category below:
+Formulas will give errors in their output due to three reasons: 
+
+1. Incorrect user input
+2. Problems or issues with Market Data or your Market Data account
+3. Limits or throttling placed by Google on your Google account. 
+
+You can see the complete list of error messages for each category below:
 
 ### Incorrect User Input
 

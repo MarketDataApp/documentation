@@ -1,6 +1,6 @@
 ---
 title: Dates and Times
-sidebar_position: 6
+sidebar_position: 7
 ---
 
 All Market Data formulas support advanced date-handling features to allow you to work with dates in a way that works best for your spreadsheet. Formulas will accept any of the following date formats:

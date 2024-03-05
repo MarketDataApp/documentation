@@ -300,6 +300,52 @@ Expiration sets the expiration parameter for the OptionChainRequest. This method
   This method returns a pointer to the OptionChainRequest instance it was called on. This allows for method chaining. If the receiver \(\*OptionChainRequest\) is nil, it returns nil to prevent a panic.
 
 
+<a name="OptionChainRequest.MaxAsk"></a>
+### MaxAsk
+
+```go
+func (ocr *OptionChainRequest) MaxAsk(maxAsk float64) *OptionChainRequest
+```
+
+MaxAsk sets the MaxAsk parameter for the OptionChainRequest. This method is used to specify the maximum ask price for options to be included in the option chain. It modifies the optionParams field of the OptionChainRequest instance to store the maximum ask price value.
+
+#### Parameters
+
+- `float64`
+
+  A float64 representing the maximum ask price to be included in the result.
+
+
+#### Returns
+
+- `*OptionChainRequest`
+
+  This method returns a pointer to the OptionChainRequest instance it was called on. This allows for method chaining. If the receiver \(\*OptionChainRequest\) is nil, it returns nil to prevent a panic.
+
+
+<a name="OptionChainRequest.MaxBid"></a>
+### MaxBid
+
+```go
+func (ocr *OptionChainRequest) MaxBid(maxBid float64) *OptionChainRequest
+```
+
+MaxBid sets the MaxBid parameter for the OptionChainRequest. This method is used to specify the maximum bid price for options to be included in the option chain. It modifies the optionParams field of the OptionChainRequest instance to store the maximum bid price value.
+
+#### Parameters
+
+- `float64`
+
+  A float64 representing the maximum bid price to be included in the result.
+
+
+#### Returns
+
+- `*OptionChainRequest`
+
+  This method returns a pointer to the OptionChainRequest instance it was called on. This allows for method chaining. If the receiver \(\*OptionChainRequest\) is nil, it returns nil to prevent a panic.
+
+
 <a name="OptionChainRequest.MaxBidAskSpread"></a>
 ### MaxBidAskSpread
 
@@ -337,6 +383,52 @@ MaxBidAskSpreadPct sets the MaxBidAskSpreadPct parameter for the OptionChainRequ
 - `float64`
 
   A float64 representing the maximum bid\-ask spread percentage to be included in the result.
+
+
+#### Returns
+
+- `*OptionChainRequest`
+
+  This method returns a pointer to the OptionChainRequest instance it was called on. This allows for method chaining. If the receiver \(\*OptionChainRequest\) is nil, it returns nil to prevent a panic.
+
+
+<a name="OptionChainRequest.MinAsk"></a>
+### MinAsk
+
+```go
+func (ocr *OptionChainRequest) MinAsk(minAsk float64) *OptionChainRequest
+```
+
+MinAsk sets the MinAsk parameter for the OptionChainRequest. This method is used to specify the minimum ask price for options to be included in the option chain. It modifies the optionParams field of the OptionChainRequest instance to store the minimum ask price value.
+
+#### Parameters
+
+- `float64`
+
+  A float64 representing the minimum ask price to be included in the result.
+
+
+#### Returns
+
+- `*OptionChainRequest`
+
+  This method returns a pointer to the OptionChainRequest instance it was called on. This allows for method chaining. If the receiver \(\*OptionChainRequest\) is nil, it returns nil to prevent a panic.
+
+
+<a name="OptionChainRequest.MinBid"></a>
+### MinBid
+
+```go
+func (ocr *OptionChainRequest) MinBid(minBid float64) *OptionChainRequest
+```
+
+MinBid sets the MinBid parameter for the OptionChainRequest. This method is used to specify the minimum bid price for options to be included in the option chain. It modifies the optionParams field of the OptionChainRequest instance to store the minimum bid price value.
+
+#### Parameters
+
+- `float64`
+
+  A float64 representing the minimum bid price to be included in the result.
 
 
 #### Returns
