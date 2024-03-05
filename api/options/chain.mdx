@@ -278,14 +278,6 @@ func ExampleOptionChainRequest() {
 
   Limit the option chain to options with an ask price less than or equal to the `number` provided.
 
-- **minOpenInterest** `number`
-
-  Limit the option chain to options with an open interest greater than or equal to the `number` provided. Can be combined with `minVolume` and `minLiquidity` to further filter.
-
-- **minVolume** `number`
-
-  Limit the option chain to options with an volume transacted greater than or equal to the `number` provided.
-
 - **maxBidAskSpread** `number`
 
   Limit the option chain to options with a bid-ask spread less than or equal to the `number` provided.
@@ -293,6 +285,14 @@ func ExampleOptionChainRequest() {
 - **maxBidAskSpreadPct** `number`
 
   Limit the option chain to options with a bid-ask spread less than or equal to the `percent` provided (relative to the underlying). For example, a value of `0.5%` would exclude all options trading with a bid-ask spread greater than $1.00 in an underlying that trades at $200.
+
+- **minOpenInterest** `number`
+
+  Limit the option chain to options with an open interest greater than or equal to the `number` provided.
+
+- **minVolume** `number`
+
+  Limit the option chain to options with an volume transacted greater than or equal to the `number` provided.
 
 </TabItem>
 </Tabs>
