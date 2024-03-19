@@ -8,7 +8,7 @@ The `feed` parameter allows the user to modify the data feed used for the API's 
 Our API offers two types of data feeds: `live` and `cached`. These options are designed to meet diverse user needs, balancing between the immediacy of data and cost efficiency. Below is a detailed overview of each feed type, including examples and use-cases to help you choose the best option for your requirements.
 
 :::info Premium Parameter
-This parameter can only be used with paid plans. Free plans or trial plans do not have the ability to control their data feed.
+This parameter can only be used with paid plans. Free plans and trial plans do not have the ability to control their data feed.
 :::
 
 
@@ -60,7 +60,6 @@ This query retrieves data from our cache, offering an affordable way to gather e
 | **Data Timeliness** | Real-time, up-to-the-second data | Data could be seconds to days old |
 | **Pricing**         | 1 credit per symbol with quote data | 1 credit per request, regardless of symbol count |
 | **Ideal Use-Case** | Time-sensitive decisions requiring the latest data | Historical data analysis or when needing large volumes of data at lower cost |
-| **Access**         | Paid plans only                 | Free and trial plans                |
 | **Default Option** | Yes (if `feed` parameter is omitted) | No (must specify `feed=cached`) |
 
 - **Opt for the `live` feed** when you require the most current data for each symbol, and the immediate freshness of the data justifies the additional credits.
