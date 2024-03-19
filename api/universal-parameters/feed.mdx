@@ -3,6 +3,8 @@ title: Data Feed tg p
 sidebar_position: 9
 ---
 
+The `feed` parameter allows the user to modify the data feed used for the API's response, forcing it to use cached data.
+
 Our API offers two types of data feeds: `live` and `cached`. These options are designed to meet diverse user needs, balancing between the immediacy of data and cost efficiency. Below is a detailed overview of each feed type, including examples and use-cases to help you choose the best option for your requirements.
 
 :::info Premium Parameter
@@ -51,7 +53,15 @@ GET https://api.marketdata.app/v1/options/chain/SPY/?feed=cached
 
 This query retrieves data from our cache, offering an affordable way to gather extensive data with a single credit.
 
-## Choosing Your Feed
+## Feed Comparison
+
+| Feature         | Live Feed                       | Cached Feed                    |
+|-----------------|---------------------------------|--------------------------------|
+| **Data Timeliness** | Real-time, up-to-the-second data | Data could be seconds to days old |
+| **Pricing**         | 1 credit per symbol with quote data | 1 credit per request, regardless of symbol count |
+| **Ideal Use-Case** | Time-sensitive decisions requiring the latest data | Historical data analysis or when needing large volumes of data at lower cost |
+| **Access**         | Paid plans only                 | Free and trial plans                |
+| **Default Option** | Yes (if `feed` parameter is omitted) | No (must specify `feed=cached`) |
 
 - **Opt for the `live` feed** when you require the most current data for each symbol, and the immediate freshness of the data justifies the additional credits.
 - **Select the `cached` feed** for bulk data retrieval or when working with a larger set of symbols, to capitalize on the cost efficiency of retrieving extensive data at a lower price.
