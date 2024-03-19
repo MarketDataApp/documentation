@@ -11,7 +11,6 @@ Our API offers two types of data feeds: `live` and `cached`. These options are d
 This parameter can only be used with paid plans. Free plans and trial plans do not have the ability to control their data feed.
 :::
 
-
 ## Live Feed
 
 The `live` feed provides real-time data, delivering the most current market information available. This option is ideal for scenarios requiring the latest data for immediate decision-making.
@@ -52,6 +51,13 @@ GET https://api.marketdata.app/v1/options/chain/SPY/?feed=cached
 ```
 
 This query retrieves data from our cache, offering an affordable way to gather extensive data with a single credit.
+
+### Cached Feed Response Codes
+
+When the `feed=cached` parameter is added, the API's response codes are modified slightly. You will no longer get `200 OK` responses, but instead 203 and 204 responses:
+
+- `203 NON-AUTHORITATIVE INFORMATION` - This response indicates the response was successful and served from our cache server. You can treat this the same as a 200 response.
+- `204 NO CONTENT` - This response indicates that the request was correct and would ordinarly return a success response, but our caching server does not have any cache data for the symbol requested. Make a live request to fetch real-time data for this symbol.
 
 ## Feed Comparison
 
