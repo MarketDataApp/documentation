@@ -49,6 +49,8 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
     - "volume" – The number of shares traded.
     - "all" – Returns all values.
     - "symbol" - The ticker symbol of the stock. _Only returned when using a bulk candles formula._ 
+    - "adjusted" - Adjust intraday data for splits. 
+    - "unadjusted" - Do not adjust daily data for splits.
 
   - **quote attributes** _(OPTIONAL – "mid" by default)_ Use one of the following attributes when requesting a quote:
     - "mid", "mark" – The midpoint price of the stock.
