@@ -1,0 +1,180 @@
+---
+title: Candles tg n
+sidebar_position: 1
+---
+
+Get historical price candles for a mutual fund.
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+## Endpoint
+```
+https://api.marketdata.app/v1/funds/candles/{resolution}/{symbol}/
+```
+#### Method
+```
+GET
+```
+## Request Example
+
+<Tabs>
+<TabItem value="HTTP" label="HTTP" default>
+
+**GET** [https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-12-31](https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-12-31)
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
+```js title="fundCandles.js"
+fetch(
+  "https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-12-31"
+)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+```
+
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```python title="fundCandles.py"
+import requests
+
+url = "https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-12-31"
+
+response = requests.request("GET", url)
+
+print(response.text)
+```
+</TabItem>
+<TabItem value="Go" label="Go">
+
+```go title="fundCandles.go"
+
+import (
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func ExampleFundCandlesRequest() {
+	candles, err := FundCandles().Resolution("D").Symbol("VFINX").From("2020-01-01").To("2020-12-31").Get()
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+
+	for _, candle := range candles {
+		fmt.Println(candle)
+	}
+}
+
+```
+</TabItem>
+</Tabs>
+
+## Response Example
+
+```json
+{
+  "s": "ok",
+  "c": [217.68, 221.03, 219.89],
+  "h": [222.49, 221.5, 220.94],
+  "l": [217.19, 217.1402, 218.83],
+  "o": [221.03, 218.55, 220],
+  "t": [1569297600, 1569384000, 1569470400],
+  "v": [33463820, 24018876, 20730608]
+}
+```
+
+## Request Parameters
+
+<Tabs>
+<TabItem value="required" label="Required" default>
+
+- **resolution** `string`
+
+  The duration of each candle.
+
+  - Daily Resolutions: (`daily`, `D`, `1D`, `2D`, ...)
+  - Weekly Resolutions: (`weekly`, `W`, `1W`, `2W`, ...)
+  - Monthly Resolutions: (`monthly`, `M`, `1M`, `2M`, ...)
+  - Yearly Resolutions:(`yearly`, `Y`, `1Y`, `2Y`, ...)
+
+- **symbol** `string`
+
+  The mutual fund's ticker symbol.
+
+- **from** `date`
+
+  The leftmost candle on a chart (inclusive). If you use `countback`, `to` is not required. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+
+- **to** `date`
+
+  The rightmost candle on a chart (inclusive). Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+
+- **countback** `number`
+
+  Will fetch a number of candles before (to the left of) `to`. If you use `from`, `countback` is not required.
+
+</TabItem>
+</Tabs>
+
+## Response Attributes
+
+<Tabs>
+<TabItem value="Success" label="Success" default>
+
+- **s** `string`
+
+  ll always be `ok` when there is data for the candles requested.
+
+- **o** `array[number]`
+
+  Open price.
+
+- **h** `array[number]`
+
+  High price.
+
+- **l** `array[number]`
+
+  Low price.
+
+- **c** `array[number]`
+
+  Close price.
+
+- **t** `array[number]`
+
+  Candle time (Unix timestamp, Eastern Time Zone). Daily, weekly, monthly, yearly candles are returned without times.
+
+</TabItem>
+<TabItem value="NoData" label="No Data">
+
+- **s** `string`
+
+  Status will be `no_data` if no candles are found for the request.
+
+- **nextTime** `number` optional
+
+  Unix time of the next quote if there is no data in the requested period, but there is data in a subsequent period.
+
+</TabItem>
+<TabItem value="Error" label="Error">
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+</TabItem>
+</Tabs>
+
