@@ -1,6 +1,6 @@
 ---
 title: Billing Portal
-sidebar_position: 9
+sidebar_position: 10
 ---
 
 For heightened security, Market Data uses an independent third-party billing system to process your transactions. We do not store your credit card information and we do not have access to your billing details. Customers can manage their own subscriptions and billing details via the [Billing Portal](https://cc.payproglobal.com/Customer/Account/Login). 
