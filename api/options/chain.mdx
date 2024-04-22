@@ -292,7 +292,7 @@ func ExampleOptionChainRequest() {
 
 - **minVolume** `number`
 
-  Limit the option chain to options with an volume transacted greater than or equal to the `number` provided.
+  Limit the option chain to options with a volume transacted greater than or equal to the `number` provided.
 
 </TabItem>
 </Tabs>
@@ -442,6 +442,19 @@ func ExampleOptionChainRequest() {
 </TabItem>
 </Tabs>
 
-## Notes
+## Option Chain Endpoint Pricing
 
-- The optionchain endpoint will consume 1 request for each symbol returned in the response.
+The cost of using the option chain API endpoint depends on the type of data feed you choose and your usage pattern. Here's a breakdown of the pricing:
+
+| Data Feed Type     | Cost Basis                | Credits Required per Unit |
+|--------------------|---------------------------|---------------------------|
+| Real-Time Feed     | Per option symbol         | 1 credit                  |
+| Cached Feed        | Per API call              | 1 credit                  |
+
+### Examples
+
+1. **Real-Time Feed Usage**
+   - If you query all strikes and all expirations for SPX (which has 22,718 total option contracts) using the Real-Time Feed, it will cost you 22,718 credits.
+
+2. **Cached Feed Usage**
+   - A single API call to SPX using the Cached Feed, regardless of the number of option symbols queried, will cost you 1 credit.

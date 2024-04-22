@@ -17,7 +17,9 @@ The `live` feed provides real-time data, delivering the most current market info
 
 ### Pricing for Live Feed
 
-- **1 credit per symbol** included in the response that has quote data (bid/ask/mid/last price).
+- Quotes: **1 credit per symbol** included in the response that has quote data (bid/ask/mid/last price).
+- Candles: **1 credit per 10,000 candles** included in the response.
+- Other Endpoints: **1 credit per response**.
 
 ### Requesting Live Data
 

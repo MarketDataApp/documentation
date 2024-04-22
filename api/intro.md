@@ -22,10 +22,11 @@ Our endpoints have **lots of optional parameters** to allow users to sort and fi
 
 #### Get Started Quick — No Registration Required!
 
-You can try stock, option, and index endpoints with several different symbols that are unlocked and require no authorization token. 
+You can try stock, option, index, and mutual fund endpoints with several different symbols that are unlocked and require no authorization token. That means these symbols can be used throughout our API with no registration required!
 
-- Try any stock endpoint with **AAPL**, no registration required.
-- Try any option endpoint with any AAPL contract, for example: **AAPL250117C00150000**. No registration required.
-- Try any index endpoint using **VIX**, no registration required.
+- Stock endpoints: Use **AAPL**.
+- Options endpoints: Use any AAPL contract, for example: **AAPL250117C00150000**.
+- Index endpoints: Use **VIX**.
+- Mutual fund endpoints: Use **VFINX**.
 
-Once you would like to experiment with other symbols, [register a free account](https://www.marketdata.app/signup/) (no credit card required) and you will get 100 free requests per day. Make the decision to pay only after making a complete trial of our API.
+Once you would like to experiment with other symbols, [register a free account](https://www.marketdata.app/signup/) (no credit card required) and you be able to choose a free trial. After your trial ends, if you decide not to subscribe, you will still get 100 free requests per day. Make the decision to pay only after making a complete trial of our API.
