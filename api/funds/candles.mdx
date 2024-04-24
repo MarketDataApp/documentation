@@ -25,14 +25,14 @@ GET
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-**GET** [https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-12-31](https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-12-31)
+**GET** [https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-01-10](https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-01-10)
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
 
 ```js title="fundCandles.js"
 fetch(
-  "https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-12-31"
+  "https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-01-10"
 )
   .then((res) => {
     console.log(res);
@@ -49,7 +49,7 @@ fetch(
 ```python title="fundCandles.py"
 import requests
 
-url = "https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-12-31"
+url = "https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-01-10"
 
 response = requests.request("GET", url)
 
@@ -67,7 +67,7 @@ import (
 )
 
 func ExampleFundCandlesRequest() {
-	candles, err := FundCandles().Resolution("D").Symbol("VFINX").From("2020-01-01").To("2020-12-31").Get()
+	candles, err := FundCandles().Resolution("D").Symbol("VFINX").From("2020-01-01").To("2020-01-10").Get()
 	if err != nil {
 		fmt.Print(err)
 		return
@@ -86,13 +86,12 @@ func ExampleFundCandlesRequest() {
 
 ```json
 {
-  "s": "ok",
-  "c": [217.68, 221.03, 219.89],
-  "h": [222.49, 221.5, 220.94],
-  "l": [217.19, 217.1402, 218.83],
-  "o": [221.03, 218.55, 220],
-  "t": [1569297600, 1569384000, 1569470400],
-  "v": [33463820, 24018876, 20730608]
+  "s":"ok",
+  "t":[1577941200,1578027600,1578286800,1578373200,1578459600,1578546000,1578632400],
+  "o":[300.69,298.6,299.65,298.84,300.32,302.39,301.53],
+  "h":[300.69,298.6,299.65,298.84,300.32,302.39,301.53],
+  "l":[300.69,298.6,299.65,298.84,300.32,302.39,301.53],
+  "c":[300.69,298.6,299.65,298.84,300.32,302.39,301.53]
 }
 ```
 
