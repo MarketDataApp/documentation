@@ -195,10 +195,6 @@ func ExampleOptionChainRequest() {
 
   Limit the option chain to expiration dates before to (not inclusive). Should be combined with from to create a range. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`. If omitted all expirations will be returned.
 
-  :::caution
-  The `from` and `to` parameters are not supported for real-time quotes. If you are requesting a real-time quote you must request a single expiration date.
-  :::
-
 - **month** `number`
 
   Limit the option chain to options that expire in a specific month (**1-12**).
@@ -218,6 +214,10 @@ func ExampleOptionChainRequest() {
 - **quarterly** `boolean`
 
   Limit the option chain to quarterly expirations by setting quarterly to `true` and omitting the `weekly` and `monthly` parameters. If set to `false`, no quarterly expirations will be returned.
+
+:::caution
+The `from`, `to`, `month`, `year`, `weekly`, `monthly`, and `quarterly` filtering parameters are not yet supported for real-time quotes. If you are requesting a real-time quote you must request a single expiration date using `expiration=YYYY-MM-DD` or request all expirations using `expiration=all`.
+:::
 
 - **nonstandard** `boolean`
 
