@@ -88,7 +88,7 @@ These methods are used to send the request in different formats or retrieve the 
 
 
 ```go
-vix, err := IndexCandles().Symbol("VIX").Resolution("D").From("2022-01-01").To("2022-01-05").Get()
+vix, err := IndexCandles().Symbol("VIX").Resolution("D").From("2024-01-01").To("2024-01-05").Get()
 if err != nil {
 	println("Error retrieving VIX index candles:", err.Error())
 	return
@@ -102,9 +102,10 @@ for _, candle := range vix {
 #### Output
 
 ```
-Candle{Date: 2022-01-03, Open: 17.6, High: 18.54, Low: 16.56, Close: 16.6}
-Candle{Date: 2022-01-04, Open: 16.57, High: 17.81, Low: 16.34, Close: 16.91}
-Candle{Date: 2022-01-05, Open: 17.07, High: 20.17, Low: 16.58, Close: 19.73}
+Candle{Date: 2024-01-02, Open: 13.21, High: 14.23, Low: 13.1, Close: 13.2}
+Candle{Date: 2024-01-03, Open: 13.38, High: 14.22, Low: 13.36, Close: 14.04}
+Candle{Date: 2024-01-04, Open: 13.97, High: 14.2, Low: 13.64, Close: 14.13}
+Candle{Date: 2024-01-05, Open: 14.24, High: 14.58, Low: 13.29, Close: 13.35}
 ```
 
 </TabItem>
@@ -115,7 +116,7 @@ Candle{Date: 2022-01-05, Open: 17.07, High: 20.17, Low: 16.58, Close: 19.73}
 
 
 ```go
-vix, err := IndexCandles().Symbol("VIX").Resolution("D").To("2022-01-05").Countback(3).Packed()
+vix, err := IndexCandles().Symbol("VIX").Resolution("D").From("2024-01-01").To("2024-01-05").Packed()
 if err != nil {
 	println("Error retrieving VIX index candles:", err.Error())
 	return
@@ -126,7 +127,7 @@ fmt.Println(vix)
 #### Output
 
 ```
-IndicesCandlesResponse{Time: [1641186000 1641272400 1641358800], Open: [17.6 16.57 17.07], High: [18.54 17.81 20.17], Low: [16.56 16.34 16.58], Close: [16.6 16.91 19.73]}
+IndicesCandlesResponse{Time: [1704171600 1704258000 1704344400 1704430800], Open: [13.21 13.38 13.97 14.24], High: [14.23 14.22 14.2 14.58], Low: [13.1 13.36 13.64 13.29], Close: [13.2 14.04 14.13 13.35]}
 ```
 
 </TabItem>
@@ -137,7 +138,7 @@ IndicesCandlesResponse{Time: [1641186000 1641272400 1641358800], Open: [17.6 16.
 
 
 ```go
-vix, err := IndexCandles().Symbol("VIX").Resolution("D").From("2022-01-01").To("2022-01-05").Raw()
+vix, err := IndexCandles().Symbol("VIX").Resolution("D").From("2024-01-01").To("2024-01-05").Raw()
 if err != nil {
 	println("Error retrieving VIX index candles:", err.Error())
 	return
@@ -148,7 +149,7 @@ fmt.Println(vix)
 #### Output
 
 ```
-{"s":"ok","t":[1641186000,1641272400,1641358800],"o":[17.6,16.57,17.07],"h":[18.54,17.81,20.17],"l":[16.56,16.34,16.58],"c":[16.6,16.91,19.73]}
+{"s":"ok","t":[1704171600,1704258000,1704344400,1704430800],"o":[13.21,13.38,13.97,14.24],"h":[14.23,14.22,14.2,14.58],"l":[13.1,13.36,13.64,13.29],"c":[13.2,14.04,14.13,13.35]}
 ```
 
 </TabItem>
