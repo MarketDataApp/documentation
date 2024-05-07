@@ -3,11 +3,15 @@ title: Rate Limits
 sidebar_position: 4
 ---
 
-We enforce rate limits to ensure our API remains accessible and efficient for all users. Normally each API call consumes a single credit. However, **if the response includes more than a single symbol, it can consume multiple credits**. Often, users can navigate around a rate limit by making the most of the diverse filters we provide (e.g., instead of retrieving an entire option chain, apply specific filters to narrow down the results).
+We enforce rate limits to ensure our API remains accessible and efficient for all users. We have two types of rate limits: API credits (total requests per unit of time) and a concurrent request limit (simultaneous requests).
+
+## API Credits
+
+Normally each API call consumes a single credit. However, **if the response includes more than a single symbol, it can consume multiple credits**. Often, users can navigate around a rate limit by making the most of the diverse filters we provide (e.g. instead of retrieving an entire option chain, apply specific filters to narrow down the results).
 
 **The rate limit is a hard limit. Once the limit has been reached, you will no longer be able to make requests until the request counter resets.** Requests in excess of the rate limit will generate 429 responses.
 
-## Usage Counter Reset Time
+### Usage Counter Reset Time
 
 The usage counter for all plans with a daily limit resets at **9:30 AM Eastern Time** (NYSE opening bell). This reset timing is crucial for users to understand so they can plan their API usage efficiently without hitting the rate limit unexpectedly.
 
@@ -17,13 +21,21 @@ To handle the reset time accurately regardless of your local timezone, it's reco
 By aligning your application's timing functions with the `America/New_York` timezone, you can ensure that your usage of the API remains within the allocated rate limits, taking into account the precise reset timing at 9:30 AM Eastern Time.
 :::
 
+## Concurrent Request Limit
+
+To maintain the stability and performance of our API, we enforce a limit of no more than 50 concurrent requests across all subscription plans. This means that at any given time, you should not have more than 50 active API calls in progress. Requests in excess of the concurrency limit will generate 429 responses.
+
+To adhere to this limit, it is advisable to implement a worker or thread pool mechanism in your application that does not exceed 50 workers. Each worker should handle no more than one API request at a time. This setup helps in efficiently managing API calls without breaching the concurrent request limit and ensures fair usage among all users.
+
 ## Rate Limits By Plan
 Different plans have specific rate limits, with most plans enforcing a daily rate limit while our Commercial Plan uses a per minute rate limit.
 
-|                  | Free Forever | Starter   | Trader    | Commercial Plans |
-|------------------|--------------|-----------|-----------|------------------|
-| Daily Limit      | 100          | 10,000    | 100,000   | No Limit         |
-| Per Minute Limit | No Limit     | No Limit  | No Limit  | 60,000           |
+|                          | Free Forever | Starter   | Trader    | Commercial Plans |
+|--------------------------|--------------|-----------|-----------|------------------|
+| Daily API Credits        | 100          | 10,000    | 100,000   | No Limit         |
+| Per Minute API Credits   | No Limit     | No Limit  | No Limit  | 60,000           |
+| Concurrent Request Limit | 50           | 50        | 50        | 50               |
+
 
 #### Summary
 
