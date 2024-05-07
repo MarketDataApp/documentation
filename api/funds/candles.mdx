@@ -67,15 +67,15 @@ import (
 )
 
 func ExampleFundCandlesRequest() {
-	candles, err := FundCandles().Resolution("D").Symbol("VFINX").From("2020-01-01").To("2020-01-10").Get()
-	if err != nil {
-		fmt.Print(err)
-		return
-	}
+  fcr, err := FundCandles().Resolution("D").Symbol("VFINX").From("2023-01-01").To("2023-01-06").Get()
+  if err != nil {
+    fmt.Print(err)
+    return
+  }
 
-	for _, candle := range candles {
-		fmt.Println(candle)
-	}
+  for _, candle := range fcr {
+    fmt.Println(candle)
+  }
 }
 
 ```

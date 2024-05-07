@@ -30,6 +30,7 @@ If you believe your request is correct and you received a 4xx reply in error, pl
 - `402 PAYMENT REQUIRED` - The requested action cannot be performed with your current plan, such as attempting to access historical data with a free plan or very old historical data with a Starter plan.
 - `404 NOT FOUND` - No data exists for the requested symbol or time period. Consider trying a different symbol or timeframe.
 - `429 TOO MANY REQUESTS` - The daily request limit for your account has been exceeded. New requests will be allowed at 9:30 AM ET (opening bell).
+- `429 TOO MANY REQUESTS` - Concurrent request limit reached. You've reached the limit of 50 requests running simultaneously on our server. Please wait until they are finished to make more.
 
 ## Server Errors (5xx)
 
