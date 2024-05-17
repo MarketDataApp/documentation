@@ -18,6 +18,7 @@ Urlfetch calls are different from Market Data requests. Even if you have our Tra
 Although there is no way to determine how many urlfetch calls can be made by your account, Market Data can detect when the limit has been exceeded and will display an error message. Each of the following error messages indicate that your Google account has exceeded the urlfetch limit:
 
 - `Your Google account has exceeded the urlfetch limit.`
+- `The Add-On cannot communicate with Market Data's servers due to your Google account exceeding the daily urlfetch limit.`
 - `ScriptError: Exception: Service invoked too many times for one day: urlfetch.`
 - `Urlfetch error.`
 
