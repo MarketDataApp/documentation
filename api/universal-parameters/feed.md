@@ -8,7 +8,7 @@ The `feed` parameter allows the user to modify the data feed used for the API's 
 Our API offers two types of data feeds: `live` and `cached`. These options are designed to meet diverse user needs, balancing between the immediacy of data and cost efficiency. Below is a detailed overview of each feed type, including examples and use-cases to help you choose the best option for your requirements.
 
 :::info Premium Parameter
-This parameter can only be used with paid plans. Free plans and trial plans do not have the ability to control their data feed.
+This parameter can only be used with paid plans. Free plans and trial plans do not have the ability to control their data feed. Free plans will always recieve delayed data.
 :::
 
 ## Live Feed
@@ -18,7 +18,8 @@ The `live` feed provides real-time data, delivering the most current market info
 ### Pricing for Live Feed
 
 - Quotes: **1 credit per symbol** included in the response that has quote data (bid/ask/mid/last price).
-- Candles: **1 credit per 10,000 candles** included in the response.
+- Candles: **1 credit per 1,000 candles** included in the response.
+- Bulk Candles: **1 credit per symbol*** included in the response.
 - Other Endpoints: **1 credit per response**.
 
 ### Requesting Live Data
@@ -34,15 +35,19 @@ Both of these requests are equally valid and return the latest data for the spec
 
 ## Cached Feed
 
-The `cached` feed provides data that could be a few seconds to a few days old, offering a cost-effective solution for accessing large volumes of data. When you use cached data, there is no guarantee of how fresh the data will be.
+The `cached` feed provides data that could be a few seconds to a few days old, offering a cost-effective solution for accessing large volumes of quote data. When you use cached data, there is no guarantee of how fresh the data will be. Tickers that are popular with Market Data customers are refreshed more often.
 
 ### Pricing for Cached Feed
 
-- **1 credit per request**, regardless of the number of symbols. This makes it an economical choice for bulk data retrieval using endpoints like [Option Chain](/api/options/chain) and [Bulk Stock Quotes](/api/stocks/bulkquotes).
+- Quotes: **1 credit per request**, regardless of the number of symbols. This makes it an economical choice for bulk data retrieval using endpoints like [Option Chain](/api/options/chain) and [Bulk Stock Quotes](/api/stocks/bulkquotes).
+- Historical Quotes: Unavailable
+- Candles: Unavailable
+- Bulk Candles: Unavailable
+- Other Endpoints: Unavailable
 
 ### Use-Case for Cached Feed
 
-The `cached` feed is perfect for users who need to access historical data or analyze trends across multiple symbols without the need for immediate updates. It allows for significant cost savings, particularly when retrieving data for multiple symbols in a single request.
+The `cached` feed is perfect for users who need to access recent quote data across multiple symbols without the need for immediate pricing. It allows for significant cost savings, particularly when retrieving data for multiple symbols in a single request.
 
 ### Requesting Cached Data
 
@@ -67,7 +72,7 @@ When the `feed=cached` parameter is added, the API's response codes are modified
 |-----------------|---------------------------------|--------------------------------|
 | **Data Timeliness** | Real-time, up-to-the-second data | Data could be seconds to days old |
 | **Pricing**         | 1 credit per symbol with quote data | 1 credit per request, regardless of symbol count |
-| **Ideal Use-Case** | Time-sensitive decisions requiring the latest data | Historical data analysis or when needing large volumes of data at lower cost |
+| **Ideal Use-Case** | Time-sensitive decisions requiring the latest data | Large volumes of data at lower cost |
 | **Default Option** | Yes (if `feed` parameter is omitted) | No (must specify `feed=cached`) |
 
 - **Opt for the `live` feed** when you require the most current data for each symbol, and the immediate freshness of the data justifies the additional credits.
