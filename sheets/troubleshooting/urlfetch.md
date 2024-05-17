@@ -8,10 +8,17 @@ Urlfetch is the service that Google Add-Ons use to fetch data from an external s
 Each time Market Data recalculates the data in a cell, that will consume one call from your urlfetch limit. **Google will recalculate your spreadsheet about once per hour**, so if you use 1000 Market Data formulas in your sheet and leave your spreadsheet open for 8 hours that will consume about 8000 urlfetch calls.
 
 :::caution
-
 Urlfetch calls are different from Market Data requests. Even if you have our Trader plan and can make 100,000 requests per day, if you use a consumer (gmail.com) account, you'll only be able to make 20,000 urlfetch calls with your spreadsheet. Your urlfetch limit is set by Google and cannot be modified by Market Data.
-
 :::
+
+| Feature                  | Consumer Accounts (Gmail) | Google Workspace Accounts |
+|--------------------------|---------------------------|---------------------------|
+| **Daily Urlfetch Limit** | 20,000 urlfetch calls              | 100,000 urlfetch calls             |
+| **Typical Use Case**     | Personal use, small projects | Business use, large projects |
+| **Recalculation Impact** | Higher risk of hitting limit with frequent recalculations | Lower risk due to higher limit |
+| **Market Data Requests** | Limited by lower urlfetch quota | More flexibility with higher quota |
+| **Account Blocking**     | 24-hour block after exceeding limit | 24-hour block after exceeding limit |
+| **Strategies Needed**    | More aggressive strategies to reduce usage | Fewer strategies needed due to higher limit |
 
 ## Error Messages You May See In The Add-on Due to Urlfetch Issues
 
@@ -67,3 +74,19 @@ Use the following links to investigate what other scripts and Add-ons may be run
 #### Uninstall Unused Add-ons
 
 Unless you are 100% sure that your other add-ons don't cause excessive recalculation of your spreadsheet and don't make excessive urlfetch calls, consider uninstalling add-ons that are no longer in use.
+
+## Strategies to Increase Your Urlfetch Limit
+
+There are two main stategies you can use to increase your urlfetch limits if you cannot reduce your usage.
+
+### Switch From Gmail To Google Workspace
+
+If you are currently using a standard Gmail account and find yourself frequently hitting the urlfetch limit, consider switching to a Google Workspace account. Google Workspace accounts often come with higher quotas for various services, including urlfetch. This upgrade can provide you with the additional capacity you need to continue using Market Data without interruptions.
+
+### Use Our Add-on With Multiple Gmail Accounts
+
+Another effective strategy is to use our Sheets Add-on with multiple Gmail accounts and switch between them throughout the day. By distributing your urlfetch requests across several accounts, you can effectively increase your overall quota. This approach allows you to continue accessing Market Data without waiting for the 24-hour reset period. Make sure to log out and log in with a different Gmail account when you approach the limit on one account.
+
+:::caution
+When using our Sheets Add-on with multiple Gmail accounts, ensure that you completely log out of all Google accounts before switching to a different one. Having [multiple Google accounts open simultaneously](/sheets/troubleshooting/multiple-google-accounts) is not supported by the Sheets Add-ons and will lead to errors. Always log out and log in with the desired account to ensure smooth operation.
+:::
