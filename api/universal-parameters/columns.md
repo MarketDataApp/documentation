@@ -9,8 +9,9 @@ The columns parameter is used to limit the results of any endpoint to only the c
 
 ## Use Example
 
-    [https://api.marketdata.app/v1/stocks/quotes/AAPL/?columns=ask,bid](https://api.marketdata.app/v1/stocks/quotes/AAPL/?columns=ask,bid)
-    [https://api.marketdata.app/v1/stocks/quotes/AAPL/?columns=-mid](https://api.marketdata.app/v1/stocks/quotes/AAPL/?columns=-mid)
+```
+https://api.marketdata.app/v1/stocks/quotes/AAPL/?columns=ask,bid
+```
 
 ## Response Example
 
@@ -22,10 +23,10 @@ The columns parameter is used to limit the results of any endpoint to only the c
 
 ### string
 
-Use a list of columns names separated by commas to limit the response to just the columns requested. You may also use a minus sign in front of the column name to exclude one or more columns from the default API output.
+Use a list of columns names separated by commas to limit the response to just the columns requested.
 
 :::caution
 
-You can not include _and_ exclude columns in the same API call. The columns parameter will be ignored if both postive and negative attributes values are used in the same API call.
+When using the columns parameter the `s` status output is suppressed from the response.
 
 :::

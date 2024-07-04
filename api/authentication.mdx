@@ -31,6 +31,10 @@ Accept: application/json
 Authorization: Bearer {token}
 ```
 
+:::tip
+The curly braces around token are a placeholder for this example. Do not actually wrap your token with curly braces. 
+:::
+
 </TabItem>
 <TabItem value="Node.js" label="Node.js">
 
@@ -139,14 +143,14 @@ func main() {
 
 ## URL Parameter Authentication
 
-Add the token as a variable directly in the URL using the format ```token={token}```. For example:
+Add the token as a variable directly in the URL using the format ```token=YOUR_TOKEN_HERE```. For example:
 
 ```
 https://api.marketdata.app/v1/stocks/quotes/SPY/?token={token}
 ```
 
-:::caution
-If you associate a brokerage connection with a token, URL Parameter Authentication will be disabled for that token. Only Header Authentication will be allowed.
+:::tip
+The curly braces around token are a placeholder for this example. Do not actually wrap your token with curly braces. 
 :::
 
 ### Demo The API With No Authentication

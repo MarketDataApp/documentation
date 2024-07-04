@@ -30,7 +30,7 @@ To adhere to this limit, it is advisable to implement a worker or thread pool me
 ## Rate Limits By Plan
 Different plans have specific rate limits, with most plans enforcing a daily rate limit while our Commercial Plan uses a per minute rate limit.
 
-|                          | Free Forever | Starter   | Trader    | Commercial Plans |
+|                          | Free Forever | Starter   | Trader    | Commercial       |
 |--------------------------|--------------|-----------|-----------|------------------|
 | Daily API Credits        | 100          | 10,000    | 100,000   | No Limit         |
 | Per Minute API Credits   | No Limit     | No Limit  | No Limit  | 60,000           |
@@ -64,9 +64,9 @@ We provide the following headers in our responses to help you manage the rate li
 - Only status 200/203 responses consume requests.
 - NULL responses are not counted.
 - Error responses are not counted.
-- Responses may consume more than 1 request if the response includes prices for more than 1 symbol (e.g. an OPTIONCHAIN endpoint).
+- Requests consume more than 1 credit if the response includes prices for more than 1 symbol (i.e. options/chain or stocks/bulkquotes endpoints).
 - Responses that include more than one symbol, but do not include the **bid**, **ask**, **mid**, or **last** columns _**do not**_ consume multiple credits and are counted as a single request.
-- Certain free trial symbols like AAPL stock, AAPL options, or the VIX index do not consume requests.
+- Certain free trial symbols like AAPL stock, AAPL options, the VIX index, and the VFINX mutual fund do not consume requests.
 
 ## Strategies To Avoid Rate Limiting
 - Exclude the bid, ask, mid, and last columns from your option chain requests if the current price is not needed.
