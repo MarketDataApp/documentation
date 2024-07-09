@@ -21,9 +21,9 @@ GET
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-**GET** [https://api.marketdata.app/v1/stocks/status/AAPL/?dateformat=timestamp](https://api.marketdata.app/v1/stocks/status/AAPL/?dateformat=timestamp)
+**GET** [https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&dateformat=timestamp](https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&dateformat=timestamp)
 
-**GET** [https://api.marketdata.app/v1/stocks/status/AAPL/?date=2024-07-04&dateformat=timestamp](https://api.marketdata.app/v1/stocks/status/AAPL/?date=2024-07-24&dateformat=timestamp)
+**GET** [https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&date=2024-07-04&dateformat=timestamp](https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&date=2024-07-24&dateformat=timestamp)
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
@@ -298,7 +298,7 @@ The following represents the output for a day the market was closed due to the I
 <Tabs>
 <TabItem value="required" label="Required">
 
-- There are no required parameters for `status`. If no parameter is given, the request will return the market status for the NYSE for the current day.
+There are no required parameters for `status`. If no parameter is given, the request will return the market status for the NYSE for the current day.
 
 </TabItem>
 <TabItem value="optional" label="Optional" default>
