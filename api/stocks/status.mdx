@@ -21,16 +21,16 @@ GET
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-**GET** [https://api.marketdata.app/v1/stocks/status/AAPL/](https://api.marketdata.app/v1/stocks/status/AAPL/)
+**GET** [https://api.marketdata.app/v1/stocks/status/AAPL/?dateformat=timestamp](https://api.marketdata.app/v1/stocks/status/AAPL/?dateformat=timestamp)
 
-**GET** [https://api.marketdata.app/v1/stocks/status/AAPL/?date=2024-07-04](https://api.marketdata.app/v1/stocks/status/AAPL/?date=2024-07-24)
+**GET** [https://api.marketdata.app/v1/stocks/status/AAPL/?date=2024-07-04&dateformat=timestamp](https://api.marketdata.app/v1/stocks/status/AAPL/?date=2024-07-24&dateformat=timestamp)
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
 
 ```js title="app.js"
 fetch(
-  "https://api.marketdata.app/v1/stocks/status/?symbol=AAPL"
+  "https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&dateformat=timestamp"
 )
   .then((res) => {
     console.log(res);
@@ -39,7 +39,7 @@ fetch(
     console.log(err);
   });
 
-fetch("https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&date=2024-07-04")
+fetch("https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&date=2024-07-04&dateformat=timestamp")
   .then((res) => {
     console.log(res);
   })
@@ -54,8 +54,8 @@ fetch("https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&date=2024-07-04"
 ```python title="app.py"
 import requests
 
-url1 = "https://api.marketdata.app/v1/stocks/status/?symbol=AAPL"
-url2 = "https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&date=2024-07-04"
+url1 = "https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&dateformat=timestamp"
+url2 = "https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&date=2024-07-04&dateformat=timestamp"
 
 response1 = requests.request("GET", url1)
 response2 = requests.request("GET", url2)
@@ -108,6 +108,7 @@ func ExampleStockStatus_historical() {
 <Tabs>
 <TabItem value="Open" label="Open" default>
 
+The following represents the output a for a normal day in the middle of the trading week.
 
 ```json
 {
@@ -209,6 +210,8 @@ func ExampleStockStatus_historical() {
 ```
 </TabItem>
 <TabItem value="Closed" label="Closed">
+
+The following represents the output for a day the market was closed due to the Independence Day holiday.
 
 ```json
 {
@@ -370,7 +373,7 @@ func ExampleStockStatus_historical() {
 
   - **exchangeTime** `string`
 
-    The current time at the exchange in ISO 8601 format.
+    The current time at the exchange .
 
 - **current** `object`
 
@@ -378,7 +381,7 @@ func ExampleStockStatus_historical() {
 
   - **date** `string`
 
-    The current date in ISO 8601 format.
+    The current date .
 
   - **primary** `object`
 
@@ -398,11 +401,11 @@ func ExampleStockStatus_historical() {
 
     - **start** `string`
 
-      The start time of the session in ISO 8601 format.
+      The start time of the session .
 
     - **end** `string`
 
-      The end time of the session in ISO 8601 format.
+      The end time of the session .
 
     - **notes** `string`
 
@@ -426,11 +429,11 @@ func ExampleStockStatus_historical() {
 
     - **start** `string`
 
-      The start time of the session in ISO 8601 format.
+      The start time of the session .
 
     - **end** `string`
 
-      The end time of the session in ISO 8601 format.
+      The end time of the session .
 
     - **notes** `string`
 
@@ -454,11 +457,11 @@ func ExampleStockStatus_historical() {
 
     - **start** `string`
 
-      The start time of the session in ISO 8601 format.
+      The start time of the session .
 
     - **end** `string`
 
-      The end time of the session in ISO 8601 format.
+      The end time of the session .
 
     - **notes** `string`
 
@@ -470,7 +473,7 @@ func ExampleStockStatus_historical() {
 
   - **date** `string`
 
-    The previous date in ISO 8601 format.
+    The previous date .
 
   - **primary** `object`
 
@@ -490,11 +493,11 @@ func ExampleStockStatus_historical() {
 
     - **start** `string`
 
-      The start time of the session in ISO 8601 format.
+      The start time of the session .
 
     - **end** `string`
 
-      The end time of the session in ISO 8601 format.
+      The end time of the session .
 
     - **notes** `string`
 
@@ -518,11 +521,11 @@ func ExampleStockStatus_historical() {
 
     - **start** `string`
 
-      The start time of the session in ISO 8601 format.
+      The start time of the session .
 
     - **end** `string`
 
-      The end time of the session in ISO 8601 format.
+      The end time of the session .
 
     - **notes** `string`
 
@@ -546,11 +549,11 @@ func ExampleStockStatus_historical() {
 
     - **start** `string`
 
-      The start time of the session in ISO 8601 format.
+      The start time of the session .
 
     - **end** `string`
 
-      The end time of the session in ISO 8601 format.
+      The end time of the session .
 
     - **notes** `string`
 
@@ -562,7 +565,7 @@ func ExampleStockStatus_historical() {
 
   - **date** `string`
 
-    The next date in ISO 8601 format.
+    The next date .
 
   - **primary** `object`
 
@@ -582,11 +585,11 @@ func ExampleStockStatus_historical() {
 
     - **start** `string`
 
-      The start time of the session in ISO 8601 format.
+      The start time of the session .
 
     - **end** `string`
 
-      The end time of the session in ISO 8601 format.
+      The end time of the session .
 
     - **notes** `string`
 
@@ -610,11 +613,11 @@ func ExampleStockStatus_historical() {
 
     - **start** `string`
 
-      The start time of the session in ISO 8601 format.
+      The start time of the session .
 
     - **end** `string`
 
-      The end time of the session in ISO 8601 format.
+      The end time of the session .
 
     - **notes** `string`
 
@@ -638,11 +641,11 @@ func ExampleStockStatus_historical() {
 
     - **start** `string`
 
-      The start time of the session in ISO 8601 format.
+      The start time of the session .
 
     - **end** `string`
 
-      The end time of the session in ISO 8601 format.
+      The end time of the session .
 
     - **notes** `string`
 
