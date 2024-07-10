@@ -81,21 +81,20 @@ func ExampleStockEarningsRequest() {
 
 ```json
 {
-  "s":"ok",
-  "symbol": "AAPL",
-  "fiscalYear": 2023,
-  "fiscalQuarter": 1,
-  "date": 1672462800,
-  "reportDate": 1675314000,
-  "reportTime": "before market open",
-  "currency": "USD",
-  "reportedEPS": 1.88,
-  "estimatedEPS": 1.94,
-  "surpriseEPS": -0.06,
-  "surpriseEPSpct": -3.0928,
-  "updated": 1701690000
+  "s": "ok",
+  "symbol": ["AAPL"],
+  "fiscalYear": [2023],
+  "fiscalQuarter": [1],
+  "date": [1672462800],
+  "reportDate": [1675314000],
+  "reportTime": ["before market open"],
+  "currency": ["USD"],
+  "reportedEPS": [1.88],
+  "estimatedEPS": [1.94],
+  "surpriseEPS": [-0.06],
+  "surpriseEPSpct": [-3.0928],
+  "updated": [1701690000]
 }
-```
 
 ## Request Parameters
 
