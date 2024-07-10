@@ -1,5 +1,5 @@
 ---
-title: OPTIONLOOKUP tg n
+title: OPTIONLOOKUP
 sidebar_position: 1
 ---
 

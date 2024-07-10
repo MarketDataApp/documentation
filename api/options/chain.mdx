@@ -235,7 +235,7 @@ The `from`, `to`, `month`, `year`, `weekly`, `monthly`, and `quarterly` filterin
   - Limit the option chain to a closed interval of strikes by specifying both endpoints. (e.g. `.30-.60`)
 
   :::tip
-  Filter strikes using the aboslulte value of the delta. The values used will always return both sides of the chain (e.g. puts & calls). This means you must filter using `side` to exclude puts or calls. Delta cannot be used to filter the side of the chain, only the strikes.
+  Filter strikes using the absolute value of the delta. The values used will always return both sides of the chain (e.g. puts & calls). This means you must filter using `side` to exclude puts or calls. Delta cannot be used to filter the side of the chain, only the strikes.
   :::
 
 - **side** `string`
@@ -380,9 +380,9 @@ The `from`, `to`, `month`, `year`, `weekly`, `monthly`, and `quarterly` filterin
 
 - **intrinsicValue** `array[number]`
 
-  The instrinisc value of the option.
+  The intrinsic value of the option.
 
-- **extrnisicValue** `array[number]`
+- **extrinsicValue** `array[number]`
 
   The extrinsic value of the option.
 

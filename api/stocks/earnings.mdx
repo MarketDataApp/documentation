@@ -81,21 +81,20 @@ func ExampleStockEarningsRequest() {
 
 ```json
 {
-  "s":"ok",
-  "symbol": "AAPL",
-  "fiscalYear": 2023,
-  "fiscalQuarter": 1,
-  "date": 1672462800,
-  "reportDate": 1675314000,
-  "reportTime": "before market open",
-  "currency": "USD",
-  "reportedEPS": 1.88,
-  "estimatedEPS": 1.94,
-  "surpriseEPS": -0.06,
-  "surpriseEPSpct": -3.0928,
-  "updated": 1701690000
+  "s": "ok",
+  "symbol": ["AAPL"],
+  "fiscalYear": [2023],
+  "fiscalQuarter": [1],
+  "date": [1672462800],
+  "reportDate": [1675314000],
+  "reportTime": ["before market open"],
+  "currency": ["USD"],
+  "reportedEPS": [1.88],
+  "estimatedEPS": [1.94],
+  "surpriseEPS": [-0.06],
+  "surpriseEPSpct": [-3.0928],
+  "updated": [1701690000]
 }
-```
 
 ## Request Parameters
 
@@ -188,7 +187,7 @@ func ExampleStockEarningsRequest() {
 
 - **surpriseEPSpct** `array[number]`
 
-  The difference in percentage terms between the estimated EPS and the reported EPS.
+  The difference in percentage terms between the estimated EPS and the reported EPS, expressed as a decimal. For example, if the estimated EPS is 1.00 and the reported EPS is 1.20, the surpriseEPSpct would be 0.20 (or 20%).
 
 - **updated** `array[date]`
 
