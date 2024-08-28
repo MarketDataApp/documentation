@@ -54,10 +54,10 @@ For users working with options, take care before repeatly requesting quotes for 
 ## Headers to Manage the Rate Limit
 We provide the following headers in our responses to help you manage the rate limit and throttle your applications when necessary:
 
-- `X-Api-RateLimit-Limit`: The maximum number of requests you're permitted to make (per day for Free/Starter/Trader plans or per minute for commercial users).
-- `X-Api-RateLimit-Remaining`: The number of requests remaining in the current rate day/period.
-- `X-Api-RateLimit-Reset`: The time at which the current rate limit window resets in UTC epoch seconds.
-- `X-Api-RateLimit-Consumed`: The quantity of requests that were consumed in the current request.
+- `X-Api-Ratelimit-Limit`: The maximum number of requests you're permitted to make (per day for Free/Starter/Trader plans or per minute for commercial users).
+- `X-Api-Ratelimit-Remaining`: The number of requests remaining in the current rate day/period.
+- `X-Api-Ratelimit-Reset`: The time at which the current rate limit window resets in UTC epoch seconds.
+- `X-Api-Ratelimit-Consumed`: The quantity of requests that were consumed in the current request.
 
 ## Detailed Rate Limit Rules
 - Each successful response increases the counter by a minimum of 1 request.
