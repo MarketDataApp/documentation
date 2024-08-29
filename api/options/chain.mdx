@@ -213,15 +213,15 @@ If no expiration filters are specified, the next monthly expiration for real-tim
 
 - **weekly** `boolean`
 
-  Limit the option chain to weekly expirations by setting weekly to `true` and omitting the `monthly` and `quarterly` parameters. If set to `false`, no weekly expirations will be returned.
+  Limit the option chain to weekly expirations by setting weekly to `true`. If set to `false`, no weekly expirations will be returned.
 
 - **monthly** `boolean`
 
-  Limit the option chain to standard monthly expirations by setting monthly to `true` and omitting the `weekly` and `quarterly` parameters. If set to `false`, no monthly expirations will be returned.
+  Limit the option chain to standard monthly expirations by setting monthly to `true`. If set to `false`, no monthly expirations will be returned.
 
 - **quarterly** `boolean`
 
-  Limit the option chain to quarterly expirations by setting quarterly to `true` and omitting the `weekly` and `monthly` parameters. If set to `false`, no quarterly expirations will be returned.
+  Limit the option chain to quarterly expirations by setting quarterly to `true`. If set to `false`, no quarterly expirations will be returned.
 
 :::caution
 When combining the `weekly`, `monthly`, and `quarterly` parameters, only identical boolean values will be honored. For example, `weekly=true&monthly=false` will return an error. You must use these parameters to either include or exclude values, but you may not include and exclude at the same time. A valid use would be `monthly=true&quarterly=true` to return both monthly and quarterly expirations.
