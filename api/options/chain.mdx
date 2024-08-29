@@ -171,21 +171,29 @@ func ExampleOptionChainRequest() {
 </TabItem>
 <TabItem value="optional" label="Optional">
 
-
-
 - **date** `date`
 
-  Use to lookup a historical end of day options chain from a specific trading day. If no date is specified the chain will be the most current chain available during market hours. When the market is closed the chain will be from the last trading day. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
+  Use to lookup a historical end of day options chain from a specific trading day. If no date parameter is specified the chain will be the most current chain available during market hours. When the market is closed the chain will be from the previous session. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
+
+</TabItem>
+
+<TabItem value="expiration" label="Expiration Filters">
+
+If no expiration filters are specified, the next monthly expiration for real-time quotes or the next monthly expiration relative to the `date` parameter for historical quotes will be returned. To return the complete option chain use `expiration=all`.
 
 - **expiration** `date`
 
-  - Limits the option chain to a specific expiration date. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`. This parameter is only required if requesting a quote along with the chain.
+  - Limits the option chain to a specific expiration date. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
   - If omitted the next monthly expiration for real-time quotes or the next monthly expiration relative to the `date` parameter for historical quotes will be returned.
   - Use the keyword `all` to return the complete option chain.
 
   :::caution
   Combining the `all` parameter with large options chains such as SPX, SPY, QQQ, etc. can cause you to consume your requests very quickly. The full SPX option chain has more than 20,000 contracts. A request is consumed for each contact you request with a price in the option chain.
   :::
+
+- **dte** `number`
+
+  Days to expiry. Limit the option chain to a single expiration date closest to the `dte` provided. Should not be used together with `from` and `to`. Take care before combining with `weekly`, `monthly`, `quarterly`, since that will limit the expirations `dte` can return. If you are using the `date` parameter, dte is relative to the `date` provided.
 
 - **from** `date`
 
@@ -216,16 +224,20 @@ func ExampleOptionChainRequest() {
   Limit the option chain to quarterly expirations by setting quarterly to `true` and omitting the `weekly` and `monthly` parameters. If set to `false`, no quarterly expirations will be returned.
 
 :::caution
-The `from`, `to`, `month`, `year`, `weekly`, `monthly`, and `quarterly` filtering parameters are not yet supported for real-time quotes. If you are requesting a real-time quote you must request a single expiration date using `expiration=YYYY-MM-DD` or request all expirations using `expiration=all`.
+When combining the `weekly`, `monthly`, and `quarterly` parameters, only identical boolean values will be honored. For example, `weekly=true&monthly=false` will return an error. You must use these parameters to either include or exclude values, but you may not include and exclude at the same time. A valid use would be `monthly=true&quarterly=true` to return both monthly and quarterly expirations.
 :::
 
-- **nonstandard** `boolean`
 
-  Include non-standard contracts by nonstandard to `true`. If set to `false`, no non-standard options expirations will be returned. If no parameter is provided, the output will default to false.
+</TabItem>
 
-- **dte** `number`
+<TabItem value="strike" label="Strike Filters">
 
-  Days to expiry. Limit the option chain to a single expiration date closest to the `dte` provided. Should not be used together with `from` and `to`. Take care before combining with `weekly`, `monthly`, `quarterly`, since that will limit the expirations `dte` can return. If you are using the `date` parameter, dte is relative to the `date` provided.
+- **strike** `string`
+
+  - Limit the option chain to options with the specific strike specified. (e.g. `400`)
+  - Limit the option chain to a specific set of strikes (e.g. `400,405`)
+  - Limit the option chain to an open interval of strikes using a logical expression (e.g. `>400`)
+  - Limit the option chain to a closed interval of strikes by specifying both endpoints. (e.g. `400-410`)
 
 - **delta** `number`
 
@@ -238,21 +250,6 @@ The `from`, `to`, `month`, `year`, `weekly`, `monthly`, and `quarterly` filterin
   Filter strikes using the absolute value of the delta. The values used will always return both sides of the chain (e.g. puts & calls). This means you must filter using `side` to exclude puts or calls. Delta cannot be used to filter the side of the chain, only the strikes.
   :::
 
-- **side** `string`
-
-  Limit the option chain to either `call` or `put`. If omitted, both sides will be returned.
-
-- **range** `string`
-
-  Limit the option chain to strikes that are in the money, out of the money, at the money, or include all. If omitted all options will be returned. Valid inputs: `itm`, `otm`, `all`.
-
-- **strike** `string`
-
-  - Limit the option chain to options with the specific strike specified. (e.g. `400`)
-  - Limit the option chain to a specific set of strikes (e.g. `400,405`)
-  - Limit the option chain to an open interval of strikes using a logical expression (e.g. `>400`)
-  - Limit the option chain to a closed interval of strikes by specifying both endpoints. (e.g. `400-410`)
-
 - **strikeLimit** `number`
 
   Limit the number of total strikes returned by the option chain. For example, if a complete chain included 30 strikes and the limit was set to 10, the 20 strikes furthest from the money will be excluded from the response.
@@ -261,6 +258,14 @@ The `from`, `to`, `month`, `year`, `weekly`, `monthly`, and `quarterly` filterin
   If `strikeLimit` is combined with the `range` or `side` parameter, those parameters will be applied first. In the above example, if the range were set to `itm` (in the money) and side set to `call`, all puts and out of the money calls would be first excluded by the range parameter and then strikeLimit will return a maximum of 10 in the money calls that are closest to the money.
   If the `side` parameter has not been used but `range` has been specified, then `strikeLimit` will return the requested number of calls and puts for each side of the chain, but duplicating the number of strikes that are received.
   :::
+
+  - **range** `string`
+
+  Limit the option chain to strikes that are in the money, out of the money, at the money, or include all. If omitted all options will be returned. Valid inputs: `itm`, `otm`, `all`.
+
+</TabItem>
+
+<TabItem value="liquidity" label="Price/Liquidity Filters">
 
 - **minBid** `number`
 
@@ -295,6 +300,31 @@ The `from`, `to`, `month`, `year`, `weekly`, `monthly`, and `quarterly` filterin
   Limit the option chain to options with a volume transacted greater than or equal to the `number` provided.
 
 </TabItem>
+
+<TabItem value="otherfilters" label="Other Filters">
+
+- **nonstandard** `boolean`
+
+  Include non-standard contracts by setting `nonstandard` to true`. If set to `false`, no non-standard options expirations will be returned. If no parameter is provided, the output will default to false.
+
+- **side** `string`
+
+  Limit the option chain to either `call` or `put`. If omitted, both sides will be returned.
+
+- **am** `boolean`
+
+  Limit the option chain to A.M. expirations by setting `am` to `true`. If set to `false`, no A.M. expirations will be returned. This parameter is only applicable for index options such as SPX, NDX, etc. If no parameter is provided, both A.M. and P.M. expirations will be returned.
+
+- **pm** `boolean`
+
+  Limit the option chain to P.M. expirations by setting `pm` to `true`. If set to `false`, no P.M. expirations will be returned. This parameter is only applicable for index options such as SPX, NDX, etc. If no parameter is provided, both A.M. and P.M. expirations will be returned.
+
+:::caution
+The `am` and `pm` parameters are only applicable for index options such as SPX, NDX, etc. If they are used for stocks or ETFs, a bad parameters error will be returned.
+:::
+
+</TabItem>
+
 </Tabs>
 
 ## Response Attributes
