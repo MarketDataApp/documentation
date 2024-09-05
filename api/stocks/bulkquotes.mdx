@@ -197,6 +197,19 @@ The difference in price in percent, expressed as a decimal, compared to the clos
 </TabItem>
 </Tabs>
 
-## Notes
+## Bulk Stock Quotes Endpoint Pricing
 
-- The bulkquotes endpoint will consume one request for each symbol returned in the response.
+The cost of using the bulk stock quotes API endpoint depends on the type of data feed you choose and your usage pattern. Here's a breakdown of the pricing:
+
+| Data Feed Type     | Cost Basis                | Credits Required per Unit |
+|--------------------|---------------------------|---------------------------|
+| Real-Time Feed     | Per stock symbol          | 1 credit                  |
+| Cached Feed        | Per API call              | 1 credit                  |
+
+### Examples
+
+1. **Real-Time Feed Usage**
+   - If you query quotes for 500 different stock symbols using the Real-Time Feed, it will cost you 500 credits.
+
+2. **Cached Feed Usage**
+   - A single API call to retrieve quotes for 500 different stock symbols using the Cached Feed will cost you 1 credit.
