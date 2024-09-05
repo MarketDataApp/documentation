@@ -128,6 +128,10 @@
   text-decoration: none; /* Remove underline from links */
 }
 
+.sdk-list .sdk-item a {
+  text-decoration: none !important;
+}
+
 .sdk-item p img {
   width: auto; /* Adjust the logo size */
   height: 80px;
@@ -139,11 +143,11 @@
   background-color: #1e1e1e; /* Dark background for the items */
   color: #ffffff; /* Light text color for readability */
   border: 1px solid #3c3c3c; /* Darker border color */
+
 }
 
 [data-theme="dark"] .sdk-item a {
   color: #eb5c6d; /* Lighter link color for better visibility */
-  text-decoration: none; /* Maintain consistency with light mode links */
 }
 
 /* Target main content links inside the main container in both p and li tags */
