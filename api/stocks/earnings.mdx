@@ -81,19 +81,19 @@ func ExampleStockEarningsRequest() {
 
 ```json
 {
-  "s":"ok",
-  "symbol": "AAPL",
-  "fiscalYear": 2023,
-  "fiscalQuarter": 1,
-  "date": 1672462800,
-  "reportDate": 1675314000,
-  "reportTime": "before market open",
-  "currency": "USD",
-  "reportedEPS": 1.88,
-  "estimatedEPS": 1.94,
-  "surpriseEPS": -0.06,
-  "surpriseEPSpct": -3.0928,
-  "updated": 1701690000
+  "s": "ok",
+  "symbol": ["AAPL"],
+  "fiscalYear": [2023],
+  "fiscalQuarter": [1],
+  "date": [1672462800],
+  "reportDate": [1675314000],
+  "reportTime": ["before market open"],
+  "currency": ["USD"],
+  "reportedEPS": [1.88],
+  "estimatedEPS": [1.94],
+  "surpriseEPS": [-0.06],
+  "surpriseEPSpct": [-3.0928],
+  "updated": [1701690000]
 }
 ```
 
@@ -127,7 +127,7 @@ func ExampleStockEarningsRequest() {
 
 - **report** `datekey`
 
-  Retrieve a specific earnings report by date and quarter. Example: `2023-Q4`. This allows you to retrieve a 4th qurater value without knowing the company's specific fiscal year.
+  Retrieve a specific earnings report by date and quarter. Example: `2023-Q4`. This allows you to retrieve a 4th quarter value without knowing the company's specific fiscal year.
 
 </TabItem>
 </Tabs>
@@ -188,7 +188,7 @@ func ExampleStockEarningsRequest() {
 
 - **surpriseEPSpct** `array[number]`
 
-  The difference in percentage terms between the estimated EPS and the reported EPS.
+  The difference in percentage terms between the estimated EPS and the reported EPS, expressed as a decimal. For example, if the estimated EPS is 1.00 and the reported EPS is 1.20, the surpriseEPSpct would be 0.20 (or 20%).
 
 - **updated** `array[date]`
 

@@ -1,0 +1,672 @@
+---
+title: Status tg n
+sidebar_position: 10
+---
+
+Get the current trading status for a stock exchange or symbol. The endpoint will respond with detailed information to let you know whether a symbol is available to trade right now. Use the optional parameters to make a historical request to determine if a symbol was available to trade at a specific date or time in the past.
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+## Endpoint
+```
+https://api.marketdata.app/v1/stocks/status/
+```
+#### Method
+```
+GET
+```
+## Request Example
+
+<Tabs>
+<TabItem value="HTTP" label="HTTP" default>
+
+**GET** [https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&dateformat=timestamp](https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&dateformat=timestamp)
+
+**GET** [https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&date=2024-07-04&dateformat=timestamp](https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&date=2024-07-24&dateformat=timestamp)
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
+```js title="app.js"
+fetch(
+  "https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&dateformat=timestamp"
+)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+fetch("https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&date=2024-07-04&dateformat=timestamp")
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```python title="app.py"
+import requests
+
+url1 = "https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&dateformat=timestamp"
+url2 = "https://api.marketdata.app/v1/stocks/status/?symbol=AAPL&date=2024-07-04&dateformat=timestamp"
+
+response1 = requests.request("GET", url1)
+response2 = requests.request("GET", url2)
+
+print(response1.text)
+print(response2.text)
+```
+
+</TabItem>
+<TabItem value="Go" label="Go">
+
+```go title="stockstatus.go"
+
+import (
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func ExampleStockStatus() {
+	ess, err := api.StockStatus().Symbol("AAPL").Get()
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+
+	for _, status := range ess {
+		fmt.Println(status)
+	}
+}
+
+func ExampleStockStatus_historical() {
+	ess, err := api.StockStatus().Symbol("AAPL")Date("2024-07-04").Get()
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+
+	for _, status := range ess {
+		fmt.Println(status)
+	}
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Response Example
+
+<Tabs>
+<TabItem value="Open" label="Open" default>
+
+The following represents the output a for a normal day in the middle of the trading week.
+
+```json
+{
+  "s": "ok",
+  "status": {
+    "activeSession": "primary",
+    "status": "open",
+    "reason": "Core Trading Session",    
+    "primary": true,
+    "preTrading": false,
+    "postTrading": false,
+    "exchangeName": "New York Stock Exchange",
+    "exchangeMic": "XNYS",
+    "exchangeTz": "America/New_York",
+    "exchangeTime": "2024-07-09T11:00:00-04:00"
+  },
+  "current": {
+    "date": "2024-07-09",
+    "primary": {
+      "name": "Core Trading Session",
+      "type": "Primary Trading Session",
+      "status": "open",
+      "start": "2024-07-09T09:30:00-04:00",
+      "end": "2024-07-09T16:00:00-04:00",
+      "notes": "Market is currently open and trading as usual."
+    },
+    "preTrading": {
+      "name": "Early Trading Session",
+      "type": "Pre-Trading Session",
+      "status": "closed",
+      "start": "2024-07-09T04:00:00-04:00",
+      "end": "2024-07-09T09:30:00-04:00",
+      "notes": "Early trading is closed."
+    },
+    "postTrading": {
+      "name": "Late Trading Session",
+      "type": "Post-Trading Session",
+      "status": "upcoming",
+      "start": "2024-07-09T16:00:00-04:00",
+      "end": "2024-07-09T20:00:00-04:00",
+      "notes": "Late trading will start at 4:00 PM ET."
+    }
+  },
+  "previous": {
+    "date": "2024-07-08",
+    "primary": {
+      "name": "Core Trading Session",
+      "type": "Primary Trading Session",
+      "status": "closed",
+      "start": "2024-07-08T09:30:00-04:00",
+      "end": "2024-07-08T16:00:00-04:00",
+      "notes": "Market was open and traded as usual."
+    },
+    "preTrading": {
+      "name": "Early Trading Session",
+      "type": "Pre-Trading Session",
+      "status": "closed",
+      "start": "2024-07-08T04:00:00-04:00",
+      "end": "2024-07-08T09:30:00-04:00",
+      "notes": "Early trading ended at 9:30 AM on 07/08/2024."
+    },
+    "postTrading": {
+      "name": "Late Trading Session",
+      "type": "Post-Trading Session",
+      "status": "closed",
+      "start": "2024-07-08T16:00:00-04:00",
+      "end": "2024-07-08T20:00:00-04:00",
+      "notes": "Late trading ended at 8:00 PM on 07/08/2024."
+    }
+  },
+  "next": {
+    "date": "2024-07-10",
+    "primary": {
+      "name": "Core Trading Session",
+      "type": "Primary Trading Session",
+      "status": "upcoming",
+      "start": "2024-07-10T09:30:00-04:00",
+      "end": "2024-07-10T16:00:00-04:00",
+      "notes": "Next regular market session starts at 9:30 AM ET."
+    },
+    "preTrading": {
+      "name": "Early Trading Session",
+      "type": "Pre-Trading Session",
+      "status": "upcoming",
+      "start": "2024-07-10T04:00:00-04:00",
+      "end": "2024-07-10T09:30:00-04:00",
+      "notes": "Next early trading session starts at 4:00 AM ET."
+    },
+    "postTrading": {
+      "name": "Late Trading Session",
+      "type": "Post-Trading Session",
+      "status": "upcoming",
+      "start": "2024-07-10T16:00:00-04:00",
+      "end": "2024-07-10T20:00:00-04:00",
+      "notes": "Next late trading session starts at 4:00 PM ET."
+    }
+  }
+}
+```
+</TabItem>
+<TabItem value="Closed" label="Closed">
+
+The following represents the output for a day the market was closed due to the Independence Day holiday.
+
+```json
+{
+  "s": "ok",
+  "status": {
+    "activeSession": null,
+    "status": "closed",
+    "reason": "Market Holiday - Independence Day",    
+    "primary": false,
+    "preTrading": false,
+    "postTrading": false,
+    "exchangeName": "New York Stock Exchange",
+    "exchangeMic": "XNYS",
+    "exchangeTz": "America/New_York",
+    "exchangeTime": "2024-07-04T11:00:00-04:00"
+  },
+  "current": {
+    "date": "2024-07-04",
+    "primary": null,
+    "preTrading": null,
+    "postTrading": null
+  },
+  "previous": {
+    "date": "2024-07-03",
+    "primary": {
+      "name": "Core Trading Session",
+      "type": "Primary Trading Session",
+      "status": "closed",
+      "start": "2024-07-038T09:30:00-04:00",
+      "end": "2024-07-03T13:00:00-04:00",
+      "notes": "Market closed early - Independence Day."
+    },
+    "preTrading": {
+      "name": "Early Trading Session",
+      "type": "Pre-Trading Session",
+      "status": "closed",
+      "start": "2024-07-03T04:00:00-04:00",
+      "end": "2024-07-03T09:30:00-04:00",
+      "notes": "Early trading ended at 9:30 AM on 07/03/2024."
+    },
+    "postTrading": {
+      "name": "Late Trading Session",
+      "type": "Post-Trading Session",
+      "status": "closed",
+      "start": "2024-07-03T13:00:00-04:00",
+      "end": "2024-07-03T17:00:00-04:00",
+      "notes": "Late trading closed early - Independence Day."
+    }
+  },
+  "next": {
+    "date": "2024-07-05",
+    "primary": {
+      "name": "Core Trading Session",
+      "type": "Primary Trading Session",
+      "status": "upcoming",
+      "start": "2024-07-05T09:30:00-04:00",
+      "end": "2024-07-05T16:00:00-04:00",
+      "notes": "Next regular market session starts at 9:30 AM ET."
+    },
+    "preTrading": {
+      "name": "Early Trading Session",
+      "type": "Pre-Trading Session",
+      "status": "upcoming",
+      "start": "2024-07-05T04:00:00-04:00",
+      "end": "2024-07-05T09:30:00-04:00",
+      "notes": "Next early trading session starts at 4:00 AM ET."
+    },
+    "postTrading": {
+      "name": "Late Trading Session",
+      "type": "Post-Trading Session",
+      "status": "upcoming",
+      "start": "2024-07-05T16:00:00-04:00",
+      "end": "2024-07-05T20:00:00-04:00",
+      "notes": "Next late trading session starts at 4:00 PM ET."
+    }
+  }
+}
+```
+</TabItem>
+</Tabs>
+
+## Request Parameters
+
+<Tabs>
+<TabItem value="required" label="Required">
+
+There are no required parameters for `status`. If no parameter is given, the request will return the market status for the NYSE for the current day.
+
+</TabItem>
+<TabItem value="optional" label="Optional" default>
+
+- **symbol** `string`
+
+  Market Data will output the market status of the primary exchange where the symbol is traded.
+
+- **exchange** `string`
+
+  Market Data will output the market status of the exchange listed. Valid strings for the US include: `nyse`, `nasdaq`, `otc`. Mic codes may also be used: `xnys`, `xnas`, `otcm`.
+
+- **date** `date`
+
+  Consult the market status relative to the specified date. Accepted timestamp inputs: ISO 8601, unix, spreadsheet, relative date strings. The status will be output as if you ran the query on the date used in the input. This means the "next" key will refer to the next session after the session indicated in `date` and the previous session will be relative to the session indicated in `date`.
+
+- **symbol** `string`
+
+  Consult whether the market was open or closed on the specified date. Accepted timestamp inputs: ISO 8601, unix, spreadsheet, relative date strings.
+
+</TabItem>
+</Tabs>
+
+## Response Attributes
+
+<Tabs>
+<TabItem value="Success" label="Success" default>
+
+- **s** `string`
+
+  Will always be `ok` when the request is successful.
+
+- **status** `object`
+
+  Contains detailed information about the current market status.
+
+  - **activeSession** `string`
+
+    Indicates the current active trading session. Possible values include `primary`, `preTrading`, `postTrading`, or `null` if the market is closed.
+
+  - **status** `string`
+
+    The overall status of the market. Possible values include `open`, `closed`, or `upcoming`.
+
+  - **reason** `string`
+
+    Provides a reason for the current market status, such as `Core Trading Session` or `Market Holiday`.
+
+  - **primary** `boolean`
+
+    Indicates if the primary trading session is active.
+
+  - **preTrading** `boolean`
+
+    Indicates if the pre-trading session is active.
+
+  - **postTrading** `boolean`
+
+    Indicates if the post-trading session is active.
+
+  - **exchangeName** `string`
+
+    The name of the exchange, e.g., `New York Stock Exchange`.
+
+  - **exchangeMic** `string`
+
+    The Market Identifier Code (MIC) of the exchange, e.g., `XNYS`.
+
+  - **exchangeTz** `string`
+
+    The time zone of the exchange, e.g., `America/New_York`.
+
+  - **exchangeTime** `string`
+
+    The current time at the exchange .
+
+- **current** `object`
+
+  Contains information about the current trading day.
+
+  - **date** `string`
+
+    The current date .
+
+  - **primary** `object`
+
+    Details about the primary trading session.
+
+    - **name** `string`
+
+      The name of the session, e.g., `Core Trading Session`.
+
+    - **type** `string`
+
+      The type of the session, e.g., `Primary Trading Session`.
+
+    - **status** `string`
+
+      The status of the session, e.g., `open`, `closed`, or `upcoming`.
+
+    - **start** `string`
+
+      The start time of the session .
+
+    - **end** `string`
+
+      The end time of the session .
+
+    - **notes** `string`
+
+      Additional notes about the session.
+
+  - **preTrading** `object`
+
+    Details about the pre-trading session.
+
+    - **name** `string`
+
+      The name of the session, e.g., `Early Trading Session`.
+
+    - **type** `string`
+
+      The type of the session, e.g., `Pre-Trading Session`.
+
+    - **status** `string`
+
+      The status of the session, e.g., `open`, `closed`, or `upcoming`.
+
+    - **start** `string`
+
+      The start time of the session .
+
+    - **end** `string`
+
+      The end time of the session .
+
+    - **notes** `string`
+
+      Additional notes about the session.
+
+  - **postTrading** `object`
+
+    Details about the post-trading session.
+
+    - **name** `string`
+
+      The name of the session, e.g., `Late Trading Session`.
+
+    - **type** `string`
+
+      The type of the session, e.g., `Post-Trading Session`.
+
+    - **status** `string`
+
+      The status of the session, e.g., `open`, `closed`, or `upcoming`.
+
+    - **start** `string`
+
+      The start time of the session .
+
+    - **end** `string`
+
+      The end time of the session .
+
+    - **notes** `string`
+
+      Additional notes about the session.
+
+- **previous** `object`
+
+  Contains information about the previous trading day.
+
+  - **date** `string`
+
+    The previous date .
+
+  - **primary** `object`
+
+    Details about the primary trading session.
+
+    - **name** `string`
+
+      The name of the session, e.g., `Core Trading Session`.
+
+    - **type** `string`
+
+      The type of the session, e.g., `Primary Trading Session`.
+
+    - **status** `string`
+
+      The status of the session, e.g., `open`, `closed`, or `upcoming`.
+
+    - **start** `string`
+
+      The start time of the session .
+
+    - **end** `string`
+
+      The end time of the session .
+
+    - **notes** `string`
+
+      Additional notes about the session.
+
+  - **preTrading** `object`
+
+    Details about the pre-trading session.
+
+    - **name** `string`
+
+      The name of the session, e.g., `Early Trading Session`.
+
+    - **type** `string`
+
+      The type of the session, e.g., `Pre-Trading Session`.
+
+    - **status** `string`
+
+      The status of the session, e.g., `open`, `closed`, or `upcoming`.
+
+    - **start** `string`
+
+      The start time of the session .
+
+    - **end** `string`
+
+      The end time of the session .
+
+    - **notes** `string`
+
+      Additional notes about the session.
+
+  - **postTrading** `object`
+
+    Details about the post-trading session.
+
+    - **name** `string`
+
+      The name of the session, e.g., `Late Trading Session`.
+
+    - **type** `string`
+
+      The type of the session, e.g., `Post-Trading Session`.
+
+    - **status** `string`
+
+      The status of the session, e.g., `open`, `closed`, or `upcoming`.
+
+    - **start** `string`
+
+      The start time of the session .
+
+    - **end** `string`
+
+      The end time of the session .
+
+    - **notes** `string`
+
+      Additional notes about the session.
+
+- **next** `object`
+
+  Contains information about the next trading day.
+
+  - **date** `string`
+
+    The next date .
+
+  - **primary** `object`
+
+    Details about the primary trading session.
+
+    - **name** `string`
+
+      The name of the session, e.g., `Core Trading Session`.
+
+    - **type** `string`
+
+      The type of the session, e.g., `Primary Trading Session`.
+
+    - **status** `string`
+
+      The status of the session, e.g., `open`, `closed`, or `upcoming`.
+
+    - **start** `string`
+
+      The start time of the session .
+
+    - **end** `string`
+
+      The end time of the session .
+
+    - **notes** `string`
+
+      Additional notes about the session.
+
+  - **preTrading** `object`
+
+    Details about the pre-trading session.
+
+    - **name** `string`
+
+      The name of the session, e.g., `Early Trading Session`.
+
+    - **type** `string`
+
+      The type of the session, e.g., `Pre-Trading Session`.
+
+    - **status** `string`
+
+      The status of the session, e.g., `open`, `closed`, or `upcoming`.
+
+    - **start** `string`
+
+      The start time of the session .
+
+    - **end** `string`
+
+      The end time of the session .
+
+    - **notes** `string`
+
+      Additional notes about the session.
+
+  - **postTrading** `object`
+
+    Details about the post-trading session.
+
+    - **name** `string`
+
+      The name of the session, e.g., `Late Trading Session`.
+
+    - **type** `string`
+
+      The type of the session, e.g., `Post-Trading Session`.
+
+    - **status** `string`
+
+      The status of the session, e.g., `open`, `closed`, or `upcoming`.
+
+    - **start** `string`
+
+      The start time of the session .
+
+    - **end** `string`
+
+      The end time of the session .
+
+    - **notes** `string`
+
+      Additional notes about the session.
+
+</TabItem>
+<TabItem value="NoData" label="No Data">
+
+- **s** `string`
+
+  Status will be `no_data` if no data is found for the date or symbol requested.
+
+</TabItem>
+<TabItem value="Error" label="Error">
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+</TabItem>
+</Tabs>

@@ -54,10 +54,10 @@ For users working with options, take care before repeatly requesting quotes for 
 ## Headers to Manage the Rate Limit
 We provide the following headers in our responses to help you manage the rate limit and throttle your applications when necessary:
 
-- `X-Api-RateLimit-Limit`: The maximum number of requests you're permitted to make (per day for Free/Starter/Trader plans or per minute for commercial users).
-- `X-Api-RateLimit-Remaining`: The number of requests remaining in the current rate day/period.
-- `X-Api-RateLimit-Reset`: The time at which the current rate limit window resets in UTC epoch seconds.
-- `X-Api-RateLimit-Consumed`: The quantity of requests that were consumed in the current request.
+- `X-Api-Ratelimit-Limit`: The maximum number of requests you're permitted to make (per day for Free/Starter/Trader plans or per minute for commercial users).
+- `X-Api-Ratelimit-Remaining`: The number of requests remaining in the current rate day/period.
+- `X-Api-Ratelimit-Reset`: The time at which the current rate limit window resets in UTC epoch seconds.
+- `X-Api-Ratelimit-Consumed`: The quantity of requests that were consumed in the current request.
 
 ## Detailed Rate Limit Rules
 - Each successful response increases the counter by a minimum of 1 request.
@@ -71,3 +71,4 @@ We provide the following headers in our responses to help you manage the rate li
 ## Strategies To Avoid Rate Limiting
 - Exclude the bid, ask, mid, and last columns from your option chain requests if the current price is not needed.
 - Use the extensive option chain filters such as `strikeLimit` to exclude unnecessary strikes from your requests.
+- Paying customers can make use of the reduced-price cached feed. Use the `feed=cached` parameter on the `stocks/bulkquotes` and `options/chain` endpoints to retrieve previously cached quotes instead of making a live request. This can save thousands of credits. For more details, refer to the [feed parameter documentation](/api/universal-parameters/feed).
