@@ -8,8 +8,9 @@ Market Data is excited to offer a **30-day free trial** of our Starter Plan, no 
 ## What You Get with the Starter Trial Plan
 
 - **10,000 API Credits per Day**: Experience the increased capacity for API requests and see how it supports larger projects.
-- **Delayed Data**: Access to data that is usually delayed by at least 15 minutes. We strive to provide this data on a "best effort" basis, meaning delays can vary.
-- **5 Years of Historical Data**: Dive into extensive historical trends with data going back five years, ideal for in-depth analysis and backtesting.
+- **Delayed Data**: Access to data from our cache that is typically delayed by 15-30 minutes, provided on a "best effort" basis, meaning delays can vary.
+- **1 Year Of Historical Data Access**: Explore our extensive historical data archives and fetch data from the last year.
+- **Full Historical Data Access (AAPL Ticker)**: Fetch complete historical data from our extensive archives for the AAPL ticker with no date restrictions.
 - **Premium Endpoints (AAPL Ticker)**: Explore our premium endpoints using the AAPL ticker, including fundamental data like earnings.
 
 ## Features of the Starter Trial Plan
@@ -23,6 +24,7 @@ The Starter Trial Plan mirrors the full Starter Plan in terms of features, with 
 ## What You Don't Get With the Starter Trial
 
 - **Real-Time Data**: Trial users do not get real-time data access. If you decide to subscribe, your data feed will be upgraded to real-time at the moment of subscription.
+- **Historical Data Access (All Tickers)**: Historical data access on tickers other than AAPL is limited to 1 year.
 - **Premium Endpoints (All Tickers)**: Get full access to our premium endpoints with all tickers.
 
 ## Comparison with Other Plans
@@ -35,8 +37,8 @@ Here's a quick comparison to help you understand the Starter Trial in relation t
 | Delayed Data          | ✅           | ✅            | ❌             |
 | Real-Time Data        | ❌           | ❌            | ✅             |
 | Standard Endpoints    | ✅           | ✅            | ✅             |
-| Premium Endpoints     | ❌           | Limited       | ✅             |
-| Historical Data       | 1 Year       | 5 Years       | 5 Years        |
+| Premium Endpoints     | ❌           | AAPL Only    | ✅             |
+| Historical Data       | 1 Year       | 1 Year       | 5 Years        |
 
 ## Why Take A Trail of the Starter Plan?
 

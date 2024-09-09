@@ -17,7 +17,7 @@ Even though it is more complex to set-up, we encourage all users to take the ext
 
 ### Troubleshooting URL Parameter Authentication
 
-Usually URL parameter authentication goes wrong because customers use **invalid characters to separate the query string from the path**. The correct character to use is `?` and the correct character to use to separate query parameters is `&`. If you use the wrong characters, the API will not be able to parse the query string correctly and will be unable to authenticate your request.
+Usually URL parameter authentication goes wrong because customers use **invalid characters to separate the query string from the path**. The correct character to use is `?` and the correct character to use to separate query parameters is `&`. If you use the wrong characters, the API will not be able to parse the query string correctly and will be unable to authenticate your request. Learn more about the correct format of the URL parameters [here](/api/troubleshooting/url-parameters).
 
 For example, suppose your token was `token1234` and you were also using the `dateformat` parameter to request a timestamp as the output format for the time. For a stocks/quotes request, the correct URL would be:
 

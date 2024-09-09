@@ -1,0 +1,52 @@
+---
+title: URL Parameters
+sidebar_position: 4
+---
+
+## Introduction to URL Parameters
+
+URL parameters, also known as query strings, are a way to pass information to a server as part of a URL. They are often used to filter or customize the response from the server. Understanding how to correctly build URL parameters is crucial for interacting with Market Data's APIs effectively.
+
+### Structure of URL Parameters
+
+A URL with parameters has the following structure:
+
+<pre>
+https://<span class="url-host">api.marketdata.app</span>/<span class="url-path">v1/stocks/quotes/SPY/</span>?<span class="url-query">token=token1234&dateformat=timestamp</span>
+</pre>
+
+- **Protocol**: `https://`
+- **Host**: <span class="url-host">`api.marketdata.app`</span>
+- **Path (or Endpoint)**: <span class="url-path">`/v1/stocks/quotes/SPY/`</span>
+- **Query String**: Begins with a `?` and includes <span class="url-query">`token=token1234&dateformat=timestamp`</span>
+  - `token` and `dateformat` are the names of the parameters.
+  - `token1234` and `timestamp` are the values assigned to those parameters.
+  - `&` is used to separate multiple parameters.
+
+### Common Uses of URL Parameters in Market Data's APIs
+
+- **Filtering**: Retrieve a subset of data based on specific criteria.
+- **Formatting**: Change the format of the data returned by the API.
+- **Authentication**: Send credentials or tokens to access API data.
+
+## How to Build URL Parameters
+
+When building URL parameters, follow these guidelines to ensure they are structured correctly:
+
+1. **Start with the Endpoint URL**: Identify the base URL of the API endpoint you are interacting with.
+2. **Add a Question Mark**: Follow the base URL with a `?` to start the query string.
+3. **Append Parameters**: Add parameters in the format `key=value`. Use `&` to separate multiple parameters.
+4. **Encode Special Characters**: Use URL encoding to handle special characters in keys or values.
+
+### Example
+
+Suppose you want to request stock quotes for `SPY` with a specific date format and token authentication:
+
+```
+https://api.marketdata.app/v1/stocks/quotes/SPY/?token=token1234&dateformat=timestamp
+```
+
+### Troubleshooting Common Mistakes
+
+- **Incorrect Character Usage**: Ensure you use `?` to start and `&` to separate parameters.
+- **Unencoded Characters**: Encode special characters like spaces (`%20`), plus (`%2B`), etc, using URL encoding.

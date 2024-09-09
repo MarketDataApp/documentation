@@ -8,6 +8,8 @@
         "datekey",
         "errmsg",
         "GAAP",
+        "Helpdesk",
+        "marketdata",
         "phpunit",
         "Println",
         "VFINX"
