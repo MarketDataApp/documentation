@@ -12,13 +12,13 @@ URL parameters, also known as query strings, are a way to pass information to a 
 A URL with parameters has the following structure:
 
 ```
-https://<span style="color:blue">api.marketdata.app</span>/<span style="color:green">v1/stocks/quotes/SPY/</span>?<span style="color:red">token=token1234&dateformat=timestamp</span>
+https://<span class="url-host">api.marketdata.app</span>/<span class="url-path">v1/stocks/quotes/SPY/</span>?<span class="url-query">token=token1234&dateformat=timestamp</span>
 ```
 
 - **Protocol**: `https://`
-- **Host**: <span style="color:blue">`api.marketdata.app`</span>
-- **Path (or Endpoint)**: <span style="color:green">`/v1/stocks/quotes/SPY/`</span>
-- **Query String**: Begins with a `?` and includes <span style="color:red">`token=token1234&dateformat=timestamp`</span>
+- **Host**: <span class="url-host">`api.marketdata.app`</span>
+- **Path (or Endpoint)**: <span class="url-path">`/v1/stocks/quotes/SPY/`</span>
+- **Query String**: Begins with a `?` and includes <span class="url-query">`token=token1234&dateformat=timestamp`</span>
   - `token` and `dateformat` are the names of the parameters.
   - `token1234` and `timestamp` are the values assigned to those parameters.
   - `&` is used to separate multiple parameters.
