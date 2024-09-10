@@ -4,14 +4,20 @@
         "md"
     ],
     "cSpell.words": [
+        "bulkcandles",
+        "bulkquotes",
         "countback",
         "datekey",
         "errmsg",
         "GAAP",
         "Helpdesk",
+        "intraday",
+        "Keyphrase",
+        "keyphrases",
         "marketdata",
         "phpunit",
         "Println",
+        "Ratelimit",
         "VFINX"
     ]
 }

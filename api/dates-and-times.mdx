@@ -1,9 +1,9 @@
 ---
 title: Dates and Times
-sidebar_position: 7
+sidebar_position: 5
 ---
 
-All Market Data formulas support advanced date-handling features to allow you to work with dates in a way that works best for your spreadsheet. Formulas will accept any of the following date formats:
+All Market Data endpoints support advanced date-handling features to allow you to work with dates in a way that works best for your application. Our API will accept date inputs in any of the following formats:
 
 - **American Numeric Notation** Dates and times in MM/DD/YYYY format. For example, closing bell on Dec 30, 2020 for the NYSE would be: 12/30/2020 4:00 PM.
 
@@ -20,11 +20,13 @@ All Market Data formulas support advanced date-handling features to allow you to
 
 ## Relative Dates and Times
 
-Relative dates allow Market Data formulas to continually modify the date sent to the formula based on the current date. We have a lot of relative date keywords supported already and quite a few more planned for the future, so keep an eye out on this section for continual improvements to this feature.
+This feature allows you to use natural language to specify dates and times in a way that is easy for humans to read and understand, but can be tricky for machines to parse.
+
+Relative dates allow Market Data endpoints to continually modify the date sent to the endpoint based on the current date. We have a lot of relative date keywords supported already and quite a few more planned for the future, so keep an eye out on this section for continual improvements to this feature.
 
 - **Time-based Parameters** Time keyphrases let you select a specific time of day, relative to the current time. Time-based parameters are typically used to model intraday stock movements.
 
-  - `now` The current time. Use this keyword to select the current open candle, for example. This is the same as the Google Sheets built-in formula `now()`. Please note that due to technical limitations by Google Sheets, `now()` cannot be embedded in or referenced by any Market Data formula. Use the `now` relative keyword as a replacement.
+  - `now` Equivalent to the current time. Use this keyword to select the current open candle, for example.
 
   - `-[number] minutes` Use negative minutes to specify a time in the past _n_ minutes before. When this is used alone, it is relative to the current time. When used in conjunction in `from` field (i.e. the starting date/time), it is relative to the `to` field (i.e. the ending date/time). For example, if the current time is 10:30 AM, but 10:00 AM is used in the `to` field and `-10 minutes` in the `from` field, then the starting time will be 9:50 AM. The query would return values from 9:50 AM to 10:00 AM. However, if the `to` field were to be omitted, then the same query would return data from 10:20 AM to 10:30 AM since `-10 minutes` would be relative to the current time of 10:30 AM.
   
@@ -36,9 +38,9 @@ Relative dates allow Market Data formulas to continually modify the date sent to
 
 - **Daily Parameters** Daily keyphrases let you select a specific day, relative to the current day.
 
-  - `today` Equivalent to today's date. This keyword can be used interchangeably with Sheets' built-in formula `today()`.
+  - `today` Equivalent to today's date.
 
-  - `yesterday` Yesterday's date. The same as Sheets formula `today()-1`.
+  - `yesterday` Yesterday's date.
  
   - `-[number] days` Use negative days to specify a time in the past _n_ days before. When this is used alone, it is relative to the current day. When used in conjunction in `from` field (i.e. the starting date), it is relative to the `to` field (i.e. the ending date). For example, if the current date is January 20, but January 10 is used in the `to` field and `-5 days` in the `from` field, then the starting day will be January 5. The query would return values from January 5 to January 10. However, if the `to` field were to be omitted, then the same query would return data from January 15 to January 20 since `-5 days` would be relative to the current date of January 20.
 
@@ -58,7 +60,7 @@ Relative dates allow Market Data formulas to continually modify the date sent to
 
 - **Yearly Dates** Yearly keyphrases let you select a specific day of in the current, previous, or following year.
 
-  - `-[number] years` Use negative months to specify a date in the past _n_ years before. When this is used alone, it is relative to the current day. When used in conjunction in `from` field (i.e. the starting date), it is relative to the date in the `to` field (i.e. the ending date). For example, if the current date is October 15, 2023 but October 8, 2023 is used in the `to` field and `-1 year` in the `from` field, then the starting day will be September 8, 2022. The query would return values from September 8, 2022 to October 8, 2023. However, if the `to` field were to be omitted, then the same query would return data from September 15, 2022 to October 15, 2023 since `-1 year` would be relative to the current date of October 15, 2023.
+  - `-[number] years` Use negative years to specify a date in the past _n_ years before. When this is used alone, it is relative to the current day. When used in conjunction in `from` field (i.e. the starting date), it is relative to the date in the `to` field (i.e. the ending date). For example, if the current date is October 15, 2023 but October 8, 2023 is used in the `to` field and `-1 year` in the `from` field, then the starting day will be September 8, 2022. The query would return values from September 8, 2022 to October 8, 2023. However, if the `to` field were to be omitted, then the same query would return data from September 15, 2022 to October 15, 2023 since `-1 year` would be relative to the current date of October 15, 2023.
 
   - `[number] years ago` The years ago keyword lets you select a relative date, 365 days before the current date. For example, if today is January 5, 2024, then using `2 years ago` would select the date January 5, 2022.
 
@@ -132,7 +134,7 @@ Option-related keyphrases cannot be used to return expiration dates far in the f
 
 :::tip
 
-Not all underlying tickers offer weekly or quarterly options. Before building a spreadsheet that uses them, ensure that your underlying offers weekly or quarterly option contracts.
+Not all underlying tickers offer weekly or quarterly options. Before building an API request that uses them, ensure that your underlying offers weekly or quarterly option contracts.
 
 :::
 
@@ -148,7 +150,7 @@ Not all underlying tickers offer weekly or quarterly options. Before building a 
 
   - `[ordinal number] quarter's expiration` - Returns the quarterly option expiration date for the 1st, 2nd, 3rd, or 4th quarter in the current financial year. For example if today is March 1, 2022, and `4th quarter's expiration` is used, the date returned would be _December 30, 2022_. This will lookup both expired and unexpired options.
 
-  - `[this|last|next] quarter's expiration` - Returns the quarterly option expiration date for the current, previous, or following quarter relative to the current date. For example if today is March 1, 2022, and `this quarter's expiration` is used, the date returned would be _March 31, 2022_.
+  - `[this|last|next] quarter's expiration` - Returns the quarterly option expiration date for the current, previous, or following quarter relative to the current date. For example if today is March 1, 2026, and `this quarter's expiration` is used, the date returned would be _March 31, 2026_.
 
   - `[expiration in [number] quarters` - Returns closest quarterly expiration that will occur [number] quarters from today without taking into account the current quarter. For example, if today is March 1, 2022 the phrase `expiration in 2 quarters` would return September 30, 2022.
 
