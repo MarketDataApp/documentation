@@ -107,6 +107,13 @@ func ExampleStockQuoteRequest() {
 
   Enable the output of 52-week high and 52-week low data in the quote output. By default this parameter is `false` if omitted.
 
+- **extended** `boolean`
+
+  Control the inclusion of extended hours data in the quote output. Defaults to `true` if omitted. 
+
+  - When set to `true`, the most recent quote is always returned, without regard to whether the market is open for primary trading or extended hours trading.
+  - When set to `false`, only quotes from the primary trading session are returned. When the market is closed or in extended hours, a historical quote from the last closing bell of the primary trading session is returned instead of an extended hours quote. 
+
 </TabItem>
 </Tabs>
 
@@ -190,3 +197,20 @@ The difference in price in percent, expressed as a decimal, compared to the clos
 
 </TabItem>
 </Tabs>
+
+## Notes
+
+### Change and Change Percentage Calculation
+
+The table below illustrates how the `change` and `changepct` values are calculated. The calculation is based on whether the extended parameter is `true` or `false` and whether the market is open for regular trading, open for extended hours trading, or closed.
+
+| Market Status                  | `extended` Parameter | Calculation Basis                | `change` Calculation                                      | `changepct` Calculation                             |
+|--------------------------------|----------------------|----------------------------------|-----------------------------------------------------------|-----------------------------------------------------|
+| Pre-Trading Session            | true                 | Last traded price, last close price                | `last_trade` - `last_close`                               | (`last_trade` - `last_close`) / `last_close`        |
+| Pre-Trading Session            | false                | Last two closing prices          | `last_close` - `prior_close`                              | (`last_close` - `prior_close`) / `prior_close`      |
+| Primary Trading Session        | N/A                  | Last traded price, last close price                | `last_trade` - `last_close`                               | (`last_trade` - `last_close`) / `last_close`        |
+| Post-Trading Session           | true                 | Last traded price, todays close price                | `last_trade` - `todays_close`                             | (`last_trade` - `todays_close`) / `todays_close`    |
+| Post-Trading Session           | false                | Last two closing prices          | `todays_close` - `prior_close`                            | (`todays_close` - `prior_close`) / `prior_close`    |
+| Closed                         | true                 | Last traded price, last close price                | `last_trade` - `last_close`                               | (`last_trade` - `last_close`) / `last_close`        |
+| Closed                         | false                | Last two closing prices          | `last_close` - `prior_close`                              | (`last_close` - `prior_close`) / `prior_close`      |
+
