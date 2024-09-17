@@ -5,7 +5,7 @@
       "destination": "/sdk-php/index.html"
     },
     {
-      "source": "/docs-staging/sdk-php",
+      "source": "/docs/sdk-php/",
       "destination": "/sdk-php/index.html"
     },
     {
