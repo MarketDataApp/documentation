@@ -168,6 +168,11 @@ func ExampleBulkStockQuotesRequest() {
 
   The difference in price in percent, expressed as a decimal, compared to the closing price of the previous primary trading session. For example, a 3% change will be represented as 0.03. 
 
+:::note
+  - When the market is open for primary trading **change** and **changepct** are always calculated using the last traded price and the last primary session close. When the market is closed or in extended hours, this criteria is also used as long as extended is omitted or set to `true`.
+  - When extended is set to `false`, and the market is closed or in extended hours, extended hours quotes are not considered and **change** and **changepct** are calculated using the last two closing prices.
+:::
+
 - **52weekHigh** `array[number]`
 
   The 52-week high for the stock. This parameter is omitted unless the optional 52week request parameter is set to true.
@@ -221,20 +226,3 @@ The cost of using the bulk stock quotes API endpoint depends on the type of data
 
 2. **Cached Feed Usage**
    - A single API call to retrieve quotes for 500 different stock symbols using the Cached Feed will cost you 1 credit.
-
-## Notes
-
-### Change and Change Percentage Calculation
-
-The table below illustrates how the `change` and `changepct` values are calculated. The calculation is based on whether the extended parameter is `true` or `false` and whether the market is open for regular trading, open for extended hours trading, or closed.
-
-| Market Status                  | `extended` Parameter | Calculation Basis                | `change` Calculation                                      | `changepct` Calculation                             |
-|--------------------------------|----------------------|----------------------------------|-----------------------------------------------------------|-----------------------------------------------------|
-| Pre-Trading Session            | true                 | Last traded price, last close price                | `last_trade` - `last_close`                               | (`last_trade` - `last_close`) / `last_close`        |
-| Pre-Trading Session            | false                | Last two closing prices          | `last_close` - `prior_close`                              | (`last_close` - `prior_close`) / `prior_close`      |
-| Primary Trading Session        | N/A                  | Last traded price, last close price                | `last_trade` - `last_close`                               | (`last_trade` - `last_close`) / `last_close`        |
-| Post-Trading Session           | true                 | Last traded price, todays close price                | `last_trade` - `todays_close`                             | (`last_trade` - `todays_close`) / `todays_close`    |
-| Post-Trading Session           | false                | Last two closing prices          | `todays_close` - `prior_close`                            | (`todays_close` - `prior_close`) / `prior_close`    |
-| Closed                         | true                 | Last traded price, last close price                | `last_trade` - `last_close`                               | (`last_trade` - `last_close`) / `last_close`        |
-| Closed                         | false                | Last two closing prices          | `last_close` - `prior_close`                              | (`last_close` - `prior_close`) / `prior_close`      |
-

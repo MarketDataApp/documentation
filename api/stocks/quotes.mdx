@@ -163,9 +163,8 @@ func ExampleStockQuoteRequest() {
   The difference in price in percent, expressed as a decimal, compared to the closing price of the previous day. For example, a 3% change will be represented as 0.3.
 
 :::note
-  - When the market is open for primary trading, **change** and **changepct** are calculated using the last traded price and the last close.
-  - When extended is omitted or set to `true`, **change** and **changepct** are calculated using the last traded price and the last close.
-  - When extended is set to `false`, and the market is closed or in extended hours, **change** and **changepct** are calculated using the last two closing prices.
+  - When the market is open for primary trading **change** and **changepct** are always calculated using the last traded price and the last primary session close. When the market is closed or in extended hours, this criteria is also used as long as extended is omitted or set to `true`.
+  - When extended is set to `false`, and the market is closed or in extended hours, extended hours quotes are not considered and **change** and **changepct** are calculated using the last two closing prices.
 :::
 
 - **52weekHigh** `array[number]`
