@@ -24,41 +24,41 @@ Relative dates allow Market Data formulas to continually modify the date sent to
 
 - **Time-based Parameters** Time keyphrases let you select a specific time of day, relative to the current time. Time-based parameters are typically used to model intraday stock movements.
 
-  - `now` The current time. Use this keyword to select the current open candle, for example. This is the same as the Google Sheets built-in formula `now()`. Please note that due to technical limitations by Google Sheets , `now()` cannot be embedded in or refrenced by any Market Data formula. Use the `now` relative keyword as a replacement.
+  - `now` The current time. Use this keyword to select the current open candle, for example. This is the same as the Google Sheets built-in formula `now()`. Please note that due to technical limitations by Google Sheets, `now()` cannot be embedded in or referenced by any Market Data formula. Use the `now` relative keyword as a replacement.
 
-  - `-[number] minutes` Use negative minutes to specify a time in the past _n_ minutes before. When this is used alone, it is relative to the current time. When used in conjuction in `from` field (i.e. the starting date/time), it is relative to the `to` field (i.e. the ending date/time). For example, if the current time is 10:30 AM, but 10:00 AM is used in the `to` field and `-10 minutes` in the `from` field, then the starting time will be 9:50 AM. The query would return values from 9:50 AM to 10:00 AM. However, if the `to` field were to be omitted, then the same query would return data from 10:20 AM to 10:30 AM since `-10 minutes` would be relative to the current time of 10:30 AM.
+  - `-[number] minutes` Use negative minutes to specify a time in the past _n_ minutes before. When this is used alone, it is relative to the current time. When used in conjunction in `from` field (i.e. the starting date/time), it is relative to the `to` field (i.e. the ending date/time). For example, if the current time is 10:30 AM, but 10:00 AM is used in the `to` field and `-10 minutes` in the `from` field, then the starting time will be 9:50 AM. The query would return values from 9:50 AM to 10:00 AM. However, if the `to` field were to be omitted, then the same query would return data from 10:20 AM to 10:30 AM since `-10 minutes` would be relative to the current time of 10:30 AM.
   
   - `[number] minutes ago` The `minutes ago` keyword lets you select a relative time, _n_ minutes before the current time. For example, if the time is 10:00 AM then `30 minutes ago` would refer to 9:30 AM of the current day.
  
-  - `-[number] hours` Use negative hours to specify a time in the past _n_ hours before. When this is used alone, it is relative to the current time. When used in conjuction in `from` field (i.e. the starting date/time), it is relative to the `to` field (i.e. the ending date/time). For example, if the current time is 10:30 AM, but 10:00 AM is used in the `to` field and `-1 hour` in the `from` field, then the starting time will be 9:00 AM. The query would return values from 9:00 AM to 10:00 AM. However, if the `to` field were to be omitted, then the same query would return data from 9:30 AM to 10:30 AM since `-1 hour` would be relative to the current time of 10:30 AM.
+  - `-[number] hours` Use negative hours to specify a time in the past _n_ hours before. When this is used alone, it is relative to the current time. When used in conjunction in `from` field (i.e. the starting date/time), it is relative to the `to` field (i.e. the ending date/time). For example, if the current time is 10:30 AM, but 10:00 AM is used in the `to` field and `-1 hour` in the `from` field, then the starting time will be 9:00 AM. The query would return values from 9:00 AM to 10:00 AM. However, if the `to` field were to be omitted, then the same query would return data from 9:30 AM to 10:30 AM since `-1 hour` would be relative to the current time of 10:30 AM.
     
   - `[number] hours ago` The `hours ago` keyword lets you select a relative time, _n_ hours before the current time. For example, if the time is 4:00 PM then `4 hours ago` would refer to 12:00 PM of the current day.
 
 - **Daily Parameters** Daily keyphrases let you select a specific day, relative to the current day.
 
-  - `today` Equivalent to today's date. This keyword can be used interchangably with Sheets' built-in formula `today()`.
+  - `today` Equivalent to today's date. This keyword can be used interchangeably with Sheets' built-in formula `today()`.
 
   - `yesterday` Yesterday's date. The same as Sheets formula `today()-1`.
  
-  - `-[number] days` Use negative days to specify a time in the past _n_ days before. When this is used alone, it is relative to the current day. When used in conjuction in `from` field (i.e. the starting date), it is relative to the `to` field (i.e. the ending date). For example, if the current date is January 20, but January 10 is used in the `to` field and `-5 days` in the `from` field, then the starting day will be January 5. The query would return values from January 5 to January 10. However, if the `to` field were to be omitted, then the same query would return data from January 15 to January 20 since `-5 days` would be relative to the current date of January 20.
+  - `-[number] days` Use negative days to specify a time in the past _n_ days before. When this is used alone, it is relative to the current day. When used in conjunction in `from` field (i.e. the starting date), it is relative to the `to` field (i.e. the ending date). For example, if the current date is January 20, but January 10 is used in the `to` field and `-5 days` in the `from` field, then the starting day will be January 5. The query would return values from January 5 to January 10. However, if the `to` field were to be omitted, then the same query would return data from January 15 to January 20 since `-5 days` would be relative to the current date of January 20.
 
   - `[number] days ago` The `days ago` keyword lets you select a relative day, _n_ days before the current date. For example, if today is January 5, 2024, then using `2 days ago` would select the date January 3, 2024.
  
 - **Weekly Parameters** Weekly keyphrases let you select a day of the week in the current, previous, or following week.
 
-  - `-[number] weeks` Use negative weeks to specify a date in the past _n_ weeks before. When this is used alone, it is relative to the current day. When used in conjuction in `from` field (i.e. the starting date), it is relative to the date in the `to` field (i.e. the ending date). For example, if the current date is October 15, 2023 but October 8 is used in the `to` field and `-1 week` in the `from` field, then the starting day will be October 2, 2023. The query would return values from October 2 to October 8. However, if the `to` field were to be omitted, then the same query would return data from October 9 to October 15 since `-5 days` would be relative to the current date of January 20.
+  - `-[number] weeks` Use negative weeks to specify a date in the past _n_ weeks before. When this is used alone, it is relative to the current day. When used in conjunction in `from` field (i.e. the starting date), it is relative to the date in the `to` field (i.e. the ending date). For example, if the current date is October 15, 2023 but October 8 is used in the `to` field and `-1 week` in the `from` field, then the starting day will be October 2, 2023. The query would return values from October 2 to October 8. However, if the `to` field were to be omitted, then the same query would return data from October 9 to October 15 since `-5 days` would be relative to the current date of January 20.
 
   - `[number] weeks ago` The `weeks ago` keyword lets you select a relative week, _n_ weeks before the current date. For example, if today is January 1, 2024, then using `2 weeks ago` would select the date January 3, 2024.
 
 - **Monthly Dates** Monthly keyphrases let you select a specific day of a specific month.
 
-  - `-[number] months` Use negative months to specify a date in the past _n_ months before. When this is used alone, it is relative to the current day. When used in conjuction in `from` field (i.e. the starting date), it is relative to the date in the `to` field (i.e. the ending date). For example, if the current date is October 15 but October 8 is used in the `to` field and `-1 month` in the `from` field, then the starting day will be September 8. The query would return values from September 8 to October 8. However, if the `to` field were to be omitted, then the same query would return data from September 15 to October since `-1 month` would be relative to the current date of October 15.
+  - `-[number] months` Use negative months to specify a date in the past _n_ months before. When this is used alone, it is relative to the current day. When used in conjunction in `from` field (i.e. the starting date), it is relative to the date in the `to` field (i.e. the ending date). For example, if the current date is October 15 but October 8 is used in the `to` field and `-1 month` in the `from` field, then the starting day will be September 8. The query would return values from September 8 to October 8. However, if the `to` field were to be omitted, then the same query would return data from September 15 to October since `-1 month` would be relative to the current date of October 15.
 
   - `[number] months ago` The months ago keyword lets you select a relative date, _n_ months before the current date. For example, if today is January 5, 2024, then using `3 months ago` would select the date October 5, 2023.
 
 - **Yearly Dates** Yearly keyphrases let you select a specific day of in the current, previous, or following year.
 
-  - `-[number] years` Use negative months to specify a date in the past _n_ years before. When this is used alone, it is relative to the current day. When used in conjuction in `from` field (i.e. the starting date), it is relative to the date in the `to` field (i.e. the ending date). For example, if the current date is October 15, 2023 but October 8, 2023 is used in the `to` field and `-1 year` in the `from` field, then the starting day will be September 8, 2022. The query would return values from September 8, 2022 to October 8, 2023. However, if the `to` field were to be omitted, then the same query would return data from September 15, 2022 to October 15, 2023 since `-1 year` would be relative to the current date of October 15, 2023.
+  - `-[number] years` Use negative months to specify a date in the past _n_ years before. When this is used alone, it is relative to the current day. When used in conjunction in `from` field (i.e. the starting date), it is relative to the date in the `to` field (i.e. the ending date). For example, if the current date is October 15, 2023 but October 8, 2023 is used in the `to` field and `-1 year` in the `from` field, then the starting day will be September 8, 2022. The query would return values from September 8, 2022 to October 8, 2023. However, if the `to` field were to be omitted, then the same query would return data from September 15, 2022 to October 15, 2023 since `-1 year` would be relative to the current date of October 15, 2023.
 
   - `[number] years ago` The years ago keyword lets you select a relative date, 365 days before the current date. For example, if today is January 5, 2024, then using `2 years ago` would select the date January 5, 2022.
 
@@ -82,9 +82,9 @@ The following relative date parameters are planned for the future and have not y
 
   - `this [day of the week]` Works the same way as specifying the day without adding _this_. The day in the _current_ week. For example, if today is Tuesday and the expression is `this Monday`, the date returned would be yesterday. If the expression were `this Wednesday` the date returned would be tomorrow. The word _this_ is optional. If it is omitted, the keyword will still return the date in the current week that corresponds with the day mentioned.
 
-  - `last [day of the week]` The day in the _previous_ week. For example, if today is Tuesday and the expression used is `last Monday`, it would not refer to the Monday that occurred yesterday, but the Monday 8 days prior that ocurred in the previous week.
+  - `last [day of the week]` The day in the _previous_ week. For example, if today is Tuesday and the expression used is `last Monday`, it would not refer to the Monday that occurred yesterday, but the Monday 8 days prior that occurred in the previous week.
 
-  - `next [day of the week]` The day in the _following_ week. For example, if today is Monday and the expression is `next Tuesday` it would not refer to tomorrow, but the Tuesday that ocurrs 8 days from now.
+  - `next [day of the week]` The day in the _following_ week. For example, if today is Monday and the expression is `next Tuesday` it would not refer to tomorrow, but the Tuesday that occurs 8 days from now.
 
 - **Monthly Dates** Monthly keyphrases let you select a specific day of a specific month.
 
@@ -94,7 +94,7 @@ The following relative date parameters are planned for the future and have not y
 
   - `ordinal number] of next month` - The nth day of the following month. For example, if today is December 15th and the phrase used is, `8th of next month` the date returned would be January 8 of the following year.
 
-  - `last day of [the|this|last|next] month` - Using the `last day of` keyword will always select the final day of the month. Since months can end on the 28th, 29th, 30th, or 31st, this keyword allows you to always select the final day of a month. For example: `last day of this month`, `last day of next month`. It can also be used to select the last day in February without needing to determine wheether the current year is a leap year, `last day of february`.
+  - `last day of [the|this|last|next] month` - Using the `last day of` keyword will always select the final day of the month. Since months can end on the 28th, 29th, 30th, or 31st, this keyword allows you to always select the final day of a month. For example: `last day of this month`, `last day of next month`. It can also be used to select the last day in February without needing to determine whether the current year is a leap year, `last day of february`.
 
   - `ordinal number] [day of the week] of [the|this|last|next] month` - Combine ordinal numbers and weekdays to specify a specific day of the week in the current, previous, or following month. For example, ``3nd Friday of last month``.
 
@@ -104,9 +104,9 @@ The following relative date parameters are planned for the future and have not y
 
 - **Yearly Dates** Yearly keyphrases let you select a specific day of in the current, previous, or following year.
 
-  - `[month] [number]` A specific date in the current year. For example `Feburary 18` would return February 18 of the current year.
+  - `[month] [number]` A specific date in the current year. For example `February 18` would return February 18 of the current year.
 
-  - `[month] [number] [this|last|next] year` A specific date in the current, previous, or following year. For example, if today was Dec 31, 2022, `Feburary 18 next year` would return February 18, 2023.
+  - `[month] [number] [this|last|next] year` A specific date in the current, previous, or following year. For example, if today was Dec 31, 2022, `February 18 next year` would return February 18, 2023.
 
 ## Option Expiration Dates
 
@@ -132,7 +132,7 @@ Option-related keyphrases cannot be used to return expiration dates far in the f
 
 :::tip
 
-Not all underlyings offer weekly or quarterly options. Before building a spreadsheet that uses them, ensure that your underlying offers weekly or quarterly option contracts.
+Not all underlying tickers offer weekly or quarterly options. Before building a spreadsheet that uses them, ensure that your underlying offers weekly or quarterly option contracts.
 
 :::
 

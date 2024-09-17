@@ -107,6 +107,13 @@ func ExampleStockQuoteRequest() {
 
   Enable the output of 52-week high and 52-week low data in the quote output. By default this parameter is `false` if omitted.
 
+- **extended** `boolean`
+
+  Control the inclusion of extended hours data in the quote output. Defaults to `true` if omitted. 
+
+  - When set to `true`, the most recent quote is always returned, without regard to whether the market is open for primary trading or extended hours trading.
+  - When set to `false`, only quotes from the primary trading session are returned. When the market is closed or in extended hours, a historical quote from the last closing bell of the primary trading session is returned instead of an extended hours quote. 
+
 </TabItem>
 </Tabs>
 
@@ -149,11 +156,16 @@ func ExampleStockQuoteRequest() {
 
 - **change** `array[number]`
 
-  The difference in price in dollars (or the security's currency if different from dollars) compared to the closing price of the previous day.
+  The difference in price in currency units compared to the closing price of the previous primary trading session.
 
 - **changepct** `array[number]`
 
-The difference in price in percent, expressed as a decimal, compared to the closing price of the previous day. For example, a 30% change will be represented as 0.30.
+  The difference in price in percent, expressed as a decimal, compared to the closing price of the previous day. For example, a 3% change will be represented as 0.3.
+
+:::note
+  - When the market is open for primary trading, **change** and **changepct** are always calculated using the last traded price and the last primary session close. When the market is closed or in extended hours, this criteria is also used as long as `extended` is omitted or set to `true`.
+  - When `extended` is set to `false`, and the market is closed or in extended hours, quotes from extended hours are not considered. The values for **change** and **changepct** will be calculated using the last two closing prices instead.
+:::
 
 - **52weekHigh** `array[number]`
 
