@@ -123,6 +123,10 @@ func ExampleIndicesCandlesRequest_get() {
 
   Will fetch a number of candles before (to the left of) `to`. If you use `from`, `countback` is not required.
 
+:::note
+When requesting intraday candles, no more than 1 year of data can be requested in a single request.
+:::
+
 </TabItem>
 </Tabs>
 
