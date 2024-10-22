@@ -116,10 +116,6 @@ func ExampleIndicesCandlesRequest_get() {
 
 All `date` parameters are optional. By default the most recent candle is returned if no date parameters are provided.
 
-:::note
-There is no maximum date range limit on daily candles. When requesting intraday candles of any resolution, no more than 1 year of data can be requested in a single request.
-:::
-
 - **from** `date`
 
   The leftmost candle on a chart (inclusive). From and countback are mutually exclusive. If you use `countback`, `from` must be omitted. Accepted timestamp inputs: ISO 8601, unix, spreadsheet. 
@@ -131,6 +127,10 @@ There is no maximum date range limit on daily candles. When requesting intraday 
 - **countback** `number`
 
   Will fetch a specific number of candles before (to the left of) `to`. From and countback are mutually exclusive. If you use `from`, `countback` must be omitted.
+
+:::note
+There is no maximum date range limit on daily candles. When requesting intraday candles of any resolution, no more than 1 year of data can be requested in a single request.
+:::
 
 </TabItem>
 </Tabs>
