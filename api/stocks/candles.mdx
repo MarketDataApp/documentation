@@ -114,9 +114,18 @@ func ExampleStockCandlesRequest() {
 
   The company's ticker symbol.
 
+</TabItem>
+<TabItem value="date" label="Dates">
+
+All `date` parameters are optional. By default the most recent candle is returned if no date parameters are provided.
+
+:::note
+There is no maximum date range limit on daily candles. When requesting intraday candles of any resolution, no more than 1 year of data can be requested in a single request.
+:::
+
 - **from** `date`
 
-  The leftmost candle on a chart (inclusive). If you use `countback`, `to` is not required. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+  The leftmost candle on a chart (inclusive). From and countback are mutually exclusive. If you use `countback`, `from` must be omitted. Accepted timestamp inputs: ISO 8601, unix, spreadsheet. 
 
 - **to** `date`
 
@@ -124,44 +133,24 @@ func ExampleStockCandlesRequest() {
 
 - **countback** `number`
 
-  Will fetch a number of candles before (to the left of) `to`. If you use `from`, `countback` is not required.
-
-:::note
-When requesting intraday candles, no more than 1 year of data can be requested in a single request.
-:::
+  Will fetch a specific number of candles before (to the left of) `to`. From and countback are mutually exclusive. If you use `from`, `countback` must be omitted.
 
 </TabItem>
 <TabItem value="optional" label="Optional">
 
-- **exchange** `string`
-
-  Use to specify the exchange of the ticker. This is useful when you need to specify stock that quotes on several exchanges with the same symbol. You may specify the exchange using the `EXCHANGE ACRONYM`, `MIC CODE`, or two digit `YAHOO FINANCE EXCHANGE CODE`. If no exchange is specified symbols will be matched to US exchanges first.
-
 - **extended** `boolean`
 
-  Include extended hours trading sessions when returning intraday candles. Daily resolutions never return extended hours candles. The default is `false`
+  Include extended hours trading sessions when returning *intraday* candles. Daily resolutions _never_ return extended hours candles.
 
-- **country** `string`
-
-  Use to specify the country of the exchange (not the country of the company) in conjunction with the symbol argument. This argument is useful when you know the ticker symbol and the country of the exchange, but not the exchange code. Use the two digit ISO 3166 country code. If no country is specified, US exchanges will be assumed.
+  - Daily candles default: `false`.
+  - Intraday candles default: `false`.
 
 - **adjustsplits** `boolean`
 
-  Adjust historical data for for historical splits and reverse splits. Market Data uses the CRSP methodology for adjustment.
-  Daily candles default: `true`.
-  Intraday candles default: `false`.
+  Adjust historical data for stock splits. Market Data uses the CRSP methodology for adjustment.
 
-:::caution
-
-Adjusted dividend data is planned for the future, but not yet implemented. All data is currently returned unadjusted for dividends.
-
-:::
-
-- **adjustdividends** `boolean`
-
-  Adjust candles for dividends. Market Data uses the CRSP methodology for adjustment.
-  Daily candles default: `true`.
-  Intraday candles default: `false`.
+  - Daily candles default: `true`.
+  - Intraday candles default: `false`.
 
 </TabItem>
 </Tabs>
