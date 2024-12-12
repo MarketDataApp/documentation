@@ -59,12 +59,44 @@ print(response.text)
 ```json
 {
   "s": "ok",
-  "service": ["Customer Dashboard", "Historical Data API", "Real-time Data API", "Website"],
-  "status": ["online", "online", "online", "online"],
-  "online": [true, true, true, true],
-  "uptimePct30d": [1, 0.99769, 0.99804, 1],
-  "uptimePct90d": [1, 0.99866, 0.99919, 1],
-  "updated": [1708972840, 1708972840, 1708972840, 1708972840]
+  "service": [
+    "/v1/funds/candles/",
+    "/v1/indices/candles/",
+    "/v1/indices/quotes/",
+    "/v1/markets/status/",
+    "/v1/options/chain/",
+    "/v1/options/expirations/",
+    "/v1/options/lookup/",
+    "/v1/options/quotes/",
+    "/v1/options/strikes/",
+    "/v1/stocks/bulkcandles/",
+    "/v1/stocks/bulkquotes/",
+    "/v1/stocks/candles/",
+    "/v1/stocks/earnings/",
+    "/v1/stocks/news/",
+    "/v1/stocks/quotes/"
+  ],
+  "status": [
+    "online",
+    "online",
+    "online",
+    "online",
+    "online",
+    "online",
+    "online",
+    "online",
+    "online",
+    "online",
+    "online",
+    "online",
+    "online",
+    "online",
+    "online"
+  ],
+  "online": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+  "uptimePct30d": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  "uptimePct90d": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  "updated": [1734036832, 1734036832, 1734036832, 1734036832, 1734036832, 1734036832, 1734036832, 1734036832, 1734036832, 1734036832, 1734036832, 1734036832, 1734036832, 1734036832, 1734036832]
 }
 ```
 
