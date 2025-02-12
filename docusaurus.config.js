@@ -169,7 +169,7 @@ const config = {
         <a target="_blank" style="font-size:15px" href="https://www.trustpilot.com/review/www.marketdata.app">See our Reviews On TrustPilot</a>
         <a target="_blank" style="font-size:15px" href="https://www.marketdata.app/privacy/">Privacy Policy</a>
         <a target="_blank" style="font-size:15px" href="https://www.marketdata.app/terms/">Terms & Conditions</a>
-        <a target="_blank" style="font-size:15px" href="https://stats.uptimerobot.com/6Kv3zIow0A">System Status</a>
+        <a target="_blank" style="font-size:15px" href="https://www.marketdata.app/status/">System Status</a>
         </div>
         </div>`,
       },

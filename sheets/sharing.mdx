@@ -3,12 +3,16 @@ title: Sharing Your Sheet
 sidebar_position: 8
 ---
 
-It is possible to share you sheet with other users by using the **Share** button in the top right corner of the sheet. You can share the sheet with anyone who has a Google account. The only requirement is that each user who receives a copy of your sheet must have the [Market Data Add-on](https://workspace.google.com/marketplace/app/market_data/453586334945) installed from the Google Workspace Marketplace.
+It is possible to share you sheet with other users by using the **Share** button in the top right corner of the sheet. You can share the sheet with anyone who has a Google account. The only two requirements are that each user who receives a copy of your sheet must have the [Market Data Add-on](https://workspace.google.com/marketplace/app/market_data/453586334945) installed from the Google Workspace Marketplace and have a Market Data account.
 
 :::warning
-When you share your spreadsheet with other users, the functions that execute will use the token you have stored in the sheet. Sharing allows other users to make requests in the sheet using your token, but those users will not be able to see the token that you have stored in the sheet. Share your sheet only with users whom you trust.
+If you share your sheet with a user who does not have a Market Data account, they will not be able to execute the formulas in the sheet. They will receive an error message and the Market Data formulas will not execute.
 :::
 
 ## Sharing Mode
 
 You must share your sheet in **Edit** mode to allow a user to open the sidebar and execute the formulas. If you share your sheet in **View** or **Comment** mode, the Market Data formulas will not execute because the user will not have access to the sidebar.
+
+## Sharing with Free or Trial Users
+
+You can share your sheet with free or trial users but these users will not have access to real-time data. They will only have access to delayed and historical data. If you need to share your sheet with another user who needs real-time data, each user will need to have a paid Market Data account.
