@@ -6,7 +6,15 @@ sidebar_position: 3
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-The Market Data API uses a **Bearer Token** for authentication. The token is required for each request you make to the API. There are two ways to pass this token to the API with your requests:
+The Market Data API uses a **Bearer Token** for authentication. The token is a programmatic representation of your username and password credentials, so you must keep it secret just as you would your username and password. The token is required for each request you make to the API.
+
+## Obtaining a Token
+
+To obtain it, sign-in to your customer dashboard using your username and password and request a token. It will be delivered by email to the address you used to sign-in.  
+
+## Using the Token
+
+There are two ways to pass this token to the API with your requests:
 
 1. Header Authentication
 2. URL Parameter Authentication
@@ -153,10 +161,14 @@ https://api.marketdata.app/v1/stocks/quotes/SPY/?token={token}
 The curly braces around token are a placeholder for this example. Do not actually wrap your token with curly braces. 
 :::
 
-### Demo The API With No Authentication
+## Demo The API With No Authentication
 
-You can try stock, option, and index endpoints with several different symbols that are unlocked and do not require a token. 
+You can try stock, option, and index endpoints with several different symbols that are unlocked and do not require a token. Please be aware that only historical data for these tickers is available without a token.
 
 - Try any stock endpoint with **AAPL**, no token required.
 - Try any option endpoint with any AAPL contract, for example: **AAPL250117C00150000**. No token required.
 - Try any index endpoint using **VIX**, no token required.
+
+## IP Address Restrictions
+
+To avoid account sharing, the Market Data API allows a single IP address for each account to be used at a time. If your IP address changes, your account will be temporarily blocked for security reasons even if you are authenticated. Please wait 5 minutes before trying again.
