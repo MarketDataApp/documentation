@@ -23,7 +23,6 @@ The Starter Trial Plan mirrors the full Starter Plan in terms of features, with 
 
 ## What You Don't Get With the Starter Trial
 
-- **Real-Time Data**: Trial users do not get real-time data access. If you decide to subscribe, your data feed will be upgraded to real-time at the moment of subscription.
 - **Historical Data Access (All Tickers)**: Historical data access on tickers other than AAPL is limited to 1 year.
 - **Premium Endpoints (All Tickers)**: Get full access to our premium endpoints with all tickers.
 
@@ -34,8 +33,8 @@ Here's a quick comparison to help you understand the Starter Trial in relation t
 | Feature               | Free Forever | Starter Trial | Starter Plan  |
 |-----------------------|--------------|---------------|---------------|
 | API Credits           | 100 per day  | 10,000 per day | 10,000 per day |
-| Delayed Data          | ✅           | ✅            | ❌             |
-| Real-Time Data        | ❌           | ❌            | ✅             |
+| Delayed Data          | ✅           | ✅            | ✅             |
+| Real-Time Data        | ❌           | ❌            | ❌             |
 | Standard Endpoints    | ✅           | ✅            | ✅             |
 | Premium Endpoints     | ❌           | AAPL Only    | ✅             |
 | Historical Data       | 1 Year       | 1 Year       | 5 Years        |

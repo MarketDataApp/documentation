@@ -3,7 +3,7 @@ title: Plan Upgrades
 sidebar_position: 9
 ---
 
-At Market Data, we strive to make your experience with our services as seamless and positive as possible. When you decide to upgrade your plan, we ensure that your unused time is not wasted. The method we use to calculate your savings is the same, but the way you receive the credit is slightly different depending on whether you're moving from a monthly plan to an annual plan or from an annual plan to a monthly plan. Here’s how we calculate and apply your unused time towards your new plan:
+At Market Data, we strive to make your experience with our services as seamless and positive as possible. When you decide to upgrade your plan, we ensure that your unused time is not wasted. The method we use to calculate your savings is the same, but the way you receive the credit is slightly different depending on whether you're moving from a monthly plan to an annual plan or from an annual plan to a monthly plan. Here's how we calculate and apply your unused time towards your new plan:
 
 ## Switching from a Monthly Plan to an Annual Plan
 
@@ -18,7 +18,7 @@ If you decide to upgrade before your current monthly subscription period ends, w
 
 ### Examples
 
-Let’s look at two specific examples to understand how the discounts are calculated and applied when upgrading to an annual plan:
+Let's look at two specific examples to understand how the discounts are calculated and applied when upgrading to an annual plan:
 
 #### Example 1: From Monthly Starter Plan to Annual Starter Plan
 
@@ -59,27 +59,27 @@ When you upgrade to a different plan before your current annual subscription exp
 
 To give you a clearer picture, here are two examples of how the credit is calculated and applied:
 
-#### Example 1: Upgrading from Annual Trader Plan to Commercial Plan
+#### Example 1: Upgrading from Annual Trader Plan to Prime Plan
 
 - **Original Plan**: Annual Trader Plan costing $348/year.
-- **New Plan**: Commercial Plan costing $250/month ($8.33 per day)
+- **New Plan**: Prime Plan costing $250/month ($8.33 per day)
 
 **Scenario**: Suppose you decide to upgrade with 90 days left in your subscription year.
 
 - **Unused Time Calculation**: 90 days / 365 days = ~24.7% of the year left.
 - **Credit Amount**: 24.7% of $348 = $85.96.
-- **Application of Credit**: This $85.96 will be credited to your new Commercial plan, extending the renewal date by 11 days.
+- **Application of Credit**: This $85.96 will be credited to your new Prime plan, extending the renewal date by 11 days.
 
-#### Example 2: Upgrading from Annual Starter Plan to Commercial Plan
+#### Example 2: Upgrading from Annual Starter Plan to Prime Plan
 
 - **Original Plan**: Annual Starter Plan costing $108/year.
-- **New Plan**: Commercial Plan costing $250/month. ($8.33 per day)
+- **New Plan**: Prime Plan costing $250/month. ($8.33 per day)
 
 **Scenario**: Suppose you decide to upgrade with 200 days left in your subscription year.
 
 - **Unused Time Calculation**: 200 days / 365 days = ~54.8% of the year left.
 - **Credit Amount**: 54.8% of $108 = $59.18.
-- **Application of Credit**: This $59.18 will be credited to your new Commercial plan, extending the renewal date by 8 days.
+- **Application of Credit**: This $59.18 will be credited to your new Prime plan, extending the renewal date by 8 days.
 
 ## How To Get More Information
 

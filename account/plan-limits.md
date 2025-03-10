@@ -11,12 +11,12 @@ Most users don't run into trouble with our limits. However, if our standard plan
 
 ## Standard Plans
 
-|                       | Free Forever | Starter   | Trader    | Commercial Plans |
-|-----------------------|--------------|-----------|-----------|------------------|
-| Daily Credits         | 100          | 10,000    | 100,000   | No Limit         |
-| Historical Data       | 1 Year       | 5 Years   | No Limit  | No Limit         |
-| Data Type             | Delayed      | Real-time | Real-time | Real-time        |
-| API Endpoints         | Standard     | Premium   | Premium   | Premium + Custom |
+|                       | Free Forever | Starter   | Trader    | Prime Plans |
+|-----------------------|--------------|-----------|-----------|--------------|
+| Daily Credits         | 100          | 10,000    | 100,000   | No Limit      |
+| Historical Data       | 1 Year       | 5 Years   | No Limit   | No Limit      |
+| Data Type             | Delayed      | Delayed   | Real-time   | Real-time     |
+| API Endpoints         | Standard     | Premium   | Premium     | Premium + Custom |
 
 ## Credits
 Each time you make a request to the API, the system will increase your credits counter. Normally each successful response will increase your counter by 1 and each call to our API will be counted once. However, **if you request multiple symbols in a single API call using the bulkquotes, bulkcandles, or option chain endpoint, a request will be used for each symbol that is included in the response**. 
@@ -33,7 +33,7 @@ To comply with exchange regulations regarding data redistribution, all plans are
 - Multiple simultaneous connections from different devices are not permitted
 - Account sharing and data redistribution are prohibited without a commercial license
 
-These restrictions are enforced across all plans to ensure compliance with exchange regulations that prohibit unauthorized data redistribution. Commercial plans requiring multi-device access should contact sales for appropriate licensing options.
+These restrictions are enforced across all plans to ensure compliance with exchange regulations that prohibit unauthorized data redistribution. Prime plans requiring multi-device access should contact sales for appropriate licensing options.
 
 #### Throttling
 
@@ -45,15 +45,15 @@ The Free Forever and Starter plans include historical age limits on historical d
 
 ## Data Type
 
-The Free Forever plan provides users with delayed data. All paid plans offer real-time data.
+The Free Forever and Starter plans provide users with delayed data. Real-time data is available with Trader and Prime plans.
 
 :::info
-Free trials of paid plans also provide delayed data. Only the paid versions of the Starter and Trader plans offer acccess to real-time data.
+Free trials of paid plans provide delayed data. Real-time data is only available with paid versions of the Trader plan and above.
 :::
 
 ## API Endpoints
 
-The Free Forever plan only provides access to pricing data. Premium endpoints and spreadsheet formulas that contain reference data are not available on free plans. In addition to our public endpoints, Commercial plans also have access to custom-built endpoints to satisfy the needs of their specific application.
+The Free Forever plan only provides access to pricing data. Premium endpoints and spreadsheet formulas that contain reference data are not available on free plans. In addition to our public endpoints, Prime plans also have access to custom-built endpoints to satisfy the needs of their specific application.
 
 ## About Daily Limits
 
