@@ -171,4 +171,14 @@ You can try stock, option, and index endpoints with several different symbols th
 
 ## IP Address Restrictions
 
-To avoid account sharing, the Market Data API allows a single IP address for each account to be used at a time. If your IP address changes, your account will be temporarily blocked for security reasons even if you are authenticated. Please wait 5 minutes before trying again.
+Due to exchange regulations prohibiting data redistribution without a commercial license, Market Data strictly enforces a single device policy. This means:
+
+1. Only one IP address is allowed per account at any given time
+2. Multiple simultaneous connections from different IP addresses are not permitted
+3. Account sharing or data redistribution is strictly prohibited
+
+If your IP address changes, your account will be temporarily blocked for security reasons, even if you are authenticated. This is to prevent unauthorized data redistribution and ensure compliance with exchange regulations. Please wait 5 minutes before trying again.
+
+:::warning
+Attempting to circumvent these restrictions by sharing accounts or redistributing data will result in permanent account suspension.
+:::
