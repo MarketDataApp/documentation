@@ -5,7 +5,7 @@ sidebar_position: 9
 
 The `feed` parameter allows the user to modify the data feed used for the API's response, forcing it to use cached data.
 
-Our API offers four types of data feeds: `live`, `cached`, `delayed`, and `historical`. These options are designed to meet diverse user needs, balancing between the immediacy of data and cost efficiency. Below is a detailed overview of each feed type, including examples and use-cases to help you choose the best option for your requirements.
+Our API offers three types of data feeds: `live`, `cached`, and `delayed`. These options are designed to meet diverse user needs, balancing between the immediacy of data and cost efficiency. Below is a detailed overview of each feed type, including examples and use-cases to help you choose the best option for your requirements.
 
 :::info Premium Parameter
 This parameter can only be used with paid plans. Free plans and trial plans do not have the ability to control their data feed. Free plans will always receive delayed data.
@@ -82,42 +82,19 @@ To access delayed data, include `feed=delayed` in your API request. For example:
 GET https://api.marketdata.app/v1/options/chain/SPY/?feed=delayed
 ```
 
-This query retrieves data that is at least 15 minutes old, allowing compliance with exchange regulatory requirements.
-
-## Historical Feed
-
-The `historical` feed provides data that is delayed by 1 day. Data becomes historical only after the opening bell of the next session. For example, the closing price on Friday would not be considered historical until the opening bell on Monday.
-
-### Pricing for Historical Feed
-
-- Pricing is the same as the live feed.
-
-### Use-Case for Historical Feed
-
-The `historical` feed is designed for commercial users who are redistributing data to clients. This is useful for compliance with specific exchange redistribution requirements.
-
-### Requesting Historical Data
-
-To access historical data, include `feed=historical` in your API request. For example:
-
-```http
-GET https://api.marketdata.app/v1/options/chain/SPY/?feed=historical
-```
-
-Historical data can typically be redistributed at no additional cost apart from your Market Data plan. Please note that a commercial plan is required for any redistribution.
+This query retrieves data that is at least 15 minutes old.
 
 ## Feed Comparison
 
-| Feature                  | Live Feed                       | Cached Feed                    | Delayed Feed                   | Historical Feed               |
-|--------------------------|---------------------------------|--------------------------------|--------------------------------|-------------------------------|
-| **Data Timeliness**      | Real-time, up-to-the-second data | Seconds to minutes old | Delayed by 15 minutes     | Delayed by 1 day         |
-| **Pricing**              | 1 credit per symbol with quote data | 1 credit per request, regardless of symbol count | Same as live feed              | Same as live feed             |
-| **Ideal Use-Case**       | Time-sensitive decisions requiring the latest data | Large volumes of data at lower cost | Compliance with data redistribution regulations | Compliance with data redistribution regulations |
-| **Default Option**       | Yes for Paid accounts (if `feed` parameter is omitted) | No (must specify `feed=cached`) | Yes for Free and Trial accounts (cannot change feed) | No (must specify `feed=historical`) |
-| **Paid Accounts Access** | ✅ | ✅ | ✅ | ✅ |
-| **Free/Trial Accounts Access** | ❌ | ❌ | ✅ | ❌ |
+| Feature                  | Live Feed                       | Cached Feed                    | Delayed Feed                   |
+|--------------------------|---------------------------------|--------------------------------|--------------------------------|
+| **Data Timeliness**      | Real-time, up-to-the-second data | Seconds to minutes old | Delayed by 15 minutes     |
+| **Pricing**              | 1 credit per symbol with quote data | 1 credit per request, regardless of symbol count | Same as live feed              |
+| **Ideal Use-Case**       | Time-sensitive decisions requiring the latest data | Large volumes of data at lower cost | Non-time-sensitive applications |
+| **Default Option**       | Yes for Paid accounts (if `feed` parameter is omitted) | No (must specify `feed=cached`) | Yes for Free and Trial accounts (cannot change feed) |
+| **Paid Accounts Access** | ✅ | ✅ | ✅ |
+| **Free/Trial Accounts Access** | ❌ | ❌ | ✅ |
 
 - **Opt for the `live` feed** when you require the most current data for each symbol, and the immediate freshness of the data justifies the additional credits.
 - **Select the `cached` feed** for bulk data retrieval or when working with a larger set of symbols, to capitalize on the cost efficiency of retrieving extensive data at a lower price.
-- **Choose the `delayed` feed** for scenarios where data timeliness is less critical, but compliance with redistribution regulations is necessary.
-- **Use the `historical` feed** for accessing data that is at least one day old, ensuring compliance with specific exchange redistribution requirements.
+- **Choose the `delayed` feed** for scenarios where data timeliness is less critical.
