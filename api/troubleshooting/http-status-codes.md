@@ -28,6 +28,7 @@ If you believe your request is correct and you received a 4xx reply in error, pl
 - `400 BAD REQUEST` - The API endpoint is not being used properly, often due to a parameter that cannot be parsed correctly (e.g., sending a string instead of a number or vice versa).
 - `401 UNAUTHORIZED` - The token supplied with the request is missing, invalid, or cannot be used.
 - `402 PAYMENT REQUIRED` - The requested action cannot be performed with your current plan, such as attempting to access historical data with a free plan or very old historical data with a Starter plan.
+- `403 FORBIDDEN` - Access denied. Only one device is permitted to access the API at a time. Your IP address has changed, and your account is temporarily blocked for security reasons. Please wait 5 minutes before trying again.
 - `404 NOT FOUND` - No data exists for the requested symbol or time period. Consider trying a different symbol or time frame.
 - `413 PAYLOAD TOO LARGE` - The request payload is too large. This is often due to requesting a time frame longer than 1 year for candle data. Resubmit the request with a time frame of 1 year or less.
 - `429 TOO MANY REQUESTS` - The daily request limit for your account has been exceeded. New requests will be allowed at 9:30 AM ET (opening bell).
