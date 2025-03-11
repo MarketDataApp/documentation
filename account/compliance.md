@@ -7,6 +7,12 @@ Exchange regulations require us to collect a broad range of information from all
 
 Please be aware that we are required to share this information with the exchanges, and they regularly review this information for accuracy.
 
+## Our Commitment to Your Privacy
+
+We understand that providing personal information can feel intrusive, and we want to assure you that we take your privacy seriously. The information we collect is strictly for compliance with exchange regulations. We apologize for any inconvenience this may cause and appreciate your understanding and cooperation.
+
+We are committed to using your information responsibly and only for the purposes outlined in this document. We do not sell or share your information with third parties beyond what is required by the exchanges.
+
 ## Information We Collect
 
 Contact information:
