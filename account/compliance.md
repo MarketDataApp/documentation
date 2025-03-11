@@ -15,16 +15,12 @@ We are committed to using your information responsibly and only for the purposes
 
 ## Information We Collect
 
-Contact information:
-- Name
-- Address
-- Email
-- Phone Number
-
-Employer information:
-- Company Name
-- Address
-- Job Title
+| Contact Information | Employer Information |
+|---------------------|----------------------|
+| Name                | Company Name         |
+| Address             | Address              |
+| Email               | Job Title            |
+| Phone Number        |                      |
 
 Customers employed by banks, insurance companies, or other financial institutions are required to undergo a more thorough review process.
 
