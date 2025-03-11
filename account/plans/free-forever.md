@@ -8,7 +8,7 @@ The **Free Forever Plan** is designed for users who want to explore Market Data'
 ## What You Get with Free Forever
 
 - **100 API Credits per Day**: Ideal for small-scale applications or personal projects.
-- **Delayed Data**: Access to data that is usually delayed by at least 15 minutes. We strive to provide this data on a "best effort" basis, meaning delays can vary.
+- **24-Hour Delayed Data**: Access to data that is delayed by at least 24 hours.
 - **Standard Endpoints**: Use most of our standard endpoints that offer pricing information, allowing you to integrate financial data into your applications.
 - **1 Year of Historical Data**: Explore and utilize historical data up to one year back for your analysis and projects.
 
@@ -16,6 +16,7 @@ The **Free Forever Plan** is designed for users who want to explore Market Data'
 
 While the Free Forever plan offers a great starting point, there are some limitations to be aware of:
 
+- **No 15-Minute Delayed Data**: Access to 15-minute delayed financial data is not available under this plan.
 - **No Real-Time Data**: Access to real-time financial data is not available under this plan.
 - **No Premium Endpoints**: Fundamental data, such as earnings data provided through our premium endpoints, are not accessible.
 - **Historical Data Limited to 1 Year**: If your project requires data older than one year, you would need to consider upgrading to a paid subscription.
@@ -26,11 +27,11 @@ To help you better understand the differences between our plans, here's a quick 
 
 | Feature               | Free Forever | Paid Plans  |
 |-----------------------|--------------|-------------|
-| Delayed Data          | ✅           | ❌          |
+| Historical Data       | 1 Year       | Full Access |
+| 15-Minute Delayed Data          | ❌           | ✅          |
 | Real-Time Data        | ❌           | ✅          |
 | Standard Endpoints    | ✅           | ✅          |
 | Premium Endpoints     | ❌           | ✅          |
-| Historical Data       | 1 Year       | Full Access |
 
 ## Why Choose Free Forever?
 

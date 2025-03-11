@@ -20,13 +20,15 @@ We are committed to using your information responsibly and only for the purposes
 | Name                | Company Name         |
 | Address             | Address              |
 | Email               | Job Title            |
-| Phone Number        |                      |
+| Phone Number        | LinkedIn Profile URL |
 
 Customers employed by banks, insurance companies, or other financial institutions are required to undergo a more thorough review process.
 
 ## Verification Process
 
-On sign-up, we will review your account profile and verify the information you provided to us matches third-party databases such as LinkedIn. We will review FINRA BrokerCheck to determine if you hold any active licenses.
+On sign-up, we will review your account profile and verify the information you provided to us matches third-party databases such as LinkedIn. We will also review FINRA BrokerCheck to determine if you hold any active securities licenses. The goal of this process is to classify your data use as either a professional or non-professional data user.
+
+Profiles that are missing contact or employer information will not be classified until all the information is provided. By providing _all required information_, you allow us to complete the verification process quickly and fully activate your account. Until the verification process is complete, your account cannot be activated for real-time data.
 
 ### Missing or Mismatching Information
 
