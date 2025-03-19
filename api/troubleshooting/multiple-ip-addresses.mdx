@@ -1,0 +1,51 @@
+---
+title: Multiple IP Addresses
+sidebar_position: 5
+---
+
+If you encounter an issue where your account is temporarily blocked due to accessing the API from multiple devices, follow these steps to resolve it:
+
+## Problem
+
+Your account is blocked because it was accessed from multiple IP addresses in a pattern that suggests simultaneous device usage. While changing IP addresses is permitted, rapidly switching back and forth between previously used IP addresses indicates multiple active devices, which is against our policy.
+
+### How It Works
+
+When you access the API:
+- Each new IP address you connect from is recorded
+- If you connect from IP address A, then switch to IP address B, that's perfectly fine
+- However, if you then switch back to IP address A while IP address B is still active, this suggests two devices are being used simultaneously
+- This pattern triggers an automatic temporary block on your account
+
+### Common Scenarios
+
+1. **VPN Usage**: If you connect to a VPN, then disconnect, your IP address may change. This can happen if you frequently switch between a VPN and your regular network.
+
+2. **Wi-Fi Network Changes**: Switching between different Wi-Fi networks in a short period can result in different IP addresses being used.
+
+3. **Load Balancing**: Servers making outgoing requests might use multiple IP addresses, especially if they are part of a load-balanced setup or if they use multiple network interfaces.
+
+4. **Proxy Usage**: Using proxies or rotating proxies can cause your requests to appear from different IP addresses.
+
+5. **Cloud Functions**: Cloud services like Amazon Web Services, Google Cloud, or Azure may send requests from ephemeral instances that change IP addresses frequently.
+
+6. **Google Apps Script**: Using UrlFetch in Google Apps Script can result in requests coming from different IP addresses, as Google's infrastructure will rotate requests through various servers.
+
+## Solution
+
+1. **Wait for 5 Minutes**: The block is temporary. Wait for 5 minutes before attempting to access the API again. During this time, ensure all your devices stop their API access.
+
+2. **Use a Single Active Device**: While you can change devices or IP addresses:
+   - Make sure to completely stop API access from your previous device before switching
+   - Do not switch devices more than once every 5 minutes
+   - Do not attempt to connect using multiple devices
+
+3. **For Cloud Systems**: If you're running cloud systems that make API calls:
+   - Use a single cloud instance to make API calls
+   - Ensure old instances are fully terminated before starting new ones
+
+## Important Note
+
+The system is designed to detect patterns of simultaneous access, not just IP changes. While you are permitted to change devices, attempting to maintain multiple active connections from different IPs will result in account blocks.
+
+For further assistance, please contact our support team.
