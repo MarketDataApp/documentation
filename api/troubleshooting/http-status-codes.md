@@ -46,7 +46,7 @@ Server errors are used to indicate problems with Market Data's service. They are
 
 Most 5xx errors are temporary and resolve themselves on their own. Please retry requests that receive 5xx errors at a later time and they will probably be successful.
 
-- `502 BAD GATEWAY` - Market Data's API server does not respond to the gateway, indicating the API is offline or unreachable.
+- `502 BAD GATEWAY` - Market Data's API server does not respond to the gateway, indicating the API is offline or unreachable. This error is normally sporadic and due to network issues and will typically resolve itself within 1-2 minutes.
 - `503 SERVICE UNAVAILABLE` - Market Data's API server is accessible but cannot fulfill the request, usually due to server overload. Retry the request in a few minutes.
 - `504 GATEWAY TIMEOUT` - Market Data's load balancer received no response from the API, suggesting the request is taking too long to resolve. Retry in 1-2 minutes and report to the helpdesk if the issue persists.
 - `509 API ENDPOINT OVERLOADED` - The endpoint is currently overloaded. Retry in a few minutes and report to the helpdesk if the issue continues for more than 15 minutes.
