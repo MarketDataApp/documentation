@@ -3,49 +3,79 @@ title: Multiple IP Addresses
 sidebar_position: 5
 ---
 
+:::info Automatic Resolution
+If your account is blocked, you do not need to contact support. The block will automatically resolve after 5 minutes if you stop making API requests. Simply wait 5 minutes without making any requests from the blocked IP address, then resume with a single device or IP address.
+
+During the block, you can continue making requests from the previously authorized IP address.
+:::
+
 If you encounter an issue where your account is temporarily blocked due to accessing the API from multiple devices, follow these steps to resolve it:
 
 ## Problem
 
-Your account is blocked because it was accessed from multiple IP addresses in a pattern that suggests simultaneous device usage. While changing IP addresses is permitted, rapidly switching back and forth between previously used IP addresses indicates multiple active devices, which is against our policy.
+Your account is blocked because it was accessed from multiple IP addresses in a pattern that suggests simultaneous device usage. While **changing IP addresses is permitted**, rapidly switching back and forth between previously used IP addresses indicates multiple active devices, which is against our policy.
+
+When this occurs, you'll receive an error response that includes detailed information to help you identify the source of the conflict:
+
+```json
+{
+  "s": "error",
+  "errmsg": "Access denied. Only one device is permitted. Your IP address has changed, and your account is temporarily blocked for security reasons. Please wait 5 minutes before trying again.",
+  "authorizedIP": "107.178.202.2",
+  "blockedIP": "44.116.21.32",
+  "troubleshootingGuide": "https://www.marketdata.app/docs/api/troubleshooting/multiple-ip-addresses"
+}
+```
+
+The error response includes:
+- The IP address of your previous request (`authorizedIP`)
+- The IP address of your current request (`blockedIP`)
+
+You can use these IP addresses to:
+1. Identify which devices or services are making the conflicting requests.
+2. Check if the IPs match known ISPs, VPNs, cloud services, or other servers you're using.
+3. Compare with your network configuration to determine if load balancing, round-robin outgoing requests, or failover is causing the issue.
 
 ### How It Works
 
 When you access the API:
 - Each new IP address you connect from is recorded
-- If you connect from IP address A, then switch to IP address B, that's perfectly fine
-- However, if you then switch back to IP address A while IP address B is still active, this suggests two devices are being used simultaneously
-- This pattern triggers an automatic temporary block on your account
+- If you connect from IP address A, then switch to IP address B, that's permitted.
+- However, if you then switch back to IP address A while IP address B is still active within 5 minutes, this suggests two devices are being used simultaneously.
+- This pattern triggers an **automatic temporary block** on your account.
+- During the block, you can continue making requests from your previously authorized IP address.
+- After the block expires, you can switch to a different IP address again, but should avoid switching back to recently used IPs.
 
 ### Common Scenarios
 
-1. **VPN Usage**: If you connect to a VPN, then disconnect, your IP address may change. This can happen if you frequently switch between a VPN and your regular network.
+1. **VPN Usage**: If you connect to a VPN, then disconnect, your IP address may change back and forth rapidly. This can happen if you frequently switch between a VPN and your regular network.
 
-2. **Wi-Fi Network Changes**: Switching between different Wi-Fi networks in a short period can result in different IP addresses being used.
+2. **Wi-Fi Network Changes**: Switching between different Wi-Fi networks in a short period can result in different IP addresses being used within a single five minute period.
 
-3. **Load Balancing**: Servers making outgoing requests might use multiple IP addresses, especially if they are part of a load-balanced setup or if they use multiple network interfaces.
+3. **Load Balancing**: Servers making outgoing requests might use multiple IP addresses, especially if they are part of a load-balanced setup, round-robin configuration, or if they use multiple network interfaces.
 
-4. **Proxy Usage**: Using proxies or rotating proxies can cause your requests to appear from different IP addresses.
+4. **Proxy Usage**: Using proxies or rotating proxies can cause your requests to appear from different IP addresses even if you are using the same device.
 
 5. **Cloud Functions**: Cloud services like Amazon Web Services, Google Cloud, or Azure may send requests from ephemeral instances that change IP addresses frequently.
 
-6. **Google Apps Script**: Using UrlFetch in Google Apps Script can result in requests coming from different IP addresses, as Google's infrastructure will rotate requests through various servers.
+6. **Google Apps Script**: Using UrlFetch in Google Apps Script can result in requests coming from different IP addresses simultaneously, as Google's infrastructure will rotate requests through various servers.
 
 ## Solution
 
 1. **Wait for 5 Minutes**: The block is temporary. Wait for 5 minutes before attempting to access the API again. During this time, ensure all your devices stop their API access.
 
 2. **Use a Single Active Device**: While you can change devices or IP addresses:
-   - Make sure to completely stop API access from your previous device before switching
-   - Do not switch devices more than once every 5 minutes
-   - Do not attempt to connect using multiple devices
+   - Make sure to completely stop API access from your previous device before switching.
+   - Do not switch devices more than once every 5 minutes.
+   - Do not attempt to connect using multiple devices.
 
 3. **For Cloud Systems**: If you're running cloud systems that make API calls:
-   - Use a single cloud instance to make API calls
-   - Ensure old instances are fully terminated before starting new ones
+   - Use a single cloud instance to make API calls.
+   - Ensure old instances are fully terminated before starting new ones.
+   - Purchase a dedicated IP address for your cloud instance if it will be starting and stopping frequently.
 
 ## Important Note
 
-The system is designed to detect patterns of simultaneous access, not just IP changes. While you are permitted to change devices, attempting to maintain multiple active connections from different IPs will result in account blocks.
+The system is designed to detect patterns of simultaneous access, not just IP changes. While you are permitted to change devices, attempting to maintain multiple active connections from different computers will result in account blocks.
 
 For further assistance, please contact our support team.
