@@ -1,6 +1,6 @@
 ---
 title: Prime Plan
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 The **Prime Plan** is Market Data's most robust offering, designed for high-powered traders and investors who require extensive data access and customization options. This plan is tailored to meet the needs of sophisticated trading operations, offering unparalleled data access with the flexibility to handle massive volumes of API requests. Here's a comprehensive overview of the Prime Plan.
