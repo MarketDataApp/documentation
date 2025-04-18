@@ -8,7 +8,7 @@ Market Data is excited to offer a **30-day free trial** of our Starter Plan, no 
 ## What You Get with the Starter Trial Plan
 
 - **10,000 API Credits per Day**: Experience the increased capacity for API requests and see how it supports larger projects.
-- **24-Hour Delayed Data**: Access to data that is delayed by at least 24 hours.
+- **24-Hour Delayed Data for Stocks and Options**: Access to data that is delayed by at least 24 hours for both stocks and options.
 - **1 Year Of Historical Data Access**: Explore our extensive historical data archives and fetch data from the last year.
 - **Full Historical Data Access (AAPL Ticker)**: Fetch complete historical data from our extensive archives for the AAPL ticker with no date restrictions.
 - **Premium Endpoints (AAPL Ticker)**: Explore our premium endpoints using the AAPL ticker, including fundamental data like earnings.
@@ -23,8 +23,8 @@ The Starter Trial Plan mirrors the full Starter Plan in terms of features, with 
 
 ## What You Don't Get With the Starter Trial
 
-- **No 15-Minute Delayed Data**: Access to 15-minute delayed financial data is not available under this trial.
-- **No Real-Time Data**: Real-time data access is not included in the trial.
+- **No Real-Time Stock Data**: Access to real-time stock data is not included in the trial.
+- **No 15-Minute Delayed Options Data**: Access to 15-minute delayed options data is not available under this trial.
 - **Historical Data Access (All Tickers)**: Historical data access on tickers other than AAPL is limited to 1 year.
 - **Premium Endpoints (All Tickers)**: Get full access to our premium endpoints with all tickers.
 
@@ -35,9 +35,9 @@ Here's a quick comparison to help you understand the Starter Trial in relation t
 | Feature               | Free Forever | Starter Trial | Starter Plan  |
 |-----------------------|--------------|---------------|---------------|
 | API Credits           | 100 per day  | 10,000 per day | 10,000 per day |
-| Historical Data       | 1 Year       | 1 Year       | 5 Years        |
-| 15-Minute Delayed Data          | ❌           | ❌            | ✅             |
-| Real-Time Data        | ❌           | ❌            | ❌             |
+| Stock Data Delay      | 24 hours     | 24 hours      | Real-time     |
+| Options Data Delay    | 24 hours     | 24 hours      | 15 minutes    |
+| Historical Data       | 1 Year       | 1 Year        | 5 Years       |
 | Standard Endpoints    | ✅           | ✅            | ✅             |
 | Premium Endpoints     | ❌           | AAPL Only     | ✅             |
 
