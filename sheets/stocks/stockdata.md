@@ -15,7 +15,7 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
 ```excel-formula
 =STOCKDATA("AAPL,MSFT,TSLA")
 =STOCKDATA("AAPL,MSFT,TSLA", "all")
-=STOCKDATA("A1:A500", "bid,ask,last")
+=STOCKDATA(A1:A500, "bid,ask,last")
 ```
 
 ## Sample Usage For Candles
