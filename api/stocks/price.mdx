@@ -1,0 +1,142 @@
+---
+title: Real-Time Price tg h
+sidebar_position: 1
+tags:
+  - "API: High Usage"
+---
+
+Get a real-time midpoint price for a stock. This endpoint returns a single real-time price for a stock, using the [SmartMid](https://www.marketdata.app/smart-mid/) model.
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+## Endpoint
+```
+https://api.marketdata.app/v1/stocks/price/{symbol}/
+```
+#### Method
+```
+GET
+```
+## Request Example
+
+<Tabs>
+<TabItem value="HTTP" label="HTTP" default>
+
+**GET** [https://api.marketdata.app/v1/stocks/price/AAPL/](https://api.marketdata.app/v1/stocks/price/AAPL/)
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
+```js title="app.js"
+fetch("https://api.marketdata.app/v1/stocks/price/AAPL/")
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```python title="app.py"
+import requests
+
+url = "https://api.marketdata.app/v1/stocks/price/AAPL/"
+response = requests.request("GET", url)
+
+print(response.text)
+```
+
+</TabItem>
+<TabItem value="Go" label="Go">
+
+```go title="stockQuote.go"
+
+import (
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func ExampleStockQuoteRequest() {
+	quotes, err := StockQuote().Symbol("AAPL").Get()
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+
+	for _, quote := range quotes {
+		fmt.Println(quote)
+	}
+}
+```
+</TabItem>
+</Tabs>
+
+## Response Example
+
+```json
+{
+  "s": "ok",
+  "symbol": ["AAPL"],
+  "mid": [149.07],
+  "volume": [66959442],
+  "updated": [1663958092]
+}
+```
+
+## Request Parameters
+
+<Tabs>
+<TabItem value="required" label="Required" default>
+
+- **symbol** `string`
+
+  The company's ticker symbol.
+
+</TabItem>
+</Tabs>
+
+## Response Attributes
+
+<Tabs>
+<TabItem value="Success" label="Success" default>
+
+- **s** `string`
+
+  Will always be `ok` when there is data for the symbol requested.
+
+- **mid** `array[number]`
+
+  The midpoint price, as calculated by the [SmartMid](https://www.marketdata.app/smart-midpoint/) model.
+
+- **volume** `array[number]`
+
+  The number of shares traded during the current session.
+
+- **updated** `array[date]`
+
+  The date/time of the stock price.
+
+</TabItem>
+<TabItem value="NoData" label="No Data">
+
+- **s** `string`
+
+  Status will be `no_data` if no price can be found for the symbol.
+
+</TabItem>
+<TabItem value="Error" label="Error">
+
+- **s** `string`
+
+  Status will be `error` if the request produces an error response.
+
+- **errmsg** `string`
+  An error message.
+
+</TabItem>
+</Tabs>
