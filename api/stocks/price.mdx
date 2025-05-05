@@ -7,7 +7,6 @@ tags:
 
 Get a real-time midpoint price for a stock. This endpoint returns a single real-time price for a stock, using the [SmartMid](https://www.marketdata.app/smart-mid/) model.
 
-import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
 ## Endpoint
@@ -50,29 +49,6 @@ response = requests.request("GET", url)
 print(response.text)
 ```
 
-</TabItem>
-<TabItem value="Go" label="Go">
-
-```go title="stockQuote.go"
-
-import (
-  "fmt"
-
-  api "github.com/MarketDataApp/sdk-go"
-)
-
-func ExampleStockQuoteRequest() {
-	quotes, err := StockQuote().Symbol("AAPL").Get()
-	if err != nil {
-		fmt.Print(err)
-		return
-	}
-
-	for _, quote := range quotes {
-		fmt.Println(quote)
-	}
-}
-```
 </TabItem>
 </Tabs>
 
