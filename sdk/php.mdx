@@ -30,16 +30,6 @@ $client = new MarketDataApp\Client('your_api_token');
 ### Fetch Data
 
 ```php
-// Indices
-$quote = $client->indices->quote('VIX');
-$quotes = $client->indices->quotes(['VIX', 'DJI']);
-$candles = $client->indices->candles(
-    symbol: "VIX",
-    from: '2022-09-01',
-    to: '2022-09-05',
-    resolution: 'D'
-);
-
 // Stocks
 $candles = $client->stocks->candles('AAPL');
 $bulk_candles = $client->stocks->bulkCandles(['AAPL, MSFT']);
