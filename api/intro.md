@@ -26,7 +26,6 @@ You can try stock, option, index, and mutual fund endpoints with several differe
 
 - Stock endpoints: Use **AAPL**.
 - Options endpoints: Use any AAPL contract, for example: **AAPL250117C00150000**.
-- Index endpoints: Use **VIX**.
 - Mutual fund endpoints: Use **VFINX**.
 
 Once you would like to experiment with other symbols, [register a free account](https://www.marketdata.app/signup/) (no credit card required) and you be able to choose a free trial. After your trial ends, if you decide not to subscribe, you will still get 100 free requests per day. Make the decision to pay only after making a complete trial of our API.

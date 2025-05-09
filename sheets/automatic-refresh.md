@@ -26,7 +26,6 @@ Place `=GOOGLEFINANCE("AAPL")` in a cell somewhere in your workbook. For this ex
 ```excel-formula
 =OPTIONDATA("AAPL260116C00150000","all,"&A1)
 =STOCKDATA("AAPL","all,"&A1)
-=INDEXDATA("VIX","all,"&A1)
 ```
 
 #### Why Is GOOGLEFINANCE Needed?
