@@ -3,8 +3,6 @@ title: Unknown Function Error
 sidebar_position: 7
 ---
 
-# Troubleshooting the #NAME Error in the Market Data Add-on
-
 When you encounter a #NAME error in your spreadsheet while using the Market Data Google Sheets add-on, it typically indicates that the add-on hasn't been properly initialized or connected to your open spreadsheet. This prevents you from using any of the market data functions like =STOCKDATA(), =OPTIONDATA(), etc.
 
 If you've already activated the add-on in your Google account but still see this error, here are several solutions to resolve the issue:
