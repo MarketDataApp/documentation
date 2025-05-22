@@ -7,10 +7,10 @@ Fetches a current or historical option quote from Market Data.
 
 ## Sample Usage
 ```excel-formula
-=OPTIONDATA("AAPL250117C00150000")
-=OPTIONDATA("AAPL250117C00150000", "bid")
-=OPTIONDATA("AAPL250117C00150000", "date,bid,ask", "9/1/2022", "1/31/2023")
-=OPTIONDATA("AAPL250117C00150000", "all", TODAY()-30, 30)
+=OPTIONDATA("AAPL271217C00250000")
+=OPTIONDATA("AAPL271217C00250000", "bid")
+=OPTIONDATA("AAPL271217C00250000", "date,bid,ask", "9/1/2022", "1/31/2023")
+=OPTIONDATA("AAPL271217C00250000", "all", TODAY()-30, 30)
 ```
 ## Syntax
 ```excel-formula
