@@ -33,8 +33,6 @@ Although there is no way to determine how many urlfetch calls can be made by you
 
 Google will block your account from making new urlfetch requests for 24 hours when you surpass the limit. When you see the urlfetch error message, you must wait a full 24 hours before making another request with the affected Google account.
 
-During this time, you may continue to use Market Data via the API or our Sheets Add-on in another Google account. The block is placed only on the Google account which exceeded the limit. Your use of Market Data with other Google accounts will not be affected. If you have a secondary Google account, you can continue to use the Sheets Add-on with that account.
-
 ## Strategies To Reduce Urlfetch Usage
 
 There are a number of strategies you can use to reduce your use of urlfetch calls.
@@ -76,16 +74,6 @@ Unless you are 100% sure that your other add-ons don't cause excessive recalcula
 
 ## Strategies to Increase Your Urlfetch Limit
 
-There are two main strategies you can use to increase your urlfetch limits if you cannot reduce your usage.
-
 ### Switch From Gmail To Google Workspace
 
 If you are currently using a standard Gmail account and find yourself frequently hitting the urlfetch limit, consider switching to a Google Workspace account. Google Workspace accounts often come with higher quotas for various services, including urlfetch. This upgrade can provide you with the additional capacity you need to continue using Market Data without interruptions.
-
-### Use Our Add-on With Multiple Gmail Accounts
-
-Another effective strategy is to use our Sheets Add-on with multiple Gmail accounts and switch between them throughout the day. By distributing your urlfetch requests across several accounts, you can effectively increase your overall quota. This approach allows you to continue accessing Market Data without waiting for the 24-hour reset period. Make sure to log out and log in with a different Gmail account when you approach the limit on one account.
-
-:::caution
-When using our Sheets Add-on with multiple Gmail accounts, ensure that you completely log out of all Google accounts before switching to a different one. Having [multiple Google accounts open simultaneously](/sheets/troubleshooting/multiple-google-accounts) is not supported by the Sheets Add-ons and will lead to errors. Always log out and log in with the desired account to ensure smooth operation.
-:::
