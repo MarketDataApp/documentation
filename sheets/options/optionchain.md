@@ -49,7 +49,6 @@ Fetches a current option chain from Market Data.
   - "gamma" - The gamma of the option.
   - "theta" - The theta of the option.
   - "vega" - The vega of the option.
-  - "rho" - The rho of the option.
   - "all" – Returns all values.
   - "noheaders" – Returns values without column headers.
 - **expiration date** - _(OPTIONAL)_ - The expiration date of the option chain. Options from this expiration will be returned. If no value is specified, the next monthly expiration will be used.
