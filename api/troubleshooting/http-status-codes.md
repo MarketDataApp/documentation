@@ -51,7 +51,7 @@ Most 5xx errors are temporary and resolve themselves on their own. Please retry 
 - `504 GATEWAY TIMEOUT` - Market Data's load balancer received no response from the API, suggesting the request is taking too long to resolve. Retry in 1-2 minutes and report to the helpdesk if the issue persists.
 - `509 API ENDPOINT OVERLOADED` - The endpoint is currently overloaded. Retry in a few minutes and report to the helpdesk if the issue continues for more than 15 minutes.
 - `524 A TIMEOUT OCCURRED` - The Market Data API failed to provide an HTTP response before the default 100-second connection timeout, possibly due to server overload or resource struggles. Contact support if this continues for more than 15 minutes.
-- `529 DATABASE OFFLINE` - The database is offline, overloaded, or not responding. Contact support@marketdata.app or submit a ticket if this error persists for more than 15 minutes.
-- `530 DATABASE ERROR` - The request resulted in a database error. Contact support@marketdata.app or submit a ticket with your API request details.
+- `529 DATABASE OFFLINE` - The database is offline, overloaded, or not responding. Contact support or submit a ticket if this error persists for more than 15 minutes.
+- `530 DATABASE ERROR` - The request resulted in a database error. Contact support or submit a ticket with your API request details.
 - `540 API ENDPOINT OFFLINE` - The Market Data API endpoint expected to respond is offline. Report to the helpdesk if this persists for more than 15 minutes.
 - `598 API GATEWAY OFFLINE` - The gateway server is not responding or is unavailable. Report to the helpdesk if this issue continues for more than 15 minutes.

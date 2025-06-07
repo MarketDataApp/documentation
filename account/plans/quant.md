@@ -9,7 +9,7 @@ The **Quant Plan** is Market Data's offering designed for high-powered traders a
 
 - **No Daily Limit on API Credits**: Enjoy unrestricted access to our API, designed to support the most demanding data needs without the worry of hitting daily limits.
 - **10,000 Credits Per Minute**: While there's no daily limit, the plan is subject to a generous per-minute rate limit to ensure optimal performance for all users.
-- **Real-Time Data**: Access up-to-the-second financial data, ensuring your trading decisions are based on the most current market information.
+- **Real-Time Data**: Access up-to-the-second financial data, ensuring your trading decisions are based on the most current market information. Note that real-time data is only available to users who qualify as non-professionals. [Learn more about professional status requirements](https://www.marketdata.app/education/stocks/professional-status-explained/).
 - **Premium + Custom API Endpoints**: Not only do you get access to all premium endpoints, but we also offer the possibility of custom-built endpoints to satisfy your specific trading requirements.
 - **Unlimited Historical Data**: There are no restrictions on the age of historical data you can access, making it ideal for deep historical analysis and backtesting.
 

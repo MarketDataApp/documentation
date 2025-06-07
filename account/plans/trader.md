@@ -8,7 +8,7 @@ The **Trader Plan** is specifically designed for high-volume users and traders w
 ## What You Get with the Trader Plan
 
 - **100,000 API Credits per Day**: Cater to high-demand projects with an extensive number of daily API requests.
-- **Real-Time Data for Stocks and Options**: Immediate access to financial data for both stocks and options, ensuring you're always working with the most current information.
+- **Real-Time Data for Stocks and Options**: Immediate access to financial data for both stocks and options, ensuring you're always working with the most current information. Note that real-time data is only available to users who qualify as non-professionals. [Learn more about professional status requirements](https://www.marketdata.app/education/stocks/professional-status-explained/).
 - **Full Historical Data Access**: Unrestricted access to our entire historical data archive, perfect for deep historical analysis and backtesting without limitations.
 - **Premium Endpoints**: Full access to all our premium endpoints, including detailed fundamental data, to provide a comprehensive view of market dynamics.
 

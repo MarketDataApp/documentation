@@ -8,7 +8,7 @@ The **Starter Plan** is tailored for users who require more from their financial
 ## What You Get with the Starter Plan
 
 - **10,000 API Credits per Day**: A significant increase in daily API requests to support larger projects.
-- **Real-Time Stock Data**: Access to real-time market data for stocks, ensuring you're working with current information.
+- **Real-Time Stock Data**: Access to real-time market data for stocks, ensuring you're working with current information. Note that real-time data is only available to users who qualify as non-professionals. [Learn more about professional status requirements](https://www.marketdata.app/education/stocks/professional-status-explained/).
 - **15-Minute Delayed Options Data**: Access to options data with a 15-minute delay.
 - **5 Years of Historical Data**: Dive deeper into financial trends with access to data going back five years, ideal for thorough analysis and backtesting.
 - **Premium Endpoints**: Unlock our all our premium endpoints, including fundamental data like earnings, for a comprehensive understanding of market dynamics.

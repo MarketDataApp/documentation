@@ -38,7 +38,6 @@ Fetches a current or historical option quote from Market Data.
   - "gamma" - The gamma of the option.
   - "theta" - The theta of the option.
   - "vega" - The vega of the option.
-  - "rho" - The rho of the option.
   - "all" – Returns all values.
   - "noheaders" – Returns values without column headers.
 - **start date** _(OPTIONAL)_ – The start date when fetching historical data. If start date is specified, but endDate is not, only the single day’s data is returned.
