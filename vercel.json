@@ -17,6 +17,10 @@
       "destination": "https://docs.marketdata.app/:subdir*"
     },
     {
+      "source": "/robots.txt",
+      "destination": "/static/robots.txt"
+    },
+    {
       "source": "/(.*)",
       "destination": "/"
     }
