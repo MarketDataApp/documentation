@@ -9,8 +9,8 @@ require("dotenv").config();
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title:
-    process.env.PROD == "true" ? "Market Data Docs" : "Market Data Docs (dev)",
-  tagline: "The Complete Reference For All Market Data Products & Services",
+    process.env.PROD == "true" ? "Market Data" : "Market Data Docs (dev)",
+  tagline: "Complete Documentation For All Market Data Products & Services",
 
   url:
     process.env.PROD == "true"
