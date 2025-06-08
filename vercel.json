@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/docs/sdk/",
+      "destination": "/docs/sdk"
+    },
+    {
+      "source": "/docs-staging/sdk/",
+      "destination": "/docs-staging/sdk"
+    },
+    {
       "source": "/docs-staging/sdk-php/",
       "destination": "/sdk-php/index.html"
     },
