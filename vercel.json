@@ -1,6 +1,38 @@
 {
   "rewrites": [
     {
+      "source": "/docs/sdk/",
+      "destination": "/docs/sdk"
+    },
+    {
+      "source": "/docs-staging/sdk/",
+      "destination": "/docs-staging/sdk"
+    },
+    {
+      "source": "/docs/api/",
+      "destination": "/docs/api"
+    },
+    {
+      "source": "/docs-staging/api/",
+      "destination": "/docs-staging/api"
+    },
+    {
+      "source": "/docs/account/",
+      "destination": "/docs/account"
+    },
+    {
+      "source": "/docs-staging/account/",
+      "destination": "/docs-staging/account"
+    },
+    {
+      "source": "/docs/sheets/",
+      "destination": "/docs/sheets"
+    },
+    {
+      "source": "/docs-staging/sheets/",
+      "destination": "/docs-staging/sheets"
+    },
+    {
       "source": "/docs-staging/sdk-php/",
       "destination": "/sdk-php/index.html"
     },
