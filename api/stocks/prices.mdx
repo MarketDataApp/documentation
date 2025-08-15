@@ -113,6 +113,8 @@ print(response.text)
   "s": "ok",
   "symbol": ["AAPL", "META", "MSFT"],
   "mid": [149.07, 320.45, 380.12],
+  "change": [-2.052, 1.23, -0.85],
+  "changepct": [-0.0088, 0.0039, -0.0022],
   "updated": [1663958092, 1663958092, 1663958092]
 }
 ```
@@ -133,6 +135,16 @@ You can provide the symbol(s) in one of two ways:
      Comma-separated list of ticker symbols.
 
 </TabItem>
+<TabItem value="Optional" label="Optional">
+
+- **extended** `boolean`
+
+  Control the inclusion of extended hours data in the price output. Defaults to `true` if omitted. 
+
+  - When set to `true`, the most recent price is always returned, without regard to whether the market is open for primary trading or extended hours trading.
+  - When set to `false`, only prices from the primary trading session are returned. When the market is closed or in extended hours, a historical price from the last closing bell of the primary trading session is returned instead of an extended hours price. 
+
+</TabItem>
 </Tabs>
 
 ## Response Attributes
@@ -151,6 +163,19 @@ You can provide the symbol(s) in one of two ways:
 - **mid** `array[number]`
 
   Array of midpoint prices, as calculated by the [SmartMid](https://www.marketdata.app/smart-mid/) model.
+
+- **change** `array[number]`
+
+  Array of price changes in currency units compared to the closing price of the previous primary trading session.
+
+- **changepct** `array[number]`
+
+  Array of price changes in percent, expressed as a decimal, compared to the closing price of the previous day. For example, a 3% change will be represented as 0.03.
+
+:::note
+  - When the market is open for primary trading, **change** and **changepct** are always calculated using the current midpoint price and the last primary session close. When the market is closed or in extended hours, this criteria is also used as long as `extended` is omitted or set to `true`.
+  - When `extended` is set to `false`, and the market is closed or in extended hours, prices from extended hours are not considered. The values for **change** and **changepct** will be calculated using the last two closing prices instead.
+:::
 
 - **updated** `array[date]`
 
