@@ -7,19 +7,15 @@ tags:
 
 Get a current or historical end of day quote for a single options contract.
 
-## Data Availability
+#### Data Availability
 
-The type of option quote data you receive depends on your user type and OPRA entitlement. This may include real-time data, 15-minute delayed data, or historical data, depending on the plan or access level.
+The type of option quote data you receive depends on your user type and OPRA entitlement (permissions granted by exchanges that allow access to real-time data). This may include real-time data, 15-minute delayed data, or historical data, depending on the plan or access level. To get real-time options data, users need to sign the OPRA agreement. [Learn more about entitlements](/account/entitlements).
 
 | User Type | OPRA Entitlement | Data Type |
 |-----------|------------------|-----------|
 | Non-Professional | ✅ | Real-time |
 | Non-Professional | ❌ | 15-min delayed |
 | Professional | Any | Historical (1 day old) |
-
-:::info What are entitlements?
-Entitlements are permissions granted by exchanges that allow access to real-time data. To get real-time options data, users need to sign the OPRA agreement. [Learn more about entitlements](/account/entitlements).
-:::
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
