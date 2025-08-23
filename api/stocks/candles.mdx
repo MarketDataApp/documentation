@@ -3,7 +3,21 @@ title: Historical Candles
 sidebar_position: 3
 ---
 
-Get historical price candles for a stock.
+Get historical price candles for stocks or ETFs.
+
+## Data Availability
+
+The type of candle data you receive depends on your user type and UTP entitlement. This may include 15-minute delayed candles or historical candles (1 day old), depending on the plan or access level. Real-time data is not available for this endpoint.
+
+| User Type | UTP Entitlement | Candle Type |
+|-----------|----------------|-------------|
+| Non-Professional | ✅ | 15-min delayed |
+| Non-Professional | ❌ | Historical (1 day old) |
+| Professional | Any | Historical (1 day old) |
+
+:::info What are entitlements?
+Entitlements are permissions granted by exchanges that allow access to real-time data. To get real-time candles, non-professional users need to sign the [UTP entitlement agreement](/account/entitlements). [Learn more about entitlements](/account/entitlements).
+:::
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
