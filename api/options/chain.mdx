@@ -11,7 +11,7 @@ import TabItem from "@theme/TabItem";
 ## Endpoint
 
 ```http
-GET https://api.marketdata.app/v1/options/chain/**{underlyingSymbol}**/
+GET https://api.marketdata.app/v1/options/chain/{underlyingSymbol}/
 ```
 
 ## Request Example
@@ -428,6 +428,7 @@ The cost of using the option chain API endpoint depends on the type of data feed
 |--------------------|---------------------------|---------------------------|
 | Real-Time Feed     | Per option symbol         | 1 credit                  |
 | Cached Feed        | Per API call              | 1 credit                  |
+| Historical Data    | Per 1000 option symbols   | 1 credit                  |
 
 #### Examples
 
@@ -436,3 +437,7 @@ The cost of using the option chain API endpoint depends on the type of data feed
 
 2. **Cached Feed Usage**
    - A single API call to SPX using the Cached Feed, regardless of the number of option symbols queried, will cost you 1 credit.
+
+3. **Historical Data Usage**
+   - When including the `date` parameter for historical queries, the cost is 1 credit per 1000 option symbols returned in the response.
+   - For example, if a historical query returns 5,000 option symbols, it will cost 5 credits (5,000 ÷ 1000 = 5).

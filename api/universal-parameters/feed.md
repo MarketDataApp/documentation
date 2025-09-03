@@ -59,6 +59,41 @@ GET https://api.marketdata.app/v1/options/chain/SPY/?feed=cached
 
 This query retrieves data from our cache, offering an affordable way to gather extensive data with a single credit.
 
+### Using maxAge with Cached Feed
+
+The `maxAge` parameter can be used together with `feed=cached` to set a limit on how old the response data can be. This helps you avoid spending credits on data that may be too stale for your needs.
+
+#### How maxAge Works
+
+- **Purpose**: Sets a maximum age limit for cached data
+- **Behavior**: If no recent data is available within the specified age limit, you'll receive a 204 empty response with 0 credit charge
+- **Format**: Accepts either absolute datetimes in any format, or relative time expressions like `1h` or `5min`
+
+#### Example Scenarios
+
+Let's assume the last cached data for AAPL options chain is from 3 minutes ago:
+
+**Scenario 1: Data within maxAge limit**
+```http
+GET https://api.marketdata.app/v1/options/chain/AAPL/?feed=cached&maxAge=5min
+```
+- **Result**: 203 response with data (1 credit charged)
+- **Reason**: 3-minute-old data is within the 5-minute limit
+
+**Scenario 2: Data exceeds maxAge limit**
+```http
+GET https://api.marketdata.app/v1/options/chain/AAPL/?feed=cached&maxAge=1min
+```
+- **Result**: 204 empty response (0 credits charged)
+- **Reason**: 3-minute-old data exceeds the 1-minute limit
+
+#### Strategic Usage
+
+Using the `maxAge` parameter allows you to create intelligent fallback logic:
+1. First attempt to get cached data with an appropriate `maxAge` limit
+2. If you receive a 204 response, fall back to requesting live data for those specific tickers
+3. This approach maximizes cost savings while ensuring data freshness
+
 ### Cached Feed Response Codes
 
 When the `feed=cached` parameter is added, the API's response codes are modified slightly. You will no longer get `200 OK` responses, but instead 203 and 204 responses:
