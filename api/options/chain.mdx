@@ -422,22 +422,26 @@ The type of option chain data you receive depends on your user type and OPRA ent
 
 ### Pricing
 
-The cost of using the option chain API endpoint depends on the type of data feed you choose and your usage pattern. Here's a breakdown of the pricing:
+The cost of using the option chain API endpoint depends on the type of data you choose and your usage pattern. Here's a breakdown of the pricing:
 
-| Data Feed Type     | Cost Basis                | Credits Required per Unit |
+| Data Type     | Cost Basis                | Credits Required per Unit |
 |--------------------|---------------------------|---------------------------|
-| Real-Time Feed     | Per option symbol         | 1 credit                  |
-| Cached Feed        | Per API call              | 1 credit                  |
+| Real-Time Data     | Per option symbol         | 1 credit                  |
+| 15m Delayed Data     | Per option symbol         | 1 credit                  |
+| Cached Data        | Per API call              | 1 credit                  |
 | Historical Data    | Per 1000 option symbols   | 1 credit                  |
 
 #### Examples
 
-1. **Real-Time Feed Usage**
-   - If you query all strikes and all expirations for SPX (which has 22,718 total option contracts) using the Real-Time Feed, it will cost you 22,718 credits.
+1. **Real-Time Usage**
+   - If you query all strikes and all expirations for SPX (which has 22,718 total option contracts) in real-time, it will cost you 22,718 credits.
 
-2. **Cached Feed Usage**
+2. **15-minute Delayed Usage**
+   - If you query all strikes and all expirations for SPX (which has 22,718 total option contracts) and opt for 15m delayed data, it will cost you 22,718 credits.
+
+3. **Cached Feed Usage**
    - A single API call to SPX using the Cached Feed, regardless of the number of option symbols queried, will cost you 1 credit.
 
-3. **Historical Data Usage**
+4. **Historical Data Usage**
    - When including the `date` parameter for historical queries, the cost is 1 credit per 1000 option symbols returned in the response.
    - For example, if a historical query returns 5,000 option symbols, it will cost 5 credits (5,000 ÷ 1000 = 5).
