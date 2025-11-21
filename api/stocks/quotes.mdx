@@ -1,21 +1,16 @@
 ---
-title: Delayed Quotes
+title: Stock Quotes
 sidebar_position: 2
 ---
 
-Retrieve the most recent available quote for a stock, based on the user's entitlements. This may include a 15-minute delayed quote or an end-of-day quote, depending on the plan or access level.
+Retrieve the most recent available quote for a stock.
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
 ## Endpoint
-```
-https://api.marketdata.app/v1/stocks/quotes/{symbol}/
-```
-#### Method
-```
-GET
-```
+**GET** `https://api.marketdata.app/v1/stocks/quotes/{symbol}/`
+
 ## Request Example
 
 <Tabs>
@@ -204,3 +199,31 @@ func ExampleStockQuoteRequest() {
 
 </TabItem>
 </Tabs>
+
+## Usage Information
+
+### Data Availability
+
+The type of quote you receive depends on your user type and IEX entitlement. This may include a real-time quote, a 15-minute delayed quote, or historical (1 day old) quote, depending on the plan or access level.
+
+| User Type | IEX Entitlement | Quote Type |
+|-----------|----------------|------------|
+| Non-Professional | ✅ | Real-time |
+| Non-Professional | ❌ | 15-min delayed |
+| Professional | ✅ | 15-min delayed |
+| Professional | ❌ | Historical (1 day old) |
+| Unknown | Any | Historical (1 day old) |
+
+:::info What are entitlements?
+Entitlements are permissions granted by exchanges that allow access to real-time data. To get real-time quotes, non-professional users need to sign the [IEX entitlement agreement](/account/entitlements). [Learn more about entitlements](/account/entitlements).
+:::
+
+### Pricing
+
+The cost of using the stock quote API endpoint depends on the type of data you choose and your usage pattern. Here's a breakdown of the pricing:
+
+| Data Type     | Cost Basis                | Credits Required per Unit |
+|--------------------|---------------------------|---------------------------|
+| Real-Time Data     | Per symbol         | 1 credit                  |
+| 15m Delayed Data     | Per symbol         | 1 credit                  |
+| Historical Data    | Per 1000 quotes   | 1 credit                  |
