@@ -183,21 +183,47 @@ func ExampleStockQuoteRequest() {
 </TabItem>
 <TabItem value="NoData" label="No Data">
 
-- **s** `string`
+Returned when the request is valid, but **no quote data exists** for the requested symbol or time period.  
+This response corresponds to an **HTTP 404 Not Found** status.
 
-  Status will be `no_data` if no quote can be found for the symbol.
+- **s** `string`  
+  Will be `no_data`.
+
+- **errmsg** `string`  
+  A descriptive message explaining why no data is available.  
+  For example:  
+  - `"No option found. No option was found for this strike and expiration."`  
+  This occurs when even though the option symbol format is valid, no real, tradable contract exists for the specified strike and expiration.
+
+A `no_data` response may occur when:
+- The market is closed (weekends or holidays)
+- The symbol or option contract had no trading quotes on the requested date
+- The contract had not begun trading yet
+- No option exists for the requested strike and expiration
+
+Even when the option symbol format is valid, the absence of a real, tradable contract or any quote data results in a `404` / `no_data` response.
 
 </TabItem>
+
 <TabItem value="Error" label="Error">
 
-- **s** `string`
+Returned when the request itself is invalid or cannot be processed.
 
-  Status will be `error` if the request produces an error response.
+- **s** `string`  
+  Will be `error`.
 
-- **errmsg** `string`
-  An error message.
+- **errmsg** `string`  
+  A human-readable description of the error.
+
+These cases correspond to **HTTP 400 Bad Request**, such as:
+- Invalid or malformed option symbol format
+- Parameters that cannot be parsed
+- Unsupported or invalid values
+
+Use the HTTP status code—not just the `s` field—to distinguish between invalid input (`400`) and valid requests that simply have no data (`404` via `no_data`).
 
 </TabItem>
+
 </Tabs>
 
 ## Usage Information
