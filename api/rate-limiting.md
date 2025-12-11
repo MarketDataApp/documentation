@@ -71,4 +71,4 @@ We provide the following headers in our responses to help you manage the rate li
 ## Strategies To Avoid Rate Limiting
 - Exclude the bid, ask, mid, and last columns from your option chain requests if the current price is not needed.
 - Use the extensive option chain filters such as `strikeLimit` to exclude unnecessary strikes from your requests.
-- Paying customers can make use of the reduced-price cached feed. Use the `feed=cached` parameter on the `stocks/bulkquotes` and `options/chain` endpoints to retrieve previously cached quotes instead of making a live request. This can save thousands of credits. For more details, refer to the [feed parameter documentation](/api/universal-parameters/feed).
+- Paying customers can make use of the reduced-price cached mode. Use the `mode=cached` parameter on the `stocks/bulkquotes` and `options/chain` endpoints to retrieve previously cached quotes instead of making a live request. This can save thousands of credits. For more details, refer to the [mode parameter documentation](/api/universal-parameters/mode).
