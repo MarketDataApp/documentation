@@ -1,0 +1,485 @@
+---
+title: Running Out of Credits
+sidebar_position: 7
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+You've run out of credits or are running low, and you're probably confused about why. The most common reason is a misunderstanding about how credits work: **1 request does not always equal 1 credit**. This guide will help you understand what happened, why it happened, and what you can do about it.
+
+For complete details on rate limits and credits, see our [Rate Limits documentation](/api/rate-limiting.md).
+
+## Understanding What Happened: Why 1 Request ≠ 1 Credit
+
+The core issue that likely caused your problem is that **bulk endpoints consume multiple credits** when they return data for multiple symbols. Here's how credit consumption actually works:
+
+### Standard Requests
+- **1 request = 1 credit** (most endpoints)
+
+### Bulk Endpoints with Quote Data
+- **1 request = N credits** (where N = number of symbols with bid/ask/mid/last)
+  - `options/chain` endpoint
+  - `stocks/quotes` endpoint (when requesting multiple symbols)
+  - `stocks/prices` endpoint (when requesting multiple symbols)
+  - `stocks/bulkcandles` endpoint
+
+### Bulk Endpoints without Quote Columns
+- **1 request = 1 credit** (even with multiple symbols)
+  - This applies when you exclude `bid`, `ask`, `mid`, and `last` columns from your request
+
+### Other Credit Rules
+- **Candles**: 1 credit per 1,000 candles
+- **Special cases**: Free trial symbols (AAPL) don't consume credits
+
+### Examples of What Likely Happened
+
+**Example 1: Option Chain Request**
+```http
+GET https://api.marketdata.app/v1/options/chain/SPX/?expiration=all
+```
+- **Result**: 20,000+ credits consumed in ONE request
+- **Why**: SPX option chain contains 20,000+ option symbols, and each symbol with quote data = 1 credit
+
+**Example 2: Bulk Stock Quotes**
+```http
+GET https://api.marketdata.app/v1/stocks/quotes/?symbols=AAPL,META,MSFT,GOOGL,AMZN
+```
+- **With quote data (bid/ask/mid/last)**: 5 credits consumed (1 per symbol)
+- **Without quote columns**: 1 credit consumed (regardless of symbol count)
+
+**Example 3: Bulk Stock Prices**
+```http
+GET https://api.marketdata.app/v1/stocks/prices/?symbols=AAPL,META,MSFT,GOOGL,AMZN
+```
+- **With quote data**: 5 credits consumed (1 per symbol)
+- **Without quote columns**: 1 credit consumed
+
+## Diagnosing Your Credit Usage
+
+To figure out what caused your credit depletion, you need to check your recent API requests and their response headers.
+
+### Check the Rate Limit Headers
+
+Every API response includes headers that show your credit usage. These are the key headers to check:
+
+- **`X-Api-Ratelimit-Consumed`**: Shows how many credits your last request used (KEY for diagnosis)
+- **`X-Api-Ratelimit-Remaining`**: Shows how many credits you have left
+- **`X-Api-Ratelimit-Limit`**: Shows your plan's limit
+- **`X-Api-Ratelimit-Reset`**: Shows when credits reset (UTC epoch seconds)
+
+### How to Check Headers
+
+<Tabs>
+<TabItem value="cURL" label="cURL" default>
+
+```bash
+curl -i -X GET "https://api.marketdata.app/v1/stocks/quotes/AAPL/" \
+  -H "Authorization: Token YOUR_TOKEN"
+```
+
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```python
+import requests
+
+response = requests.get(
+    "https://api.marketdata.app/v1/stocks/quotes/AAPL/",
+    headers={"Authorization": "Token YOUR_TOKEN"}
+)
+
+# Check credit consumption
+consumed = response.headers.get('X-Api-Ratelimit-Consumed')
+remaining = response.headers.get('X-Api-Ratelimit-Remaining')
+limit = response.headers.get('X-Api-Ratelimit-Limit')
+
+print(f"Credits consumed: {consumed}")
+print(f"Credits remaining: {remaining}")
+print(f"Credit limit: {limit}")
+```
+
+</TabItem>
+<TabItem value="NodeJS" label="Node.js">
+
+```javascript
+const response = await fetch(
+  "https://api.marketdata.app/v1/stocks/quotes/AAPL/",
+  {
+    headers: {
+      "Authorization": "Token YOUR_TOKEN"
+    }
+  }
+);
+
+const consumed = response.headers.get('X-Api-Ratelimit-Consumed');
+const remaining = response.headers.get('X-Api-Ratelimit-Remaining');
+const limit = response.headers.get('X-Api-Ratelimit-Limit');
+
+console.log(`Credits consumed: ${consumed}`);
+console.log(`Credits remaining: ${remaining}`);
+console.log(`Credit limit: ${limit}`);
+```
+
+</TabItem>
+</Tabs>
+
+### Common Causes of Unexpected Credit Depletion
+
+**1. Option Chain Requests**
+- Requesting entire chains without filtering (most common issue)
+- A single SPX option chain request can consume 20,000+ credits
+
+**2. Bulk Stock Requests**
+- Using `stocks/quotes` or `stocks/prices` with many symbols and quote data included
+- Each symbol in the response = 1 credit
+
+**3. Repeated Expensive Requests**
+- Making the same expensive request multiple times
+- Not caching responses in your application
+
+**4. Not Using Cached Mode**
+- Always requesting live data when cached would suffice
+- Cached mode costs 1 credit per request regardless of symbol count
+
+**5. Including Unnecessary Columns**
+- Requesting `bid`, `ask`, `mid`, `last` columns when not needed
+- These columns trigger per-symbol credit consumption
+
+**6. Misunderstanding Reset Time**
+- Credits reset at 9:30 AM ET, not midnight
+- This can cause confusion about when credits will be available again
+
+## What to Do Right Now
+
+### If You're Out of Credits
+
+**When Credits Reset:**
+- Credits reset at **9:30 AM Eastern Time** (NYSE opening bell)
+- You'll need to wait until the reset time
+- Use `America/New_York` timezone to calculate when your credits will reset
+- Check the `X-Api-Ratelimit-Reset` header for the exact reset time (UTC epoch seconds)
+
+**Calculate Reset Time:**
+
+<Tabs>
+<TabItem value="Python" label="Python" default>
+
+```python
+from datetime import datetime
+import pytz
+
+# Get reset time from header (UTC epoch seconds)
+reset_epoch = int(response.headers.get('X-Api-Ratelimit-Reset'))
+reset_time = datetime.fromtimestamp(reset_epoch, tz=pytz.UTC)
+eastern = pytz.timezone('America/New_York')
+reset_local = reset_time.astimezone(eastern)
+
+print(f"Credits reset at: {reset_local.strftime('%Y-%m-%d %I:%M %p %Z')}")
+```
+
+</TabItem>
+<TabItem value="NodeJS" label="Node.js">
+
+```javascript
+// Get reset time from header (UTC epoch seconds)
+const resetEpoch = parseInt(response.headers.get('X-Api-Ratelimit-Reset'));
+const resetDate = new Date(resetEpoch * 1000); // Convert to milliseconds
+
+// Convert to Eastern Time
+const resetLocal = resetDate.toLocaleString('en-US', {
+  timeZone: 'America/New_York',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true
+});
+
+console.log(`Credits reset at: ${resetLocal}`);
+```
+
+</TabItem>
+</Tabs>
+
+### If You Have Credits Remaining
+
+1. **Check your remaining credits** using the `X-Api-Ratelimit-Remaining` header
+2. **Review recent requests** to identify which ones consumed the most credits
+3. **Check the `X-Api-Ratelimit-Consumed` header** from your recent requests
+4. **Implement fixes** before you run out completely (see strategies below)
+
+## How to Prevent This From Happening Again
+
+### A. Use Cached Mode (Paid Plans Only)
+
+Cached mode is the most effective way to reduce credit usage for bulk data requests. With cached mode, you pay **1 credit per request** regardless of how many symbols are in the response.
+
+**How it works:**
+- Use `mode=cached` parameter on supported endpoints
+- Works with: `options/chain`, `stocks/quotes`, `stocks/prices`
+- Returns recently cached data (may be seconds to minutes old)
+- Best for bulk quote retrieval when real-time data isn't critical
+
+**Example:**
+```http
+# Without cached mode: 20,000+ credits
+GET https://api.marketdata.app/v1/options/chain/SPX/?expiration=all
+
+# With cached mode: 1 credit
+GET https://api.marketdata.app/v1/options/chain/SPX/?mode=cached
+```
+
+For more details, see the [mode parameter documentation](/api/universal-parameters/mode.md).
+
+### B. Filter Your Requests
+
+Use option chain filters to request only what you need:
+
+**Option Chain Filters:**
+- `strikeLimit`: Limit the number of strikes around the current price
+- `expiration`: Filter to specific expiration dates
+- `strike`: Filter to specific strike prices
+- `type`: Filter to calls or puts only
+
+**Example:**
+```http
+# Full chain: 20,000+ credits
+GET https://api.marketdata.app/v1/options/chain/SPX/?expiration=all
+
+# Filtered chain: ~100 credits (only at-the-money strikes)
+GET https://api.marketdata.app/v1/options/chain/SPX/?expiration=all&strikeLimit=1
+```
+
+### C. Exclude Unnecessary Columns
+
+Remove `bid`, `ask`, `mid`, and `last` columns when not needed. Responses without these columns = **1 credit regardless of symbol count**.
+
+**How to exclude columns:**
+- Use the `columns` parameter to specify only the data you need
+- Critical for bulk endpoints: `stocks/quotes`, `stocks/prices`, `options/chain`
+
+**Example:**
+```http
+# With quote columns: 100 credits (1 per symbol)
+GET https://api.marketdata.app/v1/stocks/quotes/?symbols=AAPL,META,MSFT,...(100 symbols)
+
+# Without quote columns: 1 credit (regardless of symbol count)
+GET https://api.marketdata.app/v1/stocks/quotes/?symbols=AAPL,META,MSFT,...(100 symbols)&columns=symbol,volume,change
+```
+
+### D. Monitor Your Usage
+
+**Check Headers After Each Request:**
+- Always check `X-Api-Ratelimit-Consumed` after bulk requests
+- Set up alerts when `X-Api-Ratelimit-Remaining` gets low
+- Track which endpoints consume the most credits
+
+**Example Monitoring Code:**
+
+<Tabs>
+<TabItem value="Python" label="Python" default>
+
+```python
+import requests
+
+def make_request_with_monitoring(url, headers):
+    response = requests.get(url, headers=headers)
+    
+    consumed = int(response.headers.get('X-Api-Ratelimit-Consumed', 0))
+    remaining = int(response.headers.get('X-Api-Ratelimit-Remaining', 0))
+    limit = int(response.headers.get('X-Api-Ratelimit-Limit', 0))
+    
+    # Alert if credits are running low
+    if remaining < limit * 0.1:  # Less than 10% remaining
+        print(f"WARNING: Only {remaining} credits remaining!")
+    
+    # Log expensive requests
+    if consumed > 10:
+        print(f"Expensive request detected: {consumed} credits consumed")
+    
+    return response
+```
+
+</TabItem>
+<TabItem value="NodeJS" label="Node.js">
+
+```javascript
+async function makeRequestWithMonitoring(url, headers) {
+  const response = await fetch(url, { headers });
+  
+  const consumed = parseInt(response.headers.get('X-Api-Ratelimit-Consumed') || '0');
+  const remaining = parseInt(response.headers.get('X-Api-Ratelimit-Remaining') || '0');
+  const limit = parseInt(response.headers.get('X-Api-Ratelimit-Limit') || '0');
+  
+  // Alert if credits are running low
+  if (remaining < limit * 0.1) {  // Less than 10% remaining
+    console.log(`WARNING: Only ${remaining} credits remaining!`);
+  }
+  
+  // Log expensive requests
+  if (consumed > 10) {
+    console.log(`Expensive request detected: ${consumed} credits consumed`);
+  }
+  
+  return response;
+}
+```
+
+</TabItem>
+</Tabs>
+
+### E. Avoid Redundant Requests
+
+- **Cache responses** in your application
+- Use `maxage` parameter with cached mode to control data freshness
+- Implement request deduplication to avoid making the same request multiple times
+
+## Understanding Your Plan Limits
+
+Here are the credit limits for each plan:
+
+| Plan | Daily Credits | Per Minute Credits |
+|------|---------------|-------------------|
+| Free Forever | 100 | No Limit |
+| Starter | 10,000 | No Limit |
+| Trader | 100,000 | No Limit |
+| Quant | No Limit | 10,000 |
+| Prime | No Limit | 100,000 |
+
+### Reset Timing
+
+- **Daily limits** reset at **9:30 AM Eastern Time** (NYSE opening bell)
+- Use `America/New_York` timezone for accurate calculations
+- **Quant and Prime plans** have per-minute limits (not daily limits)
+- Check the `X-Api-Ratelimit-Reset` header for exact reset time
+
+## When to Upgrade Your Plan
+
+Consider upgrading if:
+
+- **Free Forever → Starter**: Need more than 100 credits/day
+- **Starter → Trader**: Need more than 10,000 credits/day or real-time data
+- **Trader → Quant**: Need unlimited daily credits (10,000 credits/minute limit)
+- **Trader → Prime**: Need unlimited daily credits with higher per-minute limit (100,000 credits/minute)
+- **For bulk data users**: Quant/Prime plans are ideal for high-volume option chain or bulk stock requests
+
+### Before Upgrading
+
+1. **Calculate your actual credit needs** based on usage patterns
+2. **Consider cached mode savings** - you may not need to upgrade if you optimize your requests
+3. **Review your request patterns** - are you making unnecessary requests?
+4. **Contact sales** for custom plans if standard plans don't fit your needs
+
+## Common Scenarios: What Likely Happened to You
+
+### Scenario 1: "I requested an option chain once and used all my credits"
+
+**What happened:**
+- You made a single request to `options/chain/SPX/` or similar
+- The response contained thousands of option symbols
+- Each symbol with quote data consumed 1 credit
+
+**Why:**
+- Full option chains contain thousands of symbols
+- Each symbol with `bid`, `ask`, `mid`, or `last` data = 1 credit
+
+**Solution:**
+- Use filters (`strikeLimit`, `expiration`, etc.) to reduce the number of symbols
+- Exclude quote columns if you don't need current prices
+- Use cached mode: `?mode=cached` (1 credit per request)
+
+**Prevention:**
+- Always check `X-Api-Ratelimit-Consumed` after option chain requests
+- Start with filtered requests to test credit consumption
+- Use cached mode for bulk option chain retrieval
+
+### Scenario 2: "I made 50 requests but used 500 credits"
+
+**What happened:**
+- You used bulk endpoints (`stocks/quotes`, `stocks/prices`, `options/chain`) with quote data
+- Each request returned multiple symbols
+- Each symbol in the response consumed 1 credit
+
+**Why:**
+- Bulk endpoints with quote data consume 1 credit per symbol
+- 50 requests × 10 symbols each = 500 credits
+
+**Solution:**
+- Check `X-Api-Ratelimit-Consumed` header to see credit consumption per request
+- Exclude unnecessary columns (`bid`, `ask`, `mid`, `last`) if not needed
+- Use cached mode for bulk requests: `?mode=cached`
+
+**Prevention:**
+- Monitor headers after each bulk request
+- Use cached mode for bulk data retrieval
+- Exclude quote columns when current prices aren't needed
+
+### Scenario 3: "My credits didn't reset at midnight"
+
+**What happened:**
+- You expected credits to reset at midnight
+- Credits didn't reset when you expected
+
+**Why:**
+- Credits reset at **9:30 AM Eastern Time** (NYSE opening bell), not midnight
+- This is consistent across all plans with daily limits
+
+**Solution:**
+- Wait until 9:30 AM ET
+- Check `X-Api-Ratelimit-Reset` header for exact reset time
+- Use `America/New_York` timezone for accurate calculations
+
+**Prevention:**
+- Understand reset timing for your plan
+- Use the reset time header to calculate when credits will be available
+- Plan your API usage around the 9:30 AM ET reset time
+
+### Scenario 4: "I need to download entire option chains daily"
+
+**What happened:**
+- You need to retrieve full option chains regularly
+- Each request consumes thousands of credits
+- You quickly exhaust your daily limit
+
+**Why:**
+- Full option chains contain thousands of symbols
+- Each symbol with quote data = 1 credit
+- Daily limits are quickly exhausted with bulk requests
+
+**Solution:**
+- **Use cached mode**: `?mode=cached` (1 credit per request regardless of symbol count)
+- **Upgrade to Quant/Prime plan**: Unlimited daily credits
+- **Contact sales**: For custom plans if standard plans don't fit
+
+**Prevention:**
+- Always use cached mode for bulk data retrieval
+- Consider upgrading if you regularly need large amounts of bulk data
+- Filter requests to only get what you need
+
+## Getting Help
+
+If you've tried the strategies above and are still running out of credits, or if you need help understanding your usage patterns:
+
+### When to Contact Support
+
+- You've optimized your requests but still need more credits
+- You're unsure which optimization strategy to use
+- You need help calculating your credit needs
+- You want to discuss custom plan options
+
+### What to Include in Your Support Ticket
+
+1. **Rate limit headers** from recent requests:
+   - `X-Api-Ratelimit-Consumed` values
+   - `X-Api-Ratelimit-Remaining` values
+   - `X-Api-Ratelimit-Limit` value
+
+2. **Request examples** that consumed the most credits
+
+3. **Your usage patterns**: What endpoints you use, how often, and for what purpose
+
+4. **Your current plan** and whether you've tried cached mode
+
+This information will help our support team understand your situation and provide the best guidance.
