@@ -86,10 +86,11 @@ func ExampleStockNewsRequest_get() {
 ```json
 {
   "s":"ok",
-  "symbol": "AAPL",
-  "headline": "Whoa, There! Let Apple Stock Take a Breather Before Jumping in Headfirst.",
-  "content": "Apple is a rock-solid company, but this doesn't mean prudent investors need to buy AAPL stock at any price.",
-  "source": "https://investorplace.com/2023/12/whoa-there-let-apple-stock-take-a-breather-before-jumping-in-headfirst/",
+  "symbol": ["AAPL"],
+  "headline": ["Whoa, There! Let Apple Stock Take a Breather Before Jumping in Headfirst."],
+  "content": ["Apple is a rock-solid company, but this doesn't mean prudent investors need to buy AAPL stock at any price."],
+  "source": ["https://investorplace.com/2023/12/whoa-there-let-apple-stock-take-a-breather-before-jumping-in-headfirst/"],
+  "publicationDate": ["1703041200"],
   "updated": 1703041200
 }
 ```
@@ -157,6 +158,10 @@ func ExampleStockNewsRequest_get() {
 - **publicationDate** `array[date]`
 
   The date the news was published on the source website.
+
+- **updated** `date`
+
+  The timestamp of the last update to the news data.
 
 </TabItem>
 <TabItem value="NoData" label="No Data">
