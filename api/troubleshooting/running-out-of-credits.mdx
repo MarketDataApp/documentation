@@ -75,7 +75,7 @@ Every API response includes headers that show your credit usage. These are the k
 
 ```bash
 curl -i -X GET "https://api.marketdata.app/v1/stocks/quotes/AAPL/" \
-  -H "Authorization: Token YOUR_TOKEN"
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 </TabItem>
@@ -86,7 +86,7 @@ import requests
 
 response = requests.get(
     "https://api.marketdata.app/v1/stocks/quotes/AAPL/",
-    headers={"Authorization": "Token YOUR_TOKEN"}
+    headers={"Authorization": "Bearer YOUR_TOKEN"}
 )
 
 # Check credit consumption
@@ -107,7 +107,7 @@ const response = await fetch(
   "https://api.marketdata.app/v1/stocks/quotes/AAPL/",
   {
     headers: {
-      "Authorization": "Token YOUR_TOKEN"
+      "Authorization": "Bearer YOUR_TOKEN"
     }
   }
 );
