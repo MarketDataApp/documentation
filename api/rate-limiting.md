@@ -33,7 +33,7 @@ Different plans have specific rate limits, with most plans enforcing a daily rat
 |                          | Free Forever | Starter   | Trader    | Prime       |
 |--------------------------|--------------|-----------|-----------|------------------|
 | Daily API Credits        | 100          | 10,000    | 100,000   | No Limit         |
-| Per Minute API Credits   | No Limit     | No Limit  | No Limit  | 60,000           |
+| Per Minute API Credits   | No Limit     | No Limit  | No Limit  | 100,000          |
 | Concurrent Request Limit | 50           | 50        | 50        | 50               |
 
 
@@ -42,7 +42,7 @@ Different plans have specific rate limits, with most plans enforcing a daily rat
 - **Free Forever Plan:** 100 credits per day.
 - **Starter Plan:** 10,000 credits per day.
 - **Trader Plan:** 100,000 credits per day.
-- **Prime Plan:** 60,000 credits per minute.
+- **Prime Plan:** 100,000 credits per minute.
 
 ## Credits
 Each time you make a request to the API, the system will increase your credits counter. Normally each successful response will increase your counter by 1 and each call to our API will be counted as a single credit. However, **if you request multiple symbols in a single API call using the bulkquotes, the bulkcandles, or the option chain endpoint, a request will be used for each symbol that is included in the response**.
@@ -71,4 +71,4 @@ We provide the following headers in our responses to help you manage the rate li
 ## Strategies To Avoid Rate Limiting
 - Exclude the bid, ask, mid, and last columns from your option chain requests if the current price is not needed.
 - Use the extensive option chain filters such as `strikeLimit` to exclude unnecessary strikes from your requests.
-- Paying customers can make use of the reduced-price cached feed. Use the `feed=cached` parameter on the `stocks/bulkquotes` and `options/chain` endpoints to retrieve previously cached quotes instead of making a live request. This can save thousands of credits. For more details, refer to the [feed parameter documentation](/api/universal-parameters/feed).
+- Paying customers can make use of the reduced-price cached mode. Use the `mode=cached` parameter on the `stocks/bulkquotes` and `options/chain` endpoints to retrieve previously cached quotes instead of making a live request. This can save thousands of credits. For more details, refer to the [mode parameter documentation](/api/universal-parameters/mode).

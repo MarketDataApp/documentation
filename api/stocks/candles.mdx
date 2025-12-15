@@ -3,7 +3,7 @@ title: Historical Candles
 sidebar_position: 3
 ---
 
-Get historical price candles for a stock.
+Get historical price candles for stocks or ETFs.
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
@@ -208,3 +208,32 @@ There is no maximum date range limit on daily candles. When requesting intraday 
 
 </TabItem>
 </Tabs>
+
+
+## Usage Information
+
+### Data Availability
+
+**Real-time data is not available for this endpoint under any plan or entitlement.** The type of candle data you receive depends on your user type and UTP entitlement. This may include 15-minute delayed candles or historical candles (1 day old), depending on the plan or access level.
+
+| User Type | UTP Entitlement | Candle Type |
+|-----------|----------------|-------------|
+| Non-Professional | ✅ | 15-min delayed |
+| Non-Professional | ❌ | Historical (1 day old) |
+| Professional | Any | Historical (1 day old) |
+| Unknown | Any | Historical (1 day old) |
+
+
+:::info What are entitlements?
+Entitlements are permissions granted by exchanges that allow access to their data. To get 15-minute delayed candles, non-professional users need to sign the [UTP entitlement agreement](/account/entitlements). [Learn more about entitlements](/account/entitlements).
+:::
+
+### Pricing
+
+The cost of using the candle API endpoint is 1 credit per 1000 candles.
+
+| Data Type     | Cost Basis                | Credits Required per Unit |
+|--------------------|---------------------------|---------------------------|
+| 15-minute Delayed Data    | Per 1000 candles         | 1 credit                  |
+| Historical Data    | Per 1000 candles         | 1 credit                  |
+| Real-Time Data     | Not available         | N/A                  |

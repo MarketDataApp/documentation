@@ -15,7 +15,7 @@ Some libraries are not prepared to handle HTTP 203 response codes as successful 
 
 - `200 OK` - Successfully answered the request.
 - `203 NON-AUTHORITATIVE INFORMATION` - Successfully served the request from our caching server. Treat this result the same as STATUS 200.
-- `204 NO CONTENT` - Indicates a successful request for explicitly requested cached data, but our cache server lacks cached data for the symbol requested. Resend the request using the live data feed.
+- `204 NO CONTENT` - Indicates a successful request for explicitly requested cached data, but our cache server lacks cached data for the symbol requested. Resend the request using the live mode.
 
 ## Client Errors (4xx)
 

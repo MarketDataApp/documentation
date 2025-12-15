@@ -218,27 +218,70 @@ func ExampleOptionQuoteRequest() {
 </TabItem>
 <TabItem value="NoData" label="No Data">
 
-- **s** `string`
+Returned when the request is valid, but **no quote data exists** for the requested symbol or time period.  
+This response corresponds to an **HTTP 404 Not Found** status.
 
-  Status will be `no_data` if no candles are found for the request.
+- **s** `string`  
+  Will be `no_data`.
 
-- **nextTime** `number` optional
+- **errmsg** `string`  
+  A descriptive message explaining why no data is available.  
+  For example:  
+  - `"No option found. No option was found for this strike and expiration."`  
+  This occurs when even though the option symbol format is valid, no real, tradable contract exists for the specified strike and expiration.
 
-  Unix time of the next quote if there is no data in the requested period, but there is data in a subsequent period.
+A `no_data` response may occur when:
+- The market is closed (weekends or holidays)
+- The symbol or option contract had no trading quotes on the requested date
+- The contract had not begun trading yet
+- No option exists for the requested strike and expiration
 
-- **prevTime** `number` optional
-
-  Unix time of the previous quote if there is no data in the requested period, but there is data in a previous period.
+Even when the option symbol format is valid, the absence of a real, tradable contract or any quote data results in a `404` / `no_data` response.
 
 </TabItem>
+
 <TabItem value="Error" label="Error">
 
-- **s** `string`
+Returned when the request itself is invalid or cannot be processed.
 
-  Status will be `error` if the request produces an error response.
+- **s** `string`  
+  Will be `error`.
 
-- **errmsg** `string`
-  An error message.
+- **errmsg** `string`  
+  A human-readable description of the error.
+
+These cases correspond to **HTTP 400 Bad Request**, such as:
+- Invalid or malformed option symbol format
+- Parameters that cannot be parsed
+- Unsupported or invalid values
+
+Use the HTTP status code—not just the `s` field—to distinguish between invalid input (`400`) and valid requests that simply have no data (`404` via `no_data`).
 
 </TabItem>
+
+
 </Tabs>
+
+## Usage Information
+
+### Data Availability
+
+The type of option quote data you receive depends on your user type and OPRA entitlement. This may include real-time data, 15-minute delayed data, or historical data, depending on the plan or access level. To get real-time options data, users need to sign the OPRA agreement. [Learn more about entitlements](/account/entitlements).
+
+| User Type | OPRA Entitlement | Data Type |
+|-----------|------------------|-----------|
+| Non-Professional | ✅ | Real-time |
+| Non-Professional | ❌ | 15-min delayed |
+| Professional | Any | Historical (1 day old) |
+| Unknown | Any | Historical (1 day old) |
+
+
+### Pricing
+
+The cost of using the option quote API endpoint depends on the type of data you choose and your usage pattern. Here's a breakdown of the pricing:
+
+| Data Type     | Cost Basis                | Credits Required per Unit |
+|--------------------|---------------------------|---------------------------|
+| Real-Time Data     | Per option symbol         | 1 credit                  |
+| 15m Delayed Data     | Per option symbol         | 1 credit                  |
+| Historical Data    | Per 1000 quotes   | 1 credit                  |

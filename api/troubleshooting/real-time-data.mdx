@@ -1,0 +1,554 @@
+---
+title: Real-Time Data Not Working
+sidebar_position: 8
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+If you're expecting real-time data but receiving delayed or historical data instead, this guide will help you diagnose and fix the issue. The API doesn't throw errors when you're missing required agreements or profile information—instead, it silently provides you with the freshest data you're entitled to receive.
+
+## Understanding the Problem
+
+### What You're Experiencing
+
+When you request real-time data (or use `mode=live`), you might be receiving:
+- **15-minute delayed data** instead of real-time quotes
+- **Historical data (1 day old)** instead of current market data
+- Data that appears "stale" when you check the timestamps
+
+### Why This Happens
+
+The API determines what type of data you can receive based on two key factors:
+
+1. **Your Professional Status**: Whether you're classified as a professional or non-professional user
+2. **Your Exchange Entitlements**: Whether you've signed the required exchange agreements (IEX, UTP, OPRA)
+
+If your account profile is incomplete or you haven't signed the required exchange agreements, the API cannot determine your proper status or activate your entitlements. In these cases, the API **silently falls back** to the most restrictive data type you're allowed to receive—typically historical data that's at least 1 day old.
+
+### How to Recognize It
+
+The API response includes an `updated` field (or `date` field in some endpoints) that shows when the data was last updated. If this timestamp is more than a few minutes old during market hours, you're likely receiving delayed data instead of real-time data.
+
+## Diagnosing the Issue
+
+### Step 1: Check the Data Timestamp
+
+The first step is to verify whether you're actually receiving real-time data by checking the `updated` field in your API responses.
+
+<Tabs>
+<TabItem value="Python" label="Python" default>
+
+```python
+import requests
+from datetime import datetime
+
+# Make a request for stock quotes
+response = requests.get(
+    "https://api.marketdata.app/v1/stocks/quotes/AAPL/",
+    headers={"Authorization": "Token YOUR_TOKEN"}
+)
+
+data = response.json()
+
+if data.get("s") == "ok" and "updated" in data:
+    # Get the timestamp (Unix epoch seconds)
+    updated_timestamp = data["updated"][0]
+    updated_time = datetime.fromtimestamp(updated_timestamp)
+    current_time = datetime.now()
+    
+    # Calculate the age of the data
+    age_seconds = (current_time - updated_time).total_seconds()
+    age_minutes = age_seconds / 60
+    
+    print(f"Data timestamp: {updated_time}")
+    print(f"Current time: {current_time}")
+    print(f"Data age: {age_minutes:.1f} minutes")
+    
+    # Determine data type
+    if age_minutes < 1:
+        print("✅ Real-time data (less than 1 minute old)")
+    elif age_minutes < 20:
+        print("⚠️ 15-minute delayed data")
+    else:
+        print("❌ Historical data (1 day old or more)")
+```
+
+</TabItem>
+<TabItem value="NodeJS" label="Node.js">
+
+```javascript
+const response = await fetch(
+  "https://api.marketdata.app/v1/stocks/quotes/AAPL/",
+  {
+    headers: {
+      "Authorization": "Token YOUR_TOKEN"
+    }
+  }
+);
+
+const data = await response.json();
+
+if (data.s === "ok" && data.updated) {
+  // Get the timestamp (Unix epoch seconds)
+  const updatedTimestamp = data.updated[0] * 1000; // Convert to milliseconds
+  const updatedTime = new Date(updatedTimestamp);
+  const currentTime = new Date();
+  
+  // Calculate the age of the data
+  const ageSeconds = (currentTime - updatedTime) / 1000;
+  const ageMinutes = ageSeconds / 60;
+  
+  console.log(`Data timestamp: ${updatedTime}`);
+  console.log(`Current time: ${currentTime}`);
+  console.log(`Data age: ${ageMinutes.toFixed(1)} minutes`);
+  
+  // Determine data type
+  if (ageMinutes < 1) {
+    console.log("✅ Real-time data (less than 1 minute old)");
+  } else if (ageMinutes < 20) {
+    console.log("⚠️ 15-minute delayed data");
+  } else {
+    console.log("❌ Historical data (1 day old or more)");
+  }
+}
+```
+
+</TabItem>
+<TabItem value="cURL" label="cURL">
+
+```bash
+curl -X GET "https://api.marketdata.app/v1/stocks/quotes/AAPL/" \
+  -H "Authorization: Token YOUR_TOKEN" | jq '.updated'
+```
+
+The `updated` field contains a Unix timestamp. Compare this to the current time to determine if the data is real-time, delayed, or historical.
+
+</TabItem>
+</Tabs>
+
+### Step 2: Check Your Account Status
+
+After verifying that you're receiving delayed data, check your account status in the [Market Data Dashboard](https://dashboard.marketdata.app/marketdata/):
+
+1. **Log into your account** at the dashboard
+2. **Navigate to the Profile section**
+3. **Check for incomplete information**:
+   - Missing contact information (name, address, email, phone)
+   - Missing employer information (company name, address, job title, LinkedIn)
+4. **Check for unsigned agreements**:
+   - IEX agreement (for real-time stock quotes)
+   - UTP agreement (for 15-minute delayed stock candles)
+   - OPRA agreement (for real-time options quotes)
+
+## Root Causes
+
+### 1. Incomplete Data Use Profile
+
+**Problem**: Your account profile is missing required information that prevents us from classifying you as either a professional or non-professional user.
+
+**Required Information**:
+- **Contact Information**: Name, Address, Email, Phone Number
+- **Employer Information**: Company Name, Address, Job Title, LinkedIn Profile URL
+
+**Impact**: When your profile is incomplete, your professional status is classified as "Unknown." Accounts with unknown status receive the most restrictive data type—historical data that's at least 1 day old—regardless of which exchange agreements you've signed.
+
+**How to Fix**: Complete all required fields in your profile at the [Market Data Dashboard](https://dashboard.marketdata.app/marketdata/). Once your profile is complete, we can classify your account and activate appropriate data access.
+
+### 2. Missing Exchange Agreements
+
+**Problem**: You haven't signed the required exchange agreements that entitle you to real-time or delayed data.
+
+**Required Agreements**:
+
+- **IEX Agreement**: Required for real-time stock quotes
+  - Without IEX: Non-professional users get 15-minute delayed quotes
+  - Without IEX: Professional users get historical (1 day old) quotes
+
+- **UTP Agreement**: Required for 15-minute delayed stock candles
+  - Without UTP: All users get historical (1 day old) candles
+
+- **OPRA Agreement**: Required for real-time options quotes
+  - Without OPRA: Non-professional users get 15-minute delayed options quotes
+  - Without OPRA: Professional users get historical (1 day old) options quotes
+
+**Impact**: Even if your profile is complete and you're classified as non-professional, missing exchange agreements will prevent you from receiving real-time data.
+
+**How to Fix**: Sign the appropriate exchange agreements in your dashboard:
+1. Log into the [Market Data Dashboard](https://dashboard.marketdata.app/marketdata/)
+2. Navigate to the Profile section
+3. Review and sign the required agreements for the data you need
+4. Wait for approval (typically processed within 1 business day)
+
+### 3. Unknown Professional Status
+
+**Problem**: Your account cannot be classified as professional or non-professional due to incomplete information.
+
+**Impact**: Accounts with unknown status receive historical data (1 day old) regardless of:
+- Which exchange agreements you've signed
+- What plan you're on
+- Whether you're requesting real-time data
+
+**How to Fix**: Complete your data use profile with all required information. Once we can verify your information and classify your account, we can activate the appropriate data access level.
+
+## Solutions
+
+### Solution 1: Complete Your Data Use Profile
+
+**Steps**:
+
+1. Log into the [Market Data Dashboard](https://dashboard.marketdata.app/marketdata/)
+2. Navigate to **Profile** section
+3. Ensure all required fields are completed:
+   - **Contact Information**: Name, Address, Email, Phone Number
+   - **Employer Information**: Company Name, Address, Job Title, LinkedIn Profile URL
+4. Submit the profile for verification
+
+**Verification Process**:
+- We review your account profile and verify information against third-party databases (LinkedIn, FINRA BrokerCheck)
+- The goal is to classify your data use as either professional or non-professional
+- Verification typically takes **1 business day**
+- Until verification is complete, your account cannot be activated for real-time data
+
+**Note**: Customers employed by banks, insurance companies, or other financial institutions may require additional review.
+
+### Solution 2: Sign Exchange Agreements
+
+**Steps**:
+
+1. Log into the [Market Data Dashboard](https://dashboard.marketdata.app/marketdata/)
+2. Navigate to **Profile** section
+3. Review and sign the required agreements:
+   - **IEX Agreement**: For real-time stock quotes
+   - **UTP Agreement**: For 15-minute delayed stock candles
+   - **OPRA Agreement**: For real-time options quotes
+4. Wait for approval (typically **1 business day**)
+
+**Important**: You must have a complete profile before exchange agreements can be activated. If your profile is incomplete, signing agreements won't enable real-time data access.
+
+### Solution 3: Wait for Verification
+
+After completing your profile and signing agreements:
+- Allow **1 business day** for verification and approval
+- Check your dashboard for status updates
+- Test your API requests after verification is complete
+
+## Data Type Reference Tables
+
+### Stock Quotes (`/v1/stocks/quotes/`)
+
+The type of quote you receive depends on your user type and IEX entitlement:
+
+| User Type | IEX Entitlement | Quote Type |
+|-----------|----------------|------------|
+| Non-Professional | ✅ | Real-time |
+| Non-Professional | ❌ | 15-min delayed |
+| Professional | ✅ | 15-min delayed |
+| Professional | ❌ | Historical (1 day old) |
+| Unknown | Any | Historical (1 day old) |
+
+**To get real-time stock quotes**: You must be classified as non-professional AND have signed the IEX agreement.
+
+### Stock Candles (`/v1/stocks/candles/`)
+
+The type of candle data you receive depends on your user type and UTP entitlement:
+
+| User Type | UTP Entitlement | Candle Type |
+|-----------|----------------|-------------|
+| Non-Professional | ✅ | 15-min delayed |
+| Non-Professional | ❌ | Historical (1 day old) |
+| Professional | Any | Historical (1 day old) |
+| Unknown | Any | Historical (1 day old) |
+
+**Note**: Real-time data is not available for the candles endpoint. The best you can get is 15-minute delayed data (for non-professional users with UTP entitlement).
+
+**To get 15-minute delayed candles**: You must be classified as non-professional AND have signed the UTP agreement.
+
+### Options Quotes (`/v1/options/quotes/`)
+
+The type of option quote data you receive depends on your user type and OPRA entitlement:
+
+| User Type | OPRA Entitlement | Data Type |
+|-----------|------------------|-----------|
+| Non-Professional | ✅ | Real-time |
+| Non-Professional | ❌ | 15-min delayed |
+| Professional | Any | Historical (1 day old) |
+
+**To get real-time options quotes**: You must be classified as non-professional AND have signed the OPRA agreement.
+
+**Note**: Professional users receive historical data (1 day old) regardless of OPRA entitlement status.
+
+## Verification Steps
+
+### How to Verify Your Profile is Complete
+
+1. Log into the [Market Data Dashboard](https://dashboard.marketdata.app/marketdata/)
+2. Navigate to **Profile** section
+3. Check that all fields are filled:
+   - ✅ Name
+   - ✅ Address
+   - ✅ Email
+   - ✅ Phone Number
+   - ✅ Company Name (if applicable)
+   - ✅ Company Address (if applicable)
+   - ✅ Job Title (if applicable)
+   - ✅ LinkedIn Profile URL (if applicable)
+
+If any fields are missing, complete them and submit your profile.
+
+### How to Verify Agreements are Signed
+
+1. Log into the [Market Data Dashboard](https://dashboard.marketdata.app/marketdata/)
+2. Navigate to **Profile** section
+3. Look for agreement status indicators:
+   - ✅ IEX Agreement (for stock quotes)
+   - ✅ UTP Agreement (for stock candles)
+   - ✅ OPRA Agreement (for options quotes)
+
+If agreements show as unsigned, review and sign them. Note that agreements may take up to 1 business day to be approved and activated.
+
+### How to Test if Real-Time Data is Working
+
+After completing your profile and signing agreements, wait 1 business day for verification, then test:
+
+<Tabs>
+<TabItem value="Python" label="Python" default>
+
+```python
+import requests
+from datetime import datetime, timezone
+
+def test_realtime_data(symbol="AAPL"):
+    """Test if real-time data is working for a given symbol."""
+    response = requests.get(
+        f"https://api.marketdata.app/v1/stocks/quotes/{symbol}/",
+        headers={"Authorization": "Token YOUR_TOKEN"}
+    )
+    
+    data = response.json()
+    
+    if data.get("s") != "ok":
+        print(f"Error: {data.get('errmsg', 'Unknown error')}")
+        return False
+    
+    if "updated" not in data:
+        print("Warning: No timestamp in response")
+        return False
+    
+    # Get timestamp
+    updated_timestamp = data["updated"][0]
+    updated_time = datetime.fromtimestamp(updated_timestamp, tz=timezone.utc)
+    current_time = datetime.now(timezone.utc)
+    
+    # Calculate age
+    age_seconds = (current_time - updated_time).total_seconds()
+    age_minutes = age_seconds / 60
+    
+    print(f"Symbol: {symbol}")
+    print(f"Data timestamp: {updated_time}")
+    print(f"Current time: {current_time}")
+    print(f"Data age: {age_minutes:.2f} minutes")
+    
+    # Check if real-time (less than 1 minute old during market hours)
+    if age_minutes < 1:
+        print("✅ Real-time data is working!")
+        return True
+    elif age_minutes < 20:
+        print("⚠️ Receiving 15-minute delayed data")
+        print("   → Check if IEX agreement is signed and approved")
+        return False
+    else:
+        print("❌ Receiving historical data (1 day old)")
+        print("   → Check if profile is complete and agreements are signed")
+        return False
+
+# Test during market hours for best results
+test_realtime_data("AAPL")
+```
+
+</TabItem>
+<TabItem value="NodeJS" label="Node.js">
+
+```javascript
+async function testRealtimeData(symbol = "AAPL") {
+  const response = await fetch(
+    `https://api.marketdata.app/v1/stocks/quotes/${symbol}/`,
+    {
+      headers: {
+        "Authorization": "Token YOUR_TOKEN"
+      }
+    }
+  );
+  
+  const data = await response.json();
+  
+  if (data.s !== "ok") {
+    console.log(`Error: ${data.errmsg || "Unknown error"}`);
+    return false;
+  }
+  
+  if (!data.updated) {
+    console.log("Warning: No timestamp in response");
+    return false;
+  }
+  
+  // Get timestamp
+  const updatedTimestamp = data.updated[0] * 1000; // Convert to milliseconds
+  const updatedTime = new Date(updatedTimestamp);
+  const currentTime = new Date();
+  
+  // Calculate age
+  const ageSeconds = (currentTime - updatedTime) / 1000;
+  const ageMinutes = ageSeconds / 60;
+  
+  console.log(`Symbol: ${symbol}`);
+  console.log(`Data timestamp: ${updatedTime.toISOString()}`);
+  console.log(`Current time: ${currentTime.toISOString()}`);
+  console.log(`Data age: ${ageMinutes.toFixed(2)} minutes`);
+  
+  // Check if real-time (less than 1 minute old during market hours)
+  if (ageMinutes < 1) {
+    console.log("✅ Real-time data is working!");
+    return true;
+  } else if (ageMinutes < 20) {
+    console.log("⚠️ Receiving 15-minute delayed data");
+    console.log("   → Check if IEX agreement is signed and approved");
+    return false;
+  } else {
+    console.log("❌ Receiving historical data (1 day old)");
+    console.log("   → Check if profile is complete and agreements are signed");
+    return false;
+  }
+}
+
+// Test during market hours for best results
+testRealtimeData("AAPL");
+```
+
+</TabItem>
+</Tabs>
+
+## Common Scenarios
+
+### Scenario 1: "I just signed up but I'm still getting delayed data"
+
+**What's happening**: Your account profile is likely incomplete, or you haven't signed the required exchange agreements yet.
+
+**Solution**:
+1. Complete your data use profile with all required information
+2. Sign the appropriate exchange agreements (IEX for stock quotes, OPRA for options)
+3. Wait 1 business day for verification and approval
+4. Test your API requests after verification
+
+**Why it takes time**: We need to verify your information against third-party databases and get exchange approval for your agreements. This process typically takes 1 business day.
+
+### Scenario 2: "I'm on a paid plan (Trader/Quant/Prime) but not getting real-time data"
+
+**What's happening**: Having a paid plan alone doesn't guarantee real-time data. You also need:
+- A complete data use profile (so we can classify your account)
+- Signed exchange agreements (IEX, UTP, OPRA)
+- Non-professional classification (professional users get delayed/historical data)
+
+**Solution**:
+1. Check your profile in the dashboard—is it complete?
+2. Check your agreements—are they signed and approved?
+3. Check your professional status—if you're classified as professional, you'll receive delayed/historical data regardless of agreements
+
+**Note**: Professional users (corporations, investment advisors, money managers, etc.) receive historical data (1 day old) for compliance reasons, even with signed agreements.
+
+### Scenario 3: "My data was real-time yesterday but delayed today"
+
+**What's happening**: This could indicate:
+- An agreement expired or was revoked
+- Your account status changed (e.g., reclassified as professional)
+- A verification issue that needs attention
+
+**Solution**:
+1. Check your dashboard for any status changes or notifications
+2. Verify your agreements are still signed and approved
+3. Check if your profile information is still complete
+4. Contact support if the issue persists
+
+### Scenario 4: "How do I know if I'm professional or non-professional?"
+
+**Professional users** are typically:
+- Corporations or business entities
+- Investment advisors
+- Money managers
+- Users who trade on behalf of others
+
+**Non-professional users** are typically:
+- Individual investors trading for personal accounts
+- Not employed by financial institutions
+- Not trading on behalf of others
+
+**How to check**: Your classification is determined during the verification process when you complete your profile. If you're unsure about your status, contact support for clarification.
+
+**Impact**: Professional users receive historical data (1 day old) regardless of exchange agreements, while non-professional users can access real-time data with proper entitlements.
+
+### Scenario 5: "I completed my profile and signed agreements, but still getting delayed data"
+
+**What's happening**: The verification and approval process may not be complete yet, or there may be an issue with your information.
+
+**Solution**:
+1. **Wait 1 business day** after completing your profile and signing agreements
+2. Check your dashboard for any notifications or status updates
+3. Verify your information matches third-party databases (LinkedIn, etc.)
+4. If information doesn't match, update your profile to match your LinkedIn or other professional profiles
+5. Contact support if more than 1 business day has passed
+
+**Common issues**:
+- Profile information doesn't match LinkedIn or other databases
+- Missing required fields that weren't obvious
+- Additional verification needed for financial institution employees
+
+## Getting Help
+
+### When to Contact Support
+
+Contact our support team if:
+- You've completed your profile and signed agreements but still receiving delayed data after 1 business day
+- You're unsure about your professional status classification
+- Your profile information matches third-party databases but verification is still pending
+- You need clarification on which agreements you need for your use case
+- You've followed all steps but are still experiencing issues
+
+### What to Include in Your Support Ticket
+
+To help us resolve your issue quickly, please include:
+
+1. **Your account information**:
+   - Email address associated with your account
+   - Plan type (Free, Starter, Trader, Quant, Prime)
+
+2. **Diagnosis information**:
+   - Example API request that's returning delayed data
+   - The `updated` timestamp from a recent response
+   - Current time when you made the request
+   - Calculated age of the data (in minutes)
+
+3. **Account status**:
+   - Whether your profile is complete (all fields filled)
+   - Which agreements you've signed (IEX, UTP, OPRA)
+   - When you completed your profile and signed agreements
+   - Any error messages or notifications from the dashboard
+
+4. **Test results**:
+   - Output from the verification test code (if you ran it)
+   - Screenshots of your dashboard profile/agreement status (if helpful)
+
+### Support Resources
+
+- **Dashboard**: [Market Data Dashboard](https://dashboard.marketdata.app/marketdata/)
+- **Entitlements Documentation**: [Exchange Entitlements](/account/entitlements)
+- **Compliance Documentation**: [Account Compliance](/account/compliance)
+
+## Summary
+
+Real-time data requires:
+1. ✅ **Complete data use profile** (contact + employer information)
+2. ✅ **Signed exchange agreements** (IEX for stocks, OPRA for options, UTP for candles)
+3. ✅ **Non-professional classification** (professional users get delayed/historical data)
+4. ✅ **Verification approval** (typically 1 business day)
+
+The API doesn't throw errors when these requirements aren't met—it silently provides the best data you're entitled to receive. Check the `updated` timestamp in your API responses to verify you're getting real-time data, and use this guide to diagnose and fix any issues.
