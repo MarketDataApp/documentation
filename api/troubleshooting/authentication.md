@@ -59,7 +59,7 @@ Use CURL to test your token using URL parameter authentication. If it works, you
 To inspect the headers your application is sending, especially the `Authorization` header, use our dedicated [headers endpoint](/api/utilities/headers). This will help you identify any discrepancies in the headers that might be causing authentication issues.
 
 ```bash
-curl -X GET "https://api.marketdata.app/headers/" -H "Authorization: Token YOUR_TOKEN"
+curl -X GET "https://api.marketdata.app/headers/" -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 Make a request to https://api.marketdata.app/headers/ from your application and save the headers. This endpoint will return a JSON response of the headers your application is sending, with sensitive headers like `Authorization` partially redacted for security. Compare the headers from your application's request to the expected headers. 
@@ -69,7 +69,7 @@ If your application's `Authorization` header is different from what you expect, 
 3. **Log Response Headers and Submit a Helpdesk Ticket**
    
    ```bash
-   curl -X GET "https://api.marketdata.app/v1/stocks/quotes/SPY/" -H "Authorization: Token YOUR_TOKEN" -i
+   curl -X GET "https://api.marketdata.app/v1/stocks/quotes/SPY/" -H "Authorization: Bearer YOUR_TOKEN" -i
    ```
 
 Finally, we'll now make a header-authentication request using your token. Make a request using the CURL command above. If you receive a 401 error, the issue is with your token. If you receive a `200 OK` response, the issue is with your application's code. 

@@ -46,7 +46,7 @@ from datetime import datetime
 # Make a request for stock quotes
 response = requests.get(
     "https://api.marketdata.app/v1/stocks/quotes/AAPL/",
-    headers={"Authorization": "Token YOUR_TOKEN"}
+    headers={"Authorization": "Bearer YOUR_TOKEN"}
 )
 
 data = response.json()
@@ -82,7 +82,7 @@ const response = await fetch(
   "https://api.marketdata.app/v1/stocks/quotes/AAPL/",
   {
     headers: {
-      "Authorization": "Token YOUR_TOKEN"
+      "Authorization": "Bearer YOUR_TOKEN"
     }
   }
 );
@@ -119,7 +119,7 @@ if (data.s === "ok" && data.updated) {
 
 ```bash
 curl -X GET "https://api.marketdata.app/v1/stocks/quotes/AAPL/" \
-  -H "Authorization: Token YOUR_TOKEN" | jq '.updated'
+  -H "Authorization: Bearer YOUR_TOKEN" | jq '.updated'
 ```
 
 The `updated` field contains a Unix timestamp. Compare this to the current time to determine if the data is real-time, delayed, or historical.
@@ -322,7 +322,7 @@ def test_realtime_data(symbol="AAPL"):
     """Test if real-time data is working for a given symbol."""
     response = requests.get(
         f"https://api.marketdata.app/v1/stocks/quotes/{symbol}/",
-        headers={"Authorization": "Token YOUR_TOKEN"}
+        headers={"Authorization": "Bearer YOUR_TOKEN"}
     )
     
     data = response.json()
@@ -375,7 +375,7 @@ async function testRealtimeData(symbol = "AAPL") {
     `https://api.marketdata.app/v1/stocks/quotes/${symbol}/`,
     {
       headers: {
-        "Authorization": "Token YOUR_TOKEN"
+        "Authorization": "Bearer YOUR_TOKEN"
       }
     }
   );
