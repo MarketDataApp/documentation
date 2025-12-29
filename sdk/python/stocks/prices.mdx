@@ -1,0 +1,187 @@
+---
+title: Prices
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve stock prices for any supported stock symbol.
+
+## Making Requests
+
+Use the `prices()` method on the `stocks` resource to fetch stock prices. The method supports multiple output formats:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with prices indexed by symbol (default). |
+| **INTERNAL** | `list[StockPrice]` or `list[StockPricesHumanReadable]` | Returns a list of StockPrice objects or a list of StockPricesHumanReadable objects. |
+| **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
+| **CSV** | `str` | Writes CSV data to file and returns the filename string. |
+
+<a name="prices"></a>
+## prices
+
+```python
+def prices(
+    symbols: list[str] | str,
+    *,
+    output_format: OutputFormat = OutputFormat.DATAFRAME,
+    date_format: DateFormat = None,
+    columns: list[str] = None,
+    add_headers: bool = None,
+    use_human_readable: bool = False,
+    mode: Mode = None,
+    filename: str | Path = None,
+) -> list[StockPrice] | list[StockPricesHumanReadable] | dict | str | MarketDataClientErrorResult
+```
+
+Fetches stock prices for one or more symbols. The `symbols` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
+
+#### Parameters
+
+- `symbols` (list[str] | str)
+
+  A single symbol string or a list of symbol strings for which to fetch prices.
+
+- `output_format` (OutputFormat, optional)
+
+  The format of the returned data. Defaults to `OutputFormat.DATAFRAME`.
+
+- `date_format` (DateFormat, optional)
+
+  The date format to use in the response. Defaults to `DateFormat.UNIX`.
+
+- `columns` (list[str], optional)
+
+  Specify which columns to include in the response.
+
+- `add_headers` (bool, optional)
+
+  Whether to include headers in the response.
+
+- `use_human_readable` (bool, optional)
+
+  Whether to use human-readable format for values. Only applies when `output_format=OutputFormat.INTERNAL`.
+
+- `mode` (Mode, optional)
+
+  The data feed mode to use.
+
+- `filename` (str | Path, optional)
+
+  File path for CSV output (only used with `output_format=OutputFormat.CSV`).
+
+#### Returns
+
+- `list[StockPrice]` | `list[StockPricesHumanReadable]` | `dict` | `str` | `MarketDataClientErrorResult`
+
+  The prices data in the requested format, or a `MarketDataClientErrorResult` if an error occurred.
+
+<Tabs>
+<TabItem value="Example (DataFrame)" label="Example (DataFrame)">
+
+```python
+from marketdata.client import MarketDataClient
+
+client = MarketDataClient()
+
+# Get stock prices as DataFrame (default)
+# symbols can be passed positionally or as keyword
+df = client.stocks.prices("AAPL")
+# or
+df = client.stocks.prices(symbols="AAPL")
+
+# Get prices for multiple symbols
+df = client.stocks.prices(["AAPL", "MSFT"])
+
+print(df)
+```
+
+</TabItem>
+
+<TabItem value="Example (Internal)" label="Example (Internal)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get stock prices as internal objects
+prices = client.stocks.prices("AAPL", output_format=OutputFormat.INTERNAL)
+
+# Access individual price properties
+for price in prices:
+    print(f"Symbol: {price.symbol}")
+    print(f"Mid: {price.mid}")
+    print(f"Change: {price.change}")
+    print(f"Change Percent: {price.changepct}")
+    print(f"Updated: {price.updated}")
+```
+
+</TabItem>
+
+<TabItem value="Example (JSON)" label="Example (JSON)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get stock prices as JSON
+prices = client.stocks.prices(["AAPL", "MSFT"], output_format=OutputFormat.JSON)
+
+print(prices)
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+from pathlib import Path
+
+client = MarketDataClient()
+
+# Get stock prices as CSV
+csv_file = client.stocks.prices(
+    ["AAPL", "MSFT"],
+    output_format=OutputFormat.CSV,
+    filename=Path("prices.csv")
+)
+
+print(f"CSV file saved to: {csv_file}")
+```
+
+</TabItem>
+
+<TabItem value="Example (Human Readable)" label="Example (Human Readable)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get stock prices in human-readable format
+prices = client.stocks.prices(
+    "AAPL",
+    output_format=OutputFormat.INTERNAL,
+    use_human_readable=True
+)
+
+for price in prices:
+    print(f"Symbol: {price.Symbol}")
+    print(f"Mid: {price.Mid}")
+    print(f"Change Price: {price.Change_Price}")
+    print(f"Change Percent: {price.Change_Percent}")
+    print(f"Date: {price.Date}")
+```
+
+</TabItem>
+</Tabs>
+
