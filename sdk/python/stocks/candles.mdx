@@ -15,7 +15,7 @@ Use the `candles()` method on the `stocks` resource to fetch stock candles. The 
 | Output Format | Return Type | Description |
 |---------------|-------------|-------------|
 | **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with candles data indexed by timestamp (default). |
-| **INTERNAL** | `list[StockCandle]` or `list[StockCandlesHumanReadable]` | Returns a list of StockCandle objects or a list of StockCandlesHumanReadable objects. |
+| **INTERNAL** | `list[StockCandle]` or `list[StockCandlesHumanReadable]` | Returns a list of StockCandle objects. When `use_human_readable=True`, returns a list of StockCandlesHumanReadable objects with capitalized field names. |
 | **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
 | **CSV** | `str` | Writes CSV data to file and returns the filename string. |
 
@@ -260,3 +260,61 @@ for candle in candles:
 </TabItem>
 </Tabs>
 
+<a name="StockCandle"></a>
+## StockCandle
+
+```python
+@dataclass
+class StockCandle:
+    t: datetime.datetime
+    o: float
+    h: float
+    l: float
+    c: float
+    v: int
+```
+
+StockCandle represents a single stock candle (OHLCV data), encapsulating price and volume information for a specific time period.
+
+#### Properties
+
+- `t` (datetime.datetime): The timestamp for the candle (automatically converted from Unix timestamp).
+- `o` (float): The opening price.
+- `h` (float): The highest price.
+- `l` (float): The lowest price.
+- `c` (float): The closing price.
+- `v` (int): The trading volume.
+
+#### Notes
+
+- The `t` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+
+<a name="StockCandlesHumanReadable"></a>
+## StockCandlesHumanReadable
+
+```python
+@dataclass
+class StockCandlesHumanReadable:
+    Date: datetime.datetime
+    Open: float
+    High: float
+    Low: float
+    Close: float
+    Volume: int
+```
+
+StockCandlesHumanReadable represents a stock candle in human-readable format with capitalized field names and formatted values.
+
+#### Properties
+
+- `Date` (datetime.datetime): The timestamp for the candle (automatically converted from Unix timestamp).
+- `Open` (float): The opening price.
+- `High` (float): The highest price.
+- `Low` (float): The lowest price.
+- `Close` (float): The closing price.
+- `Volume` (int): The trading volume.
+
+#### Notes
+
+- The `Date` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+- Field names use capitalized format (e.g., `Open` instead of `o`, `Date` instead of `t`).

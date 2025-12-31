@@ -15,7 +15,7 @@ Use the `quotes()` method on the `stocks` resource to fetch stock quotes. The me
 | Output Format | Return Type | Description |
 |---------------|-------------|-------------|
 | **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with quotes indexed by symbol (default). |
-| **INTERNAL** | `list[StockQuote]` or `list[StockQuotesHumanReadable]` | Returns a list of StockQuote objects or a list of StockQuotesHumanReadable objects. |
+| **INTERNAL** | `list[StockQuote]` or `list[StockQuotesHumanReadable]` | Returns a list of StockQuote objects. When `use_human_readable=True`, returns a list of StockQuotesHumanReadable objects with capitalized field names. |
 | **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
 | **CSV** | `str` | Writes CSV data to file and returns the filename string. |
 
@@ -298,12 +298,6 @@ StockQuote represents a single stock quote, encapsulating various details such a
 - `volume` (int): The trading volume for the stock.
 - `updated` (datetime.datetime): The time when the quote was last updated (automatically converted from timestamp).
 
-#### Methods
-
-- `from_dict(data: dict) -> StockQuote`
-
-  Creates a StockQuote instance from a dictionary.
-
 #### Notes
 
 - The `updated` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
@@ -343,12 +337,6 @@ StockQuotesHumanReadable represents a stock quote in human-readable format with 
 - `Change_Percent` (float): The percentage change in price.
 - `Volume` (int): The trading volume for the stock.
 - `Date` (datetime.datetime): The time when the quote was last updated (automatically converted from timestamp).
-
-#### Methods
-
-- `from_dict(data: dict) -> StockQuotesHumanReadable`
-
-  Creates a StockQuotesHumanReadable instance from a dictionary, handling field name mapping from API format (e.g., "Change $" to "Change_Price").
 
 #### Notes
 

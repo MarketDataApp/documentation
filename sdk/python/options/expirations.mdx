@@ -15,7 +15,7 @@ Use the `expirations()` method on the `options` resource to fetch expiration dat
 | Output Format | Return Type | Description |
 |---------------|-------------|-------------|
 | **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with expiration dates indexed by expirations (default). |
-| **INTERNAL** | `OptionsExpirations` or `OptionsExpirationsHumanReadable` | Returns an OptionsExpirations object. |
+| **INTERNAL** | `OptionsExpirations` or `OptionsExpirationsHumanReadable` | Returns an OptionsExpirations object. When `use_human_readable=True`, returns an OptionsExpirationsHumanReadable object with capitalized field names. |
 | **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
 | **CSV** | `str` | Writes CSV data to file and returns the filename string. |
 
@@ -184,3 +184,49 @@ print(f"Date: {expirations.Date}")
 </TabItem>
 </Tabs>
 
+<a name="OptionsExpirations"></a>
+## OptionsExpirations
+
+```python
+@dataclass
+class OptionsExpirations:
+    s: str
+    expirations: list[datetime.datetime]
+    updated: datetime.datetime
+```
+
+OptionsExpirations represents expiration dates for options, encapsulating a list of expiration dates and an update timestamp.
+
+#### Properties
+
+- `s` (str): Status indicator ("ok" for successful responses).
+- `expirations` (list[datetime.datetime]): List of expiration dates (automatically converted from timestamps).
+- `updated` (datetime.datetime): The time when the data was last updated (automatically converted from timestamp).
+
+#### Notes
+
+- The `expirations` list contains `datetime.datetime` objects automatically converted from Unix timestamps.
+- The `updated` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+
+<a name="OptionsExpirationsHumanReadable"></a>
+## OptionsExpirationsHumanReadable
+
+```python
+@dataclass
+class OptionsExpirationsHumanReadable:
+    Expirations: list[datetime.datetime]
+    Date: datetime.datetime
+```
+
+OptionsExpirationsHumanReadable represents expiration dates in human-readable format with capitalized field names and formatted values.
+
+#### Properties
+
+- `Expirations` (list[datetime.datetime]): List of expiration dates (automatically converted from timestamps).
+- `Date` (datetime.datetime): The time when the data was last updated (automatically converted from timestamp).
+
+#### Notes
+
+- The `Expirations` list contains `datetime.datetime` objects automatically converted from Unix timestamps.
+- The `Date` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+- Field names use capitalized format (e.g., `Expirations` instead of `expirations`, `Date` instead of `updated`).

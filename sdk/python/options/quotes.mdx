@@ -15,7 +15,7 @@ Use the `quotes()` method on the `options` resource to fetch option quotes. The 
 | Output Format | Return Type | Description |
 |---------------|-------------|-------------|
 | **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with option quotes indexed by optionSymbol (default). |
-| **INTERNAL** | `OptionsQuotes` or `OptionsQuotesHumanReadable` | Returns an OptionsQuotes object. |
+| **INTERNAL** | `OptionsQuotes` or `OptionsQuotesHumanReadable` | Returns an OptionsQuotes object containing lists of option quote data. When `use_human_readable=True`, returns an OptionsQuotesHumanReadable object with capitalized field names. |
 | **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
 | **CSV** | `str` | Writes CSV data to file and returns the filename string. |
 
@@ -198,3 +198,141 @@ print(f"First option ask: {quotes.Ask[0]}")
 </TabItem>
 </Tabs>
 
+<a name="OptionsQuotes"></a>
+## OptionsQuotes
+
+```python
+@dataclass
+class OptionsQuotes:
+    s: str
+    optionSymbol: list[str]
+    underlying: list[str]
+    expiration: list[datetime.datetime]
+    side: list[str]
+    strike: list[float]
+    firstTraded: list[datetime.datetime]
+    dte: list[int]
+    updated: list[datetime.datetime]
+    bid: list[float]
+    bidSize: list[int]
+    mid: list[float]
+    ask: list[float]
+    askSize: list[int]
+    last: list[float]
+    openInterest: list[int]
+    volume: list[int]
+    inTheMoney: list[bool]
+    intrinsicValue: list[float]
+    extrinsicValue: list[float]
+    underlyingPrice: list[float]
+    iv: list[float]
+    delta: list[float]
+    gamma: list[float]
+    theta: list[float]
+    vega: list[float]
+```
+
+OptionsQuotes represents option quotes data with lists of equal length for each field. All lists have the same length, allowing you to access option data by index.
+
+#### Properties
+
+- `s` (str): Status indicator ("ok" for successful responses).
+- `optionSymbol` (list[str]): List of option symbols.
+- `underlying` (list[str]): List of underlying symbols.
+- `expiration` (list[datetime.datetime]): List of expiration dates (automatically converted from timestamps).
+- `side` (list[str]): List of option sides ("call" or "put").
+- `strike` (list[float]): List of strike prices.
+- `firstTraded` (list[datetime.datetime]): List of first traded dates (automatically converted from timestamps).
+- `dte` (list[int]): List of days to expiration.
+- `updated` (list[datetime.datetime]): List of last update timestamps (automatically converted from timestamps).
+- `bid` (list[float]): List of bid prices.
+- `bidSize` (list[int]): List of bid sizes.
+- `mid` (list[float]): List of mid prices.
+- `ask` (list[float]): List of ask prices.
+- `askSize` (list[int]): List of ask sizes.
+- `last` (list[float]): List of last traded prices.
+- `openInterest` (list[int]): List of open interest values.
+- `volume` (list[int]): List of trading volumes.
+- `inTheMoney` (list[bool]): List indicating if options are in the money.
+- `intrinsicValue` (list[float]): List of intrinsic values.
+- `extrinsicValue` (list[float]): List of extrinsic values.
+- `underlyingPrice` (list[float]): List of underlying prices.
+- `iv` (list[float]): List of implied volatilities.
+- `delta` (list[float]): List of Delta values.
+- `gamma` (list[float]): List of Gamma values.
+- `theta` (list[float]): List of Theta values.
+- `vega` (list[float]): List of Vega values.
+
+#### Notes
+
+- All lists have the same length, allowing you to access option data by index (e.g., `quotes.optionSymbol[0]`, `quotes.bid[0]`, etc.).
+- Timestamp fields (`expiration`, `firstTraded`, `updated`) are automatically converted to `datetime.datetime` objects.
+
+<a name="OptionsQuotesHumanReadable"></a>
+## OptionsQuotesHumanReadable
+
+```python
+@dataclass
+class OptionsQuotesHumanReadable:
+    Symbol: list[str]
+    Underlying: list[str]
+    Expiration_Date: list[datetime.datetime]
+    Option_Side: list[str]
+    Strike: list[float | int]
+    First_Traded: list[datetime.datetime]
+    Days_To_Expiration: list[int]
+    Date: list[datetime.datetime]
+    Bid: list[float]
+    Bid_Size: list[int]
+    Mid: list[float]
+    Ask: list[float]
+    Ask_Size: list[int]
+    Last: list[float]
+    Open_Interest: list[int]
+    Volume: list[int]
+    In_The_Money: list[bool]
+    Intrinsic_Value: list[float]
+    Extrinsic_Value: list[float]
+    Underlying_Price: list[float]
+    IV: list[float]
+    Delta: list[float]
+    Gamma: list[float]
+    Theta: list[float]
+    Vega: list[float]
+```
+
+OptionsQuotesHumanReadable represents option quotes in human-readable format with capitalized field names and formatted values.
+
+#### Properties
+
+- `Symbol` (list[str]): List of option symbols.
+- `Underlying` (list[str]): List of underlying symbols.
+- `Expiration_Date` (list[datetime.datetime]): List of expiration dates (automatically converted from timestamps).
+- `Option_Side` (list[str]): List of option sides ("call" or "put").
+- `Strike` (list[float | int]): List of strike prices.
+- `First_Traded` (list[datetime.datetime]): List of first traded dates (automatically converted from timestamps).
+- `Days_To_Expiration` (list[int]): List of days to expiration.
+- `Date` (list[datetime.datetime]): List of last update timestamps (automatically converted from timestamps).
+- `Bid` (list[float]): List of bid prices.
+- `Bid_Size` (list[int]): List of bid sizes.
+- `Mid` (list[float]): List of mid prices.
+- `Ask` (list[float]): List of ask prices.
+- `Ask_Size` (list[int]): List of ask sizes.
+- `Last` (list[float]): List of last traded prices.
+- `Open_Interest` (list[int]): List of open interest values.
+- `Volume` (list[int]): List of trading volumes.
+- `In_The_Money` (list[bool]): List indicating if options are in the money.
+- `Intrinsic_Value` (list[float]): List of intrinsic values.
+- `Extrinsic_Value` (list[float]): List of extrinsic values.
+- `Underlying_Price` (list[float]): List of underlying prices.
+- `IV` (list[float]): List of implied volatilities.
+- `Delta` (list[float]): List of Delta values.
+- `Gamma` (list[float]): List of Gamma values.
+- `Theta` (list[float]): List of Theta values.
+- `Vega` (list[float]): List of Vega values.
+
+#### Notes
+
+- All lists have the same length, allowing you to access option data by index (e.g., `quotes.Symbol[0]`, `quotes.Bid[0]`, etc.).
+- Timestamp fields (`Expiration_Date`, `First_Traded`, `Date`) are automatically converted to `datetime.datetime` objects.
+- Field names use capitalized format with underscores (e.g., `Expiration_Date` instead of `expiration`, `Option_Side` instead of `side`, `Open_Interest` instead of `openInterest`).

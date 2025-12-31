@@ -15,7 +15,7 @@ Use the `candles()` method on the `funds` resource to fetch fund candles. The me
 | Output Format | Return Type | Description |
 |---------------|-------------|-------------|
 | **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with candles data (default). |
-| **INTERNAL** | `list[FundsCandle]` or `list[FundsCandlesHumanReadable]` | Returns a list of FundsCandle objects or FundsCandlesHumanReadable objects. |
+| **INTERNAL** | `list[FundsCandle]` or `list[FundsCandlesHumanReadable]` | Returns a list of FundsCandle objects. When `use_human_readable=True`, returns a list of FundsCandlesHumanReadable objects with capitalized field names. |
 | **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
 | **CSV** | `str` | Writes CSV data to file and returns the filename string. |
 
@@ -234,3 +234,57 @@ for candle in candles:
 </TabItem>
 </Tabs>
 
+<a name="FundsCandle"></a>
+## FundsCandle
+
+```python
+@dataclass
+class FundsCandle:
+    t: datetime.datetime
+    o: float
+    h: float
+    l: float
+    c: float
+```
+
+FundsCandle represents a single fund candle (OHLC data), encapsulating price information for a specific time period.
+
+#### Properties
+
+- `t` (datetime.datetime): The timestamp for the candle (automatically converted from Unix timestamp).
+- `o` (float): The opening price.
+- `h` (float): The highest price.
+- `l` (float): The lowest price.
+- `c` (float): The closing price.
+
+#### Notes
+
+- The `t` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+
+<a name="FundsCandlesHumanReadable"></a>
+## FundsCandlesHumanReadable
+
+```python
+@dataclass
+class FundsCandlesHumanReadable:
+    Date: datetime.datetime
+    Open: float
+    High: float
+    Low: float
+    Close: float
+```
+
+FundsCandlesHumanReadable represents a fund candle in human-readable format with capitalized field names and formatted values.
+
+#### Properties
+
+- `Date` (datetime.datetime): The timestamp for the candle (automatically converted from Unix timestamp).
+- `Open` (float): The opening price.
+- `High` (float): The highest price.
+- `Low` (float): The lowest price.
+- `Close` (float): The closing price.
+
+#### Notes
+
+- The `Date` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+- Field names use capitalized format (e.g., `Open` instead of `o`, `Date` instead of `t`).
