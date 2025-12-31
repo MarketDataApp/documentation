@@ -82,21 +82,16 @@ curl -i -X GET "https://api.marketdata.app/v1/stocks/quotes/AAPL/" \
 <TabItem value="Python" label="Python">
 
 ```python
-import requests
+from marketdata.client import MarketDataClient
 
-response = requests.get(
-    "https://api.marketdata.app/v1/stocks/quotes/AAPL/",
-    headers={"Authorization": "Bearer YOUR_TOKEN"}
-)
+client = MarketDataClient()
+quotes = client.stocks.quotes("AAPL")
 
 # Check credit consumption
-consumed = response.headers.get('X-Api-Ratelimit-Consumed')
-remaining = response.headers.get('X-Api-Ratelimit-Remaining')
-limit = response.headers.get('X-Api-Ratelimit-Limit')
-
-print(f"Credits consumed: {consumed}")
-print(f"Credits remaining: {remaining}")
-print(f"Credit limit: {limit}")
+rate_limits = client.rate_limits
+print(f"Credits consumed: {rate_limits.requests_consumed}")
+print(f"Credits remaining: {rate_limits.requests_remaining}")
+print(f"Credit limit: {rate_limits.requests_limit}")
 ```
 
 </TabItem>
@@ -282,24 +277,39 @@ GET https://api.marketdata.app/v1/stocks/quotes/?symbols=AAPL,META,MSFT,...(100 
 <TabItem value="Python" label="Python" default>
 
 ```python
-import requests
+from marketdata.client import MarketDataClient
 
-def make_request_with_monitoring(url, headers):
-    response = requests.get(url, headers=headers)
+def make_request_with_monitoring(client, method_call):
+    """
+    Make an API request and monitor credit consumption.
     
-    consumed = int(response.headers.get('X-Api-Ratelimit-Consumed', 0))
-    remaining = int(response.headers.get('X-Api-Ratelimit-Remaining', 0))
-    limit = int(response.headers.get('X-Api-Ratelimit-Limit', 0))
+    Args:
+        client: MarketDataClient instance
+        method_call: Callable that makes the API request (e.g., lambda: client.stocks.quotes("AAPL"))
+    
+    Returns:
+        The result of the API call
+    """
+    result = method_call()
+    
+    # Access rate limits after the request
+    rate_limits = client.rate_limits
+    consumed = rate_limits.requests_consumed
+    remaining = rate_limits.requests_remaining
+    limit = rate_limits.requests_limit
     
     # Alert if credits are running low
     if remaining < limit * 0.1:  # Less than 10% remaining
         print(f"WARNING: Only {remaining} credits remaining!")
     
-    # Log expensive requests
-    if consumed > 10:
-        print(f"Expensive request detected: {consumed} credits consumed")
+    # Log expensive requests (note: consumed shows total consumed, not per-request)
+    # You may need to track previous consumed value to calculate per-request consumption
     
-    return response
+    return result
+
+# Example usage
+client = MarketDataClient()
+quotes = make_request_with_monitoring(client, lambda: client.stocks.quotes("AAPL"))
 ```
 
 </TabItem>
