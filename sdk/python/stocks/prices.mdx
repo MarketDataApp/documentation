@@ -15,7 +15,7 @@ Use the `prices()` method on the `stocks` resource to fetch stock prices. The me
 | Output Format | Return Type | Description |
 |---------------|-------------|-------------|
 | **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with prices indexed by symbol (default). |
-| **INTERNAL** | `list[StockPrice]` or `list[StockPricesHumanReadable]` | Returns a list of StockPrice objects or a list of StockPricesHumanReadable objects. |
+| **INTERNAL** | `list[StockPrice]` or `list[StockPricesHumanReadable]` | Returns a list of StockPrice objects. When `use_human_readable=True`, returns a list of StockPricesHumanReadable objects with capitalized field names. |
 | **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
 | **CSV** | `str` | Writes CSV data to file and returns the filename string. |
 
@@ -185,3 +185,59 @@ for price in prices:
 </TabItem>
 </Tabs>
 
+<a name="StockPrice"></a>
+## StockPrice
+
+```python
+@dataclass
+class StockPrice:
+    s: str
+    symbol: str
+    mid: float
+    change: float
+    changepct: float
+    updated: datetime.datetime
+```
+
+StockPrice represents a single stock price, encapsulating various details such as prices and timestamps.
+
+#### Properties
+
+- `s` (str): Status indicator ("ok" for successful responses).
+- `symbol` (str): The stock symbol.
+- `mid` (float): The mid price calculated between the ask and bid prices.
+- `change` (float): The price change.
+- `changepct` (float): The percentage change in price.
+- `updated` (datetime.datetime): The time when the price was last updated (automatically converted from timestamp).
+
+#### Notes
+
+- The `updated` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+
+<a name="StockPricesHumanReadable"></a>
+## StockPricesHumanReadable
+
+```python
+@dataclass
+class StockPricesHumanReadable:
+    Symbol: str
+    Mid: float
+    Change_Price: float
+    Change_Percent: float
+    Date: datetime.datetime
+```
+
+StockPricesHumanReadable represents a stock price in human-readable format with capitalized field names and formatted values.
+
+#### Properties
+
+- `Symbol` (str): The stock symbol.
+- `Mid` (float): The mid price calculated between the ask and bid prices.
+- `Change_Price` (float): The price change.
+- `Change_Percent` (float): The percentage change in price.
+- `Date` (datetime.datetime): The time when the price was last updated (automatically converted from timestamp).
+
+#### Notes
+
+- The `Date` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+- Field names use capitalized format with underscores (e.g., `Change_Price` instead of `change`).
