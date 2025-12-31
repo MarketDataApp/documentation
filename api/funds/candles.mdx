@@ -47,13 +47,11 @@ fetch(
 <TabItem value="Python" label="Python">
 
 ```python title="fundCandles.py"
-import requests
+from marketdata.client import MarketDataClient
 
-url = "https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-01-10"
-
-response = requests.request("GET", url)
-
-print(response.text)
+client = MarketDataClient()
+candles = client.funds.candles("VFINX", resolution="D", from_date="2020-01-01", to_date="2020-01-10")
+print(candles)
 ```
 </TabItem>
 <TabItem value="Go" label="Go">

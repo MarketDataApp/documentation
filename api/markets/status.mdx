@@ -52,16 +52,14 @@ fetch("https://api.marketdata.app/v1/markets/status/?date=yesterday")
 <TabItem value="Python" label="Python">
 
 ```python title="app.py"
-import requests
+from marketdata.client import MarketDataClient
 
-url1 = "https://api.marketdata.app/v1/markets/status/?from=2020-01-01&to=2020-12-31"
-url2 = "https://api.marketdata.app/v1/markets/status/?date=yesterday"
+client = MarketDataClient()
+status1 = client.markets.status(from_date="2020-01-01", to_date="2020-12-31")
+status2 = client.markets.status(date="yesterday")
 
-response1 = requests.request("GET", url1)
-response2 = requests.request("GET", url2)
-
-print(response1.text)
-print(response2.text)
+print(status1)
+print(status2)
 ```
 
 </TabItem>

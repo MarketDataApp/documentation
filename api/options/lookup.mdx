@@ -42,12 +42,11 @@ fetch(
 <TabItem value="Python" label="Python">
 
 ```python title="app.py"
-import requests
+from marketdata.client import MarketDataClient
 
-url = "https://api.marketdata.app/v1/options/lookup/AAPL%207/28/2023%20200%20Call"
-response = requests.request("GET", url)
-
-print(response.text)
+client = MarketDataClient()
+lookup = client.options.lookup("AAPL 7/28/2023 200 Call")
+print(lookup)
 ```
 
 </TabItem>

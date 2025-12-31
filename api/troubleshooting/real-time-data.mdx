@@ -40,20 +40,20 @@ The first step is to verify whether you're actually receiving real-time data by 
 <TabItem value="Python" label="Python" default>
 
 ```python
-import requests
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+from marketdata.exceptions import MarketDataClientErrorResult
 from datetime import datetime
 
 # Make a request for stock quotes
-response = requests.get(
-    "https://api.marketdata.app/v1/stocks/quotes/AAPL/",
-    headers={"Authorization": "Bearer YOUR_TOKEN"}
-)
+client = MarketDataClient()
+quotes = client.stocks.quotes("AAPL", output_format=OutputFormat.JSON)
 
-data = response.json()
-
-if data.get("s") == "ok" and "updated" in data:
+if isinstance(quotes, MarketDataClientErrorResult):
+    print(f"Error: {quotes.error}")
+elif isinstance(quotes, dict) and quotes.get("s") == "ok" and "updated" in quotes:
     # Get the timestamp (Unix epoch seconds)
-    updated_timestamp = data["updated"][0]
+    updated_timestamp = quotes["updated"][0]
     updated_time = datetime.fromtimestamp(updated_timestamp)
     current_time = datetime.now()
     
@@ -315,28 +315,30 @@ After completing your profile and signing agreements, wait 1 business day for ve
 <TabItem value="Python" label="Python" default>
 
 ```python
-import requests
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+from marketdata.exceptions import MarketDataClientErrorResult
 from datetime import datetime, timezone
 
 def test_realtime_data(symbol="AAPL"):
     """Test if real-time data is working for a given symbol."""
-    response = requests.get(
-        f"https://api.marketdata.app/v1/stocks/quotes/{symbol}/",
-        headers={"Authorization": "Bearer YOUR_TOKEN"}
-    )
+    client = MarketDataClient()
+    quotes = client.stocks.quotes(symbol, output_format=OutputFormat.JSON)
     
-    data = response.json()
-    
-    if data.get("s") != "ok":
-        print(f"Error: {data.get('errmsg', 'Unknown error')}")
+    if isinstance(quotes, MarketDataClientErrorResult):
+        print(f"Error: {quotes.error}")
         return False
     
-    if "updated" not in data:
+    if not isinstance(quotes, dict) or quotes.get("s") != "ok":
+        print(f"Error: {quotes.get('errmsg', 'Unknown error') if isinstance(quotes, dict) else 'Invalid response'}")
+        return False
+    
+    if "updated" not in quotes:
         print("Warning: No timestamp in response")
         return False
     
     # Get timestamp
-    updated_timestamp = data["updated"][0]
+    updated_timestamp = quotes["updated"][0]
     updated_time = datetime.fromtimestamp(updated_timestamp, tz=timezone.utc)
     current_time = datetime.now(timezone.utc)
     

@@ -48,18 +48,20 @@ axios
 <TabItem value="Python" label="Python">
 
 ```python title="logger.py"
-import requests
+from marketdata.client import MarketDataClient
+from marketdata.exceptions import MarketDataClientErrorResult
 import json
 
-# Make the API request
-response = requests.get("https://api.marketdata.app/v1/any_endpoint_here")
+# Make the API request using the SDK
+client = MarketDataClient()
+result = client.stocks.quotes("AAPL")
 
-# Check if the response is not 200 or 203
-if response.status_code not in [200, 203]:
+# Check if the result is an error (SDK handles HTTP errors internally)
+if isinstance(result, MarketDataClientErrorResult):
     log_data = {
-        "request": response.request.method + " " + response.request.url,
-        "response": response.content.decode("utf-8"),
-        "cf_ray_header": response.headers.get("CF-Ray", "Not available")
+        "request": f"GET https://api.marketdata.app/v1/stocks/quotes/AAPL/",
+        "response": str(result.error),
+        "cf_ray_header": "Not available"  # CF-Ray is handled internally by the SDK
     }
     # Save to a logfile
     with open("api_error_log.json", "a") as logfile:
