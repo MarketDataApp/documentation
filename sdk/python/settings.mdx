@@ -1,0 +1,361 @@
+---
+title: Settings
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Market Data Python SDK provides flexible configuration options for customizing API requests. You can configure universal parameters like output format, date format, data mode, and more through multiple methods with different priority levels.
+
+## Configuration Priority
+
+The SDK supports multiple ways to configure universal parameters. These configuration methods follow a priority hierarchy, where higher priority settings override lower priority ones.
+
+### Priority Order (Lowest to Highest)
+
+1. **Environment Variables** (Lowest Priority)
+   - Set via environment variables like `MARKETDATA_OUTPUT_FORMAT`, `MARKETDATA_DATE_FORMAT`, etc.
+   - Applied globally to all API calls unless overridden
+
+2. **Client Default Parameters** (`client.default_params`)
+   - Set via `client.default_params` property
+   - Applied to all API calls made with that client instance unless overridden
+
+3. **Direct Method Parameters** (Highest Priority)
+   - Passed directly as keyword arguments to resource methods
+   - Applied only to that specific API call
+
+### How It Works
+
+When making an API call, the SDK merges parameters in the following order:
+
+1. **Start with environment variables** (lowest priority)
+   - Parameters are read from environment variables like `MARKETDATA_OUTPUT_FORMAT`, `MARKETDATA_DATE_FORMAT`, etc.
+
+2. **Override with `client.default_params`** (medium priority)
+   - Parameters set via `client.default_params` override environment variables
+   - Example: `client.default_params.output_format = OutputFormat.JSON`
+
+3. **Override with direct method parameters** (highest priority)
+   - Parameters passed directly to resource methods override both environment variables and `client.default_params`
+   - Example: `client.stocks.prices("AAPL", output_format=OutputFormat.DATAFRAME)`
+
+### Examples
+
+<Tabs>
+<TabItem value="Environment Variables" label="Environment Variables">
+
+Set universal parameters via environment variables:
+
+```python
+import os
+os.environ["MARKETDATA_OUTPUT_FORMAT"] = "json"
+os.environ["MARKETDATA_DATE_FORMAT"] = "timestamp"
+
+from marketdata.client import MarketDataClient
+
+client = MarketDataClient()
+
+# All calls will use JSON format and timestamp date format
+# (unless overridden by client.default_params or method parameters)
+prices = client.stocks.prices("AAPL")
+# Uses: output_format=JSON, date_format=TIMESTAMP
+```
+
+</TabItem>
+
+<TabItem value="Client Default Params" label="Client Default Params">
+
+Set universal parameters via `client.default_params`:
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat, DateFormat
+
+client = MarketDataClient()
+
+# Set default parameters for this client instance
+client.default_params.output_format = OutputFormat.JSON
+client.default_params.date_format = DateFormat.TIMESTAMP
+
+# All calls will use JSON format and timestamp date format
+# (unless overridden by method parameters)
+prices = client.stocks.prices("AAPL")
+# Uses: output_format=JSON, date_format=TIMESTAMP
+
+quotes = client.stocks.quotes("AAPL")
+# Uses: output_format=JSON, date_format=TIMESTAMP
+```
+
+**Note:** `client.default_params` overrides environment variables.
+
+</TabItem>
+
+<TabItem value="Direct Method Parameters" label="Direct Method Parameters">
+
+Pass parameters directly to resource methods:
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat, DateFormat
+
+client = MarketDataClient()
+
+# Set default parameters
+client.default_params.output_format = OutputFormat.JSON
+client.default_params.date_format = DateFormat.TIMESTAMP
+
+# Direct method parameters override client.default_params
+prices = client.stocks.prices(
+    "AAPL",
+    output_format=OutputFormat.DATAFRAME,  # Overrides JSON
+    date_format=DateFormat.UNIX  # Overrides TIMESTAMP
+)
+# Uses: output_format=DATAFRAME, date_format=UNIX
+
+# This call still uses client.default_params
+quotes = client.stocks.quotes("AAPL")
+# Uses: output_format=JSON, date_format=TIMESTAMP
+```
+
+**Note:** Direct method parameters override both environment variables and `client.default_params`.
+
+</TabItem>
+</Tabs>
+
+## Available Configuration Options
+
+### Output Format
+
+Controls the format of the API response data.
+
+**Available Values:**
+- `OutputFormat.DATAFRAME` (default): Returns data as a pandas DataFrame
+- `OutputFormat.JSON`: Returns data as JSON
+- `OutputFormat.CSV`: Returns data as CSV (saves to file)
+- `OutputFormat.INTERNAL`: Returns data in internal format
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_OUTPUT_FORMAT` (values: `dataframe`, `internal`, `json`, `csv`)
+2. **Client Default:** `client.default_params.output_format = OutputFormat.JSON`
+3. **Direct Parameter:** `client.stocks.quotes("AAPL", output_format=OutputFormat.JSON)`
+
+**Example:**
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Method 1: Environment variable
+# export MARKETDATA_OUTPUT_FORMAT=json
+
+# Method 2: Client default params
+client.default_params.output_format = OutputFormat.JSON
+
+# Method 3: Direct parameter (highest priority)
+quotes = client.stocks.quotes("AAPL", output_format=OutputFormat.DATAFRAME)
+```
+
+For more details, see the [API Format documentation](/api/universal-parameters/format).
+
+### Date Format
+
+Specifies the format for date and time information in responses.
+
+**Available Values:**
+- `DateFormat.TIMESTAMP`: ISO 8601 timestamp format (e.g., `2020-12-30 16:00:00 -05:00`)
+- `DateFormat.UNIX`: Unix timestamp in seconds (e.g., `1609362000`)
+- `DateFormat.SPREADSHEET`: Excel spreadsheet format (e.g., `44195.66667`)
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_DATE_FORMAT` (values: `timestamp`, `unix`, `spreadsheet`)
+2. **Client Default:** `client.default_params.date_format = DateFormat.UNIX`
+3. **Direct Parameter:** `client.stocks.candles("AAPL", date_format=DateFormat.UNIX)`
+
+**Example:**
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import DateFormat
+
+client = MarketDataClient()
+
+# Method 1: Environment variable
+# export MARKETDATA_DATE_FORMAT=unix
+
+# Method 2: Client default params
+client.default_params.date_format = DateFormat.UNIX
+
+# Method 3: Direct parameter (highest priority)
+candles = client.stocks.candles("AAPL", date_format=DateFormat.TIMESTAMP)
+```
+
+For more details, see the [API Date Format documentation](/api/universal-parameters/date-format).
+
+### Columns
+
+Limits the response to only the columns you need, reducing data transfer and processing time.
+
+**Type:** `list[str]` or comma-separated string
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_COLUMNS` (comma-separated list, e.g., `ask,bid`)
+2. **Client Default:** `client.default_params.columns = ["ask", "bid"]`
+3. **Direct Parameter:** `client.stocks.quotes("AAPL", columns=["ask", "bid"])`
+
+**Example:**
+```python
+from marketdata.client import MarketDataClient
+
+client = MarketDataClient()
+
+# Method 1: Environment variable
+# export MARKETDATA_COLUMNS=ask,bid
+
+# Method 2: Client default params
+client.default_params.columns = ["ask", "bid"]
+
+# Method 3: Direct parameter (highest priority)
+quotes = client.stocks.quotes("AAPL", columns=["ask", "bid"])
+# Or as a comma-separated string
+quotes = client.stocks.quotes("AAPL", columns="ask,bid")
+```
+
+For more details, see the [API Columns documentation](/api/universal-parameters/columns).
+
+### Headers
+
+Controls whether headers are included in CSV output.
+
+**Type:** `bool`
+
+**Default:** `True`
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_ADD_HEADERS` (values: `true`, `false`)
+2. **Client Default:** `client.default_params.add_headers = False`
+3. **Direct Parameter:** `client.stocks.candles("AAPL", add_headers=False)`
+
+**Example:**
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Method 1: Environment variable
+# export MARKETDATA_ADD_HEADERS=false
+
+# Method 2: Client default params
+client.default_params.add_headers = False
+
+# Method 3: Direct parameter (highest priority)
+candles = client.stocks.candles(
+    "AAPL",
+    output_format=OutputFormat.CSV,
+    add_headers=False
+)
+```
+
+For more details, see the [API Headers documentation](/api/universal-parameters/headers).
+
+### Human Readable
+
+Uses human-readable attribute names in JSON or CSV output instead of camelCase. Only applies when `output_format=OutputFormat.INTERNAL`.
+
+**Type:** `bool`
+
+**Default:** `False`
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_USE_HUMAN_READABLE` (values: `true`, `false`)
+2. **Client Default:** `client.default_params.use_human_readable = True`
+3. **Direct Parameter:** `client.stocks.quotes("AAPL", use_human_readable=True)`
+
+**Example:**
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Method 1: Environment variable
+# export MARKETDATA_USE_HUMAN_READABLE=true
+
+# Method 2: Client default params
+client.default_params.use_human_readable = True
+
+# Method 3: Direct parameter (highest priority)
+quotes = client.stocks.quotes(
+    "AAPL",
+    output_format=OutputFormat.INTERNAL,
+    use_human_readable=True
+)
+```
+
+For more details, see the [API Human Readable documentation](/api/universal-parameters/human-readable).
+
+### Data Mode
+
+Controls how an API request is fulfilled, including data freshness guarantees and credit usage.
+
+**Available Values:**
+- `Mode.LIVE`: Real-time data (default for paid accounts)
+- `Mode.CACHED`: Recently cached data (reduces credit usage for bulk quotes)
+- `Mode.DELAYED`: Data delayed by at least 15 minutes (default for free/trial accounts)
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_MODE` (values: `live`, `cached`, `delayed`)
+2. **Client Default:** `client.default_params.mode = Mode.CACHED`
+3. **Direct Parameter:** `client.options.chain("SPY", mode=Mode.CACHED)`
+
+**Example:**
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import Mode
+
+client = MarketDataClient()
+
+# Method 1: Environment variable
+# export MARKETDATA_MODE=cached
+
+# Method 2: Client default params
+client.default_params.mode = Mode.CACHED
+
+# Method 3: Direct parameter (highest priority)
+chain = client.options.chain("SPY", mode=Mode.CACHED)
+quotes = client.stocks.quotes("AAPL", mode=Mode.LIVE)
+```
+
+:::info Premium Parameter
+The `mode` parameter is available only on paid plans. Free and trial plans cannot change the data mode and will always receive delayed data.
+:::
+
+For more details, see the [API Mode documentation](/api/universal-parameters/mode).
+
+## Available Environment Variables
+
+You can set the following environment variables to configure universal parameters globally:
+
+- `MARKETDATA_OUTPUT_FORMAT`: Output format (`dataframe`, `internal`, `json`, `csv`)
+- `MARKETDATA_DATE_FORMAT`: Date format (`timestamp`, `unix`, `spreadsheet`)
+- `MARKETDATA_COLUMNS`: Comma-separated list of columns to include
+- `MARKETDATA_ADD_HEADERS`: Whether to include headers (`true`, `false`)
+- `MARKETDATA_USE_HUMAN_READABLE`: Whether to use human-readable format (`true`, `false`)
+- `MARKETDATA_MODE`: Data feed mode (`live`, `cached`, `delayed`)
+
+## Best Practices
+
+- **Use environment variables** for global defaults that apply across your entire application
+- **Use `client.default_params`** when you want different defaults for different client instances
+- **Use direct method parameters** when you need to override defaults for specific API calls
+
+This flexible configuration system allows you to set sensible defaults while still having fine-grained control over individual API calls.
+
