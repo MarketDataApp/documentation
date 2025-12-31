@@ -11,9 +11,9 @@ The Market Data API uses a **Bearer Token** for authentication. The token is req
 There are two ways to set your token when using the Python SDK:
 
 1. Set it from an environment variable _(recommended)_
-2. Pass it directly when creating the client
+2. Pass it directly when creating the [client](/sdk/python/client)
 
-On startup, the SDK will look for the environment variable. If found, it will use the token for all requests. If the environment variable is not found, you will need to pass the token when creating the client.
+On startup, the SDK will look for the environment variable. If found, it will use the token for all requests. If the environment variable is not found, you will need to pass the token when creating the [client](/sdk/python/client).
 
 :::tip
 When your code is running in a production environment, we recommend using an environment variable to ensure your token is not stored with your code. This is the most secure way to set your token.
@@ -108,7 +108,7 @@ from marketdata.exceptions import MarketDataClientErrorResult
 # No need to set a token here, the SDK will read it
 # from the environment variable automatically.
 
-# Initialize the client
+# Initialize the client (see client documentation for details)
 client = MarketDataClient()
 
 # Make a test request
@@ -153,5 +153,7 @@ else:
 
 ## Next Steps
 
-After successful authentication, you will be able to begin making requests to the Market Data API. We recommend reading the brief overview of how the client works, so you can get familiar with interacting with the SDK. The SDK includes methods for each endpoint that allow you to retrieve data. Use any of the endpoints in the SDK to make requests to the API.
+After successful authentication, you will be able to begin making requests to the Market Data API. We recommend reading the brief overview of how the [client](/sdk/python/client) works, so you can get familiar with interacting with the SDK. The SDK includes methods for each endpoint that allow you to retrieve data. Use any of the endpoints in the SDK to make requests to the API.
+
+You may also want to configure [Settings](/sdk/python/settings) to customize output format, date format, and other universal parameters.
 

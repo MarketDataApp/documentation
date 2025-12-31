@@ -64,29 +64,29 @@ Fetches market status information for specified dates and countries. All paramet
 
   Filter by country code (e.g., "US", "CA", "GB").
 
-- `output_format` (OutputFormat, optional)
+- `output_format` ([OutputFormat](/sdk/python/settings#output-format), optional)
 
-  The format of the returned data. Defaults to `OutputFormat.DATAFRAME`.
+  The format of the returned data. Defaults to `OutputFormat.DATAFRAME`. See [Settings](/sdk/python/settings) for details.
 
-- `date_format` (DateFormat, optional)
+- `date_format` ([DateFormat](/sdk/python/settings#date-format), optional)
 
-  The date format to use in the response. Defaults to `DateFormat.UNIX`.
+  The date format to use in the response. Defaults to `DateFormat.UNIX`. See [Settings](/sdk/python/settings) for details.
 
-- `columns` (list[str], optional)
+- [`columns`](/sdk/python/settings#columns) (optional)
 
-  Specify which columns to include in the response.
+  Specify which columns to include in the response. See [Settings](/sdk/python/settings) for details.
 
-- `add_headers` (bool, optional)
+- [`add_headers`](/sdk/python/settings#headers) (optional)
 
-  Whether to include headers in the response.
+  Whether to include headers in the response. See [Settings](/sdk/python/settings) for details.
 
-- `use_human_readable` (bool, optional)
+- [`use_human_readable`](/sdk/python/settings#human-readable) (optional)
 
-  Whether to use human-readable format for values. Only applies when `output_format=OutputFormat.INTERNAL`.
+  Whether to use human-readable format for values. Only applies when `output_format=OutputFormat.INTERNAL`. See [Settings](/sdk/python/settings) for details.
 
-- `mode` (Mode, optional)
+- `mode` ([Mode](/sdk/python/settings#data-mode), optional)
 
-  The data feed mode to use.
+  The data feed mode to use. See [Settings](/sdk/python/settings) for details.
 
 - `filename` (str | Path, optional)
 
