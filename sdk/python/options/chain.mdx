@@ -1,0 +1,484 @@
+---
+title: Option Chain
+sidebar_position: 4
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve a complete or filtered options chain for a given underlying symbol. Both real-time and historical requests are possible.
+
+## Making Requests
+
+Use the `chain()` method on the `options` resource to fetch options chain data. The method supports multiple output formats:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with options chain data indexed by optionSymbol (default). |
+| **INTERNAL** | `OptionsChain` or `OptionsChainHumanReadable` | Returns an OptionsChain object containing lists of option data. |
+| **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
+| **CSV** | `str` | Writes CSV data to file and returns the filename string. |
+
+<a name="chain"></a>
+## chain
+
+```python
+def chain(
+    symbol: str,
+    *,
+    expiration: str = None,
+    date: str | datetime.datetime = None,
+    from_date: str | datetime.datetime = None,
+    to_date: str | datetime.datetime = None,
+    strike: float = None,
+    side: str = None,
+    dte: int = None,
+    delta: float = None,
+    range: str = None,
+    strike_limit: int = None,
+    min_bid: float = None,
+    max_bid: float = None,
+    min_ask: float = None,
+    max_ask: float = None,
+    min_open_interest: int = None,
+    min_volume: int = None,
+    max_bid_ask_spread: float = None,
+    max_bid_ask_spread_pct: float = None,
+    monthly: bool = None,
+    weekly: bool = None,
+    quarterly: bool = None,
+    nonstandard: bool = None,
+    am: bool = None,
+    pm: bool = None,
+    month: int = None,
+    year: int = None,
+    output_format: OutputFormat = OutputFormat.DATAFRAME,
+    date_format: DateFormat = None,
+    columns: list[str] = None,
+    add_headers: bool = None,
+    use_human_readable: bool = False,
+    mode: Mode = None,
+    filename: str | Path = None,
+) -> OptionsChain | OptionsChainHumanReadable | dict | str | MarketDataClientErrorResult
+```
+
+Fetches the options chain for a given symbol with extensive filtering options. The `symbol` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
+
+#### Parameters
+
+- `symbol` (str)
+
+  The underlying stock symbol for which to fetch the options chain.
+
+- `expiration` (str, optional)
+
+  Filter by expiration date. Can be a date string or "all" to get all expirations.
+
+- `date` (str | datetime.datetime, optional)
+
+  Historical date for the options chain data.
+
+- `from_date` (str | datetime.datetime, optional)
+
+  Start date for the date range.
+
+- `to_date` (str | datetime.datetime, optional)
+
+  End date for the date range.
+
+- `strike` (float, optional)
+
+  Filter by strike price.
+
+- `side` (str, optional)
+
+  Filter by option side: "call" or "put".
+
+- `dte` (int, optional)
+
+  Days to expiration. Requests an expiration date based on the number of days from the present date.
+
+- `delta` (float, optional)
+
+  Filter by Delta value.
+
+- `range` (str, optional)
+
+  Filter by strike range: "itm" (In The Money), "otm" (Out of The Money), "atm" (At The Money).
+
+- `strike_limit` (int, optional)
+
+  Maximum number of strike prices to include in the option chain.
+
+- `min_open_interest` (int, optional)
+
+  Minimum open interest for options to be included.
+
+- `min_bid` (float, optional)
+
+  Minimum bid price for options to be included. Uses API alias `minBid`.
+
+- `max_bid` (float, optional)
+
+  Maximum bid price for options to be included. Uses API alias `maxBid`.
+
+- `min_ask` (float, optional)
+
+  Minimum ask price for options to be included. Uses API alias `minAsk`.
+
+- `max_ask` (float, optional)
+
+  Maximum ask price for options to be included. Uses API alias `maxAsk`.
+
+- `min_volume` (int, optional)
+
+  Minimum volume for options to be included.
+
+- `max_bid_ask_spread` (float, optional)
+
+  Maximum bid-ask spread for options to be included.
+
+- `max_bid_ask_spread_pct` (float, optional)
+
+  Maximum bid-ask spread percentage for options to be included.
+
+- `monthly` (bool, optional)
+
+  Include or exclude monthly option expirations.
+
+- `weekly` (bool, optional)
+
+  Include or exclude weekly option expirations.
+
+- `quarterly` (bool, optional)
+
+  Include or exclude quarterly option expirations.
+
+- `nonstandard` (bool, optional)
+
+  Include or exclude non-standard option expirations.
+
+- `am` (bool, optional)
+
+  Whether to include A.M. expirations.
+
+- `pm` (bool, optional)
+
+  Whether to include P.M. expirations.
+
+- `month` (int, optional)
+
+  Filter by specific month (1-12).
+
+- `year` (int, optional)
+
+  Filter by specific year.
+
+- `output_format` (OutputFormat, optional)
+
+  The format of the returned data. Defaults to `OutputFormat.DATAFRAME`.
+
+- `date_format` (DateFormat, optional)
+
+  The date format to use in the response. Defaults to `DateFormat.UNIX`.
+
+- `columns` (list[str], optional)
+
+  Specify which columns to include in the response.
+
+- `add_headers` (bool, optional)
+
+  Whether to include headers in the response.
+
+- `use_human_readable` (bool, optional)
+
+  Whether to use human-readable format for values. Only applies when `output_format=OutputFormat.INTERNAL`.
+
+- `mode` (Mode, optional)
+
+  The data feed mode to use.
+
+- `filename` (str | Path, optional)
+
+  File path for CSV output (only used with `output_format=OutputFormat.CSV`).
+
+#### Returns
+
+- `OptionsChain` | `OptionsChainHumanReadable` | `dict` | `str` | `MarketDataClientErrorResult`
+
+  The options chain data in the requested format, or a `MarketDataClientErrorResult` if an error occurred.
+
+#### Notes
+
+- When using `OutputFormat.DATAFRAME`, the DataFrame is indexed by the `optionSymbol` column.
+- When using `OutputFormat.INTERNAL`, timestamps are automatically converted to `datetime.datetime` objects.
+- The OptionsChain object contains lists of equal length for each field, allowing you to iterate through options by index.
+
+<Tabs>
+<TabItem value="Example (DataFrame)" label="Example (DataFrame)">
+
+```python
+from marketdata.client import MarketDataClient
+
+client = MarketDataClient()
+
+# Get options chain as DataFrame (default)
+# symbol can be passed positionally or as keyword
+chain = client.options.chain("AAPL")
+# or
+chain = client.options.chain(symbol="AAPL")
+
+# Filter by side and date
+chain = client.options.chain(
+    "AAPL",
+    side="call",
+    date="2022-01-03",
+    dte=60,
+    strike_limit=2,
+    range="itm"
+)
+
+print(chain)
+```
+
+#### Output
+
+```
+                    underlying  expiration        side  strike  ...  volume  openInterest  inTheMoney  underlyingPrice
+optionSymbol                                                     ...
+AAPL220318C00175000       AAPL  2022-03-18       call   175.0  ...    1295         15232        True           182.01
+AAPL220318C00180000       AAPL  2022-03-18       call   180.0  ...    4609         18299        True           182.01
+```
+
+</TabItem>
+
+<TabItem value="Example (Internal)" label="Example (Internal)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get options chain as internal object
+chain = client.options.chain(
+    "AAPL",
+    side="call",
+    date="2022-01-03",
+    dte=60,
+    strike_limit=2,
+    range="itm",
+    output_format=OutputFormat.INTERNAL
+)
+
+# Access option data by index
+print(f"Number of options: {len(chain.optionSymbol)}")
+print(f"First option symbol: {chain.optionSymbol[0]}")
+print(f"First option strike: {chain.strike[0]}")
+print(f"First option expiration: {chain.expiration[0]}")
+print(f"First option bid: {chain.bid[0]}")
+print(f"First option ask: {chain.ask[0]}")
+print(f"First option mid: {chain.mid[0]}")
+```
+
+#### Output
+
+```
+Number of options: 2
+First option symbol: AAPL220318C00175000
+First option strike: 175.0
+First option expiration: 2022-03-18 16:00:00-04:00
+First option bid: 12.95
+First option ask: 13.1
+First option mid: 13.02
+```
+
+</TabItem>
+
+<TabItem value="Example (JSON)" label="Example (JSON)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get options chain as JSON
+chain = client.options.chain(
+    "AAPL",
+    side="call",
+    date="2022-01-03",
+    output_format=OutputFormat.JSON
+)
+
+print(chain)
+```
+
+#### Output
+
+```json
+{
+  "s": "ok",
+  "optionSymbol": ["AAPL220318C00175000", "AAPL220318C00180000"],
+  "underlying": ["AAPL", "AAPL"],
+  "expiration": [1642798800, 1642798800],
+  "side": ["call", "call"],
+  "strike": [175, 180],
+  "bid": [12.95, 10.0],
+  "ask": [13.1, 10.2],
+  "mid": [13.02, 10.1],
+  ...
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+from pathlib import Path
+
+client = MarketDataClient()
+
+# Get options chain as CSV
+csv_file = client.options.chain(
+    "AAPL",
+    side="call",
+    date="2022-01-03",
+    output_format=OutputFormat.CSV,
+    filename=Path("chain.csv")
+)
+
+print(f"CSV file saved to: {csv_file}")
+```
+
+</TabItem>
+
+<TabItem value="Example (Human Readable)" label="Example (Human Readable)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get options chain in human-readable format
+chain = client.options.chain(
+    "AAPL",
+    side="call",
+    date="2022-01-03",
+    output_format=OutputFormat.INTERNAL,
+    use_human_readable=True
+)
+
+# Access option data by index
+print(f"Number of options: {len(chain.Symbol)}")
+print(f"First option symbol: {chain.Symbol[0]}")
+print(f"First option strike: {chain.Strike[0]}")
+print(f"First option expiration: {chain.Expiration_Date[0]}")
+print(f"First option bid: {chain.Bid[0]}")
+print(f"First option ask: {chain.Ask[0]}")
+```
+
+</TabItem>
+
+<TabItem value="Example (Filtered)" label="Example (Filtered)">
+
+```python
+from marketdata.client import MarketDataClient
+
+client = MarketDataClient()
+
+# Get filtered options chain
+chain = client.options.chain(
+    "AAPL",
+    side="call",
+    month=2,
+    year=2022,
+    range="itm",
+    strike=150,
+    weekly=False,
+    monthly=True,
+    quarterly=False,
+    nonstandard=False
+)
+
+print(chain)
+```
+
+</TabItem>
+</Tabs>
+
+<a name="OptionsChain"></a>
+## OptionsChain
+
+```python
+@dataclass
+class OptionsChain:
+    s: str
+    optionSymbol: list[str]
+    underlying: list[str]
+    expiration: list[datetime.datetime]
+    side: list[str]
+    strike: list[float]
+    firstTraded: list[datetime.datetime]
+    dte: list[int]
+    updated: list[datetime.datetime]
+    bid: list[float]
+    bidSize: list[int]
+    mid: list[float]
+    ask: list[float]
+    askSize: list[int]
+    last: list[float]
+    openInterest: list[int]
+    volume: list[int]
+    inTheMoney: list[bool]
+    intrinsicValue: list[float]
+    extrinsicValue: list[float]
+    underlyingPrice: list[float]
+    iv: list[float]
+    delta: list[float]
+    gamma: list[float]
+    theta: list[float]
+    vega: list[float]
+```
+
+OptionsChain represents the options chain data with lists of equal length for each field. All lists have the same length, allowing you to access option data by index.
+
+#### Properties
+
+- `s` (str): Status indicator ("ok" for successful responses).
+- `optionSymbol` (list[str]): List of option symbols.
+- `underlying` (list[str]): List of underlying symbols.
+- `expiration` (list[datetime.datetime]): List of expiration dates (automatically converted from timestamps).
+- `side` (list[str]): List of option sides ("call" or "put").
+- `strike` (list[float]): List of strike prices.
+- `firstTraded` (list[datetime.datetime]): List of first traded dates (automatically converted from timestamps).
+- `dte` (list[int]): List of days to expiration.
+- `updated` (list[datetime.datetime]): List of last update timestamps (automatically converted from timestamps).
+- `bid` (list[float]): List of bid prices.
+- `bidSize` (list[int]): List of bid sizes.
+- `mid` (list[float]): List of mid prices.
+- `ask` (list[float]): List of ask prices.
+- `askSize` (list[int]): List of ask sizes.
+- `last` (list[float]): List of last traded prices.
+- `openInterest` (list[int]): List of open interest values.
+- `volume` (list[int]): List of trading volumes.
+- `inTheMoney` (list[bool]): List indicating if options are in the money.
+- `intrinsicValue` (list[float]): List of intrinsic values.
+- `extrinsicValue` (list[float]): List of extrinsic values.
+- `underlyingPrice` (list[float]): List of underlying prices.
+- `iv` (list[float]): List of implied volatilities.
+- `delta` (list[float]): List of Delta values.
+- `gamma` (list[float]): List of Gamma values.
+- `theta` (list[float]): List of Theta values.
+- `vega` (list[float]): List of Vega values.
+
+#### Notes
+
+- All lists have the same length, allowing you to access option data by index (e.g., `chain.optionSymbol[0]`, `chain.strike[0]`, etc.).
+- Timestamp fields (`expiration`, `firstTraded`, `updated`) are automatically converted to `datetime.datetime` objects.
+- The `OptionsChainHumanReadable` variant uses capitalized field names with underscores (e.g., `Expiration_Date` instead of `expiration`).
+

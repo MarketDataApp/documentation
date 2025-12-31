@@ -1,0 +1,200 @@
+---
+title: Quotes
+sidebar_position: 5
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve quotes for one or more option symbols.
+
+## Making Requests
+
+Use the `quotes()` method on the `options` resource to fetch option quotes. The method supports multiple output formats and automatically handles multiple symbols by fetching them concurrently:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with option quotes indexed by optionSymbol (default). |
+| **INTERNAL** | `OptionsQuotes` or `OptionsQuotesHumanReadable` | Returns an OptionsQuotes object. |
+| **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
+| **CSV** | `str` | Writes CSV data to file and returns the filename string. |
+
+<a name="quotes"></a>
+## quotes
+
+```python
+def quotes(
+    symbols: str | list[str],
+    *,
+    output_format: OutputFormat = OutputFormat.DATAFRAME,
+    date_format: DateFormat = None,
+    columns: list[str] = None,
+    add_headers: bool = None,
+    use_human_readable: bool = False,
+    mode: Mode = None,
+    filename: str | Path = None,
+) -> OptionsQuotes | OptionsQuotesHumanReadable | dict | str | MarketDataClientErrorResult
+```
+
+Fetches option quotes for one or more option symbols. Note: `quotes()` takes option symbols (e.g., "AAPL240120C00150000"), not stock symbols. The `symbols` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
+
+#### Parameters
+
+- `symbols` (str | list[str])
+
+  A single option symbol string or a list of option symbol strings for which to fetch quotes.
+
+- `output_format` (OutputFormat, optional)
+
+  The format of the returned data. Defaults to `OutputFormat.DATAFRAME`.
+
+- `date_format` (DateFormat, optional)
+
+  The date format to use in the response. Defaults to `DateFormat.UNIX`.
+
+- `columns` (list[str], optional)
+
+  Specify which columns to include in the response.
+
+- `add_headers` (bool, optional)
+
+  Whether to include headers in the response.
+
+- `use_human_readable` (bool, optional)
+
+  Whether to use human-readable format for values. Only applies when `output_format=OutputFormat.INTERNAL`.
+
+- `mode` (Mode, optional)
+
+  The data feed mode to use.
+
+- `filename` (str | Path, optional)
+
+  File path for CSV output (only used with `output_format=OutputFormat.CSV`).
+
+#### Returns
+
+- `OptionsQuotes` | `OptionsQuotesHumanReadable` | `dict` | `str` | `MarketDataClientErrorResult`
+
+  The option quotes in the requested format, or a `MarketDataClientErrorResult` if an error occurred.
+
+#### Notes
+
+- Multiple option symbols are fetched concurrently (up to 50 concurrent requests by default).
+- When using `OutputFormat.DATAFRAME`, the DataFrame is indexed by the `optionSymbol` column.
+- The OptionsQuotes object contains lists of equal length for each field, allowing you to iterate through options by index.
+
+<Tabs>
+<TabItem value="Example (DataFrame)" label="Example (DataFrame)">
+
+```python
+from marketdata.client import MarketDataClient
+
+client = MarketDataClient()
+
+# Get option quotes as DataFrame (default)
+# symbols can be passed positionally or as keyword
+# Note: quotes() takes option symbols, not stock symbols
+df = client.options.quotes("AAPL240120C00150000")
+# or
+df = client.options.quotes(symbols="AAPL240120C00150000")
+
+# Get quotes for multiple option symbols
+df = client.options.quotes(["AAPL240120C00150000", "AAPL240120P00150000"])
+
+print(df)
+```
+
+</TabItem>
+
+<TabItem value="Example (Internal)" label="Example (Internal)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get option quotes as internal object
+quotes = client.options.quotes(
+    ["AAPL240120C00150000", "AAPL240120P00150000"],
+    output_format=OutputFormat.INTERNAL
+)
+
+# Access option data by index
+print(f"Number of options: {len(quotes.optionSymbol)}")
+print(f"First option symbol: {quotes.optionSymbol[0]}")
+print(f"First option bid: {quotes.bid[0]}")
+print(f"First option ask: {quotes.ask[0]}")
+```
+
+</TabItem>
+
+<TabItem value="Example (JSON)" label="Example (JSON)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get option quotes as JSON
+quotes = client.options.quotes(
+    ["AAPL240120C00150000", "AAPL240120P00150000"],
+    output_format=OutputFormat.JSON
+)
+
+print(quotes)
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+from pathlib import Path
+
+client = MarketDataClient()
+
+# Get option quotes as CSV
+csv_file = client.options.quotes(
+    ["AAPL240120C00150000", "AAPL240120P00150000"],
+    output_format=OutputFormat.CSV,
+    filename=Path("options_quotes.csv")
+)
+
+print(f"CSV file saved to: {csv_file}")
+```
+
+</TabItem>
+
+<TabItem value="Example (Human Readable)" label="Example (Human Readable)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get option quotes in human-readable format
+quotes = client.options.quotes(
+    ["AAPL240120C00150000", "AAPL240120P00150000"],
+    output_format=OutputFormat.INTERNAL,
+    use_human_readable=True
+)
+
+# Access option data by index
+print(f"Number of options: {len(quotes.Symbol)}")
+print(f"First option symbol: {quotes.Symbol[0]}")
+print(f"First option underlying: {quotes.Underlying[0]}")
+print(f"First option expiration: {quotes.Expiration_Date[0]}")
+print(f"First option strike: {quotes.Strike[0]}")
+print(f"First option bid: {quotes.Bid[0]}")
+print(f"First option ask: {quotes.Ask[0]}")
+```
+
+</TabItem>
+</Tabs>
+

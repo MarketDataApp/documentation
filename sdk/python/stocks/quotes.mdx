@@ -1,0 +1,357 @@
+---
+title: Quotes
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve live quotes for any supported stock symbol.
+
+## Making Requests
+
+Use the `quotes()` method on the `stocks` resource to fetch stock quotes. The method supports multiple output formats:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with quotes indexed by symbol (default). |
+| **INTERNAL** | `list[StockQuote]` or `list[StockQuotesHumanReadable]` | Returns a list of StockQuote objects or a list of StockQuotesHumanReadable objects. |
+| **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
+| **CSV** | `str` | Writes CSV data to file and returns the filename string. |
+
+<a name="quotes"></a>
+## quotes
+
+```python
+def quotes(
+    symbols: list[str] | str,
+    *,
+    use_52_week: bool = None,
+    extended: bool = None,
+    output_format: OutputFormat = OutputFormat.DATAFRAME,
+    date_format: DateFormat = None,
+    columns: list[str] = None,
+    add_headers: bool = None,
+    use_human_readable: bool = False,
+    mode: Mode = None,
+    filename: str | Path = None,
+) -> list[StockQuote] | list[StockQuotesHumanReadable] | dict | str | MarketDataClientErrorResult
+```
+
+Fetches stock quotes for one or more symbols. The `symbols` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
+
+#### Parameters
+
+- `symbols` (list[str] | str)
+
+  A single symbol string or a list of symbol strings for which to fetch quotes.
+
+- `use_52_week` (bool, optional)
+
+  Whether to use the 52 week high and low. Uses API alias `52week`.
+
+- `extended` (bool, optional)
+
+  Whether to use the extended quotes.
+
+- `output_format` (OutputFormat, optional)
+
+  The format of the returned data. Defaults to `OutputFormat.DATAFRAME`.
+
+- `date_format` (DateFormat, optional)
+
+  The date format to use in the response. Defaults to `DateFormat.UNIX`.
+
+- `columns` (list[str], optional)
+
+  Specify which columns to include in the response. If not provided, all available columns are returned.
+
+- `add_headers` (bool, optional)
+
+  Whether to include headers in the response. Uses API alias `headers`.
+
+- `use_human_readable` (bool, optional)
+
+  Whether to use human-readable format for values. Uses API alias `human`. Only applies when `output_format=OutputFormat.INTERNAL`.
+
+- `mode` (Mode, optional)
+
+  The data feed mode to use. Available options: `Mode.LIVE`, `Mode.CACHED`, `Mode.DELAYED`.
+
+- `filename` (str | Path, optional)
+
+  File path for CSV output (only used with `output_format=OutputFormat.CSV`). Must end with `.csv`. Directory must exist. File must not already exist. If not provided, a timestamped file is created in `output/` directory.
+
+#### Returns
+
+- `list[StockQuote]` | `list[StockQuotesHumanReadable]` | `dict` | `str` | `MarketDataClientErrorResult`
+
+  The quotes data in the requested format, or a `MarketDataClientErrorResult` if an error occurred.
+
+#### Notes
+
+- When using `OutputFormat.DATAFRAME`, the DataFrame is indexed by the `symbol` column.
+- When using `OutputFormat.INTERNAL`, timestamps are automatically converted to `datetime.datetime` objects.
+- When using `OutputFormat.CSV`, the method writes to a file and returns the filename string.
+
+<Tabs>
+<TabItem value="Example (DataFrame)" label="Example (DataFrame)">
+
+```python
+from marketdata.client import MarketDataClient
+
+client = MarketDataClient()
+
+# Get stock quotes as DataFrame (default)
+# symbols can be passed positionally or as keyword
+df = client.stocks.quotes("AAPL")
+# or
+df = client.stocks.quotes(symbols="AAPL")
+
+# Get quotes for multiple symbols
+df = client.stocks.quotes(["AAPL", "MSFT"])
+
+print(df)
+```
+
+#### Output
+
+```
+       ask  askSize    bid  bidSize      mid      last   change  changepct    volume      updated
+symbol                                                                                              
+AAPL  278.02      100  277.97      100  277.995  278.0188  -0.0112         0.0  4964676  2025-01-13 16:21:46
+```
+
+</TabItem>
+
+<TabItem value="Example (Internal)" label="Example (Internal)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get stock quotes as internal objects
+quotes = client.stocks.quotes("AAPL", output_format=OutputFormat.INTERNAL)
+
+# Access individual quote properties
+for quote in quotes:
+    print(f"Symbol: {quote.symbol}")
+    print(f"Ask: {quote.ask}")
+    print(f"Bid: {quote.bid}")
+    print(f"Mid: {quote.mid}")
+    print(f"Last: {quote.last}")
+    print(f"Change: {quote.change}")
+    print(f"Change Percent: {quote.change_percent}")
+    print(f"Volume: {quote.volume}")
+    print(f"Updated: {quote.updated}")
+```
+
+#### Output
+
+```
+Symbol: AAPL
+Ask: 278.02
+Bid: 277.97
+Mid: 277.995
+Last: 278.0188
+Change: -0.0112
+Change Percent: 0.0
+Volume: 4964676
+Updated: 2025-01-13 16:21:46
+```
+
+</TabItem>
+
+<TabItem value="Example (JSON)" label="Example (JSON)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get stock quotes as JSON
+quotes = client.stocks.quotes(["AAPL", "MSFT"], output_format=OutputFormat.JSON)
+
+print(quotes)
+```
+
+#### Output
+
+```json
+{
+  "s": "ok",
+  "symbol": ["AAPL", "MSFT"],
+  "ask": [278.02, 479.45],
+  "askSize": [100, 40],
+  "bid": [277.97, 479.37],
+  "bidSize": [100, 40],
+  "mid": [277.995, 479.41],
+  "last": [278.0188, 479.42],
+  "change": [-0.0112, -4.05],
+  "changepct": [0.0, -0.0084],
+  "volume": [4964676, 3581398],
+  "updated": [1765552906, 1765552906]
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+from pathlib import Path
+
+client = MarketDataClient()
+
+# Get stock quotes as CSV
+csv_file = client.stocks.quotes(
+    ["AAPL", "MSFT"],
+    output_format=OutputFormat.CSV,
+    filename=Path("quotes.csv")
+)
+
+print(f"CSV file saved to: {csv_file}")
+```
+
+#### Output
+
+```
+CSV file saved to: quotes.csv
+```
+
+</TabItem>
+
+<TabItem value="Example (Human Readable)" label="Example (Human Readable)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get stock quotes in human-readable format
+quotes = client.stocks.quotes(
+    "AAPL",
+    output_format=OutputFormat.INTERNAL,
+    use_human_readable=True
+)
+
+for quote in quotes:
+    print(f"Symbol: {quote.Symbol}")
+    print(f"Ask: {quote.Ask}")
+    print(f"Bid: {quote.Bid}")
+    print(f"Change Price: {quote.Change_Price}")
+    print(f"Change Percent: {quote.Change_Percent}")
+```
+
+#### Output
+
+```
+Symbol: AAPL
+Ask: 278.55
+Bid: 278.54
+Change Price: 0.51
+Change Percent: 0.0018
+```
+
+</TabItem>
+</Tabs>
+
+<a name="StockQuote"></a>
+## StockQuote
+
+```python
+@dataclass
+class StockQuote:
+    symbol: str
+    ask: float
+    askSize: int
+    bid: float
+    bidSize: int
+    mid: float
+    last: float
+    change: float
+    changepct: float
+    volume: int
+    updated: datetime.datetime
+```
+
+StockQuote represents a single stock quote, encapsulating various details such as prices, volumes, and timestamps.
+
+#### Properties
+
+- `symbol` (str): The stock symbol.
+- `ask` (float): The asking price for the stock.
+- `askSize` (int): The size (quantity) of the ask.
+- `bid` (float): The bidding price for the stock.
+- `bidSize` (int): The size (quantity) of the bid.
+- `mid` (float): The mid price calculated between the ask and bid prices.
+- `last` (float): The last traded price for the stock.
+- `change` (float): The price change.
+- `changepct` (float): The percentage change in price.
+- `change_percent` (float): Property that returns `changepct` for convenience.
+- `volume` (int): The trading volume for the stock.
+- `updated` (datetime.datetime): The time when the quote was last updated (automatically converted from timestamp).
+
+#### Methods
+
+- `from_dict(data: dict) -> StockQuote`
+
+  Creates a StockQuote instance from a dictionary.
+
+#### Notes
+
+- The `updated` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+- The `change_percent` property provides convenient access to the `changepct` field.
+
+<a name="StockQuotesHumanReadable"></a>
+## StockQuotesHumanReadable
+
+```python
+@dataclass
+class StockQuotesHumanReadable:
+    Symbol: str
+    Ask: float
+    Ask_Size: int
+    Bid: float
+    Bid_Size: int
+    Mid: float
+    Last: float
+    Change_Price: float
+    Change_Percent: float
+    Volume: int
+    Date: datetime.datetime
+```
+
+StockQuotesHumanReadable represents a stock quote in human-readable format with capitalized field names and formatted values.
+
+#### Properties
+
+- `Symbol` (str): The stock symbol.
+- `Ask` (float): The asking price for the stock.
+- `Ask_Size` (int): The size (quantity) of the ask.
+- `Bid` (float): The bidding price for the stock.
+- `Bid_Size` (int): The size (quantity) of the bid.
+- `Mid` (float): The mid price calculated between the ask and bid prices.
+- `Last` (float): The last traded price for the stock.
+- `Change_Price` (float): The price change.
+- `Change_Percent` (float): The percentage change in price.
+- `Volume` (int): The trading volume for the stock.
+- `Date` (datetime.datetime): The time when the quote was last updated (automatically converted from timestamp).
+
+#### Methods
+
+- `from_dict(data: dict) -> StockQuotesHumanReadable`
+
+  Creates a StockQuotesHumanReadable instance from a dictionary, handling field name mapping from API format (e.g., "Change $" to "Change_Price").
+
+#### Notes
+
+- The `Date` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+- Field names use capitalized format with underscores (e.g., `Ask_Size` instead of `askSize`).
+

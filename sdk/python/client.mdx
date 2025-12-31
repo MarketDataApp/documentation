@@ -1,0 +1,309 @@
+---
+title: Client
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Market Data Python Client includes functionality for making API requests, handling responses, managing rate limits, and logging. The SDK supports various data types including stocks, options, funds, and market status information.
+
+### Get Started Quickly with the MarketDataClient
+
+1. Review the [documentation on authentication](/sdk/python/authentication) to learn how to set your API token.
+2. Create a `MarketDataClient` instance and use it to make requests to the Market Data API.
+3. Make a test request and review the console output. The SDK includes logging capabilities to help you debug requests.
+4. Check the rate limit in the client to keep track of your requests and how many requests you have remaining.
+
+<a name="MarketDataClient"></a>
+## MarketDataClient
+
+```python
+class MarketDataClient:
+    def __init__(self, token: str = None, logger: Logger = None):
+        ...
+```
+
+MarketDataClient is the main client class for interacting with the Market Data API. It provides access to all resources (stocks, options, funds, markets) and handles authentication, rate limiting, and request management.
+
+#### Properties
+
+- `token` (str): The authentication token for API requests
+- `rate_limits` (UserRateLimits): Current rate limit information
+- `base_url` (str): The base URL for API requests
+- `api_version` (str): The API version to use
+- `headers` (dict): HTTP headers including Authorization and User-Agent
+- `default_params` (UserUniversalAPIParams): Default universal parameters for API requests
+
+#### Resources
+
+- `stocks` (StocksResource): Access to stocks endpoints (prices, quotes, candles, earnings, news)
+- `options` (OptionsResource): Access to options endpoints (chain, expirations, strikes, quotes, lookup)
+- `funds` (FundsResource): Access to funds endpoints (candles)
+- `markets` (MarketsResource): Access to markets endpoints (status)
+
+#### Methods
+
+- <a href="#MarketDataClient.__init__">`__init__(token=None, logger=None)`</a>
+
+  Creates a new MarketDataClient instance.
+
+<a name="MarketDataClient.__init__"></a>
+### __init__
+
+```python
+def __init__(self, token: str = None, logger: Logger = None)
+```
+
+Creates and configures a new MarketDataClient instance with default settings. This method initializes the client with the provided token (or reads it from the `MARKETDATA_TOKEN` environment variable), sets up HTTP client configuration, and initializes rate limits by making a request to the `/user/` endpoint.
+
+#### Parameters
+
+- `token` (str, optional)
+
+  The authentication token for API requests. If not provided, the SDK will attempt to read it from the `MARKETDATA_TOKEN` environment variable.
+
+- `logger` (Logger, optional)
+
+  A custom logger instance. If not provided, the SDK will use its default logger.
+
+#### Returns
+
+- `MarketDataClient`
+
+  A new MarketDataClient instance ready to make API requests.
+
+#### Notes
+
+- The client automatically fetches rate limits during initialization by making a request to `/user/` endpoint.
+- The client includes a User-Agent header with the format `marketdata-py-{version}` (e.g., `marketdata-py-0.0.1`).
+- All requests include an `Authorization: Bearer {token}` header.
+- The client uses `httpx.Client` for HTTP requests with automatic connection pooling.
+
+#### Example
+
+```python
+from marketdata.client import MarketDataClient
+
+# Token will be automatically obtained from MARKETDATA_TOKEN environment variable
+client = MarketDataClient()
+
+# Or provide the token explicitly
+client = MarketDataClient(token="your_token_here")
+
+# You can also provide a custom logger
+from marketdata.logger import get_logger
+custom_logger = get_logger()
+client = MarketDataClient(token="your_token_here", logger=custom_logger)
+```
+
+<a name="RateLimits"></a>
+## Accessing Rate Limits
+
+The client automatically fetches and tracks rate limits from the API. Rate limits are initialized when the client is created by making a request to `/user/` endpoint, and are updated after each API request based on response headers.
+
+You can access current rate limits:
+
+```python
+client = MarketDataClient()
+
+# Access current rate limits
+rate_limits = client.rate_limits
+
+# Access individual fields
+print(f"Limit: {rate_limits.requests_limit}")
+print(f"Remaining: {rate_limits.requests_remaining}")
+print(f"Consumed: {rate_limits.requests_consumed}")
+print(f"Reset at: {rate_limits.requests_reset}")
+
+# Or use the formatted string representation
+print(rate_limits)  # Shows: "Rate used X/Y, remaining: Z credits, next reset: ISO timestamp"
+```
+
+**Note:** Rate limits are tracked via the following response headers:
+- `x-api-ratelimit-limit`: Total number of requests allowed
+- `x-api-ratelimit-remaining`: Number of requests remaining
+- `x-api-ratelimit-consumed`: Number of requests consumed
+- `x-api-ratelimit-reset`: Unix timestamp when the rate limit resets
+
+The `requests_reset` field is automatically converted to a `datetime.datetime` object for easier use.
+
+<a name="ConfigurationPriority"></a>
+## Configuration Priority
+
+The SDK supports multiple ways to configure universal parameters (like `output_format`, `date_format`, `mode`, etc.). These configuration methods follow a priority hierarchy, where higher priority settings override lower priority ones.
+
+### Priority Order (Lowest to Highest)
+
+1. **Environment Variables** (Lowest Priority)
+   - Set via environment variables like `MARKETDATA_OUTPUT_FORMAT`, `MARKETDATA_DATE_FORMAT`, etc.
+   - Applied globally to all API calls unless overridden
+
+2. **Client Default Parameters** (`client.default_params`)
+   - Set via `client.default_params` property
+   - Applied to all API calls made with that client instance unless overridden
+
+3. **Direct Method Parameters** (Highest Priority)
+   - Passed directly as keyword arguments to resource methods
+   - Applied only to that specific API call
+
+### How It Works
+
+When making an API call, the SDK merges parameters in the following order:
+
+1. **Start with environment variables** (lowest priority)
+   - Parameters are read from environment variables like `MARKETDATA_OUTPUT_FORMAT`, `MARKETDATA_DATE_FORMAT`, etc.
+
+2. **Override with `client.default_params`** (medium priority)
+   - Parameters set via `client.default_params` override environment variables
+   - Example: `client.default_params.output_format = OutputFormat.JSON`
+
+3. **Override with direct method parameters** (highest priority)
+   - Parameters passed directly to resource methods override both environment variables and `client.default_params`
+   - Example: `client.stocks.prices("AAPL", output_format=OutputFormat.DATAFRAME)`
+
+### Examples
+
+<Tabs>
+<TabItem value="Environment Variables" label="Environment Variables">
+
+Set universal parameters via environment variables:
+
+```python
+import os
+os.environ["MARKETDATA_OUTPUT_FORMAT"] = "json"
+os.environ["MARKETDATA_DATE_FORMAT"] = "timestamp"
+
+from marketdata.client import MarketDataClient
+
+client = MarketDataClient()
+
+# All calls will use JSON format and timestamp date format
+# (unless overridden by client.default_params or method parameters)
+prices = client.stocks.prices("AAPL")
+# Uses: output_format=JSON, date_format=TIMESTAMP
+```
+
+</TabItem>
+
+<TabItem value="Client Default Params" label="Client Default Params">
+
+Set universal parameters via `client.default_params`:
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat, DateFormat
+
+client = MarketDataClient()
+
+# Set default parameters for this client instance
+client.default_params.output_format = OutputFormat.JSON
+client.default_params.date_format = DateFormat.TIMESTAMP
+
+# All calls will use JSON format and timestamp date format
+# (unless overridden by method parameters)
+prices = client.stocks.prices("AAPL")
+# Uses: output_format=JSON, date_format=TIMESTAMP
+
+quotes = client.stocks.quotes("AAPL")
+# Uses: output_format=JSON, date_format=TIMESTAMP
+```
+
+**Note:** `client.default_params` overrides environment variables.
+
+</TabItem>
+
+<TabItem value="Direct Method Parameters" label="Direct Method Parameters">
+
+Pass parameters directly to resource methods:
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat, DateFormat
+
+client = MarketDataClient()
+
+# Set default parameters
+client.default_params.output_format = OutputFormat.JSON
+client.default_params.date_format = DateFormat.TIMESTAMP
+
+# Direct method parameters override client.default_params
+prices = client.stocks.prices(
+    "AAPL",
+    output_format=OutputFormat.DATAFRAME,  # Overrides JSON
+    date_format=DateFormat.UNIX  # Overrides TIMESTAMP
+)
+# Uses: output_format=DATAFRAME, date_format=UNIX
+
+# This call still uses client.default_params
+quotes = client.stocks.quotes("AAPL")
+# Uses: output_format=JSON, date_format=TIMESTAMP
+```
+
+**Note:** Direct method parameters override both environment variables and `client.default_params`.
+
+</TabItem>
+
+<TabItem value="Complete Example" label="Complete Example">
+
+Here's a complete example showing all three configuration methods:
+
+```python
+import os
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat, DateFormat
+
+# 1. Set environment variables (lowest priority)
+os.environ["MARKETDATA_OUTPUT_FORMAT"] = "csv"
+os.environ["MARKETDATA_DATE_FORMAT"] = "spreadsheet"
+
+client = MarketDataClient()
+
+# 2. Override with client.default_params (medium priority)
+client.default_params.output_format = OutputFormat.JSON
+client.default_params.date_format = DateFormat.TIMESTAMP
+
+# Call 1: Uses client.default_params (JSON, TIMESTAMP)
+prices1 = client.stocks.prices("AAPL")
+# Result: JSON format, TIMESTAMP date format
+
+# Call 2: Override with direct parameters (highest priority)
+prices2 = client.stocks.prices(
+    "AAPL",
+    output_format=OutputFormat.DATAFRAME,  # Overrides JSON
+    date_format=DateFormat.UNIX  # Overrides TIMESTAMP
+)
+# Result: DATAFRAME format, UNIX date format
+
+# Call 3: Uses client.default_params again (JSON, TIMESTAMP)
+quotes = client.stocks.quotes("AAPL")
+# Result: JSON format, TIMESTAMP date format
+```
+
+**Summary:**
+- Environment variables: `CSV`, `SPREADSHEET` (lowest priority)
+- `client.default_params`: `JSON`, `TIMESTAMP` (overrides env vars)
+- Direct parameters: `DATAFRAME`, `UNIX` (overrides everything)
+
+</TabItem>
+</Tabs>
+
+### Available Environment Variables
+
+You can set the following environment variables to configure universal parameters:
+
+- `MARKETDATA_OUTPUT_FORMAT`: Output format (`dataframe`, `internal`, `json`, `csv`)
+- `MARKETDATA_DATE_FORMAT`: Date format (`timestamp`, `unix`, `spreadsheet`)
+- `MARKETDATA_COLUMNS`: Comma-separated list of columns to include
+- `MARKETDATA_ADD_HEADERS`: Whether to include headers (`true`, `false`)
+- `MARKETDATA_USE_HUMAN_READABLE`: Whether to use human-readable format (`true`, `false`)
+- `MARKETDATA_MODE`: Data feed mode (`live`, `cached`, `delayed`)
+
+### Best Practices
+
+- **Use environment variables** for global defaults that apply across your entire application
+- **Use `client.default_params`** when you want different defaults for different client instances
+- **Use direct method parameters** when you need to override defaults for specific API calls
+
+This flexible configuration system allows you to set sensible defaults while still having fine-grained control over individual API calls.
+
