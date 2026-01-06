@@ -62,7 +62,10 @@ const config = {
         routeBasePath: "api",
         sidebarPath: require.resolve("./sidebars.js"),
 
-        editUrl: "https://github.com/MarketDataApp/documentation/tree/dev",
+        editUrl: ({ docPath }) => {
+          const branch = process.env.PROD == "true" ? "main" : "dev";
+          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/${docPath}`;
+        },
       },
     ],
     [
@@ -72,11 +75,10 @@ const config = {
         id: "sdk",
         path: "sdk",
         routeBasePath: "sdk",
-        editUrl:
-          process.env.PROD == "true"
-            ? "https://github.com/MarketDataApp/documentation/tree/main"
-            : "https://github.com/MarketDataApp/documentation/tree/dev",
-
+        editUrl: ({ docPath }) => {
+          const branch = process.env.PROD == "true" ? "main" : "dev";
+          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/${docPath}`;
+        },
         sidebarPath: require.resolve("./sidebars.js"),
       },
     ],
@@ -87,11 +89,10 @@ const config = {
         id: "sheets",
         path: "sheets",
         routeBasePath: "sheets",
-        editUrl:
-          process.env.PROD == "true"
-            ? "https://github.com/MarketDataApp/documentation/tree/main"
-            : "https://github.com/MarketDataApp/documentation/tree/dev",
-
+        editUrl: ({ docPath }) => {
+          const branch = process.env.PROD == "true" ? "main" : "dev";
+          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/${docPath}`;
+        },
         sidebarPath: require.resolve("./sidebars.js"),
       },
     ],
@@ -102,10 +103,10 @@ const config = {
         id: "account",
         path: "account",
         routeBasePath: "account",
-        editUrl:
-          process.env.PROD == "true"
-            ? "https://github.com/MarketDataApp/documentation/tree/main"
-            : "https://github.com/MarketDataApp/documentation/tree/dev",
+        editUrl: ({ docPath }) => {
+          const branch = process.env.PROD == "true" ? "main" : "dev";
+          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/${docPath}`;
+        },
         sidebarPath: require.resolve("./sidebars.js"),
       },
     ],
