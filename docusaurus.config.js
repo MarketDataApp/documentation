@@ -64,7 +64,7 @@ const config = {
 
         editUrl: ({ docPath }) => {
           const branch = process.env.PROD == "true" ? "main" : "dev";
-          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/${docPath}`;
+          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/api/${docPath}`;
         },
       },
     ],
@@ -77,7 +77,7 @@ const config = {
         routeBasePath: "sdk",
         editUrl: ({ docPath }) => {
           const branch = process.env.PROD == "true" ? "main" : "dev";
-          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/${docPath}`;
+          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/sdk/${docPath}`;
         },
         sidebarPath: require.resolve("./sidebars.js"),
       },
@@ -91,7 +91,7 @@ const config = {
         routeBasePath: "sheets",
         editUrl: ({ docPath }) => {
           const branch = process.env.PROD == "true" ? "main" : "dev";
-          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/${docPath}`;
+          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/sheets/${docPath}`;
         },
         sidebarPath: require.resolve("./sidebars.js"),
       },
@@ -105,7 +105,7 @@ const config = {
         routeBasePath: "account",
         editUrl: ({ docPath }) => {
           const branch = process.env.PROD == "true" ? "main" : "dev";
-          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/${docPath}`;
+          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/account/${docPath}`;
         },
         sidebarPath: require.resolve("./sidebars.js"),
       },
