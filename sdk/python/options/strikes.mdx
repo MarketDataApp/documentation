@@ -15,7 +15,7 @@ Use the `strikes()` method on the `options` resource to fetch strike prices. The
 | Output Format | Return Type | Description |
 |---------------|-------------|-------------|
 | **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with strike prices (default). |
-| **INTERNAL** | `OptionsStrikes` or `OptionsStrikesHumanReadable` | Returns an OptionsStrikes object. |
+| **INTERNAL** | `OptionsStrikes` or `OptionsStrikesHumanReadable` | Returns an OptionsStrikes object. When `use_human_readable=True`, returns an OptionsStrikesHumanReadable object with capitalized field names. |
 | **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
 | **CSV** | `str` | Writes CSV data to file and returns the filename string. |
 
@@ -192,3 +192,51 @@ print(f"Date: {strikes.Date}")
 </TabItem>
 </Tabs>
 
+<a name="OptionsStrikes"></a>
+## OptionsStrikes
+
+```python
+@dataclass
+class OptionsStrikes:
+    s: str
+    updated: datetime.datetime
+    # Dynamic fields: expiration dates as keys (e.g., "2024-01-20": list[float])
+```
+
+OptionsStrikes represents strike prices for options, with dynamic fields based on expiration dates. Each expiration date becomes a field containing a list of strike prices.
+
+#### Properties
+
+- `s` (str): Status indicator ("ok" for successful responses).
+- `updated` (datetime.datetime): The time when the data was last updated (automatically converted from timestamp).
+- Dynamic fields: Each expiration date (in format "YYYY-MM-DD") becomes a field containing a list of strike prices (list[float]).
+
+#### Notes
+
+- The `updated` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+- Strike prices are organized by expiration date, with each expiration date as a field name.
+- Access strikes using `getattr()` or `__dict__` (e.g., `getattr(strikes, "2024-01-20")`).
+
+<a name="OptionsStrikesHumanReadable"></a>
+## OptionsStrikesHumanReadable
+
+```python
+@dataclass
+class OptionsStrikesHumanReadable:
+    Date: datetime.datetime
+    # Dynamic fields: expiration dates as keys (e.g., "2024-01-20": list[float])
+```
+
+OptionsStrikesHumanReadable represents strike prices in human-readable format with capitalized field names and formatted values.
+
+#### Properties
+
+- `Date` (datetime.datetime): The time when the data was last updated (automatically converted from timestamp).
+- Dynamic fields: Each expiration date (in format "YYYY-MM-DD") becomes a field containing a list of strike prices (list[float]).
+
+#### Notes
+
+- The `Date` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+- Strike prices are organized by expiration date, with each expiration date as a field name.
+- Access strikes using `getattr()` or `__dict__` (e.g., `getattr(strikes, "2024-01-20")`).
+- Field names use capitalized format (e.g., `Date` instead of `updated`).

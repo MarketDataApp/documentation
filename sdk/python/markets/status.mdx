@@ -15,7 +15,7 @@ Use the `status()` method on the `markets` resource to fetch market status infor
 | Output Format | Return Type | Description |
 |---------------|-------------|-------------|
 | **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with market status data (default). |
-| **INTERNAL** | `list[MarketStatus]` or `list[MarketStatusHumanReadable]` | Returns a list of MarketStatus objects or a list of MarketStatusHumanReadable objects. |
+| **INTERNAL** | `list[MarketStatus]` or `list[MarketStatusHumanReadable]` | Returns a list of MarketStatus objects. When `use_human_readable=True`, returns a list of MarketStatusHumanReadable objects with capitalized field names. |
 | **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
 | **CSV** | `str` | Writes CSV data to file and returns the filename string. |
 
@@ -216,3 +216,45 @@ for status in status_list:
 </TabItem>
 </Tabs>
 
+<a name="MarketStatus"></a>
+## MarketStatus
+
+```python
+@dataclass
+class MarketStatus:
+    date: datetime.date
+    status: str
+```
+
+MarketStatus represents market status information for a specific date, indicating whether the market is open or closed.
+
+#### Properties
+
+- `date` (datetime.date): The date for which the market status applies (automatically converted from timestamp).
+- `status` (str): The market status (e.g., "open", "closed").
+
+#### Notes
+
+- The `date` field is automatically converted to a `datetime.date` object from a Unix timestamp.
+
+<a name="MarketStatusHumanReadable"></a>
+## MarketStatusHumanReadable
+
+```python
+@dataclass
+class MarketStatusHumanReadable:
+    Status: str
+    Date: datetime.datetime
+```
+
+MarketStatusHumanReadable represents market status information in human-readable format with capitalized field names and formatted values.
+
+#### Properties
+
+- `Status` (str): The market status (e.g., "open", "closed").
+- `Date` (datetime.datetime): The date for which the market status applies (automatically converted from timestamp).
+
+#### Notes
+
+- The `Date` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+- Field names use capitalized format (e.g., `Date` instead of `date`, `Status` instead of `status`).

@@ -15,7 +15,7 @@ Use the `lookup()` method on the `options` resource to lookup option symbols. Th
 | Output Format | Return Type | Description |
 |---------------|-------------|-------------|
 | **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with option lookup data indexed by optionSymbol (default). |
-| **INTERNAL** | `OptionsLookup` or `OptionsLookupHumanReadable` | Returns an OptionsLookup object. |
+| **INTERNAL** | `OptionsLookup` or `OptionsLookupHumanReadable` | Returns an OptionsLookup object. When `use_human_readable=True`, returns an OptionsLookupHumanReadable object with capitalized field names. |
 | **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
 | **CSV** | `str` | Writes CSV data to file and returns the filename string. |
 
@@ -185,3 +185,38 @@ print(f"Symbol: {lookup_result.Symbol}")
 </TabItem>
 </Tabs>
 
+<a name="OptionsLookup"></a>
+## OptionsLookup
+
+```python
+@dataclass
+class OptionsLookup:
+    s: str
+    optionSymbol: str
+```
+
+OptionsLookup represents the result of an option symbol lookup, containing the resolved option symbol.
+
+#### Properties
+
+- `s` (str): Status indicator ("ok" for successful responses).
+- `optionSymbol` (str): The resolved option symbol.
+
+<a name="OptionsLookupHumanReadable"></a>
+## OptionsLookupHumanReadable
+
+```python
+@dataclass
+class OptionsLookupHumanReadable:
+    Symbol: str
+```
+
+OptionsLookupHumanReadable represents an option symbol lookup result in human-readable format with capitalized field names.
+
+#### Properties
+
+- `Symbol` (str): The resolved option symbol.
+
+#### Notes
+
+- Field names use capitalized format (e.g., `Symbol` instead of `optionSymbol`).

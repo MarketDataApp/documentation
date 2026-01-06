@@ -15,7 +15,7 @@ Use the `news()` method on the `stocks` resource to fetch news articles. The met
 | Output Format | Return Type | Description |
 |---------------|-------------|-------------|
 | **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with news articles indexed by symbol (default). |
-| **INTERNAL** | `list[StockNews]` or `list[StockNewsHumanReadable]` | Returns a list of StockNews objects. |
+| **INTERNAL** | `list[StockNews]` or `list[StockNewsHumanReadable]` | Returns a list of StockNews objects. When `use_human_readable=True`, returns a list of StockNewsHumanReadable objects with capitalized field names. |
 | **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
 | **CSV** | `str` | Writes CSV data to file and returns the filename string. |
 
@@ -203,3 +203,61 @@ for news in news_list:
 </TabItem>
 </Tabs>
 
+<a name="StockNews"></a>
+## StockNews
+
+```python
+@dataclass
+class StockNews:
+    symbol: str
+    headline: str
+    content: str
+    source: str
+    publicationDate: datetime.datetime
+    updated: datetime.datetime
+```
+
+StockNews represents a single news article for a stock, encapsulating headline, content, source, and publication information.
+
+#### Properties
+
+- `symbol` (str): The stock symbol.
+- `headline` (str): The news headline.
+- `content` (str): The news article content.
+- `source` (str): The news source.
+- `publicationDate` (datetime.datetime): The publication date (automatically converted from timestamp).
+- `updated` (datetime.datetime): The time when the news was last updated (automatically converted from timestamp).
+
+#### Notes
+
+- The `publicationDate` and `updated` fields are automatically converted to `datetime.datetime` objects from Unix timestamps.
+
+<a name="StockNewsHumanReadable"></a>
+## StockNewsHumanReadable
+
+```python
+@dataclass
+class StockNewsHumanReadable:
+    Symbol: str
+    headline: str
+    content: str
+    source: str
+    publicationDate: datetime.datetime
+    Date: datetime.datetime
+```
+
+StockNewsHumanReadable represents a news article in human-readable format with capitalized field names and formatted values.
+
+#### Properties
+
+- `Symbol` (str): The stock symbol.
+- `headline` (str): The news headline.
+- `content` (str): The news article content.
+- `source` (str): The news source.
+- `publicationDate` (datetime.datetime): The publication date (automatically converted from timestamp).
+- `Date` (datetime.datetime): The time when the news was last updated (automatically converted from timestamp).
+
+#### Notes
+
+- The `publicationDate` and `Date` fields are automatically converted to `datetime.datetime` objects from Unix timestamps.
+- Field names use capitalized format with underscores where applicable (e.g., `Symbol` instead of `symbol`, `Date` instead of `updated`).
