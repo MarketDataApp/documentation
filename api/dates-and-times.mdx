@@ -41,7 +41,9 @@ Relative dates allow Market Data endpoints to continually modify the date sent t
   - `today` Equivalent to today's date.
 
   - `yesterday` Yesterday's date.
- 
+
+  - `last session` Returns the date of the last closed market session. This keyphrase always gets the previous closed session, accounting for weekends, holidays, and half-days (which are counted as valid sessions). For example, on Monday during market hours, it would return Friday's date. After market close on Monday, it would return Monday's date. This allows you to always track the previous session without having to account for weekends, holidays, or other market closures.
+
   - `-[number] days` Use negative days to specify a time in the past _n_ days before. When this is used alone, it is relative to the current day. When used in conjunction in `from` field (i.e. the starting date), it is relative to the `to` field (i.e. the ending date). For example, if the current date is January 20, but January 10 is used in the `to` field and `-5 days` in the `from` field, then the starting day will be January 5. The query would return values from January 5 to January 10. However, if the `to` field were to be omitted, then the same query would return data from January 15 to January 20 since `-5 days` would be relative to the current date of January 20.
 
   - `[number] days ago` The `days ago` keyword lets you select a relative day, _n_ days before the current date. For example, if today is January 5, 2024, then using `2 days ago` would select the date January 3, 2024.
@@ -120,7 +122,7 @@ Option date parameters are planned for the future and have not yet been implemen
 
 ---
 
-Option-related keyphrases cannot be used to return expiration dates far in the future for options which have not yet been traded or for options in the past which have already expired. For example, if today is January 15, 2023, you couldn't use `November 2023's 1st weekly expiration` since weekly options for November would not exist yet. The formula will return a `No data` response if you try to request an expiration that does not exist, whether in the future or the past.
+Option-related keyphrases cannot be used to return expiration dates far in the future for options which have not yet been traded or for options in the past which have already expired. For example, if today is January 15, 2023, you couldn't use `November 2023's 1st weekly expiration` since weekly options for November would not exist yet. The API will return a `No data` response if you try to request an expiration that does not exist, whether in the future or the past.
 
 :::
 
