@@ -39,7 +39,9 @@ Relative dates allow Market Data formulas to continually modify the date sent to
   - `today` Equivalent to today's date. This keyword can be used interchangeably with Sheets' built-in formula `today()`.
 
   - `yesterday` Yesterday's date. The same as Sheets formula `today()-1`.
- 
+
+  - `last session` Returns the date of the last closed market session. This keyphrase always gets the previous closed session, accounting for weekends, holidays, and half-days (which are counted as valid sessions). For example, on Monday during market hours, it would return Friday's date. After market close on Monday, it would return Monday's date. This allows you to always track the previous session without having to account for weekends, holidays, or other market closures.
+
   - `-[number] days` Use negative days to specify a time in the past _n_ days before. When this is used alone, it is relative to the current day. When used in conjunction in `from` field (i.e. the starting date), it is relative to the `to` field (i.e. the ending date). For example, if the current date is January 20, but January 10 is used in the `to` field and `-5 days` in the `from` field, then the starting day will be January 5. The query would return values from January 5 to January 10. However, if the `to` field were to be omitted, then the same query would return data from January 15 to January 20 since `-5 days` would be relative to the current date of January 20.
 
   - `[number] days ago` The `days ago` keyword lets you select a relative day, _n_ days before the current date. For example, if today is January 5, 2024, then using `2 days ago` would select the date January 3, 2024.
@@ -58,7 +60,7 @@ Relative dates allow Market Data formulas to continually modify the date sent to
 
 - **Yearly Dates** Yearly keyphrases let you select a specific day of in the current, previous, or following year.
 
-  - `-[number] years` Use negative months to specify a date in the past _n_ years before. When this is used alone, it is relative to the current day. When used in conjunction in `from` field (i.e. the starting date), it is relative to the date in the `to` field (i.e. the ending date). For example, if the current date is October 15, 2023 but October 8, 2023 is used in the `to` field and `-1 year` in the `from` field, then the starting day will be September 8, 2022. The query would return values from September 8, 2022 to October 8, 2023. However, if the `to` field were to be omitted, then the same query would return data from September 15, 2022 to October 15, 2023 since `-1 year` would be relative to the current date of October 15, 2023.
+  - `-[number] years` Use negative years to specify a date in the past _n_ years before. When this is used alone, it is relative to the current day. When used in conjunction in `from` field (i.e. the starting date), it is relative to the date in the `to` field (i.e. the ending date). For example, if the current date is October 15, 2023 but October 8, 2023 is used in the `to` field and `-1 year` in the `from` field, then the starting day will be September 8, 2022. The query would return values from September 8, 2022 to October 8, 2023. However, if the `to` field were to be omitted, then the same query would return data from September 15, 2022 to October 15, 2023 since `-1 year` would be relative to the current date of October 15, 2023.
 
   - `[number] years ago` The years ago keyword lets you select a relative date, 365 days before the current date. For example, if today is January 5, 2024, then using `2 years ago` would select the date January 5, 2022.
 
