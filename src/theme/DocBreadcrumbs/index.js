@@ -1,13 +1,15 @@
 import React from "react";
 import clsx from "clsx";
-import { ThemeClassNames } from "@docusaurus/theme-common";
+import { ThemeClassNames, useWindowSize } from "@docusaurus/theme-common";
 import {
   useSidebarBreadcrumbs,
   useHomePageRoute,
+  useDoc,
 } from "@docusaurus/theme-common/internal";
 import Link from "@docusaurus/Link";
 import { translate } from "@docusaurus/Translate";
 import HomeBreadcrumbItem from "@theme/DocBreadcrumbs/Items/Home";
+import EditThisPage from "@theme/EditThisPage";
 import styles from "./styles.module.css";
 import { getLabelAndTag } from "@site/src/utils/functions";
 // TODO move to design system folder
@@ -54,6 +56,11 @@ function BreadcrumbsItem({ children, active, index, addMicrodata }) {
 export default function DocBreadcrumbs() {
   const breadcrumbs = useSidebarBreadcrumbs();
   const homePageRoute = useHomePageRoute();
+  const { metadata } = useDoc();
+  const { editUrl } = metadata;
+  const windowSize = useWindowSize();
+  const isDesktop = windowSize === "desktop" || windowSize === "ssr";
+  
   if (!breadcrumbs) {
     return null;
   }
@@ -68,30 +75,37 @@ export default function DocBreadcrumbs() {
         message: "Breadcrumbs",
         description: "The ARIA label for the breadcrumbs",
       })}>
-      <ul
-        className="breadcrumbs"
-        itemScope
-        itemType="https://schema.org/BreadcrumbList">
-        {homePageRoute && <HomeBreadcrumbItem />}
-        {breadcrumbs.map((item, idx) => {
-          const isLast = idx === breadcrumbs.length - 1;
-          const href =
-            item.type === "category" && item.linkUnlisted
-              ? undefined
-              : item.href;
-          return (
-            <BreadcrumbsItem
-              key={idx}
-              active={isLast}
-              index={idx}
-              addMicrodata={!!href}>
-              <BreadcrumbsItemLink href={href} isLast={isLast}>
-                {item.label}
-              </BreadcrumbsItemLink>
-            </BreadcrumbsItem>
-          );
-        })}
-      </ul>
+      <div className={styles.breadcrumbsWrapper}>
+        <ul
+          className="breadcrumbs"
+          itemScope
+          itemType="https://schema.org/BreadcrumbList">
+          {homePageRoute && <HomeBreadcrumbItem />}
+          {breadcrumbs.map((item, idx) => {
+            const isLast = idx === breadcrumbs.length - 1;
+            const href =
+              item.type === "category" && item.linkUnlisted
+                ? undefined
+                : item.href;
+            return (
+              <BreadcrumbsItem
+                key={idx}
+                active={isLast}
+                index={idx}
+                addMicrodata={!!href}>
+                <BreadcrumbsItemLink href={href} isLast={isLast}>
+                  {item.label}
+                </BreadcrumbsItemLink>
+              </BreadcrumbsItem>
+            );
+          })}
+        </ul>
+        {editUrl && isDesktop && (
+          <div className={styles.editThisPageWrapper}>
+            <EditThisPage editUrl={editUrl} />
+          </div>
+        )}
+      </div>
     </nav>
   );
 }

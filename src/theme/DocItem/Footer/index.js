@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import {ThemeClassNames} from '@docusaurus/theme-common';
+import {ThemeClassNames, useWindowSize} from '@docusaurus/theme-common';
 import {useDoc} from '@docusaurus/theme-common/internal';
 import LastUpdated from '@theme/LastUpdated';
 import EditThisPage from '@theme/EditThisPage';
@@ -25,9 +25,16 @@ function EditMetaRow({
   lastUpdatedBy,
   formattedLastUpdatedAt,
 }) {
+  const windowSize = useWindowSize();
+  const isMobile = windowSize === "mobile";
+  
   return (
     <div className={clsx(ThemeClassNames.docs.docFooterEditMetaRow, 'row')}>
-      <div className="col">{editUrl && <EditThisPage editUrl={editUrl} />}</div>
+      {editUrl && isMobile && (
+        <div className="col">
+          <EditThisPage editUrl={editUrl} />
+        </div>
+      )}
 
       <div className={clsx('col', styles.lastUpdated)}>
         {(lastUpdatedAt || lastUpdatedBy) && (
