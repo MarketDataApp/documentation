@@ -1,6 +1,6 @@
 ---
 title: Client
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 import Tabs from "@theme/Tabs";
@@ -10,11 +10,11 @@ The Market Data Python Client includes functionality for making API requests, ha
 
 ### Get Started Quickly with the MarketDataClient
 
-1. Review the [documentation on authentication](/sdk/python/authentication) to learn how to set your API token.
+1. Review the [documentation on authentication](/sdk/py/authentication) to learn how to set your API token.
 2. Create a [`MarketDataClient`](#MarketDataClient) instance and use it to make requests to the Market Data API.
 3. Make a test request and review the console output. The SDK includes logging capabilities to help you debug requests.
 4. Check the [rate limit](#RateLimits) in the client to keep track of your requests and how many requests you have remaining.
-5. Configure [Settings](/sdk/python/settings) to customize output format, date format, and other universal parameters.
+5. Configure [Settings](/sdk/py/settings) to customize output format, date format, and other universal parameters.
 
 <a name="MarketDataClient"></a>
 ## MarketDataClient
@@ -29,19 +29,19 @@ class MarketDataClient:
 
 #### Properties
 
-- `token` (str): The authentication token for API requests. See [authentication documentation](/sdk/python/authentication) for details.
+- `token` (str): The authentication token for API requests. See [authentication documentation](/sdk/py/authentication) for details.
 - `rate_limits` ([UserRateLimits](#RateLimits)): Current rate limit information
 - `base_url` (str): The base URL for API requests
 - `api_version` (str): The API version to use
 - `headers` (dict): HTTP headers including Authorization and User-Agent
-- `default_params` ([UserUniversalAPIParams](/sdk/python/settings)): Default universal parameters for API requests. See [Settings](/sdk/python/settings) for details on configuring these parameters.
+- `default_params` ([UserUniversalAPIParams](/sdk/py/settings)): Default universal parameters for API requests. See [Settings](/sdk/py/settings) for details on configuring these parameters.
 
 #### Resources
 
-- `stocks` ([StocksResource](/sdk/python/stocks)): Access to stocks endpoints (prices, quotes, candles, earnings, news)
-- `options` ([OptionsResource](/sdk/python/options)): Access to options endpoints (chain, expirations, strikes, quotes, lookup)
-- `funds` ([FundsResource](/sdk/python/funds)): Access to funds endpoints (candles)
-- `markets` ([MarketsResource](/sdk/python/markets)): Access to markets endpoints (status)
+- `stocks` ([StocksResource](/sdk/py/stocks)): Access to stocks endpoints (prices, quotes, candles, earnings, news)
+- `options` ([OptionsResource](/sdk/py/options)): Access to options endpoints (chain, expirations, strikes, quotes, lookup)
+- `funds` ([FundsResource](/sdk/py/funds)): Access to funds endpoints (candles)
+- `markets` ([MarketsResource](/sdk/py/markets)): Access to markets endpoints (status)
 
 #### Methods
 
@@ -131,5 +131,5 @@ The `requests_reset` field is automatically converted to a `datetime.datetime` o
 
 ## Configuration
 
-The SDK supports flexible configuration of universal parameters through multiple methods. You can configure settings like output format, date format, data mode, and more. See the [Settings](/sdk/python/settings) documentation for complete details on all available configuration options and how to use them.
+The SDK supports flexible configuration of universal parameters through multiple methods. You can configure settings like output format, date format, data mode, and more. See the [Settings](/sdk/py/settings) documentation for complete details on all available configuration options and how to use them.
 

@@ -1,0 +1,152 @@
+---
+title: Installation
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+This guide will help you install the Market Data Python SDK and configure it for your needs.
+
+## Prerequisites
+
+- Python >= 3.10
+
+## Basic Installation
+
+Install the Market Data Python SDK from PyPI:
+
+<Tabs>
+<TabItem value="pip" label="pip">
+
+```bash
+pip install marketdata-sdk-py
+```
+
+</TabItem>
+<TabItem value="uv" label="uv">
+
+```bash
+uv pip install marketdata-sdk-py
+```
+
+</TabItem>
+</Tabs>
+
+## Installation with DataFrame Support
+
+The SDK supports multiple DataFrame libraries for `OutputFormat.DATAFRAME`. To use DataFrame output format, you need to install at least one DataFrame library.
+
+### Install with pandas (recommended)
+
+<Tabs>
+<TabItem value="pip" label="pip">
+
+```bash
+pip install "marketdata-sdk-py[pandas]"
+```
+
+</TabItem>
+<TabItem value="uv" label="uv">
+
+```bash
+uv pip install "marketdata-sdk-py[pandas]"
+```
+
+</TabItem>
+</Tabs>
+
+### Install with polars
+
+<Tabs>
+<TabItem value="pip" label="pip">
+
+```bash
+pip install "marketdata-sdk-py[polars]"
+```
+
+</TabItem>
+<TabItem value="uv" label="uv">
+
+```bash
+uv pip install "marketdata-sdk-py[polars]"
+```
+
+</TabItem>
+</Tabs>
+
+### Install with both pandas and polars
+
+<Tabs>
+<TabItem value="pip" label="pip">
+
+```bash
+pip install "marketdata-sdk-py[pandas,polars]"
+```
+
+</TabItem>
+<TabItem value="uv" label="uv">
+
+```bash
+uv pip install "marketdata-sdk-py[pandas,polars]"
+```
+
+</TabItem>
+</Tabs>
+
+## Optional Dependencies
+
+The SDK supports multiple DataFrame libraries for `OutputFormat.DATAFRAME`. You must install at least one of the following:
+
+- **pandas** (recommended): `pandas>=2.3.3`
+- **polars**: `polars-lts-cpu>=1.33.1`
+
+### DataFrame Handler Priority
+
+When using `OutputFormat.DATAFRAME`, the SDK automatically selects an available DataFrame library in the following order:
+
+1. **pandas** (if installed)
+2. **polars** (if pandas is not installed)
+
+If neither pandas nor polars is installed, a `ValueError` will be raised when attempting to use `OutputFormat.DATAFRAME`:
+
+```python
+ValueError: No dataframe output handler found
+```
+
+:::info
+You can use other output formats (`OutputFormat.INTERNAL`, `OutputFormat.JSON`, `OutputFormat.CSV`) without installing pandas or polars.
+:::
+
+## Local Development Installation
+
+For local development, install from the project directory:
+
+```bash
+# Clone the repository
+git clone https://github.com/MarketDataApp/sdk-py.git
+cd sdk-py
+
+# Install the package
+pip install .
+
+# Or install with optional dependencies
+pip install ".[pandas]"
+```
+
+## Core Dependencies
+
+The SDK includes the following core dependencies (installed automatically):
+
+- `httpx>=0.28.1`: HTTP client library for making API requests
+- `pydantic>=2.12.5`: Data validation and settings management
+- `pydantic-settings>=2.12.0`: Configuration management from environment variables
+- `tenacity>=9.1.2`: Retry logic library for handling transient errors
+
+## Next Steps
+
+After installation, you'll need to:
+
+1. Set up your [authentication token](/sdk/py/authentication)
+2. Learn about the [client](/sdk/py/client) and how to make your first API requests
+3. Configure [settings](/sdk/py/settings) to customize output format, date format, and other universal parameters
