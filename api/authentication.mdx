@@ -83,34 +83,22 @@ https.get(url, {
 ```
 
 </TabItem>
+
 <TabItem value="Python" label="Python">
 
 ```python
-import requests
+from marketdata.client import MarketDataClient
 
-# Your token
-token = 'your_token_here'
+# Initialize the client (token is read from MARKETDATA_TOKEN environment variable)
+# Or pass it directly: client = MarketDataClient(token="your_token_here")
+client = MarketDataClient()
 
-# The API endpoint for retrieving stock quotes for SPY
-url = 'https://api.marketdata.app/v1/stocks/quotes/SPY/'
-
-# Setting up the headers for authentication
-headers = {
-    'Accept': 'application/json',
-    'Authorization': f'Bearer {token}'
-}
-
-# Making the GET request to the API
-response = requests.get(url, headers=headers)
-
-# Checking if the request was successful
-if response. status_code in (200, 203):
-    # Parsing the JSON response
-    data = response.json()
-    print(data)
-else:
-    print(f'Failed to retrieve data: {response.status_code}')
+# Get stock quotes for SPY
+quotes = client.stocks.quotes("SPY")
+print(quotes)
 ```
+
+For more information about using the Python SDK, see our [Python SDK documentation](/sdk/py) and [authentication guide](/sdk/py/authentication).
 
 </TabItem>
 

@@ -87,6 +87,55 @@ When you are looking for a single price for a stock, depending on what data you 
 | `=STOCKDATA("AAPL", "LAST")`      | Last trade of the regular session        | Last trade of the extended session       | Last trade of the previous extended session   |
 | `=STOCKDATA("AAPL", "MID")`       | Midpoint bid/ask of the regular session  | Midpoint bid/ask of the extended session | No data                                       |
 
+## Usage Information
+
+### Data Availability
+
+The `STOCKDATA` function can return both quotes and candles, depending on whether date parameters are specified. The data type you receive depends on your user type and exchange entitlements.
+
+:::info What are entitlements?
+Entitlements are permissions granted by exchanges that allow access to their data. To get quotes, users need to sign the [IEX agreement](/account/entitlements). To get candles, users need to sign the [UTP agreement](/account/entitlements). [Learn more about entitlements](/account/entitlements).
+:::
+
+#### Quotes (No Date Parameters)
+
+When you use `STOCKDATA` without date parameters, it returns quote data. The type of quote you receive depends on your user type and IEX entitlement. This may include a real-time quote, a 15-minute delayed quote or historical (1 day old) quote, depending on the plan or access level. Real-time quotes are not currently available.
+
+| User Type | IEX Entitlement | Quote Type |
+|-----------|----------------|------------|
+| Non-Professional | ✅ | Real-time |
+| Non-Professional | ❌ | 15-min delayed |
+| Professional | ✅ | Real-time |
+| Professional | ❌ | Historical (1 day old) |
+| Unknown | ✅ | Real-time |
+| Unknown | ❌ | Historical (1 day old) |
+
+#### Current Day Candles
+
+When you use `STOCKDATA` with date parameters to request candles from the current trading session (today), you receive current day candle data. **Real-time candle data is not available for candles under any plan or entitlement.** The type of candle data you receive depends on your user type and UTP entitlement. This may include 15-minute delayed candles or historical candles (1 day old), depending on the plan or access level.
+
+| User Type | UTP Entitlement | Candle Type |
+|-----------|----------------|-------------|
+| Non-Professional | ✅ | 15-min delayed |
+| Non-Professional | ❌ | 15-min delayed |
+| Professional | ✅ | 15-min delayed |
+| Unknown | Any | Historical (1 day old) |
+
+#### Historical Candles
+
+When you use `STOCKDATA` with date parameters to request candles from past dates, you receive historical candle data. Historical candles can use any resolution (intraday, daily, weekly, etc.) from past trading sessions. **Historical data is available to all users regardless of exchange entitlements.** However, the age of historical data you can access depends on your plan:
+
+| Plan | Historical Data Availability |
+|------|------------------------------|
+| Free Forever | 1 year |
+| Trial Plans (Starter, Trader) | 1 year |
+| Starter | 5 years |
+| Trader, Quant, Prime | No limit (full access) |
+
+:::info Plan Limits
+If you attempt to access historical data older than your plan's limit permits, the formula will return an error. [Learn more about plan limits](/account/plan-limits).
+:::
+
 ## Notes
 - All parameters must be enclosed in quotation marks or be references to cells containing text. A possible exception is when endDate is specified as a number of days.
 - Results with a single data point will be returned as a value within a single cell. Multiple data points will be returned as an expanded array with column headers.

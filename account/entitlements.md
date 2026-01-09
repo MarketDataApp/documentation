@@ -28,18 +28,21 @@ Market Data offers three exchange entitlements:
 - **Exchange**: Investors Exchange (IEX)
 - **Benefit**: Access to real-time stock data
 - **Requirement**: Signed IEX data agreement
+- **Plan Requirement**: Any paid Market Data plan
 
 ### UTP Entitlement
 - **Data Type**: Consolidated UTP data (candlesticks, quotes and trades)
 - **Exchange**: Unlisted Trading Privileges (UTP) - includes NASDAQ, NYSE, and other major exchanges
-- **Benefit**: Access to 15-minute delayed intraday stock data from major exchanges
+- **Benefit**: Access to 15-minute delayed intraday stock candles from major exchanges
 - **Requirement**: Signed UTP data agreement
+- **Plan Requirement**: Any paid Market Data plan
 
 ### OPRA Entitlement
 - **Data Type**: Real-time options quotes and trades
 - **Exchange**: Options Price Reporting Authority (OPRA)
 - **Benefit**: Access to real-time options data
 - **Requirement**: Signed OPRA data agreement
+- **Plan Requirement**: Paid Trader plan or above
 
 ## How to Get Your Entitlement
 

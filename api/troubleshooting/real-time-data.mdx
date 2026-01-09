@@ -40,20 +40,20 @@ The first step is to verify whether you're actually receiving real-time data by 
 <TabItem value="Python" label="Python" default>
 
 ```python
-import requests
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+from marketdata.exceptions import MarketDataClientErrorResult
 from datetime import datetime
 
 # Make a request for stock quotes
-response = requests.get(
-    "https://api.marketdata.app/v1/stocks/quotes/AAPL/",
-    headers={"Authorization": "Bearer YOUR_TOKEN"}
-)
+client = MarketDataClient()
+quotes = client.stocks.quotes("AAPL", output_format=OutputFormat.JSON)
 
-data = response.json()
-
-if data.get("s") == "ok" and "updated" in data:
+if isinstance(quotes, MarketDataClientErrorResult):
+    print(f"Error: {quotes.error}")
+elif isinstance(quotes, dict) and quotes.get("s") == "ok" and "updated" in quotes:
     # Get the timestamp (Unix epoch seconds)
-    updated_timestamp = data["updated"][0]
+    updated_timestamp = quotes["updated"][0]
     updated_time = datetime.fromtimestamp(updated_timestamp)
     current_time = datetime.now()
     
@@ -233,50 +233,28 @@ After completing your profile and signing agreements:
 - Check your dashboard for status updates
 - Test your API requests after verification is complete
 
-## Data Type Reference Tables
+## Data Availability by Endpoint
 
-### Stock Quotes (`/v1/stocks/quotes/`)
+The data type you receive (real-time, 15-minute delayed, or historical) depends on your user type, exchange entitlements, and the specific endpoint you're using. **Professional users do not get real-time data on all endpoints**, but the exact data type available varies by endpoint.
 
-The type of quote you receive depends on your user type and IEX entitlement:
+**To determine what data types are available for your user classification**, check the **Data Availability** section in the documentation for each endpoint you're using:
 
-| User Type | IEX Entitlement | Quote Type |
-|-----------|----------------|------------|
-| Non-Professional | ✅ | Real-time |
-| Non-Professional | ❌ | 15-min delayed |
-| Professional | ✅ | 15-min delayed |
-| Professional | ❌ | Historical (1 day old) |
-| Unknown | Any | Historical (1 day old) |
+**Stocks Endpoints:**
+- **[Stock Quotes](/api/stocks/quotes#data-availability)** (`/v1/stocks/quotes/`)
+- **[Stock Prices](/api/stocks/prices#data-availability)** (`/v1/stocks/prices/`)
+- **[Stock Candles](/api/stocks/candles#data-availability)** (`/v1/stocks/candles/`)
+- **[Bulk Stock Candles](/api/stocks/bulkcandles#data-availability)** (`/v1/stocks/bulkcandles/`)
+- **[Stock News](/api/stocks/news#data-availability)** (`/v1/stocks/news/`)
+- **[Stock Earnings](/api/stocks/earnings#data-availability)** (`/v1/stocks/earnings/`)
 
-**To get real-time stock quotes**: You must be classified as non-professional AND have signed the IEX agreement.
+**Options Endpoints:**
+- **[Options Quotes](/api/options/quotes#data-availability)** (`/v1/options/quotes/`)
+- **[Option Chain](/api/options/chain#data-availability)** (`/v1/options/chain/`)
+- **[Option Strikes](/api/options/strikes#data-availability)** (`/v1/options/strikes/`)
+- **[Option Lookup](/api/options/lookup#data-availability)** (`/v1/options/lookup/`)
+- **[Option Expirations](/api/options/expirations#data-availability)** (`/v1/options/expirations/`)
 
-### Stock Candles (`/v1/stocks/candles/`)
-
-The type of candle data you receive depends on your user type and UTP entitlement:
-
-| User Type | UTP Entitlement | Candle Type |
-|-----------|----------------|-------------|
-| Non-Professional | ✅ | 15-min delayed |
-| Non-Professional | ❌ | Historical (1 day old) |
-| Professional | Any | Historical (1 day old) |
-| Unknown | Any | Historical (1 day old) |
-
-**Note**: Real-time data is not available for the candles endpoint. The best you can get is 15-minute delayed data (for non-professional users with UTP entitlement).
-
-**To get 15-minute delayed candles**: You must be classified as non-professional AND have signed the UTP agreement.
-
-### Options Quotes (`/v1/options/quotes/`)
-
-The type of option quote data you receive depends on your user type and OPRA entitlement:
-
-| User Type | OPRA Entitlement | Data Type |
-|-----------|------------------|-----------|
-| Non-Professional | ✅ | Real-time |
-| Non-Professional | ❌ | 15-min delayed |
-| Professional | Any | Historical (1 day old) |
-
-**To get real-time options quotes**: You must be classified as non-professional AND have signed the OPRA agreement.
-
-**Note**: Professional users receive historical data (1 day old) regardless of OPRA entitlement status.
+Each endpoint's Data Availability section provides the canonical source of truth for what data types are available for professional users, non-professional users, and users with unknown status, along with the required exchange entitlements.
 
 ## Verification Steps
 
@@ -315,28 +293,30 @@ After completing your profile and signing agreements, wait 1 business day for ve
 <TabItem value="Python" label="Python" default>
 
 ```python
-import requests
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+from marketdata.exceptions import MarketDataClientErrorResult
 from datetime import datetime, timezone
 
 def test_realtime_data(symbol="AAPL"):
     """Test if real-time data is working for a given symbol."""
-    response = requests.get(
-        f"https://api.marketdata.app/v1/stocks/quotes/{symbol}/",
-        headers={"Authorization": "Bearer YOUR_TOKEN"}
-    )
+    client = MarketDataClient()
+    quotes = client.stocks.quotes(symbol, output_format=OutputFormat.JSON)
     
-    data = response.json()
-    
-    if data.get("s") != "ok":
-        print(f"Error: {data.get('errmsg', 'Unknown error')}")
+    if isinstance(quotes, MarketDataClientErrorResult):
+        print(f"Error: {quotes.error}")
         return False
     
-    if "updated" not in data:
+    if not isinstance(quotes, dict) or quotes.get("s") != "ok":
+        print(f"Error: {quotes.get('errmsg', 'Unknown error') if isinstance(quotes, dict) else 'Invalid response'}")
+        return False
+    
+    if "updated" not in quotes:
         print("Warning: No timestamp in response")
         return False
     
     # Get timestamp
-    updated_timestamp = data["updated"][0]
+    updated_timestamp = quotes["updated"][0]
     updated_time = datetime.fromtimestamp(updated_timestamp, tz=timezone.utc)
     current_time = datetime.now(timezone.utc)
     
@@ -452,7 +432,7 @@ testRealtimeData("AAPL");
 **Solution**:
 1. Check your profile in the dashboard—is it complete?
 2. Check your agreements—are they signed and approved?
-3. Check your professional status—if you're classified as professional, you'll receive delayed/historical data regardless of agreements
+3. Check your professional status in the [customer dashboard](https://dashboard.marketdata.app/marketdata/profile)—if you're classified as professional, you'll receive delayed/historical data regardless of agreements
 
 **Note**: Professional users (corporations, investment advisors, money managers, etc.) receive historical data (1 day old) for compliance reasons, even with signed agreements.
 
@@ -482,7 +462,7 @@ testRealtimeData("AAPL");
 - Not employed by financial institutions
 - Not trading on behalf of others
 
-**How to check**: Your classification is determined during the verification process when you complete your profile. If you're unsure about your status, contact support for clarification.
+**How to check**: You can check your professional status in the [customer dashboard](https://dashboard.marketdata.app/marketdata/profile). Your classification is determined during the verification process when you complete your profile. If you're unsure about your status, contact support for clarification.
 
 **Impact**: Professional users receive historical data (1 day old) regardless of exchange agreements, while non-professional users can access real-time data with proper entitlements.
 

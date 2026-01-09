@@ -1,0 +1,222 @@
+---
+title: Lookup
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Lookup an option symbol from a human-readable string format.
+
+## Making Requests
+
+Use the `lookup()` method on the `options` resource to lookup option symbols. The method supports multiple output formats:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with option lookup data indexed by optionSymbol (default). |
+| **INTERNAL** | `OptionsLookup` or `OptionsLookupHumanReadable` | Returns an OptionsLookup object. When `use_human_readable=True`, returns an OptionsLookupHumanReadable object with capitalized field names. |
+| **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
+| **CSV** | `str` | Writes CSV data to file and returns the filename string. |
+
+<a name="lookup"></a>
+## lookup
+
+```python
+def lookup(
+    lookup: str,
+    *,
+    output_format: OutputFormat = OutputFormat.DATAFRAME,
+    date_format: DateFormat = None,
+    columns: list[str] = None,
+    add_headers: bool = None,
+    use_human_readable: bool = False,
+    mode: Mode = None,
+    filename: str | Path = None,
+) -> OptionsLookup | OptionsLookupHumanReadable | dict | str | MarketDataClientErrorResult
+```
+
+Fetches option lookup data for a given lookup string. The lookup string should contain the underlying symbol, expiration date, strike price, and option side in the format: "SYMBOL DD-MM-YYYY STRIKE SIDE" (e.g., "AAPL 20-12-2024 150.0 call"). The `lookup` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
+
+#### Parameters
+
+- `lookup` (str)
+
+  The lookup string in the format "SYMBOL DD-MM-YYYY STRIKE SIDE" (e.g., "AAPL 20-12-2024 150.0 call").
+
+- `output_format` ([OutputFormat](/sdk/py/settings#output-format), optional)
+
+  The format of the returned data. Defaults to `OutputFormat.DATAFRAME`. See [Settings](/sdk/py/settings) for details.
+
+- `date_format` ([DateFormat](/sdk/py/settings#date-format), optional)
+
+  The date format to use in the response. Defaults to `DateFormat.UNIX`. See [Settings](/sdk/py/settings) for details.
+
+- [`columns`](/sdk/py/settings#columns) (optional)
+
+  Specify which columns to include in the response. See [Settings](/sdk/py/settings) for details.
+
+- [`add_headers`](/sdk/py/settings#headers) (optional)
+
+  Whether to include headers in the response. See [Settings](/sdk/py/settings) for details.
+
+- [`use_human_readable`](/sdk/py/settings#human-readable) (optional)
+
+  Whether to use human-readable format for values. Only applies when `output_format=OutputFormat.INTERNAL`. See [Settings](/sdk/py/settings) for details.
+
+- `mode` ([Mode](/sdk/py/settings#data-mode), optional)
+
+  The data feed mode to use. See [Settings](/sdk/py/settings) for details.
+
+- `filename` (str | Path, optional)
+
+  File path for CSV output (only used with `output_format=OutputFormat.CSV`).
+
+#### Returns
+
+- `OptionsLookup` | `OptionsLookupHumanReadable` | `dict` | `str` | `MarketDataClientErrorResult`
+
+  The option lookup data in the requested format, or a `MarketDataClientErrorResult` if an error occurred.
+
+#### Notes
+
+- The lookup string format is: "SYMBOL DD-MM-YYYY STRIKE SIDE"
+- Example: "AAPL 20-12-2024 150.0 call" or "AAPL 20-12-2024 150.0 put"
+- When using `OutputFormat.DATAFRAME`, the DataFrame is indexed by the `optionSymbol` column.
+
+<Tabs>
+<TabItem value="Example (DataFrame)" label="Example (DataFrame)">
+
+```python
+from marketdata.client import MarketDataClient
+
+client = MarketDataClient()
+
+# Get option lookup as DataFrame (default)
+# lookup can be passed positionally or as keyword
+df = client.options.lookup("AAPL 20-12-2024 150.0 call")
+# or
+df = client.options.lookup(lookup="AAPL 20-12-2024 150.0 call")
+
+print(df)
+```
+
+</TabItem>
+
+<TabItem value="Example (Internal)" label="Example (Internal)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get option lookup as internal object
+lookup_result = client.options.lookup(
+    "AAPL 20-12-2024 150.0 call",
+    output_format=OutputFormat.INTERNAL
+)
+
+# Access lookup properties
+print(f"Option Symbol: {lookup_result.optionSymbol}")
+```
+
+</TabItem>
+
+<TabItem value="Example (JSON)" label="Example (JSON)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get option lookup as JSON
+lookup_result = client.options.lookup(
+    "AAPL 20-12-2024 150.0 call",
+    output_format=OutputFormat.JSON
+)
+
+print(lookup_result)
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+from pathlib import Path
+
+client = MarketDataClient()
+
+# Get option lookup as CSV
+csv_file = client.options.lookup(
+    "AAPL 20-12-2024 150.0 call",
+    output_format=OutputFormat.CSV,
+    filename=Path("lookup.csv")
+)
+
+print(f"CSV file saved to: {csv_file}")
+```
+
+</TabItem>
+
+<TabItem value="Example (Human Readable)" label="Example (Human Readable)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get option lookup in human-readable format
+lookup_result = client.options.lookup(
+    "AAPL 20-12-2024 150.0 call",
+    output_format=OutputFormat.INTERNAL,
+    use_human_readable=True
+)
+
+# Access lookup properties
+print(f"Symbol: {lookup_result.Symbol}")
+```
+
+</TabItem>
+</Tabs>
+
+<a name="OptionsLookup"></a>
+## OptionsLookup
+
+```python
+@dataclass
+class OptionsLookup:
+    s: str
+    optionSymbol: str
+```
+
+OptionsLookup represents the result of an option symbol lookup, containing the resolved option symbol.
+
+#### Properties
+
+- `s` (str): Status indicator ("ok" for successful responses).
+- `optionSymbol` (str): The resolved option symbol.
+
+<a name="OptionsLookupHumanReadable"></a>
+## OptionsLookupHumanReadable
+
+```python
+@dataclass
+class OptionsLookupHumanReadable:
+    Symbol: str
+```
+
+OptionsLookupHumanReadable represents an option symbol lookup result in human-readable format with capitalized field names.
+
+#### Properties
+
+- `Symbol` (str): The resolved option symbol.
+
+#### Notes
+
+- Field names use capitalized format (e.g., `Symbol` instead of `optionSymbol`).

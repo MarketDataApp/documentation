@@ -1,0 +1,260 @@
+---
+title: Status
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve market status information (open/closed) for dates and countries.
+
+## Making Requests
+
+Use the `status()` method on the `markets` resource to fetch market status information. The method supports multiple output formats:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with market status data (default). |
+| **INTERNAL** | `list[MarketStatus]` or `list[MarketStatusHumanReadable]` | Returns a list of MarketStatus objects. When `use_human_readable=True`, returns a list of MarketStatusHumanReadable objects with capitalized field names. |
+| **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
+| **CSV** | `str` | Writes CSV data to file and returns the filename string. |
+
+<a name="status"></a>
+## status
+
+```python
+def status(
+    *,
+    date: str | datetime.datetime = None,
+    from_date: str | datetime.datetime = None,
+    to_date: str | datetime.datetime = None,
+    countback: int = None,
+    country: str = None,
+    output_format: OutputFormat = OutputFormat.DATAFRAME,
+    date_format: DateFormat = None,
+    columns: list[str] = None,
+    add_headers: bool = None,
+    use_human_readable: bool = False,
+    mode: Mode = None,
+    filename: str | Path = None,
+) -> list[MarketStatus] | list[MarketStatusHumanReadable] | dict | str | MarketDataClientErrorResult
+```
+
+Fetches market status information for specified dates and countries. All parameters must be keyword-only.
+
+#### Parameters
+
+- `date` (str | datetime.datetime, optional)
+
+  Specific date for the market status.
+
+- `from_date` (str | datetime.datetime, optional)
+
+  Start date for the date range.
+
+- `to_date` (str | datetime.datetime, optional)
+
+  End date for the date range.
+
+- `countback` (int, optional)
+
+  Number of days to return, counting backwards from the `to_date`.
+
+- `country` (str, optional)
+
+  Filter by country code (e.g., "US", "CA", "GB").
+
+- `output_format` ([OutputFormat](/sdk/py/settings#output-format), optional)
+
+  The format of the returned data. Defaults to `OutputFormat.DATAFRAME`. See [Settings](/sdk/py/settings) for details.
+
+- `date_format` ([DateFormat](/sdk/py/settings#date-format), optional)
+
+  The date format to use in the response. Defaults to `DateFormat.UNIX`. See [Settings](/sdk/py/settings) for details.
+
+- [`columns`](/sdk/py/settings#columns) (optional)
+
+  Specify which columns to include in the response. See [Settings](/sdk/py/settings) for details.
+
+- [`add_headers`](/sdk/py/settings#headers) (optional)
+
+  Whether to include headers in the response. See [Settings](/sdk/py/settings) for details.
+
+- [`use_human_readable`](/sdk/py/settings#human-readable) (optional)
+
+  Whether to use human-readable format for values. Only applies when `output_format=OutputFormat.INTERNAL`. See [Settings](/sdk/py/settings) for details.
+
+- `mode` ([Mode](/sdk/py/settings#data-mode), optional)
+
+  The data feed mode to use. See [Settings](/sdk/py/settings) for details.
+
+- `filename` (str | Path, optional)
+
+  File path for CSV output (only used with `output_format=OutputFormat.CSV`).
+
+#### Returns
+
+- `list[MarketStatus]` | `list[MarketStatusHumanReadable]` | `dict` | `str` | `MarketDataClientErrorResult`
+
+  The market status data in the requested format, or a `MarketDataClientErrorResult` if an error occurred.
+
+#### Notes
+
+- All parameters must be keyword-only (no positional arguments).
+- When using `countback`, it counts backwards from `to_date` or the current date if `to_date` is not provided.
+
+<Tabs>
+<TabItem value="Example (DataFrame)" label="Example (DataFrame)">
+
+```python
+from marketdata.client import MarketDataClient
+
+client = MarketDataClient()
+
+# Get market status as DataFrame (default)
+# All parameters must be keyword-only
+df = client.markets.status(countback=7)
+
+# Get market status for a specific date
+df = client.markets.status(date="2023-01-01")
+
+# Get market status for a date range
+df = client.markets.status(
+    from_date="2023-01-01",
+    to_date="2023-01-31",
+    country="US"
+)
+
+print(df)
+```
+
+</TabItem>
+
+<TabItem value="Example (Internal)" label="Example (Internal)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get market status as internal objects
+status_list = client.markets.status(
+    countback=7,
+    output_format=OutputFormat.INTERNAL
+)
+
+# Access individual status properties
+for status in status_list:
+    print(f"Date: {status.date}")
+    print(f"Status: {status.status}")
+```
+
+</TabItem>
+
+<TabItem value="Example (JSON)" label="Example (JSON)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get market status as JSON
+status = client.markets.status(
+    countback=7,
+    output_format=OutputFormat.JSON
+)
+
+print(status)
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+from pathlib import Path
+
+client = MarketDataClient()
+
+# Get market status as CSV
+csv_file = client.markets.status(
+    countback=7,
+    output_format=OutputFormat.CSV,
+    filename=Path("market_status.csv")
+)
+
+print(f"CSV file saved to: {csv_file}")
+```
+
+</TabItem>
+
+<TabItem value="Example (Human Readable)" label="Example (Human Readable)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get market status in human-readable format
+status_list = client.markets.status(
+    countback=7,
+    output_format=OutputFormat.INTERNAL,
+    use_human_readable=True
+)
+
+# Access individual status properties
+for status in status_list:
+    print(f"Status: {status.Status}")
+    print(f"Date: {status.Date}")
+```
+
+</TabItem>
+</Tabs>
+
+<a name="MarketStatus"></a>
+## MarketStatus
+
+```python
+@dataclass
+class MarketStatus:
+    date: datetime.date
+    status: str
+```
+
+MarketStatus represents market status information for a specific date, indicating whether the market is open or closed.
+
+#### Properties
+
+- `date` (datetime.date): The date for which the market status applies (automatically converted from timestamp).
+- `status` (str): The market status (e.g., "open", "closed").
+
+#### Notes
+
+- The `date` field is automatically converted to a `datetime.date` object from a Unix timestamp.
+
+<a name="MarketStatusHumanReadable"></a>
+## MarketStatusHumanReadable
+
+```python
+@dataclass
+class MarketStatusHumanReadable:
+    Status: str
+    Date: datetime.datetime
+```
+
+MarketStatusHumanReadable represents market status information in human-readable format with capitalized field names and formatted values.
+
+#### Properties
+
+- `Status` (str): The market status (e.g., "open", "closed").
+- `Date` (datetime.datetime): The date for which the market status applies (automatically converted from timestamp).
+
+#### Notes
+
+- The `Date` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+- Field names use capitalized format (e.g., `Date` instead of `date`, `Status` instead of `status`).

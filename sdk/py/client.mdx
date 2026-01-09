@@ -1,0 +1,135 @@
+---
+title: Client
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Market Data Python Client includes functionality for making API requests, handling responses, managing rate limits, and logging. The SDK supports various data types including stocks, options, funds, and market status information.
+
+### Get Started Quickly with the MarketDataClient
+
+1. Review the [documentation on authentication](/sdk/py/authentication) to learn how to set your API token.
+2. Create a [`MarketDataClient`](#MarketDataClient) instance and use it to make requests to the Market Data API.
+3. Make a test request and review the console output. The SDK includes logging capabilities to help you debug requests.
+4. Check the [rate limit](#RateLimits) in the client to keep track of your requests and how many requests you have remaining.
+5. Configure [Settings](/sdk/py/settings) to customize output format, date format, and other universal parameters.
+
+<a name="MarketDataClient"></a>
+## MarketDataClient
+
+```python
+class MarketDataClient:
+    def __init__(self, token: str = None, logger: Logger = None):
+        ...
+```
+
+[MarketDataClient](#MarketDataClient) is the main client class for interacting with the Market Data API. It provides access to all resources (stocks, options, funds, markets) and handles authentication, rate limiting, and request management.
+
+#### Properties
+
+- `token` (str): The authentication token for API requests. See [authentication documentation](/sdk/py/authentication) for details.
+- `rate_limits` ([UserRateLimits](#RateLimits)): Current rate limit information
+- `base_url` (str): The base URL for API requests
+- `api_version` (str): The API version to use
+- `headers` (dict): HTTP headers including Authorization and User-Agent
+- `default_params` ([UserUniversalAPIParams](/sdk/py/settings)): Default universal parameters for API requests. See [Settings](/sdk/py/settings) for details on configuring these parameters.
+
+#### Resources
+
+- `stocks` ([StocksResource](/sdk/py/stocks)): Access to stocks endpoints (prices, quotes, candles, earnings, news)
+- `options` ([OptionsResource](/sdk/py/options)): Access to options endpoints (chain, expirations, strikes, quotes, lookup)
+- `funds` ([FundsResource](/sdk/py/funds)): Access to funds endpoints (candles)
+- `markets` ([MarketsResource](/sdk/py/markets)): Access to markets endpoints (status)
+
+#### Methods
+
+- <a href="#MarketDataClient.__init__">`__init__(token=None, logger=None)`</a>
+
+  Creates a new MarketDataClient instance.
+
+<a name="MarketDataClient.__init__"></a>
+### __init__
+
+```python
+def __init__(self, token: str = None, logger: Logger = None)
+```
+
+Creates and configures a new MarketDataClient instance with default settings. This method initializes the client with the provided token (or reads it from the `MARKETDATA_TOKEN` environment variable), sets up HTTP client configuration, and initializes rate limits by making a request to the `/user/` endpoint.
+
+#### Parameters
+
+- `token` (str, optional)
+
+  The authentication token for API requests. If not provided, the SDK will attempt to read it from the `MARKETDATA_TOKEN` environment variable.
+
+- `logger` (`logging.Logger`, optional)
+
+  A custom logger instance from Python's `logging` module. If not provided, the SDK will use its default logger. You can create a custom logger using `marketdata.logger.get_logger()`.
+
+#### Returns
+
+- `MarketDataClient`
+
+  A new MarketDataClient instance ready to make API requests.
+
+#### Notes
+
+- The client automatically fetches rate limits during initialization by making a request to `/user/` endpoint.
+- The client includes a User-Agent header with the format `marketdata-py-{version}` (e.g., `marketdata-py-0.0.1`).
+- All requests include an `Authorization: Bearer {token}` header.
+- The client uses `httpx.Client` for HTTP requests with automatic connection pooling.
+
+#### Example
+
+```python
+from marketdata.client import MarketDataClient
+
+# Token will be automatically obtained from MARKETDATA_TOKEN environment variable
+client = MarketDataClient()
+
+# Or provide the token explicitly
+client = MarketDataClient(token="your_token_here")
+
+# You can also provide a custom logger
+from marketdata.logger import get_logger
+custom_logger = get_logger()
+client = MarketDataClient(token="your_token_here", logger=custom_logger)
+```
+
+<a name="RateLimits"></a>
+## Accessing Rate Limits
+
+The client automatically fetches and tracks rate limits from the API. Rate limits are initialized when the client is created by making a request to `/user/` endpoint, and are updated after each API request based on response headers.
+
+You can access current rate limits:
+
+```python
+client = MarketDataClient()
+
+# Access current rate limits
+rate_limits = client.rate_limits
+
+# Access individual fields
+print(f"Limit: {rate_limits.requests_limit}")
+print(f"Remaining: {rate_limits.requests_remaining}")
+print(f"Consumed: {rate_limits.requests_consumed}")
+print(f"Reset at: {rate_limits.requests_reset}")
+
+# Or use the formatted string representation
+print(rate_limits)  # Shows: "Rate used X/Y, remaining: Z credits, next reset: ISO timestamp"
+```
+
+**Note:** Rate limits are tracked via the following response headers:
+- `x-api-ratelimit-limit`: Total number of requests allowed
+- `x-api-ratelimit-remaining`: Number of requests remaining
+- `x-api-ratelimit-consumed`: Number of requests consumed
+- `x-api-ratelimit-reset`: Unix timestamp when the rate limit resets
+
+The `requests_reset` field is automatically converted to a `datetime.datetime` object for easier use.
+
+## Configuration
+
+The SDK supports flexible configuration of universal parameters through multiple methods. You can configure settings like output format, date format, data mode, and more. See the [Settings](/sdk/py/settings) documentation for complete details on all available configuration options and how to use them.
+

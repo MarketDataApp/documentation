@@ -1,0 +1,320 @@
+---
+title: Candles
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve historical price candles for any supported stock symbol.
+
+## Making Requests
+
+Use the `candles()` method on the `stocks` resource to fetch stock candles. The method supports multiple output formats and automatically handles large date ranges by splitting them into year-long chunks and fetching them concurrently:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with candles data indexed by timestamp (default). |
+| **INTERNAL** | `list[StockCandle]` or `list[StockCandlesHumanReadable]` | Returns a list of StockCandle objects. When `use_human_readable=True`, returns a list of StockCandlesHumanReadable objects with capitalized field names. |
+| **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
+| **CSV** | `str` | Writes CSV data to file and returns the filename string. |
+
+<a name="candles"></a>
+## candles
+
+```python
+def candles(
+    symbol: str,
+    *,
+    resolution: str = "D",
+    from_date: str | datetime.datetime = None,
+    to_date: str | datetime.datetime = None,
+    date: str | datetime.datetime = None,
+    countback: int = None,
+    adjust_splits: bool = None,
+    extended: bool = None,
+    exchange: str = None,
+    output_format: OutputFormat = OutputFormat.DATAFRAME,
+    date_format: DateFormat = None,
+    columns: list[str] = None,
+    add_headers: bool = None,
+    use_human_readable: bool = False,
+    mode: Mode = None,
+    filename: str | Path = None,
+) -> list[StockCandle] | list[StockCandlesHumanReadable] | dict | str | MarketDataClientErrorResult
+```
+
+Fetches historical candles (OHLCV) data for a stock symbol. Supports various timeframes (minutely, hourly, daily, weekly, monthly, yearly) and automatically handles large date ranges by splitting them into year-long chunks and fetching them concurrently. The `symbol` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
+
+#### Parameters
+
+- `symbol` (str)
+
+  The stock symbol for which to fetch candles data.
+
+- `resolution` (str, optional)
+
+  The granularity of the candle data (e.g., "1m", "5m", "1H", "4H", "1D", "1W", "1M", "1Y"). Defaults to `"D"` (daily).
+
+- `from_date` (str | datetime.datetime, optional)
+
+  Start date for the date range.
+
+- `to_date` (str | datetime.datetime, optional)
+
+  End date for the date range.
+
+- `date` (str | datetime.datetime, optional)
+
+  Specific date for the candles data.
+
+- `countback` (int, optional)
+
+  Number of candles to return, counting backwards from the `to_date`.
+
+- `adjust_splits` (bool, optional)
+
+  Whether to adjust for stock splits. Uses API alias `adjustsplits`.
+
+- `extended` (bool, optional)
+
+  Whether to include extended hours data.
+
+- `exchange` (str, optional)
+
+  Filter by exchange.
+
+- `output_format` ([OutputFormat](/sdk/py/settings#output-format), optional)
+
+  The format of the returned data. Defaults to `OutputFormat.DATAFRAME`. See [Settings](/sdk/py/settings) for details.
+
+- `date_format` ([DateFormat](/sdk/py/settings#date-format), optional)
+
+  The date format to use in the response. Defaults to `DateFormat.UNIX`. See [Settings](/sdk/py/settings) for details.
+
+- [`columns`](/sdk/py/settings#columns) (optional)
+
+  Specify which columns to include in the response. See [Settings](/sdk/py/settings) for details.
+
+- [`add_headers`](/sdk/py/settings#headers) (optional)
+
+  Whether to include headers in the response. See [Settings](/sdk/py/settings) for details.
+
+- [`use_human_readable`](/sdk/py/settings#human-readable) (optional)
+
+  Whether to use human-readable format for values. Only applies when `output_format=OutputFormat.INTERNAL`. See [Settings](/sdk/py/settings) for details.
+
+- `mode` ([Mode](/sdk/py/settings#data-mode), optional)
+
+  The data feed mode to use. See [Settings](/sdk/py/settings) for details.
+
+- `filename` (str | Path, optional)
+
+  File path for CSV output (only used with `output_format=OutputFormat.CSV`).
+
+#### Returns
+
+- `list[StockCandle]` | `list[StockCandlesHumanReadable]` | `dict` | `str` | `MarketDataClientErrorResult`
+
+  The candles data in the requested format, or a `MarketDataClientErrorResult` if an error occurred.
+
+#### Notes
+
+- For intraday resolutions (minutely/hourly), large date ranges are automatically split into year-long chunks and fetched concurrently (up to 50 concurrent requests by default).
+- When using `OutputFormat.DATAFRAME`, the DataFrame is indexed by the timestamp column (`t` or `Date`).
+- When using `OutputFormat.INTERNAL`, timestamps are automatically converted to `datetime.datetime` objects.
+
+<Tabs>
+<TabItem value="Example (DataFrame)" label="Example (DataFrame)">
+
+```python
+from marketdata.client import MarketDataClient
+
+client = MarketDataClient()
+
+# Get stock candles as DataFrame (default)
+# symbol can be passed positionally or as keyword
+df = client.stocks.candles("AAPL", resolution="4H", from_date="2023-01-01", to_date="2023-01-04")
+# or
+df = client.stocks.candles(symbol="AAPL", resolution="4H", from_date="2023-01-01", to_date="2023-01-04")
+
+print(df)
+```
+
+#### Output
+
+```
+                    open    high     low   close      volume
+t                                                             
+2023-01-03 09:30:00  130.28  130.90  124.19  124.65  64192007
+2023-01-03 13:30:00  124.67  125.42  124.17  125.05  30727802
+2023-01-04 09:30:00  126.89  128.66  125.08  127.26  49096197
+2023-01-04 13:30:00  127.26  127.87  125.28  126.38  28870578
+```
+
+</TabItem>
+
+<TabItem value="Example (Internal)" label="Example (Internal)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get stock candles as internal objects
+candles = client.stocks.candles(
+    "AAPL",
+    resolution="4H",
+    from_date="2023-01-01",
+    to_date="2023-01-04",
+    output_format=OutputFormat.INTERNAL
+)
+
+# Access individual candle properties
+for candle in candles:
+    print(f"Time: {candle.t}")
+    print(f"Open: {candle.o}")
+    print(f"High: {candle.h}")
+    print(f"Low: {candle.l}")
+    print(f"Close: {candle.c}")
+    print(f"Volume: {candle.v}")
+```
+
+</TabItem>
+
+<TabItem value="Example (JSON)" label="Example (JSON)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get stock candles as JSON
+candles = client.stocks.candles(
+    "AAPL",
+    resolution="4H",
+    from_date="2023-01-01",
+    to_date="2023-01-04",
+    output_format=OutputFormat.JSON
+)
+
+print(candles)
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+from pathlib import Path
+
+client = MarketDataClient()
+
+# Get stock candles as CSV
+csv_file = client.stocks.candles(
+    "AAPL",
+    resolution="4H",
+    from_date="2023-01-01",
+    to_date="2023-01-04",
+    output_format=OutputFormat.CSV,
+    filename=Path("candles.csv")
+)
+
+print(f"CSV file saved to: {csv_file}")
+```
+
+</TabItem>
+
+<TabItem value="Example (Human Readable)" label="Example (Human Readable)">
+
+```python
+from marketdata.client import MarketDataClient
+from marketdata.input_types.base import OutputFormat
+
+client = MarketDataClient()
+
+# Get stock candles in human-readable format
+candles = client.stocks.candles(
+    "AAPL",
+    resolution="4H",
+    from_date="2023-01-01",
+    to_date="2023-01-04",
+    output_format=OutputFormat.INTERNAL,
+    use_human_readable=True
+)
+
+# Access individual candle properties
+for candle in candles:
+    print(f"Date: {candle.Date}")
+    print(f"Open: {candle.Open}")
+    print(f"High: {candle.High}")
+    print(f"Low: {candle.Low}")
+    print(f"Close: {candle.Close}")
+    print(f"Volume: {candle.Volume}")
+```
+
+</TabItem>
+</Tabs>
+
+<a name="StockCandle"></a>
+## StockCandle
+
+```python
+@dataclass
+class StockCandle:
+    t: datetime.datetime
+    o: float
+    h: float
+    l: float
+    c: float
+    v: int
+```
+
+StockCandle represents a single stock candle (OHLCV data), encapsulating price and volume information for a specific time period.
+
+#### Properties
+
+- `t` (datetime.datetime): The timestamp for the candle (automatically converted from Unix timestamp).
+- `o` (float): The opening price.
+- `h` (float): The highest price.
+- `l` (float): The lowest price.
+- `c` (float): The closing price.
+- `v` (int): The trading volume.
+
+#### Notes
+
+- The `t` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+
+<a name="StockCandlesHumanReadable"></a>
+## StockCandlesHumanReadable
+
+```python
+@dataclass
+class StockCandlesHumanReadable:
+    Date: datetime.datetime
+    Open: float
+    High: float
+    Low: float
+    Close: float
+    Volume: int
+```
+
+StockCandlesHumanReadable represents a stock candle in human-readable format with capitalized field names and formatted values.
+
+#### Properties
+
+- `Date` (datetime.datetime): The timestamp for the candle (automatically converted from Unix timestamp).
+- `Open` (float): The opening price.
+- `High` (float): The highest price.
+- `Low` (float): The lowest price.
+- `Close` (float): The closing price.
+- `Volume` (int): The trading volume.
+
+#### Notes
+
+- The `Date` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
+- Field names use capitalized format (e.g., `Open` instead of `o`, `Date` instead of `t`).
