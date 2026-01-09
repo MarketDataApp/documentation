@@ -1,8 +1,0 @@
-{
-  "label": "Universal Parameters",
-  "position": 11,
-  "link": {
-    "type": "generated-index",
-    "description": "The following parameters are universal and can be used with any endpoint unless otherwise indicated in that endpoint's documentation."
-  }
-}
