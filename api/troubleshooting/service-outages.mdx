@@ -16,16 +16,20 @@ We highly encourage users with mission critical applications to have a backup pr
 
 ## How To Confirm Downtime
 
-We utilize the service UptimeRobot to independently monitor our real-time and historical APIs and the results of this monitoring is made available to the public at our [status page](https://www.marketdata.app/status/).
+Market Data provides real-time status monitoring for each of our API endpoints. You can check the status of individual endpoints either through our status webpage or programmatically via our status API endpoint.
+
+### Status Webpage
+
+Visit our [status page](https://www.marketdata.app/status/) to view the current status of all Market Data API endpoints, including historical uptime statistics.
 
 - Status Page: [https://www.marketdata.app/status/](https://www.marketdata.app/status/)
 
 ### Confirm Downtime Programmatically
 
-Use the [/utilities/status/ endpoint](/api/utilities/status) to confirm the status of all Market Data services, including our APIs. This endpoint will remain online during outages and will send a JSON response that includes the status of all Market Data services. 
+Use the [/utilities/status/ endpoint](/api/utilities/status) to programmatically check the status of all Market Data API endpoints. This endpoint returns the current status for each endpoint (e.g., `/v1/stocks/quotes/`, `/v1/options/chain/`, etc.) and will remain online during outages, allowing you to determine which specific endpoints are affected.
 
 :::tip
-This endpoint is ideal to allow for automatic switching between Market Data and your backup provider.
+This endpoint is ideal to allow for automatic switching between Market Data and your backup provider when specific endpoints are down.
 :::
 
 <Tabs>
@@ -35,38 +39,41 @@ This endpoint is ideal to allow for automatic switching between Market Data and 
 // Importing the required library
 const axios = require('axios');
 
-// URL to the new JSON data
+// URL to the status endpoint
 const url = "https://api.marketdata.app/status/";
 
-// Service names for Historical Data API and Real-time Data API
-const historicalDataApiName = "Historical Data API";
-const realTimeDataApiName = "Real-time Data API";
-
-// Function to check the status of the given service name
-async function checkApiStatus(serviceName) {
+// Function to check the status of a specific endpoint
+async function checkEndpointStatus(endpointPath) {
     try {
         const response = await axios.get(url);
         const jsonData = response.data;
+        const index = jsonData.service.indexOf(endpointPath);
 
-        if (jsonData.service.includes(serviceName)) {
-            const index = jsonData.service.indexOf(serviceName);
-            return jsonData.online[index] ? "Online" : "Offline";
+        if (index !== -1) {
+            return {
+                online: jsonData.online[index],
+                status: jsonData.status[index],
+                uptime30d: jsonData.uptimePct30d[index],
+                uptime90d: jsonData.uptimePct90d[index]
+            };
         } else {
-            return "Service name not found";
+            return null;
         }
     } catch (error) {
         console.error("Error fetching API status:", error);
-        return "Failed to fetch API status";
+        return null;
     }
 }
 
-// Checking the status of Historical Data API and Real-time Data API
+// Checking the status of specific endpoints
 async function checkStatuses() {
-    const historicalStatus = await checkApiStatus(historicalDataApiName);
-    const realTimeStatus = await checkApiStatus(realTimeDataApiName);
+    const stocksQuotes = await checkEndpointStatus("/v1/stocks/quotes/");
+    const optionsChain = await checkEndpointStatus("/v1/options/chain/");
+    const stocksCandles = await checkEndpointStatus("/v1/stocks/candles/");
 
-    console.log(`Historical Data API: ${historicalStatus}`);
-    console.log(`Real-time Data API: ${realTimeStatus}`);
+    console.log(`Stocks Quotes: ${stocksQuotes ? (stocksQuotes.online ? "Online" : "Offline") : "Not found"}`);
+    console.log(`Options Chain: ${optionsChain ? (optionsChain.online ? "Online" : "Offline") : "Not found"}`);
+    console.log(`Stocks Candles: ${stocksCandles ? (stocksCandles.online ? "Online" : "Offline") : "Not found"}`);
 }
 
 checkStatuses();
@@ -79,28 +86,31 @@ checkStatuses();
 # Importing the required library
 import requests
 
-# URL to the new JSON data
+# URL to the status endpoint
 url = "https://api.marketdata.app/status/"
 json_data = requests.get(url).json()
 
-# Service names for Historical Data API and Real-time Data API
-historical_data_api_name = "Historical Data API"
-real_time_data_api_name = "Real-time Data API"
+# Function to check the status of a specific endpoint
+def check_endpoint_status(endpoint_path):
+    try:
+        index = json_data["service"].index(endpoint_path)
+        return {
+            "online": json_data["online"][index],
+            "status": json_data["status"][index],
+            "uptime30d": json_data["uptimePct30d"][index],
+            "uptime90d": json_data["uptimePct90d"][index]
+        }
+    except ValueError:
+        return None
 
-# Function to check the status of the given service name
-def check_api_status(service_name):
-    if service_name in json_data["service"]:
-        index = json_data["service"].index(service_name)
-        return "Online" if json_data["online"][index] else "Offline"
-    else:
-        return "Service name not found"
+# Checking the status of specific endpoints
+stocks_quotes = check_endpoint_status("/v1/stocks/quotes/")
+options_chain = check_endpoint_status("/v1/options/chain/")
+stocks_candles = check_endpoint_status("/v1/stocks/candles/")
 
-# Checking the status of Historical Data API and Real-time Data API
-historical_status = check_api_status(historical_data_api_name)
-real_time_status = check_api_status(real_time_data_api_name)
-
-print(f"Historical Data API: {historical_status}")
-print(f"Real-time Data API: {real_time_status}")
+print(f"Stocks Quotes: {'Online' if stocks_quotes and stocks_quotes['online'] else 'Offline' if stocks_quotes else 'Not found'}")
+print(f"Options Chain: {'Online' if options_chain and options_chain['online'] else 'Offline' if options_chain else 'Not found'}")
+print(f"Stocks Candles: {'Online' if stocks_candles and stocks_candles['online'] else 'Offline' if stocks_candles else 'Not found'}")
 ```
 
 </TabItem>
