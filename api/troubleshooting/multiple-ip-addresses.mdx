@@ -72,7 +72,18 @@ When you access the API:
 3. **For Cloud Systems**: If you're running cloud systems that make API calls:
    - Use a single cloud instance to make API calls.
    - Ensure old instances are fully terminated before starting new ones.
-   - Purchase a dedicated IP address for your cloud instance if it will be starting and stopping frequently.
+   - Purchase a dedicated IP address for your cloud instance if it will be starting and stopping more than once every 5 minutes.
+
+4. **For Serverless Functions (Lambda, Google Apps Script, etc.)**: Serverless functions may present challenges because they don't have persistent IP addresses and may route requests through different IPs. 
+
+   :::warning Compliance Requirement
+   Any solution you implement must ensure that all API requests originate from a single, consistent IP address at any given time. The single-device policy is strictly enforced for exchange compliance and cannot be bypassed.
+   :::
+
+   If you're experiencing issues with serverless functions, we recommend:
+   - Reviewing your infrastructure to ensure all requests are routed through a single, consistent IP address
+   - Ensuring your serverless architecture doesn't create multiple simultaneous connections from different IPs
+   - Contacting our support team for guidance on compliant implementation patterns for your specific use case
 
 ## Important Note
 
