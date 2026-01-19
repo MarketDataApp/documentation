@@ -5,7 +5,7 @@ export default function Root({children}) {
   return (
     <>
       <Head>
-        <script src="/cdn-cgi/zaraz/i.js" referrerPolicy="origin" />
+        <script data-cfasync="false" src="/cdn-cgi/zaraz/i.js" referrerPolicy="origin" />
       </Head>
       {children}
     </>
