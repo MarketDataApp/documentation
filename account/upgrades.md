@@ -34,15 +34,15 @@ Let's look at two specific examples to understand how the discounts are calculat
 
 #### Example 2: From Monthly Trader Plan to Annual Trader Plan
 
-- **Original Plan**: Monthly Trader Plan costing $100/month.
-- **New Plan**: Annual Trader Plan costing $348/year.
+- **Original Plan**: Monthly Trader Plan costing $75/month.
+- **New Plan**: Annual Trader Plan costing $360/year.
 
 **Scenario**: Suppose you decide to upgrade with 10 days left in your monthly plan.
 
 - **Unused Time Calculation**: 10 days remaining.
-- **Daily Rate**: $100 / 30 = ~$3.33 per day.
-- **Credit Amount**: 10 days x $3.33/day = ~$33.30.
-- **Discount Applied**: Your new annual plan will be discounted by $33.30, so you pay $348 - $33.30 = $314.70 initially.
+- **Daily Rate**: $75 / 30 = $2.50 per day.
+- **Credit Amount**: 10 days x $2.50/day = $25.00.
+- **Discount Applied**: Your new annual plan will be discounted by $25.00, so you pay $360 - $25.00 = $335.00 initially.
 
 ## Switching from an Annual Plan to a Monthly Plan
 
@@ -61,14 +61,14 @@ To give you a clearer picture, here are two examples of how the credit is calcul
 
 #### Example 1: Upgrading from Annual Trader Plan to Prime Plan
 
-- **Original Plan**: Annual Trader Plan costing $348/year.
+- **Original Plan**: Annual Trader Plan costing $360/year.
 - **New Plan**: Prime Plan costing $250/month ($8.33 per day)
 
 **Scenario**: Suppose you decide to upgrade with 90 days left in your subscription year.
 
 - **Unused Time Calculation**: 90 days / 365 days = ~24.7% of the year left.
-- **Credit Amount**: 24.7% of $348 = $85.96.
-- **Application of Credit**: This $85.96 will be credited to your new Prime plan, extending the renewal date by 11 days.
+- **Credit Amount**: 24.7% of $360 = $88.92.
+- **Application of Credit**: This $88.92 will be credited to your new Prime plan, extending the renewal date by 11 days.
 
 #### Example 2: Upgrading from Annual Starter Plan to Prime Plan
 
