@@ -1,6 +1,6 @@
 ---
 title: Multiple Google Accounts Error
-sidebar_position: 3
+sidebar_position: 5
 ---
 
 Google does not support multi-login with Google Workspace Add-ons. Google's official statement on the issue:

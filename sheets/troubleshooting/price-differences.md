@@ -1,6 +1,6 @@
 ---
 title: Price Differences
-sidebar_position: 6
+sidebar_position: 8
 ---
 
 You may notice that from time to time prices differ when using Market Data compared to Google Finance, TradingView, Yahoo Finance, or other financial websites, especially after hours. This is normal and it to be expected since those platforms display real-time prices using trades (i.e. the last trade or closing price), while Market Data displays real-time prices using quotes.

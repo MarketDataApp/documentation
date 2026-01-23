@@ -1,6 +1,6 @@
 ---
 title: Excessive Refreshing
-sidebar_position: 4
+sidebar_position: 6
 ---
 
 Due to Google's strict quota on urlfetch requests, unwanted refreshing of cells can become troublesome. Google will refresh your spreadsheet if any of the following take place:

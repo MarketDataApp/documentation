@@ -1,6 +1,6 @@
 ---
 title: Extensions Menu Disabled When Using Market Data
-sidebar_position: 8
+sidebar_position: 7
 ---
 
 If the **Extensions** menu in Google Sheets appears grayed out (lighter text, unclickable) when trying to use the Market Data add-on, it is almost always due to a Google Sheets behavior when viewing a fully protected sheet — it is **not** caused by the Market Data add-on itself.
