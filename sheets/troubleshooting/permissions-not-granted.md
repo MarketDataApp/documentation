@@ -45,7 +45,7 @@ At this time, the **only reliable solution** is to remove the add-on completely 
    - **Ensure all permission toggles are enabled**
    - Click **Continue**
 
-<div style="clear: both;"></div>
+<div className="clear-float" />
 
 ## Important Notes
 

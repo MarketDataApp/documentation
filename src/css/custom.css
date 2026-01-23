@@ -202,6 +202,11 @@
   background-color: #E65100; /* Beta: Orange */
 }
 
+/* Clear floats so following content starts below (e.g. after float: right images) */
+.clear-float {
+  clear: both;
+}
+
 /* CSS Styling for Images */
 img[alt="Pull Request in Postman"] {
   max-width: 735px;
