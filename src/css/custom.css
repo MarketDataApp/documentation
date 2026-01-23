@@ -202,9 +202,32 @@
   background-color: #E65100; /* Beta: Orange */
 }
 
+/* Clear floats so following content starts below (e.g. after float: right images) */
+.clear-float {
+  clear: both;
+}
+
 /* CSS Styling for Images */
 img[alt="Pull Request in Postman"] {
   max-width: 735px;
   width: 100%;
   height: auto;
+}
+
+/* OAuth consent GIF: float right so step list flows on the left; stack on narrow screens */
+img[alt="Google OAuth consent screen—select all permissions and click Continue"] {
+  float: right;
+  max-height: 540px;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  margin-left: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  img[alt="Google OAuth consent screen—select all permissions and click Continue"] {
+    float: none;
+    margin-left: 0;
+  }
 }
