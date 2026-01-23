@@ -208,3 +208,12 @@ img[alt="Pull Request in Postman"] {
   width: 100%;
   height: auto;
 }
+
+/* OAuth consent GIF: portrait image, cap height so it doesn't tower the article */
+img[alt="Google OAuth consent screen—select all permissions and click Continue"] {
+  max-height: 540px;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  display: block;
+}
