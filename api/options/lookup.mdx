@@ -71,6 +71,18 @@ func ExampleOptionLookupRequest() {
 }
 ```
 </TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="optionLookup.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$lookup = $client->options->lookup("AAPL 7/28/2023 200 Call");
+
+// Display the OCC symbol
+echo $lookup;
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

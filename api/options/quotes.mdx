@@ -73,6 +73,18 @@ func ExampleOptionQuoteRequest() {
 }
 ```
 </TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="optionQuotes.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$quotes = $client->options->quotes("AAPL271217C00250000");
+
+// Display formatted quotes with Greeks
+echo $quotes;
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

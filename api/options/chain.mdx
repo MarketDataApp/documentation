@@ -68,6 +68,27 @@ func ExampleOptionChainRequest() {
 }
 ```
 </TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="optionChain.php"
+use MarketDataApp\Client;
+use MarketDataApp\Enums\Side;
+
+$client = new Client();
+$chain = $client->options->option_chain(
+    symbol: "AAPL",
+    side: Side::CALL
+);
+
+// Display chain summary (expirations, contract counts)
+echo $chain;
+
+// Convenience methods available
+$calls = $chain->getCalls();
+$puts = $chain->getPuts();
+$strikes = $chain->getStrikes();
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

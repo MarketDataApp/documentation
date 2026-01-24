@@ -71,6 +71,18 @@ func ExampleOptionsExpirationsRequest() {
 }
 ```
 </TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="optionExpirations.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$expirations = $client->options->expirations("AAPL");
+
+// Display all expiration dates
+echo $expirations;
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

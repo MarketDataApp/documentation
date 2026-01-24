@@ -58,6 +58,18 @@ print(prices)
 ```
 
 </TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="stockPrices.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$prices = $client->stocks->prices("AAPL");
+
+// Display formatted price
+echo $prices;
+```
+</TabItem>
 </Tabs>
 
 </TabItem>
@@ -92,6 +104,18 @@ prices = client.stocks.prices(["AAPL", "META", "MSFT"])
 print(prices)
 ```
 
+</TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="stockPrices.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$prices = $client->stocks->prices(["AAPL", "META", "MSFT"]);
+
+// Display formatted prices summary
+echo $prices;
+```
 </TabItem>
 </Tabs>
 

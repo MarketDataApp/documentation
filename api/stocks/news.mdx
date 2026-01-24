@@ -78,6 +78,22 @@ func ExampleStockNewsRequest_get() {
 }
 ```
 </TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="stockNews.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$news = $client->stocks->news(
+    symbol: "AAPL",
+    from: "2024-01-01",
+    to: "2024-01-31"
+);
+
+// Display formatted news summary
+echo $news;
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

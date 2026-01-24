@@ -79,6 +79,18 @@ func ExampleStockQuoteRequest() {
 }
 ```
 </TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="stockQuote.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$quote = $client->stocks->quote("AAPL");
+
+// Display formatted quote with price, change, bid/ask, volume
+echo $quote;
+```
+</TabItem>
 </Tabs>
 
 </TabItem>
@@ -113,6 +125,18 @@ quotes = client.stocks.quotes(["AAPL", "META", "MSFT"])
 print(quotes)
 ```
 
+</TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="stockQuotes.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$quotes = $client->stocks->quotes(["AAPL", "META", "MSFT"]);
+
+// Display formatted quotes summary
+echo $quotes;
+```
 </TabItem>
 </Tabs>
 

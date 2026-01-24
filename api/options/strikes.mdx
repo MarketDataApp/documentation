@@ -74,6 +74,22 @@ func ExampleOptionsStrikesRequest() {
 
 ```
 </TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="optionStrikes.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$strikes = $client->options->strikes(
+    symbol: "AAPL",
+    expiration: "2023-01-20",
+    date: "2023-01-03"
+);
+
+// Display strikes by expiration
+echo $strikes;
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

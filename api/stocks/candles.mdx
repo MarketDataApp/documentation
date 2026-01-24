@@ -74,6 +74,23 @@ func ExampleStockCandlesRequest() {
 
 ```
 </TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="stockCandles.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$candles = $client->stocks->candles(
+    symbol: "AAPL",
+    from: "2020-01-01",
+    to: "2020-12-31",
+    resolution: "D"
+);
+
+// Display formatted candles summary
+echo $candles;
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

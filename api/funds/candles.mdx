@@ -78,6 +78,23 @@ func ExampleFundCandlesRequest() {
 
 ```
 </TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="fundCandles.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$candles = $client->mutual_funds->candles(
+    symbol: "VFINX",
+    from: "2020-01-01",
+    to: "2020-01-10",
+    resolution: "D"
+);
+
+// Display formatted candles summary
+echo $candles;
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

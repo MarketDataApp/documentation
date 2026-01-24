@@ -51,7 +51,18 @@ print(response.text)
 ```
 
 </TabItem>
+<TabItem value="PHP" label="PHP">
 
+```php title="statusCheck.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$status = $client->utilities->api_status();
+
+// Display API status for all services
+echo $status;
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

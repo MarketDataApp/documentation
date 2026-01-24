@@ -51,6 +51,18 @@ print(response.text)
 ```
 
 </TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="headersCheck.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$headers = $client->utilities->headers();
+
+// Display all headers
+echo $headers;
+```
+</TabItem>
 </Tabs>
 
 ## Response Example

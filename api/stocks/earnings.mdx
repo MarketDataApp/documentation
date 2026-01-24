@@ -74,6 +74,22 @@ func ExampleStockEarningsRequest() {
 }
 ```
 </TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="stockEarnings.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$earnings = $client->stocks->earnings(
+    symbol: "AAPL",
+    from: "2023-01-01",
+    to: "2024-01-01"
+);
+
+// Display formatted earnings summary
+echo $earnings;
+```
+</TabItem>
 </Tabs>
 
 ## Response Example
