@@ -1,0 +1,110 @@
+---
+title: Headers
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve the headers your application is sending for troubleshooting authentication issues.
+
+## Making Requests
+
+Use the `headers()` method on the `utilities` resource to see request headers:
+
+<a name="headers"></a>
+## headers
+
+```php
+public function headers(): Headers
+```
+
+Retrieve the headers sent by your application. This endpoint aids in troubleshooting authentication issues, particularly with the Authorization header.
+
+#### Notes
+
+- Sensitive header values (like Authorization) are partially redacted for security.
+- This is useful for debugging API authentication problems.
+
+#### Returns
+
+- `Headers`
+
+  A Headers response object containing the headers sent in the request.
+
+<Tabs>
+<TabItem value="Example (View Headers)" label="Example (View Headers)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get the headers being sent
+$headers = $client->utilities->headers();
+
+echo "Request Headers:\n";
+echo "================\n";
+
+foreach ($headers->headers as $name => $value) {
+    echo "$name: $value\n";
+}
+```
+
+#### Output
+
+```
+Request Headers:
+================
+Authorization: Bearer eyJ0...***REDACTED***
+Content-Type: application/json
+User-Agent: MarketDataApp-PHP/1.0.0
+Host: api.marketdata.app
+```
+
+</TabItem>
+
+<TabItem value="Example (Verify Auth)" label="Example (Verify Auth)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Debug authentication setup
+$headers = $client->utilities->headers();
+
+// Check if Authorization header is present
+if (isset($headers->headers['Authorization'])) {
+    echo "✓ Authorization header is being sent.\n";
+    echo "Header value: " . $headers->headers['Authorization'] . "\n";
+} else {
+    echo "✗ Authorization header is missing!\n";
+    echo "Check your MARKETDATA_TOKEN environment variable.\n";
+}
+```
+
+</TabItem>
+</Tabs>
+
+<a name="Headers"></a>
+## Headers
+
+```php
+class Headers extends ResponseBase
+{
+    public string $status;
+    public array $headers;
+}
+```
+
+Represents the request headers sent to the API.
+
+#### Properties
+
+- `status` (string): Response status (`"ok"`).
+- `headers` (array): Associative array of header name => value pairs.

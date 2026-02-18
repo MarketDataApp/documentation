@@ -1,0 +1,199 @@
+---
+title: Strikes
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Get a list of current or historical option strike prices for an underlying symbol.
+
+## Making Requests
+
+Use the `strikes()` method on the `options` resource to fetch strike prices:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **JSON** | `Strikes` | Returns a Strikes object containing strike prices (default). |
+| **CSV** | `Strikes` | Returns a Strikes object with CSV data accessible via `getCsv()`. |
+| **HTML** | `Strikes` | Returns a Strikes object with HTML data accessible via `getHtml()`. |
+
+<a name="strikes"></a>
+## strikes
+
+```php
+public function strikes(
+    string $symbol,
+    ?string $expiration = null,
+    ?string $date = null,
+    ?Parameters $parameters = null
+): Strikes
+```
+
+Get a list of current or historical option strike prices for an underlying symbol. If no optional parameters are used, the endpoint returns strikes for every expiration in the chain.
+
+#### Parameters
+
+- `symbol` (string)
+
+  The underlying ticker symbol for the options chain (e.g., "AAPL", "SPY").
+
+- `expiration` (string, optional)
+
+  Limit the lookup of strikes to options that expire on a specific date. Accepted formats: ISO 8601, Unix timestamp, spreadsheet serial number.
+
+- `date` (string, optional)
+
+  Look up a historical list of strikes from a specific previous trading day. If omitted, returns current trading day strikes (or last trading day when market is closed). Accepted formats: ISO 8601, Unix timestamp, spreadsheet serial number.
+
+- `parameters` ([Parameters](/sdk/php/parameters), optional)
+
+  Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
+
+#### Returns
+
+- `Strikes`
+
+  A Strikes response object containing the list of strike prices.
+
+<Tabs>
+<TabItem value="Example (All Strikes)" label="Example (All Strikes)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get all strikes for AAPL options
+$strikes = $client->options->strikes('AAPL');
+
+echo "AAPL Option Strikes:\n";
+echo "====================\n";
+
+// Strikes are returned for all expirations
+echo "Total strikes available: " . count($strikes->strikes) . "\n\n";
+
+// Show unique strike values
+$uniqueStrikes = array_unique($strikes->strikes);
+sort($uniqueStrikes);
+echo "Sample strikes: " . implode(', ', array_slice($uniqueStrikes, 0, 10)) . "...\n";
+```
+
+</TabItem>
+
+<TabItem value="Example (By Expiration)" label="Example (By Expiration)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get strikes for a specific expiration date
+$strikes = $client->options->strikes(
+    symbol: 'AAPL',
+    expiration: '2025-01-17'
+);
+
+echo "AAPL strikes for Jan 17, 2025 expiration:\n";
+
+// Sort and display strikes
+$values = $strikes->strikes;
+sort($values);
+
+foreach ($values as $strike) {
+    echo "$" . number_format($strike, 2) . "\n";
+}
+```
+
+#### Output
+
+```
+AAPL strikes for Jan 17, 2025 expiration:
+$100.00
+$105.00
+$110.00
+$115.00
+...
+$200.00
+$205.00
+$210.00
+```
+
+</TabItem>
+
+<TabItem value="Example (Historical)" label="Example (Historical)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get strikes as of a historical date
+$strikes = $client->options->strikes(
+    symbol: 'AAPL',
+    expiration: '2024-01-19',
+    date: '2024-01-02'
+);
+
+echo "Strikes available on 2024-01-02 for Jan 19, 2024 expiration:\n";
+
+$values = $strikes->strikes;
+sort($values);
+echo implode(', ', array_map(fn($s) => '$' . $s, $values)) . "\n";
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Get strikes as CSV
+$strikes = $client->options->strikes(
+    symbol: 'AAPL',
+    expiration: '2025-01-17',
+    parameters: new Parameters(format: Format::CSV)
+);
+
+echo $strikes->getCsv();
+```
+
+</TabItem>
+</Tabs>
+
+<a name="Strikes"></a>
+## Strikes
+
+```php
+class Strikes extends ResponseBase
+{
+    public string $status;
+    public array $strikes;
+}
+```
+
+Represents a list of option strike prices.
+
+#### Properties
+
+- `status` (string): Response status (`"ok"` or `"no_data"`).
+- `strikes` (float[]): Array of strike prices as floating-point numbers.
+
+#### Methods
+
+- `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
+- `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
+- `isJson()`: Returns `true` if the response contains JSON data.

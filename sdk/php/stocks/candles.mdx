@@ -1,0 +1,304 @@
+---
+title: Candles
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve historical price candles (OHLCV data) for any supported stock symbol.
+
+## Making Requests
+
+Use the `candles()` method on the `stocks` resource to fetch stock candles. The method supports multiple output formats and automatically handles large date ranges by splitting them into year-long chunks and fetching them concurrently:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **JSON** | `Candles` | Returns a Candles object containing an array of Candle objects (default). |
+| **CSV** | `Candles` | Returns a Candles object with CSV data accessible via `getCsv()`. |
+| **HTML** | `Candles` | Returns a Candles object with HTML data accessible via `getHtml()`. |
+
+<a name="candles"></a>
+## candles
+
+```php
+public function candles(
+    string $symbol,
+    string $from,
+    ?string $to = null,
+    string $resolution = 'D',
+    ?int $countback = null,
+    bool $extended = false,
+    ?bool $adjust_splits = null,
+    ?Parameters $parameters = null
+): Candles
+```
+
+Fetches historical candles (OHLCV) data for a stock symbol. Supports various timeframes (minutely, hourly, daily, weekly, monthly, yearly) and automatically handles large date ranges by splitting them into year-long chunks and fetching them concurrently.
+
+#### Parameters
+
+- `symbol` (string)
+
+  The stock symbol for which to fetch candles data (e.g., "AAPL", "MSFT").
+
+- `from` (string)
+
+  The start date for the candle data. Accepted formats: ISO 8601 (`2024-01-01`), Unix timestamp, or spreadsheet serial number.
+
+- `to` (string, optional)
+
+  The end date for the candle data. If omitted, you must specify `countback`. Accepted formats: ISO 8601, Unix timestamp, or spreadsheet serial number.
+
+- `resolution` (string, optional)
+
+  The granularity of the candle data. Defaults to `"D"` (daily).
+  - **Minutely:** `1`, `3`, `5`, `15`, `30`, `45`, `minutely`
+  - **Hourly:** `H`, `1H`, `2H`, `hourly`
+  - **Daily:** `D`, `1D`, `2D`, `daily`
+  - **Weekly:** `W`, `1W`, `2W`, `weekly`
+  - **Monthly:** `M`, `1M`, `2M`, `monthly`
+  - **Yearly:** `Y`, `1Y`, `2Y`, `yearly`
+
+- `countback` (int, optional)
+
+  Number of candles to return, counting backwards from `to`. If specified, `to` is required and `from` is ignored.
+
+- `extended` (bool, optional)
+
+  Whether to include extended hours (pre-market and after-hours) data. Defaults to `false`. Only applies to intraday resolutions.
+
+- `adjust_splits` (bool, optional)
+
+  Whether to adjust for stock splits. Daily candles default to `true`, intraday candles default to `false`. Uses API alias `adjustsplits`.
+
+- `parameters` ([Parameters](/sdk/php/parameters), optional)
+
+  Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
+
+#### Returns
+
+- `Candles`
+
+  A Candles response object containing the candle data, or an error status if no data is available.
+
+#### Notes
+
+- For intraday resolutions (minutely/hourly), large date ranges spanning more than 1 year are automatically split into year-long chunks and fetched concurrently (up to 50 concurrent requests).
+- The `from` date is inclusive (leftmost candle on a chart).
+- The `to` date is inclusive (rightmost candle on a chart).
+- If requesting CSV format with date ranges > 1 year, the `filename` parameter cannot be used.
+
+<Tabs>
+<TabItem value="Example (JSON)" label="Example (JSON)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get daily stock candles (default)
+$candles = $client->stocks->candles(
+    symbol: 'AAPL',
+    from: '2024-01-01',
+    to: '2024-01-31'
+);
+
+// Access individual candle data
+foreach ($candles->candles as $candle) {
+    echo "Date: " . $candle->timestamp->format('Y-m-d') . "\n";
+    echo "Open: $" . $candle->open . "\n";
+    echo "High: $" . $candle->high . "\n";
+    echo "Low: $" . $candle->low . "\n";
+    echo "Close: $" . $candle->close . "\n";
+    echo "Volume: " . number_format($candle->volume) . "\n\n";
+}
+```
+
+#### Output
+
+```
+Date: 2024-01-02
+Open: $187.15
+High: $188.44
+Low: $183.89
+Close: $185.64
+Volume: 82,488,700
+
+Date: 2024-01-03
+Open: $184.22
+High: $185.88
+Low: $183.43
+Close: $184.25
+Volume: 58,414,500
+...
+```
+
+</TabItem>
+
+<TabItem value="Example (Intraday)" label="Example (Intraday)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get 5-minute candles with extended hours
+$candles = $client->stocks->candles(
+    symbol: 'AAPL',
+    from: '2024-01-15',
+    to: '2024-01-15',
+    resolution: '5',
+    extended: true
+);
+
+echo "Found " . count($candles->candles) . " candles\n";
+
+// Access the first few candles
+foreach (array_slice($candles->candles, 0, 3) as $candle) {
+    echo $candle->timestamp->format('Y-m-d H:i') . ": $" . $candle->close . "\n";
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Get stock candles as CSV
+$candles = $client->stocks->candles(
+    symbol: 'AAPL',
+    from: '2024-01-01',
+    to: '2024-01-31',
+    parameters: new Parameters(format: Format::CSV)
+);
+
+// Access the raw CSV data
+$csv = $candles->getCsv();
+echo $csv;
+```
+
+#### Output
+
+```
+t,o,h,l,c,v
+1704204000,187.15,188.44,183.89,185.64,82488700
+1704290400,184.22,185.88,183.43,184.25,58414500
+...
+```
+
+</TabItem>
+
+<TabItem value="Example (Countback)" label="Example (Countback)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get the last 10 daily candles
+$candles = $client->stocks->candles(
+    symbol: 'AAPL',
+    from: '2024-01-01',  // Ignored when countback is used
+    to: '2024-01-31',
+    countback: 10
+);
+
+echo "Retrieved " . count($candles->candles) . " candles\n";
+```
+
+</TabItem>
+
+<TabItem value="Example (Multi-Year)" label="Example (Multi-Year)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get 5 years of hourly data
+// SDK automatically splits into year-long chunks and fetches concurrently
+$candles = $client->stocks->candles(
+    symbol: 'AAPL',
+    from: '2019-01-01',
+    to: '2024-01-01',
+    resolution: 'H'
+);
+
+echo "Retrieved " . count($candles->candles) . " hourly candles\n";
+echo "First candle: " . $candles->candles[0]->timestamp->format('Y-m-d') . "\n";
+echo "Last candle: " . end($candles->candles)->timestamp->format('Y-m-d') . "\n";
+```
+
+</TabItem>
+</Tabs>
+
+<a name="Candle"></a>
+## Candle
+
+```php
+class Candle
+{
+    public float $open;
+    public float $high;
+    public float $low;
+    public float $close;
+    public int $volume;
+    public Carbon $timestamp;
+    public ?string $symbol;
+}
+```
+
+Represents a single stock candle (OHLCV data), encapsulating price and volume information for a specific time period.
+
+#### Properties
+
+- `open` (float): The opening price.
+- `high` (float): The highest price during the period.
+- `low` (float): The lowest price during the period.
+- `close` (float): The closing price.
+- `volume` (int): The trading volume.
+- `timestamp` (Carbon): The timestamp for the candle.
+- `symbol` (string|null): The stock symbol (may be null for single-symbol requests).
+
+<a name="Candles"></a>
+## Candles
+
+```php
+class Candles extends ResponseBase
+{
+    public string $status;
+    public ?int $next_time;
+    public array $candles;
+}
+```
+
+Represents a collection of stock candles data.
+
+#### Properties
+
+- `status` (string): The status of the response (`"ok"` or `"no_data"`).
+- `next_time` (int|null): Unix timestamp of the next available quote if no data in the requested period.
+- `candles` (Candle[]): Array of Candle objects.
+
+#### Methods
+
+- `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
+- `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
+- `isJson()`: Returns `true` if the response contains JSON data.

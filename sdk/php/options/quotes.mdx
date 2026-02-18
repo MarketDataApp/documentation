@@ -1,0 +1,274 @@
+---
+title: Option Quotes
+sidebar_position: 5
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Get current or historical end-of-day quotes for one or more options contracts.
+
+## Making Requests
+
+Use the `quotes()` method on the `options` resource to fetch option quotes:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **JSON** | `Quotes` | Returns a Quotes object containing option quote data (default). |
+| **CSV** | `Quotes` | Returns a Quotes object with CSV data accessible via `getCsv()`. |
+| **HTML** | `Quotes` | Returns a Quotes object with HTML data accessible via `getHtml()`. |
+
+<a name="quotes"></a>
+## quotes
+
+```php
+public function quotes(
+    string|array $option_symbols,
+    ?string $date = null,
+    ?string $from = null,
+    ?string $to = null,
+    ?Parameters $parameters = null
+): Quotes
+```
+
+Get current or historical end-of-day quotes for one or more options contracts. When multiple symbols are provided, requests are made concurrently using a sliding window of up to 50 concurrent requests.
+
+#### Parameters
+
+- `option_symbols` (string|array)
+
+  The OCC-formatted option symbol(s). Can be a single string or an array of strings for multiple symbols. Use `option_chain()` or `lookup()` to find OCC symbols.
+
+- `date` (string, optional)
+
+  Look up a historical end-of-day quote from a specific trading day. If omitted, returns the current quote during market hours or last trading day's quote when closed.
+
+- `from` (string, optional)
+
+  Return a series of end-of-day quotes starting from this date (inclusive).
+
+- `to` (string, optional)
+
+  Return a series of end-of-day quotes ending at this date (exclusive).
+
+- `parameters` ([Parameters](/sdk/php/parameters), optional)
+
+  Universal parameters for customizing the output format.
+
+#### Returns
+
+- `Quotes`
+
+  A Quotes response object containing the option quote data.
+
+#### Notes
+
+- For multiple symbols, the SDK uses concurrent requests for optimal throughput.
+- Failed requests for individual symbols are tolerated - the response includes data from successful requests.
+
+<Tabs>
+<TabItem value="Example (Single Symbol)" label="Example (Single Symbol)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get quote for a single option
+$quotes = $client->options->quotes('AAPL250117C00200000');
+
+foreach ($quotes->quotes as $quote) {
+    echo "Symbol: " . $quote->option_symbol . "\n";
+    echo "Underlying: " . $quote->underlying . "\n";
+    echo "Strike: $" . $quote->strike . "\n";
+    echo "Expiration: " . $quote->expiration->format('Y-m-d') . "\n";
+    echo "Bid: $" . $quote->bid . " x " . $quote->bid_size . "\n";
+    echo "Ask: $" . $quote->ask . " x " . $quote->ask_size . "\n";
+    echo "Last: $" . $quote->last . "\n";
+    echo "Volume: " . number_format($quote->volume) . "\n";
+    echo "Open Interest: " . number_format($quote->open_interest) . "\n";
+}
+```
+
+#### Output
+
+```
+Symbol: AAPL250117C00200000
+Underlying: AAPL
+Strike: $200
+Expiration: 2025-01-17
+Bid: $5.80 x 45
+Ask: $5.95 x 30
+Last: $5.85
+Volume: 1,234
+Open Interest: 15,678
+```
+
+</TabItem>
+
+<TabItem value="Example (Multiple Symbols)" label="Example (Multiple Symbols)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get quotes for multiple options (fetched concurrently)
+$symbols = [
+    'AAPL250117C00180000',
+    'AAPL250117C00190000',
+    'AAPL250117C00200000',
+    'AAPL250117P00180000',
+    'AAPL250117P00190000',
+];
+
+$quotes = $client->options->quotes($symbols);
+
+echo "Option Quotes:\n";
+echo "==============\n";
+
+foreach ($quotes->quotes as $quote) {
+    $type = str_contains($quote->option_symbol, 'C00') ? 'C' : 'P';
+    echo sprintf(
+        "%s $%.0f: Bid $%.2f / Ask $%.2f (Vol: %d)\n",
+        $type,
+        $quote->strike,
+        $quote->bid,
+        $quote->ask,
+        $quote->volume
+    );
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (Historical)" label="Example (Historical)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get historical quote from a specific date
+$quotes = $client->options->quotes(
+    option_symbols: 'AAPL250117C00200000',
+    date: '2024-01-15'
+);
+
+echo "Historical Quote (2024-01-15):\n";
+foreach ($quotes->quotes as $quote) {
+    echo "Last: $" . $quote->last . "\n";
+    echo "IV: " . number_format($quote->iv * 100, 1) . "%\n";
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (Historical Range)" label="Example (Historical Range)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get a series of historical quotes
+$quotes = $client->options->quotes(
+    option_symbols: 'AAPL250117C00200000',
+    from: '2024-01-01',
+    to: '2024-01-31'
+);
+
+echo "Historical Price Series:\n";
+echo "========================\n";
+
+foreach ($quotes->quotes as $quote) {
+    echo sprintf(
+        "%s: Close $%.2f, IV %.1f%%\n",
+        $quote->updated->format('Y-m-d'),
+        $quote->last,
+        ($quote->iv ?? 0) * 100
+    );
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Get quotes as CSV
+$quotes = $client->options->quotes(
+    option_symbols: ['AAPL250117C00180000', 'AAPL250117C00200000'],
+    parameters: new Parameters(format: Format::CSV)
+);
+
+echo $quotes->getCsv();
+```
+
+</TabItem>
+</Tabs>
+
+<a name="Quotes"></a>
+## Quotes
+
+```php
+class Quotes extends ResponseBase
+{
+    public string $status;
+    public array $quotes;
+    public ?Carbon $next_time;
+    public ?Carbon $prev_time;
+    public array $errors;
+}
+```
+
+Represents option quote data for one or more contracts.
+
+#### Properties
+
+- `status` (string): Response status (`"ok"` or `"no_data"`).
+- `quotes` (array): Array of option quotes, each containing:
+  - `option_symbol` (string): OCC-formatted option symbol
+  - `underlying` (string): Underlying ticker symbol
+  - `expiration` (Carbon): Expiration date
+  - `side` (string): "call" or "put"
+  - `strike` (float): Strike price
+  - `bid` (float): Bid price
+  - `bid_size` (int): Bid size
+  - `ask` (float): Ask price
+  - `ask_size` (int): Ask size
+  - `mid` (float): Midpoint price
+  - `last` (float): Last trade price
+  - `volume` (int): Daily volume
+  - `open_interest` (int): Open interest
+  - `delta` (float|null): Delta greek
+  - `gamma` (float|null): Gamma greek
+  - `theta` (float|null): Theta greek
+  - `vega` (float|null): Vega greek
+  - `iv` (float|null): Implied volatility
+  - `updated` (Carbon): Last update timestamp
+- `next_time` (Carbon|null): Next available data time (when status is `no_data`).
+- `prev_time` (Carbon|null): Previous available data time (when status is `no_data`).
+- `errors` (array): Map of symbol => error message for failed requests (multi-symbol only).
+
+#### Methods
+
+- `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
+- `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
+- `isJson()`: Returns `true` if the response contains JSON data.

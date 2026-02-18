@@ -1,0 +1,163 @@
+---
+title: API Status
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Check the current status of Market Data services and historical uptime.
+
+## Making Requests
+
+Use the `api_status()` method on the `utilities` resource to check API status:
+
+<a name="api_status"></a>
+## api_status
+
+```php
+public function api_status(): ApiStatus
+```
+
+Check the current status of Market Data services and historical uptime. The status is updated every 5 minutes. Historical uptime is available for the last 30 and 90 days.
+
+#### Smart Caching
+
+The SDK implements intelligent caching for API status to reduce unnecessary requests:
+
+- **Fresh cache (< 4.5 min):** Returns cached data immediately
+- **Refresh window (4.5-5 min):** Returns cached data and triggers async refresh
+- **Stale cache (> 5 min):** Blocks and fetches fresh data
+
+#### Notes
+
+- This endpoint is public and does not require authentication.
+- The endpoint continues to respond even if the API is offline.
+
+#### Returns
+
+- `ApiStatus`
+
+  An ApiStatus response object containing service status and uptime information.
+
+<Tabs>
+<TabItem value="Example (Basic)" label="Example (Basic)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Check API status
+$status = $client->utilities->api_status();
+
+echo "Market Data API Status\n";
+echo "======================\n";
+
+foreach ($status->services as $service) {
+    $indicator = $service['status'] === 'online' ? '✓' : '✗';
+    echo sprintf("%s %s\n", $indicator, $service['name']);
+}
+
+echo "\nUptime:\n";
+echo "30-day: " . number_format($status->uptime_30d, 2) . "%\n";
+echo "90-day: " . number_format($status->uptime_90d, 2) . "%\n";
+```
+
+#### Output
+
+```
+Market Data API Status
+======================
+✓ Stock Quotes
+✓ Stock Candles
+✓ Options Chain
+✓ Options Quotes
+✓ Market Status
+
+Uptime:
+30-day: 99.98%
+90-day: 99.95%
+```
+
+</TabItem>
+
+<TabItem value="Example (Service Check)" label="Example (Service Check)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Enums\ApiStatusResult;
+
+$client = new Client();
+
+// Check if a specific service is online
+$stockQuotesStatus = $client->utilities->getServiceStatus('/v1/stocks/quotes/');
+
+switch ($stockQuotesStatus) {
+    case ApiStatusResult::ONLINE:
+        echo "Stock quotes service is online.\n";
+        break;
+    case ApiStatusResult::OFFLINE:
+        echo "Stock quotes service is offline!\n";
+        break;
+    case ApiStatusResult::UNKNOWN:
+        echo "Stock quotes service status is unknown.\n";
+        break;
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (Manual Refresh)" label="Example (Manual Refresh)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Force a fresh status check (blocking)
+$success = $client->utilities->refreshApiStatus(blocking: true);
+
+if ($success) {
+    echo "API status cache refreshed successfully.\n";
+
+    // Get the fresh status
+    $status = $client->utilities->api_status();
+    echo "Last updated: " . $status->updated->format('Y-m-d H:i:s') . "\n";
+}
+```
+
+</TabItem>
+</Tabs>
+
+<a name="ApiStatus"></a>
+## ApiStatus
+
+```php
+class ApiStatus extends ResponseBase
+{
+    public string $status;
+    public array $services;
+    public float $uptime_30d;
+    public float $uptime_90d;
+    public Carbon $updated;
+}
+```
+
+Represents the API status and uptime information.
+
+#### Properties
+
+- `status` (string): Response status (`"ok"`).
+- `services` (array): Array of service status entries, each containing:
+  - `name` (string): Service name
+  - `status` (string): Service status (`"online"` or `"offline"`)
+- `uptime_30d` (float): 30-day uptime percentage.
+- `uptime_90d` (float): 90-day uptime percentage.
+- `updated` (Carbon): When the status was last updated.

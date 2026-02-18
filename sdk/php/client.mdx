@@ -1,0 +1,209 @@
+---
+title: Client
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The `Client` class is the main entry point for the Market Data PHP SDK. It provides access to all API endpoints through resource properties.
+
+## Creating a Client
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+// Using environment variable or .env file
+$client = new Client();
+
+// With explicit token
+$client = new Client('your_api_token_here');
+
+// With token and custom logger
+use Psr\Log\LoggerInterface;
+
+$client = new Client('your_api_token_here', $logger);
+```
+
+#### Parameters
+
+- `token` (string, optional)
+
+  Your Market Data API token. If not provided, the SDK looks for the `MARKETDATA_TOKEN` environment variable or `.env` file.
+
+- `logger` (LoggerInterface, optional)
+
+  A PSR-3 compatible logger instance. If not provided, a default logger is created based on `MARKETDATA_LOGGING_LEVEL`.
+
+## Resource Properties
+
+The Client exposes five endpoint resources as properties:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `$client->stocks` | `Stocks` | Stock data including candles, quotes, earnings, and news |
+| `$client->options` | `Options` | Options chains, expirations, strikes, and quotes |
+| `$client->markets` | `Markets` | Market status and trading calendar |
+| `$client->mutual_funds` | `MutualFunds` | Mutual fund candles |
+| `$client->utilities` | `Utilities` | API status, headers, and rate limits |
+
+## Using Resources
+
+Each resource provides methods for accessing specific API endpoints:
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Stocks
+$candles = $client->stocks->candles('AAPL', '2024-01-01', '2024-01-31');
+$quote = $client->stocks->quote('AAPL');
+$quotes = $client->stocks->quotes(['AAPL', 'MSFT', 'GOOGL']);
+
+// Options
+$expirations = $client->options->expirations('AAPL');
+$chain = $client->options->option_chain('AAPL', expiration: '2025-01-17');
+
+// Markets
+$status = $client->markets->status();
+
+// Mutual Funds
+$fundCandles = $client->mutual_funds->candles('VFINX', '2024-01-01', '2024-01-31');
+
+// Utilities
+$apiStatus = $client->utilities->api_status();
+$user = $client->utilities->user();
+```
+
+## Default Parameters
+
+Configure universal parameters that apply to all API calls:
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+use MarketDataApp\Enums\Mode;
+
+$client = new Client();
+
+// Set default parameters for all requests
+$client->default_params = new Parameters(
+    format: Format::JSON,
+    mode: Mode::CACHED
+);
+
+// These calls will use the default parameters
+$candles = $client->stocks->candles('AAPL', '2024-01-01', '2024-01-31');
+$quote = $client->stocks->quote('AAPL');
+```
+
+See [Parameters](/sdk/php/parameters) for all available options.
+
+## Rate Limits
+
+Access your current rate limit information:
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Make a request to populate rate limits
+$quote = $client->stocks->quote('AAPL');
+
+// Access rate limits from the last response
+$rateLimits = $client->rate_limits;
+
+if ($rateLimits) {
+    echo "Requests consumed: " . $rateLimits->consumed . "\n";
+    echo "Daily limit: " . $rateLimits->limit . "\n";
+    echo "Remaining: " . $rateLimits->remaining . "\n";
+    echo "Reset time: " . $rateLimits->reset . "\n";
+}
+```
+
+## Parallel Requests
+
+Execute multiple API calls concurrently for improved performance:
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Execute up to 50 concurrent requests
+$results = $client->execute_in_parallel([
+    ['stocks/quotes/', ['symbol' => 'AAPL']],
+    ['stocks/quotes/', ['symbol' => 'MSFT']],
+    ['stocks/quotes/', ['symbol' => 'GOOGL']],
+]);
+```
+
+For simpler multi-symbol requests, use the built-in batch methods like `quotes()` which handle parallelization automatically.
+
+## Error Handling
+
+The Client throws exceptions for various error conditions:
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Exceptions\ApiException;
+use MarketDataApp\Exceptions\UnauthorizedException;
+use MarketDataApp\Exceptions\BadStatusCodeError;
+
+try {
+    $client = new Client();
+    $quote = $client->stocks->quote('INVALID_SYMBOL');
+} catch (UnauthorizedException $e) {
+    echo "Authentication failed: " . $e->getMessage();
+} catch (ApiException $e) {
+    echo "API error: " . $e->getMessage();
+    echo "\nSupport info: " . $e->getSupportInfo();
+} catch (BadStatusCodeError $e) {
+    echo "Request failed: " . $e->getMessage();
+}
+```
+
+See [Error Handling](/sdk/php/errors) for details on exception types.
+
+## Custom HTTP Client
+
+Inject a custom Guzzle client for advanced use cases:
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use GuzzleHttp\Client as GuzzleClient;
+
+$client = new Client();
+
+// Set custom Guzzle client with custom configuration
+$guzzle = new GuzzleClient([
+    'timeout' => 30,
+    'connect_timeout' => 5,
+]);
+
+$client->setGuzzle($guzzle);
+```
+
+## Next Steps
+
+- Configure [Parameters](/sdk/php/parameters) for customizing output formats
+- Set up [Logging](/sdk/php/logging) for debugging
+- Learn about [Error Handling](/sdk/php/errors)
+- Explore endpoint documentation: [Stocks](/sdk/php/stocks), [Options](/sdk/php/options), [Markets](/sdk/php/markets), [Funds](/sdk/php/funds)

@@ -1,0 +1,65 @@
+---
+title: Installation
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Market Data PHP SDK can be installed via Composer, the standard PHP dependency manager.
+
+## Requirements
+
+- PHP 8.2 or higher
+- Composer
+
+## Installing with Composer
+
+Install the SDK using Composer:
+
+```bash
+composer require marketdataapp/sdk-php
+```
+
+This will install the SDK and all required dependencies.
+
+## Dependencies
+
+The SDK depends on the following packages, which are automatically installed by Composer:
+
+- **guzzlehttp/guzzle** - HTTP client for making API requests
+- **vlucas/phpdotenv** - Environment variable loading from `.env` files
+- **psr/log** - PSR-3 logger interface
+- **nesbot/carbon** - Date/time handling
+- **monolog/monolog** - PSR-3 compatible logging (optional)
+
+## Verifying Installation
+
+After installation, you can verify the SDK is working by creating a simple test script:
+
+```php
+<?php
+
+require_once 'vendor/autoload.php';
+
+use MarketDataApp\Client;
+
+// Create client (uses MARKETDATA_TOKEN environment variable)
+$client = new Client();
+
+// Test the connection
+$status = $client->utilities->api_status();
+echo "API Status: Online\n";
+```
+
+## Updating the SDK
+
+To update to the latest version:
+
+```bash
+composer update marketdataapp/sdk-php
+```
+
+## Next Steps
+
+After installing the SDK, [set up your authentication token](/sdk/php/authentication) to start making API calls.

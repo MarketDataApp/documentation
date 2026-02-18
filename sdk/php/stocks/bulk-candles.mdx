@@ -1,0 +1,214 @@
+---
+title: Bulk Candles
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve bulk daily candle data for multiple stocks in a single request. This endpoint returns a single daily candle for each symbol, ideal for market snapshots.
+
+## Making Requests
+
+Use the `bulkCandles()` method on the `stocks` resource to fetch bulk candle data:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **JSON** | `BulkCandles` | Returns a BulkCandles object containing an array of Candle objects (default). |
+| **CSV** | `BulkCandles` | Returns a BulkCandles object with CSV data accessible via `getCsv()`. |
+| **HTML** | `BulkCandles` | Returns a BulkCandles object with HTML data accessible via `getHtml()`. |
+
+<a name="bulkCandles"></a>
+## bulkCandles
+
+```php
+public function bulkCandles(
+    array $symbols = [],
+    string $resolution = 'D',
+    bool $snapshot = false,
+    ?string $date = null,
+    ?bool $adjust_splits = null,
+    ?Parameters $parameters = null
+): BulkCandles
+```
+
+Get bulk candle data for multiple stocks. Unlike the standard candles endpoint, this endpoint returns a single daily candle for each symbol provided. The typical use-case is to get a complete market snapshot during trading hours, though it can also be used for bulk snapshots of historical daily candles.
+
+#### Parameters
+
+- `symbols` (array, optional)
+
+  Array of ticker symbols to return. Can be omitted if `snapshot` is `true`.
+
+- `resolution` (string, optional)
+
+  The duration of each candle. Only daily candles are supported. Defaults to `"D"`.
+  - **Daily:** `D`, `1D`, `2D`, `daily`
+
+- `snapshot` (bool, optional)
+
+  When `true`, returns candles for all available symbols for the specified date. The `symbols` parameter can be omitted when using snapshot mode. Defaults to `false`.
+
+- `date` (string, optional)
+
+  The date of the candles to return. If omitted during market hours, returns current session data. If the market is closed, returns data from the most recent session. Accepted formats: ISO 8601, Unix timestamp, spreadsheet serial number.
+
+- `adjust_splits` (bool, optional)
+
+  Whether to adjust historical data for stock splits. Daily candles default to `true`. Uses API alias `adjustsplits`.
+
+- `parameters` ([Parameters](/sdk/php/parameters), optional)
+
+  Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
+
+#### Returns
+
+- `BulkCandles`
+
+  A BulkCandles response object containing the candle data for all requested symbols.
+
+#### Notes
+
+- Only daily resolutions are supported for bulk candles.
+- Either `symbols` or `snapshot` must be provided.
+- When using `snapshot: true`, all available symbols are returned, which can be a large dataset.
+
+<Tabs>
+<TabItem value="Example (Multiple Symbols)" label="Example (Multiple Symbols)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get daily candles for multiple symbols
+$bulkCandles = $client->stocks->bulkCandles(
+    symbols: ['AAPL', 'MSFT', 'GOOGL', 'AMZN']
+);
+
+// Access candle data for each symbol
+foreach ($bulkCandles->candles as $candle) {
+    echo sprintf(
+        "%s: Open $%.2f, Close $%.2f, Volume %s\n",
+        $candle->symbol,
+        $candle->open,
+        $candle->close,
+        number_format($candle->volume)
+    );
+}
+```
+
+#### Output
+
+```
+AAPL: Open $185.64, Close $186.19, Volume 48,234,500
+MSFT: Open $378.25, Close $380.55, Volume 22,156,800
+GOOGL: Open $142.35, Close $143.12, Volume 18,456,200
+AMZN: Open $155.82, Close $157.45, Volume 35,678,900
+```
+
+</TabItem>
+
+<TabItem value="Example (Historical Date)" label="Example (Historical Date)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get bulk candles for a specific historical date
+$bulkCandles = $client->stocks->bulkCandles(
+    symbols: ['AAPL', 'MSFT', 'GOOGL'],
+    date: '2024-01-15'
+);
+
+echo "Candles for 2024-01-15:\n";
+foreach ($bulkCandles->candles as $candle) {
+    echo sprintf(
+        "%s: $%.2f (%.2f%%)\n",
+        $candle->symbol,
+        $candle->close,
+        (($candle->close - $candle->open) / $candle->open) * 100
+    );
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (Market Snapshot)" label="Example (Market Snapshot)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get a snapshot of ALL available symbols
+$bulkCandles = $client->stocks->bulkCandles(
+    snapshot: true
+);
+
+echo "Total symbols: " . count($bulkCandles->candles) . "\n";
+
+// Find top gainers
+$gainers = array_filter($bulkCandles->candles, function($candle) {
+    return $candle->close > $candle->open;
+});
+
+echo "Gainers today: " . count($gainers) . "\n";
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Get bulk candles as CSV
+$bulkCandles = $client->stocks->bulkCandles(
+    symbols: ['AAPL', 'MSFT', 'GOOGL'],
+    parameters: new Parameters(format: Format::CSV)
+);
+
+// Access the raw CSV data
+echo $bulkCandles->getCsv();
+```
+
+</TabItem>
+</Tabs>
+
+<a name="BulkCandles"></a>
+## BulkCandles
+
+```php
+class BulkCandles extends ResponseBase
+{
+    public string $status;
+    public array $candles;
+}
+```
+
+Represents a collection of bulk candle data for multiple symbols.
+
+#### Properties
+
+- `status` (string): The status of the response (`"ok"` or `"no_data"`).
+- `candles` (Candle[]): Array of Candle objects, one per symbol requested.
+
+#### Methods
+
+- `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
+- `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
+- `isJson()`: Returns `true` if the response contains JSON data.

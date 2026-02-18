@@ -1,0 +1,221 @@
+---
+title: Prices
+sidebar_position: 5
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Get real-time midpoint prices for one or more stocks using the SmartMid model.
+
+## Making Requests
+
+Use the `prices()` method on the `stocks` resource to fetch midpoint prices:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **JSON** | `Prices` | Returns a Prices object containing price data (default). |
+| **CSV** | `Prices` | Returns a Prices object with CSV data accessible via `getCsv()`. |
+| **HTML** | `Prices` | Returns a Prices object with HTML data accessible via `getHtml()`. |
+
+<a name="prices"></a>
+## prices
+
+```php
+public function prices(
+    string|array $symbols,
+    bool $extended = true,
+    ?Parameters $parameters = null
+): Prices
+```
+
+Get real-time midpoint prices for stocks using the SmartMid model. Supports both single and multiple symbol requests.
+
+#### Parameters
+
+- `symbols` (string|array)
+
+  A single stock ticker symbol as a string (e.g., `"AAPL"`), or an array of symbols (e.g., `['AAPL', 'MSFT']`).
+
+- `extended` (bool, optional)
+
+  Control the inclusion of extended hours (pre-market and after-hours) data. Defaults to `true`.
+  - When `true`: Returns the most recent price regardless of trading session.
+  - When `false`: Returns only prices from the primary trading session.
+
+- `parameters` ([Parameters](/sdk/php/parameters), optional)
+
+  Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
+
+#### Returns
+
+- `Prices`
+
+  A Prices response object containing the price data.
+
+#### Notes
+
+- The SmartMid model calculates the midpoint price between the bid and ask, weighted by size and market conditions.
+- For single symbols, the API uses the path format `prices/{symbol}/`.
+- For multiple symbols, the API uses the query format `prices/?symbols={comma-separated}`.
+
+<Tabs>
+<TabItem value="Example (Single Symbol)" label="Example (Single Symbol)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get price for a single symbol
+$prices = $client->stocks->prices('AAPL');
+
+foreach ($prices->prices as $price) {
+    echo "Symbol: " . $price->symbol . "\n";
+    echo "Price: $" . number_format($price->price, 2) . "\n";
+    echo "Updated: " . $price->timestamp->format('Y-m-d H:i:s') . "\n";
+}
+```
+
+#### Output
+
+```
+Symbol: AAPL
+Price: $186.19
+Updated: 2024-01-15 16:00:00
+```
+
+</TabItem>
+
+<TabItem value="Example (Multiple Symbols)" label="Example (Multiple Symbols)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get prices for multiple symbols
+$prices = $client->stocks->prices(['AAPL', 'MSFT', 'GOOGL', 'AMZN']);
+
+echo "Current Prices\n";
+echo "==============\n";
+
+foreach ($prices->prices as $price) {
+    echo sprintf(
+        "%s: $%.2f\n",
+        $price->symbol,
+        $price->price
+    );
+}
+```
+
+#### Output
+
+```
+Current Prices
+==============
+AAPL: $186.19
+MSFT: $380.55
+GOOGL: $143.12
+AMZN: $157.45
+```
+
+</TabItem>
+
+<TabItem value="Example (Regular Hours)" label="Example (Regular Hours)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get prices excluding extended hours
+$prices = $client->stocks->prices(
+    symbols: ['AAPL', 'MSFT'],
+    extended: false
+);
+
+// During extended hours, returns closing prices from regular session
+foreach ($prices->prices as $price) {
+    echo sprintf(
+        "%s: $%.2f (Regular Session)\n",
+        $price->symbol,
+        $price->price
+    );
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Get prices as CSV
+$prices = $client->stocks->prices(
+    symbols: ['AAPL', 'MSFT', 'GOOGL'],
+    parameters: new Parameters(format: Format::CSV)
+);
+
+echo $prices->getCsv();
+```
+
+</TabItem>
+</Tabs>
+
+<a name="Price"></a>
+## Price
+
+```php
+class Price
+{
+    public string $symbol;
+    public float $price;
+    public Carbon $timestamp;
+}
+```
+
+Represents a single stock price point.
+
+#### Properties
+
+- `symbol` (string): The stock ticker symbol.
+- `price` (float): The SmartMid price.
+- `timestamp` (Carbon): The timestamp of the price.
+
+<a name="Prices"></a>
+## Prices
+
+```php
+class Prices extends ResponseBase
+{
+    public string $status;
+    public array $prices;
+}
+```
+
+Represents a collection of stock prices.
+
+#### Properties
+
+- `status` (string): Response status (`"ok"` or `"no_data"`).
+- `prices` (Price[]): Array of Price objects.
+
+#### Methods
+
+- `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
+- `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
+- `isJson()`: Returns `true` if the response contains JSON data.

@@ -1,0 +1,285 @@
+---
+title: Fund Candles
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Get historical price candles (OHLCV data) for mutual funds.
+
+## Making Requests
+
+Use the `candles()` method on the `mutual_funds` resource to fetch fund candles:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **JSON** | `Candles` | Returns a Candles object containing an array of Candle objects (default). |
+| **CSV** | `Candles` | Returns a Candles object with CSV data accessible via `getCsv()`. |
+| **HTML** | `Candles` | Returns a Candles object with HTML data accessible via `getHtml()`. |
+
+<a name="candles"></a>
+## candles
+
+```php
+public function candles(
+    string $symbol,
+    string $from,
+    ?string $to = null,
+    string $resolution = 'D',
+    ?int $countback = null,
+    ?Parameters $parameters = null
+): Candles
+```
+
+Get historical price candles for a mutual fund. Supports various timeframes from minutely to yearly resolutions.
+
+#### Parameters
+
+- `symbol` (string)
+
+  The mutual fund ticker symbol (e.g., "VFINX", "FXAIX").
+
+- `from` (string)
+
+  The start date for the candle data. Accepted formats: ISO 8601 (`2024-01-01`), Unix timestamp, or spreadsheet serial number.
+
+- `to` (string, optional)
+
+  The end date for the candle data. If omitted, you must specify `countback`.
+
+- `resolution` (string, optional)
+
+  The granularity of the candle data. Defaults to `"D"` (daily).
+  - **Minutely:** `1`, `3`, `5`, `15`, `30`, `45`, `minutely`
+  - **Hourly:** `H`, `1H`, `2H`, `hourly`
+  - **Daily:** `D`, `1D`, `2D`, `daily`
+  - **Weekly:** `W`, `1W`, `2W`, `weekly`
+  - **Monthly:** `M`, `1M`, `2M`, `monthly`
+  - **Yearly:** `Y`, `1Y`, `2Y`, `yearly`
+
+- `countback` (int, optional)
+
+  Number of candles to return, counting backwards from `to`.
+
+- `parameters` ([Parameters](/sdk/php/parameters), optional)
+
+  Universal parameters for customizing the output format.
+
+#### Returns
+
+- `Candles`
+
+  A Candles response object containing the candle data.
+
+#### Notes
+
+- Mutual funds typically only trade once per day at market close, so daily resolution is most common.
+- The `from` date is inclusive (leftmost candle on a chart).
+- The `to` date is inclusive (rightmost candle on a chart).
+
+<Tabs>
+<TabItem value="Example (Daily)" label="Example (Daily)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get daily candles for Vanguard 500 Index Fund
+$candles = $client->mutual_funds->candles(
+    symbol: 'VFINX',
+    from: '2024-01-01',
+    to: '2024-01-31'
+);
+
+echo "VFINX Daily Prices:\n";
+echo "===================\n";
+
+foreach ($candles->candles as $candle) {
+    echo sprintf(
+        "%s: Open $%.2f, High $%.2f, Low $%.2f, Close $%.2f\n",
+        $candle->timestamp->format('Y-m-d'),
+        $candle->open,
+        $candle->high,
+        $candle->low,
+        $candle->close
+    );
+}
+```
+
+#### Output
+
+```
+VFINX Daily Prices:
+===================
+2024-01-02: Open $438.21, High $440.15, Low $436.89, Close $439.45
+2024-01-03: Open $439.45, High $441.22, Low $437.56, Close $438.12
+2024-01-04: Open $438.12, High $439.88, Low $435.44, Close $436.78
+...
+```
+
+</TabItem>
+
+<TabItem value="Example (Weekly)" label="Example (Weekly)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get weekly candles for a year
+$candles = $client->mutual_funds->candles(
+    symbol: 'VFINX',
+    from: '2023-01-01',
+    to: '2023-12-31',
+    resolution: 'W'
+);
+
+echo "VFINX Weekly Summary (2023):\n";
+echo "============================\n";
+
+foreach ($candles->candles as $candle) {
+    $change = $candle->close - $candle->open;
+    $pctChange = ($change / $candle->open) * 100;
+    $indicator = $change >= 0 ? '▲' : '▼';
+
+    echo sprintf(
+        "Week of %s: $%.2f %s%.1f%%\n",
+        $candle->timestamp->format('M j'),
+        $candle->close,
+        $indicator,
+        abs($pctChange)
+    );
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (Compare Funds)" label="Example (Compare Funds)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Compare two index funds
+$funds = ['VFINX', 'FXAIX'];
+$results = [];
+
+foreach ($funds as $symbol) {
+    $candles = $client->mutual_funds->candles(
+        symbol: $symbol,
+        from: '2024-01-01',
+        to: '2024-01-31'
+    );
+
+    $first = $candles->candles[0];
+    $last = end($candles->candles);
+    $return = (($last->close - $first->open) / $first->open) * 100;
+
+    $results[$symbol] = [
+        'start' => $first->open,
+        'end' => $last->close,
+        'return' => $return
+    ];
+}
+
+echo "Fund Comparison (January 2024):\n";
+echo "===============================\n";
+
+foreach ($results as $symbol => $data) {
+    echo sprintf(
+        "%s: $%.2f → $%.2f (%+.2f%%)\n",
+        $symbol,
+        $data['start'],
+        $data['end'],
+        $data['return']
+    );
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Get candles as CSV
+$candles = $client->mutual_funds->candles(
+    symbol: 'VFINX',
+    from: '2024-01-01',
+    to: '2024-01-31',
+    parameters: new Parameters(format: Format::CSV)
+);
+
+echo $candles->getCsv();
+```
+
+</TabItem>
+</Tabs>
+
+<a name="Candle"></a>
+## Candle
+
+```php
+class Candle
+{
+    public float $open;
+    public float $high;
+    public float $low;
+    public float $close;
+    public int $volume;
+    public Carbon $timestamp;
+}
+```
+
+Represents a single mutual fund candle (OHLCV data).
+
+#### Properties
+
+- `open` (float): The opening price (NAV).
+- `high` (float): The highest price during the period.
+- `low` (float): The lowest price during the period.
+- `close` (float): The closing price (NAV).
+- `volume` (int): The trading volume.
+- `timestamp` (Carbon): The timestamp for the candle.
+
+<a name="Candles"></a>
+## Candles
+
+```php
+class Candles extends ResponseBase
+{
+    public string $status;
+    public ?int $next_time;
+    public array $candles;
+}
+```
+
+Represents a collection of mutual fund candles data.
+
+#### Properties
+
+- `status` (string): The status of the response (`"ok"` or `"no_data"`).
+- `next_time` (int|null): Unix timestamp of the next available quote if no data in the requested period.
+- `candles` (Candle[]): Array of Candle objects.
+
+#### Methods
+
+- `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
+- `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
+- `isJson()`: Returns `true` if the response contains JSON data.

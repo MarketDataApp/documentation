@@ -1,0 +1,146 @@
+---
+title: Rate Limits
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve rate limit information for the current user.
+
+## Making Requests
+
+Use the `user()` method on the `utilities` resource to get rate limit information:
+
+<a name="user"></a>
+## user
+
+```php
+public function user(): User
+```
+
+Retrieve rate limit information for the current user, including credit usage and limits.
+
+#### Notes
+
+- Rate limits track **credits**, not requests. Most requests consume 1 credit, but bulk requests or options requests may consume multiple credits.
+- Free/Starter/Trader plans have daily limits.
+- Prime users have per-minute limits.
+- The `reset` timestamp indicates when the current rate limit window resets (UTC).
+
+#### Returns
+
+- `User`
+
+  A User response object containing rate limit information.
+
+<Tabs>
+<TabItem value="Example (Check Limits)" label="Example (Check Limits)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get rate limit information
+$user = $client->utilities->user();
+
+echo "Rate Limit Status\n";
+echo "=================\n";
+echo "Limit: " . number_format($user->limit) . " credits\n";
+echo "Remaining: " . number_format($user->remaining) . " credits\n";
+echo "Used: " . number_format($user->consumed) . " credits\n";
+echo "Resets: " . $user->reset->format('Y-m-d H:i:s T') . "\n";
+
+// Calculate usage percentage
+$usagePercent = (($user->limit - $user->remaining) / $user->limit) * 100;
+echo "Usage: " . number_format($usagePercent, 1) . "%\n";
+```
+
+#### Output
+
+```
+Rate Limit Status
+=================
+Limit: 10,000 credits
+Remaining: 9,850 credits
+Used: 1 credits
+Resets: 2024-01-16 00:00:00 UTC
+Usage: 1.5%
+```
+
+</TabItem>
+
+<TabItem value="Example (Usage Warning)" label="Example (Usage Warning)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+$user = $client->utilities->user();
+
+// Check if approaching rate limit
+$usagePercent = (($user->limit - $user->remaining) / $user->limit) * 100;
+
+if ($usagePercent > 90) {
+    echo "⚠️ WARNING: You've used " . number_format($usagePercent, 1) . "% of your daily limit!\n";
+    echo "Only " . number_format($user->remaining) . " credits remaining.\n";
+    echo "Limit resets at: " . $user->reset->format('H:i:s T') . "\n";
+} elseif ($usagePercent > 75) {
+    echo "ℹ️ Notice: You've used " . number_format($usagePercent, 1) . "% of your daily limit.\n";
+} else {
+    echo "✓ Usage is normal: " . number_format($usagePercent, 1) . "% used.\n";
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (Rate Limit Header)" label="Example (Rate Limit Header)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Rate limits are also available on the client after any request
+$quote = $client->stocks->quote('AAPL');
+
+if ($client->rate_limits) {
+    echo "Rate limits from last response:\n";
+    echo "Consumed: " . $client->rate_limits->consumed . " credits\n";
+    echo "Remaining: " . $client->rate_limits->remaining . " credits\n";
+    echo "Limit: " . $client->rate_limits->limit . " credits\n";
+}
+```
+
+</TabItem>
+</Tabs>
+
+<a name="User"></a>
+## User
+
+```php
+class User
+{
+    public int $limit;
+    public int $remaining;
+    public int $consumed;
+    public Carbon $reset;
+}
+```
+
+Represents rate limit information for the current user.
+
+#### Properties
+
+- `limit` (int): Maximum number of credits permitted per rate period.
+- `remaining` (int): Credits remaining in the current rate period.
+- `consumed` (int): Credits consumed in the current request (not cumulative).
+- `reset` (Carbon): When the current rate limit window resets (UTC).

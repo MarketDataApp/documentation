@@ -1,0 +1,262 @@
+---
+title: Earnings
+sidebar_position: 6
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Get historical earnings per share data or a future earnings calendar for a stock.
+
+:::info Premium Endpoint
+The earnings endpoint requires a premium subscription. Free and trial accounts cannot access this data.
+:::
+
+## Making Requests
+
+Use the `earnings()` method on the `stocks` resource to fetch earnings data:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **JSON** | `Earnings` | Returns an Earnings object containing earnings report data (default). |
+| **CSV** | `Earnings` | Returns an Earnings object with CSV data accessible via `getCsv()`. |
+| **HTML** | `Earnings` | Returns an Earnings object with HTML data accessible via `getHtml()`. |
+
+<a name="earnings"></a>
+## earnings
+
+```php
+public function earnings(
+    string $symbol,
+    ?string $from = null,
+    ?string $to = null,
+    ?int $countback = null,
+    ?string $date = null,
+    ?Parameters $parameters = null
+): Earnings
+```
+
+Get historical earnings per share data or a future earnings calendar for a stock.
+
+#### Parameters
+
+- `symbol` (string)
+
+  The stock ticker symbol (e.g., "AAPL").
+
+- `from` (string, optional)
+
+  The earliest earnings report to include. If omitted without `countback`, returns recent and upcoming earnings. Accepted formats: ISO 8601, Unix timestamp.
+
+- `to` (string, optional)
+
+  The latest earnings report to include. Accepted formats: ISO 8601, Unix timestamp.
+
+- `countback` (int, optional)
+
+  Number of earnings reports to return before `to`. Use instead of `from`.
+
+- `date` (string, optional)
+
+  Retrieve a specific earnings report by date. Accepted formats: ISO 8601, Unix timestamp.
+
+- `parameters` ([Parameters](/sdk/php/parameters), optional)
+
+  Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
+
+#### Returns
+
+- `Earnings`
+
+  An Earnings response object containing the earnings data.
+
+<Tabs>
+<TabItem value="Example (Recent Earnings)" label="Example (Recent Earnings)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get recent and upcoming earnings for AAPL
+$earnings = $client->stocks->earnings('AAPL');
+
+foreach ($earnings->earnings as $report) {
+    echo "Date: " . $report->report_date->format('Y-m-d') . "\n";
+    echo "Fiscal Year: " . $report->fiscal_year . " Q" . $report->fiscal_quarter . "\n";
+    echo "EPS Estimate: $" . $report->eps_estimate . "\n";
+    echo "EPS Actual: $" . ($report->eps_actual ?? 'N/A') . "\n";
+    echo "Surprise: " . ($report->eps_surprise ?? 'N/A') . "\n\n";
+}
+```
+
+#### Output
+
+```
+Date: 2024-01-25
+Fiscal Year: 2024 Q1
+EPS Estimate: $2.10
+EPS Actual: $2.18
+Surprise: +0.08
+
+Date: 2024-04-25
+Fiscal Year: 2024 Q2
+EPS Estimate: $1.50
+EPS Actual: N/A
+Surprise: N/A
+```
+
+</TabItem>
+
+<TabItem value="Example (Historical Range)" label="Example (Historical Range)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get historical earnings for a date range
+$earnings = $client->stocks->earnings(
+    symbol: 'AAPL',
+    from: '2023-01-01',
+    to: '2023-12-31'
+);
+
+echo "AAPL Earnings for 2023:\n";
+echo "========================\n";
+
+foreach ($earnings->earnings as $report) {
+    $surprise = $report->eps_surprise ?? 0;
+    $surpriseIndicator = $surprise > 0 ? '↑' : ($surprise < 0 ? '↓' : '-');
+
+    echo sprintf(
+        "Q%d %d: EPS $%.2f (Est: $%.2f) %s\n",
+        $report->fiscal_quarter,
+        $report->fiscal_year,
+        $report->eps_actual ?? 0,
+        $report->eps_estimate ?? 0,
+        $surpriseIndicator
+    );
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (Last N Reports)" label="Example (Last N Reports)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get the last 4 earnings reports
+$earnings = $client->stocks->earnings(
+    symbol: 'AAPL',
+    to: 'today',
+    countback: 4
+);
+
+echo "Last 4 Quarterly Earnings:\n";
+
+foreach ($earnings->earnings as $report) {
+    echo sprintf(
+        "%s: Q%d FY%d - $%.2f EPS\n",
+        $report->report_date->format('Y-m-d'),
+        $report->fiscal_quarter,
+        $report->fiscal_year,
+        $report->eps_actual ?? 0
+    );
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Get earnings as CSV
+$earnings = $client->stocks->earnings(
+    symbol: 'AAPL',
+    from: '2023-01-01',
+    parameters: new Parameters(format: Format::CSV)
+);
+
+echo $earnings->getCsv();
+```
+
+</TabItem>
+</Tabs>
+
+<a name="Earning"></a>
+## Earning
+
+```php
+class Earning
+{
+    public string $symbol;
+    public int $fiscal_year;
+    public int $fiscal_quarter;
+    public Carbon $report_date;
+    public ?string $report_time;
+    public ?float $eps_estimate;
+    public ?float $eps_actual;
+    public ?float $eps_surprise;
+    public ?float $revenue_estimate;
+    public ?float $revenue_actual;
+    public ?float $revenue_surprise;
+}
+```
+
+Represents a single earnings report.
+
+#### Properties
+
+- `symbol` (string): The stock ticker symbol.
+- `fiscal_year` (int): The fiscal year of the earnings report.
+- `fiscal_quarter` (int): The fiscal quarter (1-4).
+- `report_date` (Carbon): The date of the earnings report.
+- `report_time` (string|null): Time of day for the report ("before market", "after market", etc.).
+- `eps_estimate` (float|null): Analyst consensus EPS estimate.
+- `eps_actual` (float|null): Actual reported EPS (null for future reports).
+- `eps_surprise` (float|null): Difference between actual and estimate.
+- `revenue_estimate` (float|null): Analyst consensus revenue estimate.
+- `revenue_actual` (float|null): Actual reported revenue.
+- `revenue_surprise` (float|null): Difference between actual and estimated revenue.
+
+<a name="Earnings"></a>
+## Earnings
+
+```php
+class Earnings extends ResponseBase
+{
+    public string $status;
+    public array $earnings;
+}
+```
+
+Represents a collection of earnings reports.
+
+#### Properties
+
+- `status` (string): Response status (`"ok"` or `"no_data"`).
+- `earnings` (Earning[]): Array of Earning objects.
+
+#### Methods
+
+- `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
+- `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
+- `isJson()`: Returns `true` if the response contains JSON data.

@@ -1,0 +1,228 @@
+---
+title: Quotes
+sidebar_position: 4
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Get real-time price quotes for multiple stocks in a single API request.
+
+## Making Requests
+
+Use the `quotes()` method on the `stocks` resource to fetch quotes for multiple symbols:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **JSON** | `Quotes` | Returns a Quotes object containing an array of Quote data (default). |
+| **CSV** | `Quotes` | Returns a Quotes object with CSV data accessible via `getCsv()`. |
+| **HTML** | `Quotes` | Returns a Quotes object with HTML data accessible via `getHtml()`. |
+
+<a name="quotes"></a>
+## quotes
+
+```php
+public function quotes(
+    array $symbols,
+    bool $fifty_two_week = false,
+    bool $extended = true,
+    ?Parameters $parameters = null
+): Quotes
+```
+
+Get real-time price quotes for multiple stocks in a single API request.
+
+#### Parameters
+
+- `symbols` (array)
+
+  Array of stock ticker symbols (e.g., `['AAPL', 'MSFT', 'GOOGL']`).
+
+- `fifty_two_week` (bool, optional)
+
+  Enable the output of 52-week high and 52-week low data for each quote. Defaults to `false`. Uses API alias `52week`.
+
+- `extended` (bool, optional)
+
+  Control the inclusion of extended hours (pre-market and after-hours) data. Defaults to `true`.
+  - When `true`: Returns the most recent quote regardless of trading session.
+  - When `false`: Returns only quotes from the primary trading session.
+
+- `parameters` ([Parameters](/sdk/php/parameters), optional)
+
+  Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
+
+#### Returns
+
+- `Quotes`
+
+  A Quotes response object containing quote data for all requested symbols.
+
+<Tabs>
+<TabItem value="Example (JSON)" label="Example (JSON)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get quotes for multiple symbols
+$quotes = $client->stocks->quotes(['AAPL', 'MSFT', 'GOOGL', 'AMZN']);
+
+// Display each quote
+foreach ($quotes->quotes as $quote) {
+    $changeSign = $quote->change >= 0 ? '+' : '';
+    echo sprintf(
+        "%s: $%.2f %s%.2f (%s%.2f%%)\n",
+        $quote->symbol,
+        $quote->last,
+        $changeSign,
+        $quote->change,
+        $changeSign,
+        $quote->change_percent * 100
+    );
+}
+```
+
+#### Output
+
+```
+AAPL: $186.19 +1.05 (+0.57%)
+MSFT: $380.55 +2.30 (+0.61%)
+GOOGL: $143.12 -0.45 (-0.31%)
+AMZN: $157.45 +1.63 (+1.05%)
+```
+
+</TabItem>
+
+<TabItem value="Example (52-Week Data)" label="Example (52-Week Data)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get quotes with 52-week high/low
+$quotes = $client->stocks->quotes(
+    symbols: ['AAPL', 'MSFT', 'GOOGL'],
+    fifty_two_week: true
+);
+
+echo "Symbol | Last     | 52W High | 52W Low  | % from High\n";
+echo "-------|----------|----------|----------|------------\n";
+
+foreach ($quotes->quotes as $quote) {
+    $pctFromHigh = (($quote->last - $quote->fifty_two_week_high) / $quote->fifty_two_week_high) * 100;
+    echo sprintf(
+        "%-6s | $%7.2f | $%7.2f | $%7.2f | %+.1f%%\n",
+        $quote->symbol,
+        $quote->last,
+        $quote->fifty_two_week_high,
+        $quote->fifty_two_week_low,
+        $pctFromHigh
+    );
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (Market Dashboard)" label="Example (Market Dashboard)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Build a market dashboard
+$watchlist = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA'];
+$quotes = $client->stocks->quotes($watchlist);
+
+// Calculate market statistics
+$totalVolume = 0;
+$gainers = 0;
+$losers = 0;
+
+foreach ($quotes->quotes as $quote) {
+    $totalVolume += $quote->volume;
+    if ($quote->change > 0) {
+        $gainers++;
+    } elseif ($quote->change < 0) {
+        $losers++;
+    }
+}
+
+echo "Market Dashboard\n";
+echo "================\n";
+echo "Stocks: " . count($quotes->quotes) . "\n";
+echo "Gainers: " . $gainers . "\n";
+echo "Losers: " . $losers . "\n";
+echo "Total Volume: " . number_format($totalVolume) . "\n";
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Get quotes as CSV
+$quotes = $client->stocks->quotes(
+    symbols: ['AAPL', 'MSFT', 'GOOGL'],
+    parameters: new Parameters(format: Format::CSV)
+);
+
+echo $quotes->getCsv();
+```
+
+</TabItem>
+</Tabs>
+
+<a name="Quotes"></a>
+## Quotes
+
+```php
+class Quotes extends ResponseBase
+{
+    public string $status;
+    public array $quotes;
+}
+```
+
+Represents a collection of stock quotes.
+
+#### Properties
+
+- `status` (string): Response status (`"ok"` or `"no_data"`).
+- `quotes` (array): Array of quote data for each symbol. Each element contains:
+  - `symbol` (string): The stock ticker symbol.
+  - `ask` (float|null): The ask price.
+  - `ask_size` (int|null): Number of shares offered at the ask price.
+  - `bid` (float|null): The bid price.
+  - `bid_size` (int|null): Number of shares that may be sold at the bid price.
+  - `mid` (float|null): The midpoint price between ask and bid.
+  - `last` (float|null): The last traded price.
+  - `change` (float|null): Price change in dollars from previous close.
+  - `change_percent` (float|null): Price change as a decimal.
+  - `fifty_two_week_high` (float|null): 52-week high (only when `fifty_two_week: true`).
+  - `fifty_two_week_low` (float|null): 52-week low (only when `fifty_two_week: true`).
+  - `volume` (int|null): Trading volume for the current session.
+  - `updated` (Carbon|null): Timestamp of the quote.
+
+#### Methods
+
+- `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
+- `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
+- `isJson()`: Returns `true` if the response contains JSON data.

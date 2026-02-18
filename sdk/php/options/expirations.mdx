@@ -1,0 +1,190 @@
+---
+title: Expirations
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Get a list of current or historical option expiration dates for an underlying symbol.
+
+## Making Requests
+
+Use the `expirations()` method on the `options` resource to fetch expiration dates:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **JSON** | `Expirations` | Returns an Expirations object containing expiration dates (default). |
+| **CSV** | `Expirations` | Returns an Expirations object with CSV data accessible via `getCsv()`. |
+| **HTML** | `Expirations` | Returns an Expirations object with HTML data accessible via `getHtml()`. |
+
+<a name="expirations"></a>
+## expirations
+
+```php
+public function expirations(
+    string $symbol,
+    int|float|null $strike = null,
+    ?string $date = null,
+    ?Parameters $parameters = null
+): Expirations
+```
+
+Get a list of current or historical option expiration dates for an underlying symbol. If no optional parameters are used, the endpoint returns all expiration dates in the option chain.
+
+#### Parameters
+
+- `symbol` (string)
+
+  The underlying ticker symbol for the options chain (e.g., "AAPL", "SPY").
+
+- `strike` (int|float, optional)
+
+  Limit the lookup of expiration dates to a specific strike price. Only returns expiration dates that include this strike. Accepts decimal values for non-standard strikes (e.g., `12.5`).
+
+- `date` (string, optional)
+
+  Look up a historical list of expiration dates from a specific previous trading day. If omitted, returns current trading day expirations (or last trading day when market is closed). Accepted formats: ISO 8601, Unix timestamp, spreadsheet serial number.
+
+- `parameters` ([Parameters](/sdk/php/parameters), optional)
+
+  Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
+
+#### Returns
+
+- `Expirations`
+
+  An Expirations response object containing the list of expiration dates.
+
+<Tabs>
+<TabItem value="Example (All Expirations)" label="Example (All Expirations)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get all expiration dates for AAPL options
+$expirations = $client->options->expirations('AAPL');
+
+echo "AAPL Option Expirations:\n";
+echo "========================\n";
+
+foreach ($expirations->expirations as $date) {
+    echo $date->format('Y-m-d') . "\n";
+}
+```
+
+#### Output
+
+```
+AAPL Option Expirations:
+========================
+2024-01-19
+2024-01-26
+2024-02-02
+2024-02-09
+2024-02-16
+2024-03-15
+2024-06-21
+2024-09-20
+2025-01-17
+...
+```
+
+</TabItem>
+
+<TabItem value="Example (By Strike)" label="Example (By Strike)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get expirations that have a $200 strike
+$expirations = $client->options->expirations(
+    symbol: 'AAPL',
+    strike: 200
+);
+
+echo "Expirations with $200 strike:\n";
+foreach ($expirations->expirations as $date) {
+    echo $date->format('Y-m-d') . "\n";
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (Historical)" label="Example (Historical)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get expiration dates as of a historical date
+$expirations = $client->options->expirations(
+    symbol: 'AAPL',
+    date: '2024-01-02'
+);
+
+echo "Expirations available on 2024-01-02:\n";
+foreach ($expirations->expirations as $date) {
+    echo $date->format('Y-m-d') . "\n";
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Get expirations as CSV
+$expirations = $client->options->expirations(
+    symbol: 'AAPL',
+    parameters: new Parameters(format: Format::CSV)
+);
+
+echo $expirations->getCsv();
+```
+
+</TabItem>
+</Tabs>
+
+<a name="Expirations"></a>
+## Expirations
+
+```php
+class Expirations extends ResponseBase
+{
+    public string $status;
+    public array $expirations;
+}
+```
+
+Represents a list of option expiration dates.
+
+#### Properties
+
+- `status` (string): Response status (`"ok"` or `"no_data"`).
+- `expirations` (Carbon[]): Array of expiration dates as Carbon datetime objects.
+
+#### Methods
+
+- `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
+- `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
+- `isJson()`: Returns `true` if the response contains JSON data.
