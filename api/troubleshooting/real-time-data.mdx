@@ -40,9 +40,7 @@ The first step is to verify whether you're actually receiving real-time data by 
 <TabItem value="Python" label="Python" default>
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
-from marketdata.exceptions import MarketDataClientErrorResult
+from marketdata import MarketDataClient, OutputFormat, MarketDataClientErrorResult
 from datetime import datetime
 
 # Make a request for stock quotes
@@ -293,9 +291,7 @@ After completing your profile and signing agreements, wait 1 business day for ve
 <TabItem value="Python" label="Python" default>
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
-from marketdata.exceptions import MarketDataClientErrorResult
+from marketdata import MarketDataClient, OutputFormat, MarketDataClientErrorResult
 from datetime import datetime, timezone
 
 def test_realtime_data(symbol="AAPL"):

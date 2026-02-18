@@ -47,7 +47,7 @@ fetch("https://api.marketdata.app/v1/stocks/news/AAPL/")
 <TabItem value="Python" label="Python">
 
 ```python title="app.py"
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 news = client.stocks.news("AAPL")

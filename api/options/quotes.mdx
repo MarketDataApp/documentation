@@ -42,7 +42,7 @@ fetch("https://api.marketdata.app/v1/options/quotes/AAPL271217C00250000/")
 <TabItem value="Python" label="Python">
 
 ```python title="app.py"
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 quotes = client.options.quotes("AAPL271217C00250000")

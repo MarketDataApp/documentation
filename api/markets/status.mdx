@@ -52,7 +52,7 @@ fetch("https://api.marketdata.app/v1/markets/status/?date=yesterday")
 <TabItem value="Python" label="Python">
 
 ```python title="app.py"
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 status1 = client.markets.status(from_date="2020-01-01", to_date="2020-12-31")

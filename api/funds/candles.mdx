@@ -47,7 +47,7 @@ fetch(
 <TabItem value="Python" label="Python">
 
 ```python title="fundCandles.py"
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 candles = client.funds.candles("VFINX", resolution="D", from_date="2020-01-01", to_date="2020-01-10")

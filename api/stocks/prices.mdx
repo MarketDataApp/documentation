@@ -50,7 +50,7 @@ fetch("https://api.marketdata.app/v1/stocks/prices/AAPL/")
 <TabItem value="Python" label="Python">
 
 ```python title="app.py"
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 prices = client.stocks.prices("AAPL")
@@ -97,7 +97,7 @@ fetch("https://api.marketdata.app/v1/stocks/prices/?symbols=AAPL,META,MSFT")
 <TabItem value="Python" label="Python">
 
 ```python title="app.py"
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 prices = client.stocks.prices(["AAPL", "META", "MSFT"])

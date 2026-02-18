@@ -98,7 +98,7 @@ Fetches stock quotes for one or more symbols. The `symbols` parameter can be pas
 <TabItem value="Example (DataFrame)" label="Example (DataFrame)">
 
 ```python
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 
@@ -127,8 +127,7 @@ AAPL  278.02      100  277.97      100  277.995  278.0188  -0.0112         0.0  
 <TabItem value="Example (Internal)" label="Example (Internal)">
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
+from marketdata import MarketDataClient, OutputFormat
 
 client = MarketDataClient()
 
@@ -167,8 +166,7 @@ Updated: 2025-01-13 16:21:46
 <TabItem value="Example (JSON)" label="Example (JSON)">
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
+from marketdata import MarketDataClient, OutputFormat
 
 client = MarketDataClient()
 
@@ -202,8 +200,7 @@ print(quotes)
 <TabItem value="Example (CSV)" label="Example (CSV)">
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
+from marketdata import MarketDataClient, OutputFormat
 from pathlib import Path
 
 client = MarketDataClient()
@@ -229,8 +226,7 @@ CSV file saved to: quotes.csv
 <TabItem value="Example (Human Readable)" label="Example (Human Readable)">
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
+from marketdata import MarketDataClient, OutputFormat
 
 client = MarketDataClient()
 

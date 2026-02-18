@@ -102,8 +102,7 @@ The SDK will automatically load this file if you have `python-dotenv` installed.
 Use the following test code to verify that your authentication is working by making a test request to SPY or any other symbol that requires authentication. Do not use AAPL to test your authentication because AAPL is a free test symbol and will return data even if you are not authenticated properly.
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.exceptions import MarketDataClientErrorResult
+from marketdata import MarketDataClient, MarketDataClientErrorResult
 
 # No need to set a token here, the SDK will read it
 # from the environment variable automatically.
@@ -131,8 +130,7 @@ If you decide to pass the token directly when creating the client, you can do so
 ### Example Code
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.exceptions import MarketDataClientErrorResult
+from marketdata import MarketDataClient, MarketDataClientErrorResult
 
 # Replace with your token
 token = "your_token_here"

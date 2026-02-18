@@ -53,7 +53,7 @@ import os
 os.environ["MARKETDATA_OUTPUT_FORMAT"] = "json"
 os.environ["MARKETDATA_DATE_FORMAT"] = "timestamp"
 
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 
@@ -70,8 +70,7 @@ prices = client.stocks.prices("AAPL")
 Set universal parameters via `client.default_params`:
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat, DateFormat
+from marketdata import MarketDataClient, OutputFormat, DateFormat
 
 client = MarketDataClient()
 
@@ -97,8 +96,7 @@ quotes = client.stocks.quotes("AAPL")
 Pass parameters directly to resource methods:
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat, DateFormat
+from marketdata import MarketDataClient, OutputFormat, DateFormat
 
 client = MarketDataClient()
 
@@ -144,8 +142,7 @@ Controls the format of the API response data.
 
 **Example:**
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
+from marketdata import MarketDataClient, OutputFormat
 
 client = MarketDataClient()
 
@@ -178,8 +175,7 @@ Specifies the format for date and time information in responses.
 
 **Example:**
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import DateFormat
+from marketdata import MarketDataClient, DateFormat
 
 client = MarketDataClient()
 
@@ -209,7 +205,7 @@ Limits the response to only the columns you need, reducing data transfer and pro
 
 **Example:**
 ```python
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 
@@ -243,8 +239,7 @@ Controls whether headers are included in CSV output.
 
 **Example:**
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
+from marketdata import MarketDataClient, OutputFormat
 
 client = MarketDataClient()
 
@@ -280,8 +275,7 @@ Uses human-readable attribute names in JSON or CSV output instead of camelCase. 
 
 **Example:**
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
+from marketdata import MarketDataClient, OutputFormat
 
 client = MarketDataClient()
 
@@ -318,8 +312,7 @@ Controls how an API request is fulfilled, including data freshness guarantees an
 
 **Example:**
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import Mode
+from marketdata import MarketDataClient, Mode
 
 client = MarketDataClient()
 

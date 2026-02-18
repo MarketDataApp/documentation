@@ -107,7 +107,7 @@ Fetches market status information for specified dates and countries. All paramet
 <TabItem value="Example (DataFrame)" label="Example (DataFrame)">
 
 ```python
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 
@@ -133,8 +133,7 @@ print(df)
 <TabItem value="Example (Internal)" label="Example (Internal)">
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
+from marketdata import MarketDataClient, OutputFormat
 
 client = MarketDataClient()
 
@@ -155,8 +154,7 @@ for status in status_list:
 <TabItem value="Example (JSON)" label="Example (JSON)">
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
+from marketdata import MarketDataClient, OutputFormat
 
 client = MarketDataClient()
 
@@ -174,8 +172,7 @@ print(status)
 <TabItem value="Example (CSV)" label="Example (CSV)">
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
+from marketdata import MarketDataClient, OutputFormat
 from pathlib import Path
 
 client = MarketDataClient()
@@ -195,8 +192,7 @@ print(f"CSV file saved to: {csv_file}")
 <TabItem value="Example (Human Readable)" label="Example (Human Readable)">
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
+from marketdata import MarketDataClient, OutputFormat
 
 client = MarketDataClient()
 
