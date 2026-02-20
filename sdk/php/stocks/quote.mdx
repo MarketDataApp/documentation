@@ -1,0 +1,248 @@
+---
+title: Quote
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Get a real-time price quote for a single stock symbol.
+
+## Making Requests
+
+Use the `quote()` method on the `stocks` resource to fetch a real-time quote:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **JSON** | `Quote` | Returns a Quote object with typed properties (default). |
+| **CSV** | `Quote` | Returns a Quote object with CSV data accessible via `getCsv()`. |
+| **HTML** | `Quote` | Returns a Quote object with HTML data accessible via `getHtml()`. |
+
+:::warning HTML Not Yet Available
+`Format::HTML` is included for forward compatibility, but HTML responses are not currently implemented by the Market Data API.
+:::
+
+<a name="quote"></a>
+## quote
+
+```php
+public function quote(
+    string $symbol,
+    bool $fifty_two_week = false,
+    bool $extended = true,
+    ?Parameters $parameters = null
+): Quote
+```
+
+Get a real-time price quote for a stock symbol, including bid/ask prices, last trade, change, and volume.
+
+#### Parameters
+
+- `symbol` (string)
+
+  The stock ticker symbol (e.g., "AAPL", "MSFT").
+
+- `fifty_two_week` (bool, optional)
+
+  Enable the output of 52-week high and 52-week low data. Defaults to `false`. Uses API alias `52week`.
+
+- `extended` (bool, optional)
+
+  Control the inclusion of extended hours (pre-market and after-hours) data. Defaults to `true`.
+  - When `true`: Returns the most recent quote regardless of trading session.
+  - When `false`: Returns only quotes from the primary trading session. During extended hours, returns the closing quote from the last regular session.
+
+- `parameters` ([Parameters](/sdk/php/parameters), optional)
+
+  Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
+
+#### Returns
+
+- `Quote`
+
+  A Quote response object containing the current quote data.
+
+<Tabs>
+<TabItem value="Example (JSON)" label="Example (JSON)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get real-time quote for AAPL
+$quote = $client->stocks->quote('AAPL');
+
+echo "Symbol: " . $quote->symbol . "\n";
+echo "Last Price: $" . number_format($quote->last, 2) . "\n";
+echo "Change: $" . number_format($quote->change, 2) . " (" . number_format($quote->change_percent * 100, 2) . "%)\n";
+echo "Bid: $" . $quote->bid . " x " . $quote->bid_size . "\n";
+echo "Ask: $" . $quote->ask . " x " . $quote->ask_size . "\n";
+echo "Volume: " . number_format($quote->volume) . "\n";
+echo "Updated: " . $quote->updated->format('Y-m-d H:i:s') . "\n";
+```
+
+#### Output
+
+```
+Symbol: AAPL
+Last Price: $186.19
+Change: $1.05 (0.57%)
+Bid: $186.18 x 200
+Ask: $186.20 x 300
+Volume: 48,234,500
+Updated: 2024-01-15 16:00:00
+```
+
+</TabItem>
+
+<TabItem value="Example (52-Week)" label="Example (52-Week)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get quote with 52-week high/low
+$quote = $client->stocks->quote(
+    symbol: 'AAPL',
+    fifty_two_week: true
+);
+
+echo $quote->symbol . ": $" . $quote->last . "\n";
+echo "52-Week High: $" . $quote->fifty_two_week_high . "\n";
+echo "52-Week Low: $" . $quote->fifty_two_week_low . "\n";
+
+// Calculate position in 52-week range
+$range = $quote->fifty_two_week_high - $quote->fifty_two_week_low;
+$position = ($quote->last - $quote->fifty_two_week_low) / $range * 100;
+echo "Position in 52-Week Range: " . number_format($position, 1) . "%\n";
+```
+
+</TabItem>
+
+<TabItem value="Example (Regular Hours Only)" label="Example (Regular Hours Only)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get quote excluding extended hours
+$quote = $client->stocks->quote(
+    symbol: 'AAPL',
+    extended: false
+);
+
+// During extended hours, this returns the closing quote from the regular session
+echo "Regular Session Quote\n";
+echo "Last: $" . $quote->last . "\n";
+echo "Updated: " . $quote->updated->format('Y-m-d H:i:s') . "\n";
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Get quote as CSV
+$quote = $client->stocks->quote(
+    symbol: 'AAPL',
+    parameters: new Parameters(format: Format::CSV)
+);
+
+echo $quote->getCsv();
+```
+
+</TabItem>
+
+<TabItem value="Example (Human Readable)" label="Example (Human Readable)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+
+$client = new Client();
+
+// Get quote with human-readable property names
+$quote = $client->stocks->quote(
+    symbol: 'AAPL',
+    fifty_two_week: true,
+    parameters: new Parameters(use_human_readable: true)
+);
+
+// Access properties using capitalized names
+echo "Symbol: " . $quote->Symbol . "\n";
+echo "Ask: $" . $quote->Ask . "\n";
+echo "Bid: $" . $quote->Bid . "\n";
+echo "Last: $" . $quote->Last . "\n";
+echo "52-Week High: $" . $quote->{'52 Week High'} . "\n";
+echo "52-Week Low: $" . $quote->{'52 Week Low'} . "\n";
+```
+
+</TabItem>
+</Tabs>
+
+<a name="Quote"></a>
+## Quote
+
+```php
+class Quote extends ResponseBase
+{
+    public string $status;
+    public string $symbol;
+    public ?float $ask;
+    public ?int $ask_size;
+    public ?float $bid;
+    public ?int $bid_size;
+    public ?float $mid;
+    public ?float $last;
+    public ?float $change;
+    public ?float $change_percent;
+    public ?float $fifty_two_week_high;
+    public ?float $fifty_two_week_low;
+    public ?int $volume;
+    public ?Carbon $updated;
+}
+```
+
+Represents a stock quote with real-time price information.
+
+#### Properties
+
+- `status` (string): Response status (`"ok"` or `"no_data"`).
+- `symbol` (string): The stock ticker symbol.
+- `ask` (float|null): The ask price.
+- `ask_size` (int|null): Number of shares offered at the ask price.
+- `bid` (float|null): The bid price.
+- `bid_size` (int|null): Number of shares that may be sold at the bid price.
+- `mid` (float|null): The midpoint price between ask and bid.
+- `last` (float|null): The last traded price.
+- `change` (float|null): Price change in dollars from previous close.
+- `change_percent` (float|null): Price change as a decimal (e.g., 0.30 = 30%).
+- `fifty_two_week_high` (float|null): 52-week high price (only when `fifty_two_week: true`).
+- `fifty_two_week_low` (float|null): 52-week low price (only when `fifty_two_week: true`).
+- `volume` (int|null): Trading volume for the current session.
+- `updated` (Carbon|null): Timestamp of the quote.
+
+#### Methods
+
+- `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
+- `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
+- `isJson()`: Returns `true` if the response contains JSON data.

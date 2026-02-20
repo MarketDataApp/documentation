@@ -1,0 +1,265 @@
+---
+title: Market Status
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Get the past, present, or future market status (open/closed) for any trading day.
+
+## Making Requests
+
+Use the `status()` method on the `markets` resource to check market status:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **JSON** | `Statuses` | Returns a Statuses object containing market status data (default). |
+| **CSV** | `Statuses` | Returns a Statuses object with CSV data accessible via `getCsv()`. |
+| **HTML** | `Statuses` | Returns a Statuses object with HTML data accessible via `getHtml()`. |
+
+:::warning HTML Not Yet Available
+`Format::HTML` is included for forward compatibility, but HTML responses are not currently implemented by the Market Data API.
+:::
+
+<a name="status"></a>
+## status
+
+```php
+public function status(
+    string $country = "US",
+    ?string $date = null,
+    ?string $from = null,
+    ?string $to = null,
+    ?int $countback = null,
+    ?Parameters $parameters = null
+): Statuses
+```
+
+Get the past, present, or future status for a stock market. The endpoint will respond with "open" for trading days or "closed" for weekends or market holidays.
+
+#### Parameters
+
+- `country` (string, optional)
+
+  The country code using the two-digit ISO 3166 format. Defaults to `"US"`. Currently, only the United States is supported.
+
+- `date` (string, optional)
+
+  Check whether the market was open or closed on a specific date. Accepted formats: ISO 8601, Unix timestamp, spreadsheet serial number.
+
+- `from` (string, optional)
+
+  The earliest date (inclusive) for a date range query. Combine with `to` or `countback`.
+
+- `to` (string, optional)
+
+  The last date (inclusive) for a date range query.
+
+- `countback` (int, optional)
+
+  Number of dates to return before `to`. Use instead of `from`.
+
+- `parameters` ([Parameters](/sdk/php/parameters), optional)
+
+  Universal parameters for customizing the output format.
+
+#### Returns
+
+- `Statuses`
+
+  A Statuses response object containing the market status for the requested date(s).
+
+<Tabs>
+<TabItem value="Example (Current Status)" label="Example (Current Status)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get current market status
+$statuses = $client->markets->status();
+
+foreach ($statuses->statuses as $status) {
+    echo "Date: " . $status->date->format('Y-m-d') . "\n";
+    echo "Status: " . $status->status . "\n";
+}
+```
+
+#### Output
+
+```
+Date: 2024-01-15
+Status: open
+```
+
+</TabItem>
+
+<TabItem value="Example (Specific Date)" label="Example (Specific Date)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Check if the market was open on a specific date
+$statuses = $client->markets->status(date: '2024-01-01');
+
+foreach ($statuses->statuses as $status) {
+    $isOpen = $status->status === 'open';
+    echo "January 1, 2024: " . ($isOpen ? "Market Open" : "Market Closed") . "\n";
+}
+```
+
+#### Output
+
+```
+January 1, 2024: Market Closed
+```
+
+</TabItem>
+
+<TabItem value="Example (Date Range)" label="Example (Date Range)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get market status for a date range
+$statuses = $client->markets->status(
+    from: '2024-01-01',
+    to: '2024-01-15'
+);
+
+echo "Market Calendar: January 2024\n";
+echo "=============================\n";
+
+foreach ($statuses->statuses as $status) {
+    $indicator = $status->status === 'open' ? '✓' : '✗';
+    echo sprintf(
+        "%s %s: %s\n",
+        $indicator,
+        $status->date->format('D, M j'),
+        ucfirst($status->status)
+    );
+}
+```
+
+#### Output
+
+```
+Market Calendar: January 2024
+=============================
+✗ Mon, Jan 1: Closed
+✓ Tue, Jan 2: Open
+✓ Wed, Jan 3: Open
+✓ Thu, Jan 4: Open
+✓ Fri, Jan 5: Open
+✗ Sat, Jan 6: Closed
+✗ Sun, Jan 7: Closed
+✓ Mon, Jan 8: Open
+...
+```
+
+</TabItem>
+
+<TabItem value="Example (Trading Days Count)" label="Example (Trading Days Count)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get the last 20 trading days
+$statuses = $client->markets->status(
+    to: 'today',
+    countback: 20
+);
+
+$tradingDays = 0;
+foreach ($statuses->statuses as $status) {
+    if ($status->status === 'open') {
+        $tradingDays++;
+    }
+}
+
+echo "Last " . count($statuses->statuses) . " days included " . $tradingDays . " trading days.\n";
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Get market status as CSV
+$statuses = $client->markets->status(
+    from: '2024-01-01',
+    to: '2024-01-31',
+    parameters: new Parameters(format: Format::CSV)
+);
+
+echo $statuses->getCsv();
+```
+
+</TabItem>
+</Tabs>
+
+<a name="Status"></a>
+## Status
+
+```php
+class Status
+{
+    public Carbon $date;
+    public string $status;
+}
+```
+
+Represents the market status for a single date.
+
+#### Properties
+
+- `date` (Carbon): The date.
+- `status` (string): The market status (`"open"` or `"closed"`).
+
+<a name="Statuses"></a>
+## Statuses
+
+```php
+class Statuses extends ResponseBase
+{
+    public string $status;
+    public array $statuses;
+}
+```
+
+Represents a collection of market status entries.
+
+#### Properties
+
+- `status` (string): Response status (`"ok"` or `"no_data"`).
+- `statuses` (Status[]): Array of Status objects.
+
+#### Methods
+
+- `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
+- `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
+- `isJson()`: Returns `true` if the response contains JSON data.

@@ -3,15 +3,28 @@ title: Delayed Stock Quotes
 sidebar_position: 2
 ---
 
-Retrieve the most recent available delayed quote for a stock.
+Retrieve the most recent available delayed quote for one or more stocks.
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
 ## Endpoint
-**GET** `https://api.marketdata.app/v1/stocks/quotes/{symbol}/`
+```
+https://api.marketdata.app/v1/stocks/quotes/{symbol}/
+```
+or
+```
+https://api.marketdata.app/v1/stocks/quotes/?symbols={symbol1},{symbol2},...
+```
 
-## Request Example
+#### Method
+```
+GET
+```
+## Request Examples
+
+<Tabs>
+<TabItem value="Single" label="Single Symbol" default>
 
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
@@ -35,7 +48,7 @@ fetch("https://api.marketdata.app/v1/stocks/quotes/AAPL/")
 <TabItem value="Python" label="Python">
 
 ```python title="app.py"
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 quotes = client.stocks.quotes("AAPL")
@@ -66,6 +79,68 @@ func ExampleStockQuoteRequest() {
 }
 ```
 </TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="stockQuote.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$quote = $client->stocks->quote("AAPL");
+
+// Display formatted quote with price, change, bid/ask, volume
+echo $quote;
+```
+</TabItem>
+</Tabs>
+
+</TabItem>
+<TabItem value="Multiple" label="Multiple Symbols">
+
+<Tabs>
+<TabItem value="HTTP" label="HTTP" default>
+
+**GET** [https://api.marketdata.app/v1/stocks/quotes/?symbols=AAPL,META,MSFT](https://api.marketdata.app/v1/stocks/quotes/?symbols=AAPL,META,MSFT)
+
+</TabItem>
+<TabItem value="NodeJS" label="NodeJS">
+
+```js title="app.js"
+fetch("https://api.marketdata.app/v1/stocks/quotes/?symbols=AAPL,META,MSFT")
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+</TabItem>
+<TabItem value="Python" label="Python">
+
+```python title="app.py"
+from marketdata import MarketDataClient
+
+client = MarketDataClient()
+quotes = client.stocks.quotes(["AAPL", "META", "MSFT"])
+print(quotes)
+```
+
+</TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="stockQuotes.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$quotes = $client->stocks->quotes(["AAPL", "META", "MSFT"]);
+
+// Display formatted quotes summary
+echo $quotes;
+```
+</TabItem>
+</Tabs>
+
+</TabItem>
 </Tabs>
 
 ## Response Example
@@ -73,17 +148,17 @@ func ExampleStockQuoteRequest() {
 ```json
 {
   "s": "ok",
-  "symbol": ["AAPL"],
-  "ask": [230.78],
-  "askSize": [2],
-  "bid": [230.77],
-  "bidSize": [2],
-  "mid": [230.775],
-  "last": [230.775],
-  "change": [-2.052],
-  "changepct": [-0.0088],
-  "volume": [23116822],
-  "updated": [1755276667]
+  "symbol": ["AAPL", "META", "MSFT"],
+  "ask": [247.94, 641.42, 465.95],
+  "askSize": [200, 100, 200],
+  "bid": [247.87, 641.25, 465.94],
+  "bidSize": [400, 100, 40],
+  "mid": [247.905, 641.335, 465.945],
+  "last": [247.94, 641.42, 465.94],
+  "change": [-0.41, 7.84, 14.80],
+  "changepct": [-0.0017, 0.0124, 0.0328],
+  "volume": [27255134, 8921456, 26896268],
+  "updated": [1769210435, 1769210435, 1769210429]
 }
 ```
 
@@ -92,9 +167,15 @@ func ExampleStockQuoteRequest() {
 <Tabs>
 <TabItem value="required" label="Required" default>
 
-- **symbol** `string`
+You can provide the symbol(s) in one of two ways:
 
-  The company's ticker symbol.
+1. As part of the URL path:
+   - **symbol** `string`
+     The company's ticker symbol.
+
+2. As a query parameter:
+   - **symbols** `string`
+     Comma-separated list of ticker symbols.
 
 </TabItem>
 <TabItem value="Optional" label="Optional">
@@ -124,7 +205,7 @@ func ExampleStockQuoteRequest() {
 
 - **symbol** `array[string]`
 
-  The symbol of the stock.
+  Array of ticker symbols that were requested.
 
 - **ask** `array[number]`
 
@@ -156,7 +237,7 @@ func ExampleStockQuoteRequest() {
 
 - **changepct** `array[number]`
 
-  The difference in price in percent, expressed as a decimal, compared to the closing price of the previous day. For example, a 3% change will be represented as 0.3.
+  The difference in price in percent, expressed as a decimal, compared to the closing price of the previous day. For example, a 3% change will be represented as 0.03.
 
 :::note
   - When the market is open for primary trading, **change** and **changepct** are always calculated using the last traded price and the last primary session close. When the market is closed or in extended hours, this criteria is also used as long as `extended` is omitted or set to `true`.
@@ -184,7 +265,7 @@ func ExampleStockQuoteRequest() {
 
 - **s** `string`
 
-  Status will be `no_data` if no quote can be found for the symbol.
+  Status will only be `no_data` if no quotes can be found for all of the symbols. If a quote for any symbol can be returned, the request will be successful.
 
 </TabItem>
 <TabItem value="Error" label="Error">

@@ -1,0 +1,165 @@
+---
+title: Logging
+sidebar_position: 6
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Market Data PHP SDK supports PSR-3 compatible logging for debugging and monitoring API interactions.
+
+## Default Logging
+
+The SDK creates a default logger based on the `MARKETDATA_LOGGING_LEVEL` environment variable:
+
+```php
+<?php
+
+// Set logging level via environment variable
+putenv('MARKETDATA_LOGGING_LEVEL=debug');
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Debug messages will be logged to stderr
+$quote = $client->stocks->quote('AAPL');
+```
+
+### Available Log Levels
+
+The SDK supports standard PSR-3 log levels:
+
+| Level | Description |
+|-------|-------------|
+| `emergency` | System is unusable |
+| `alert` | Action must be taken immediately |
+| `critical` | Critical conditions |
+| `error` | Error conditions |
+| `warning` | Warning conditions |
+| `notice` | Normal but significant conditions |
+| `info` | Informational messages |
+| `debug` | Debug-level messages (most verbose) |
+
+## Custom Logger
+
+Inject your own PSR-3 compatible logger:
+
+<Tabs>
+<TabItem value="monolog" label="Monolog">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Handler\RotatingFileHandler;
+
+// Create Monolog logger
+$logger = new Logger('marketdata');
+
+// Log to file with rotation
+$logger->pushHandler(new RotatingFileHandler(
+    '/var/log/marketdata/api.log',
+    maxFiles: 7,
+    level: Logger::DEBUG
+));
+
+// Also log errors to stderr
+$logger->pushHandler(new StreamHandler(
+    'php://stderr',
+    level: Logger::ERROR
+));
+
+// Pass logger to client
+$client = new Client(logger: $logger);
+
+$quote = $client->stocks->quote('AAPL');
+```
+
+</TabItem>
+
+<TabItem value="custom" label="Custom PSR-3 Logger">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use Psr\Log\AbstractLogger;
+use Psr\Log\LogLevel;
+
+// Create a simple custom logger
+class SimpleLogger extends AbstractLogger
+{
+    public function log($level, $message, array $context = []): void
+    {
+        $timestamp = date('Y-m-d H:i:s');
+        $contextStr = !empty($context) ? json_encode($context) : '';
+        echo "[{$timestamp}] [{$level}] {$message} {$contextStr}\n";
+    }
+}
+
+$logger = new SimpleLogger();
+$client = new Client(logger: $logger);
+
+$quote = $client->stocks->quote('AAPL');
+```
+
+</TabItem>
+</Tabs>
+
+## What Gets Logged
+
+The SDK logs the following events:
+
+### Debug Level
+- API request URLs and parameters
+- Response status codes
+- Retry attempts
+
+### Info Level
+- Successful API responses
+- Rate limit information
+
+### Warning Level
+- Retry attempts after transient failures
+- Deprecated endpoint usage
+
+### Error Level
+- API errors and exceptions
+- Authentication failures
+- Network errors
+
+## Example Log Output
+
+```
+[2024-01-15 10:30:00] [debug] Making request: GET https://api.marketdata.app/v1/stocks/quotes/?symbol=AAPL
+[2024-01-15 10:30:01] [debug] Response received: 200 OK
+[2024-01-15 10:30:01] [info] Rate limits - Used: 1, Remaining: 9999, Limit: 10000
+```
+
+## Disabling Logging
+
+To disable logging, set the log level to a high threshold or provide a null logger:
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use Psr\Log\NullLogger;
+
+// Option 1: Use NullLogger
+$client = new Client(logger: new NullLogger());
+
+// Option 2: Set high log level via environment
+putenv('MARKETDATA_LOGGING_LEVEL=emergency');
+$client = new Client();
+```
+
+## Production Recommendations
+
+- Use `warning` or `error` level in production to reduce log volume
+- Use `debug` level only during development or troubleshooting
+- Configure log rotation to prevent disk space issues
+- Consider using structured logging (JSON format) for log aggregation systems

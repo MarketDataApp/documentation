@@ -1,0 +1,381 @@
+---
+title: Option Chain
+sidebar_position: 4
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Get a current or historical end-of-day options chain for an underlying ticker symbol with extensive filtering options.
+
+## Making Requests
+
+Use the `option_chain()` method on the `options` resource to fetch option chains:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **JSON** | `OptionChains` | Returns an OptionChains object containing option contracts (default). |
+| **CSV** | `OptionChains` | Returns an OptionChains object with CSV data accessible via `getCsv()`. |
+| **HTML** | `OptionChains` | Returns an OptionChains object with HTML data accessible via `getHtml()`. |
+
+:::warning HTML Not Yet Available
+`Format::HTML` is included for forward compatibility, but HTML responses are not currently implemented by the Market Data API.
+:::
+
+<a name="option_chain"></a>
+## option_chain
+
+```php
+public function option_chain(
+    string $symbol,
+    ?string $date = null,
+    string|Expiration|null $expiration = null,
+    ?string $from = null,
+    ?string $to = null,
+    ?int $month = null,
+    ?int $year = null,
+    bool $weekly = true,
+    bool $monthly = true,
+    bool $quarterly = true,
+    ?bool $non_standard = null,
+    ?int $dte = null,
+    string|float|null $delta = null,
+    ?Side $side = null,
+    Range $range = Range::ALL,
+    ?string $strike = null,
+    ?int $strike_limit = null,
+    ?float $min_bid = null,
+    ?float $max_bid = null,
+    ?float $min_ask = null,
+    ?float $max_ask = null,
+    ?float $max_bid_ask_spread = null,
+    ?float $max_bid_ask_spread_pct = null,
+    ?int $min_open_interest = null,
+    ?int $min_volume = null,
+    ?bool $am = null,
+    ?bool $pm = null,
+    ?Parameters $parameters = null
+): OptionChains
+```
+
+Get a current or historical end-of-day options chain for an underlying ticker symbol. Use the `optionSymbol` returned from this endpoint to get quotes, greeks, or other information using other endpoints.
+
+#### Parameters
+
+- `symbol` (string)
+
+  The underlying ticker symbol (e.g., "AAPL", "SPY", "SPX").
+
+- `date` (string, optional)
+
+  Look up a historical end-of-day options chain from a specific trading day. If omitted, returns the current chain during market hours or the last trading day's chain when closed.
+
+- `expiration` (string|Expiration, optional)
+
+  Limit to a specific expiration date, or use `Expiration::ALL` to return the complete chain.
+
+  :::caution
+  Using `Expiration::ALL` with large chains (SPX, SPY, QQQ) can consume API credits quickly. The full SPX chain has 20,000+ contracts.
+  :::
+
+- `from` (string, optional)
+
+  Limit to expiration dates after this date (inclusive). Combine with `to` for a range.
+
+- `to` (string, optional)
+
+  Limit to expiration dates before this date (not inclusive). Combine with `from` for a range.
+
+- `month` (int, optional)
+
+  Limit to options expiring in a specific month (1-12).
+
+- `year` (int, optional)
+
+  Limit to options expiring in a specific year.
+
+- `weekly` (bool, optional)
+
+  Include weekly expirations. Defaults to `true`.
+
+- `monthly` (bool, optional)
+
+  Include standard monthly expirations. Defaults to `true`.
+
+- `quarterly` (bool, optional)
+
+  Include quarterly expirations. Defaults to `true`.
+
+- `non_standard` (bool, optional)
+
+  Include non-standard contracts. Defaults to `false`.
+
+- `dte` (int, optional)
+
+  Days to expiration. Returns the single expiration closest to this DTE.
+
+- `delta` (string|float, optional)
+
+  Filter by delta:
+  - Single value: `.50` (closest to delta)
+  - Multiple values: `.60,.30`
+  - Open interval: `>.50`
+  - Closed interval: `.30-.60`
+
+- `side` (Side, optional)
+
+  Limit to `Side::CALL` or `Side::PUT`. If omitted, both sides are returned.
+
+- `range` (Range, optional)
+
+  Filter by moneyness: `Range::IN_THE_MONEY`, `Range::OUT_OF_THE_MONEY`, or `Range::ALL` (default).
+
+- `strike` (string, optional)
+
+  Filter by strike price:
+  - Single value: `400`
+  - Multiple values: `400,405`
+  - Open interval: `>400`
+  - Closed interval: `400-410`
+
+- `strike_limit` (int, optional)
+
+  Limit total strikes returned. Excludes strikes furthest from the money.
+
+- `min_bid`, `max_bid`, `min_ask`, `max_ask` (float, optional)
+
+  Filter by bid/ask price ranges.
+
+- `max_bid_ask_spread` (float, optional)
+
+  Maximum bid-ask spread in dollars.
+
+- `max_bid_ask_spread_pct` (float, optional)
+
+  Maximum bid-ask spread as percent of underlying (e.g., 0.5 = 0.5%).
+
+- `min_open_interest` (int, optional)
+
+  Minimum open interest.
+
+- `min_volume` (int, optional)
+
+  Minimum volume.
+
+- `am`, `pm` (bool, optional)
+
+  For index options only (SPX): filter by AM or PM settlement.
+
+- `parameters` ([Parameters](/sdk/php/parameters), optional)
+
+  Universal parameters for customizing the output format.
+
+#### Returns
+
+- `OptionChains`
+
+  An OptionChains response object containing the filtered option contracts.
+
+<Tabs>
+<TabItem value="Example (Basic)" label="Example (Basic)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get the options chain for AAPL
+$chain = $client->options->option_chain('AAPL');
+
+echo "AAPL Options Chain\n";
+echo "==================\n";
+echo "Total contracts: " . count($chain->options) . "\n\n";
+
+// Display first few contracts
+foreach (array_slice($chain->options, 0, 5) as $option) {
+    echo sprintf(
+        "%s: Bid $%.2f / Ask $%.2f (Vol: %d, OI: %d)\n",
+        $option->option_symbol,
+        $option->bid,
+        $option->ask,
+        $option->volume,
+        $option->open_interest
+    );
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (Filtered by Side)" label="Example (Filtered by Side)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Enums\Side;
+
+$client = new Client();
+
+// Get only calls expiring in January 2025
+$chain = $client->options->option_chain(
+    symbol: 'AAPL',
+    expiration: '2025-01-17',
+    side: Side::CALL
+);
+
+echo "AAPL Calls for Jan 17, 2025:\n";
+echo "============================\n";
+
+foreach ($chain->options as $option) {
+    echo sprintf(
+        "Strike $%.2f: Bid $%.2f / Ask $%.2f\n",
+        $option->strike,
+        $option->bid,
+        $option->ask
+    );
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (ATM Options)" label="Example (ATM Options)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Enums\Range;
+
+$client = new Client();
+
+// Get at-the-money options closest to 50 delta
+$chain = $client->options->option_chain(
+    symbol: 'SPY',
+    expiration: '2025-01-17',
+    delta: 0.50,
+    strike_limit: 5
+);
+
+echo "SPY ATM Options (near 50 delta):\n";
+echo "================================\n";
+
+foreach ($chain->options as $option) {
+    $type = str_contains($option->option_symbol, 'C') ? 'CALL' : 'PUT';
+    echo sprintf(
+        "%s $%.2f: $%.2f (Delta: %.2f)\n",
+        $type,
+        $option->strike,
+        $option->mid,
+        $option->delta ?? 0
+    );
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (Liquid Options)" label="Example (Liquid Options)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get liquid options with tight spreads
+$chain = $client->options->option_chain(
+    symbol: 'AAPL',
+    expiration: '2025-01-17',
+    min_volume: 100,
+    min_open_interest: 1000,
+    max_bid_ask_spread: 0.10
+);
+
+echo "Liquid AAPL Options:\n";
+echo "====================\n";
+
+foreach ($chain->options as $option) {
+    $spread = $option->ask - $option->bid;
+    echo sprintf(
+        "%s: Vol %d, OI %d, Spread $%.2f\n",
+        $option->option_symbol,
+        $option->volume,
+        $option->open_interest,
+        $spread
+    );
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+use MarketDataApp\Enums\Side;
+
+$client = new Client();
+
+// Get chain as CSV
+$chain = $client->options->option_chain(
+    symbol: 'AAPL',
+    expiration: '2025-01-17',
+    side: Side::CALL,
+    strike_limit: 10,
+    parameters: new Parameters(format: Format::CSV)
+);
+
+echo $chain->getCsv();
+```
+
+</TabItem>
+</Tabs>
+
+<a name="OptionChains"></a>
+## OptionChains
+
+```php
+class OptionChains extends ResponseBase
+{
+    public string $status;
+    public array $options;
+}
+```
+
+Represents an options chain with all matching contracts.
+
+#### Properties
+
+- `status` (string): Response status (`"ok"` or `"no_data"`).
+- `options` (array): Array of option contracts, each containing:
+  - `option_symbol` (string): OCC-formatted option symbol
+  - `underlying` (string): Underlying ticker symbol
+  - `expiration` (Carbon): Expiration date
+  - `side` (string): "call" or "put"
+  - `strike` (float): Strike price
+  - `bid` (float): Bid price
+  - `bid_size` (int): Bid size
+  - `ask` (float): Ask price
+  - `ask_size` (int): Ask size
+  - `mid` (float): Midpoint price
+  - `last` (float): Last trade price
+  - `volume` (int): Daily volume
+  - `open_interest` (int): Open interest
+  - `delta` (float|null): Delta greek
+  - `gamma` (float|null): Gamma greek
+  - `theta` (float|null): Theta greek
+  - `vega` (float|null): Vega greek
+  - `iv` (float|null): Implied volatility
+  - `updated` (Carbon): Last update timestamp
+
+#### Methods
+
+- `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
+- `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
+- `isJson()`: Returns `true` if the response contains JSON data.

@@ -40,7 +40,7 @@ fetch("https://api.marketdata.app/v1/options/expirations/AAPL")
 <TabItem value="Python" label="Python">
 
 ```python title="app.py"
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 expirations = client.options.expirations("AAPL")
@@ -69,6 +69,18 @@ func ExampleOptionsExpirationsRequest() {
 		fmt.Println(expiration)
 	}
 }
+```
+</TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="optionExpirations.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$expirations = $client->options->expirations("AAPL");
+
+// Display all expiration dates
+echo $expirations;
 ```
 </TabItem>
 </Tabs>

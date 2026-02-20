@@ -38,7 +38,7 @@ fetch("https://api.marketdata.app/v1/options/chain/AAPL/")
 <TabItem value="Python" label="Python">
 
 ```python title="app.py"
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 chain = client.options.chain("AAPL")
@@ -66,6 +66,27 @@ func ExampleOptionChainRequest() {
 		fmt.Println(contract)
 	}
 }
+```
+</TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="optionChain.php"
+use MarketDataApp\Client;
+use MarketDataApp\Enums\Side;
+
+$client = new Client();
+$chain = $client->options->option_chain(
+    symbol: "AAPL",
+    side: Side::CALL
+);
+
+// Display chain summary (expirations, contract counts)
+echo $chain;
+
+// Convenience methods available
+$calls = $chain->getCalls();
+$puts = $chain->getPuts();
+$strikes = $chain->getStrikes();
 ```
 </TabItem>
 </Tabs>

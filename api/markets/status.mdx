@@ -52,7 +52,7 @@ fetch("https://api.marketdata.app/v1/markets/status/?date=yesterday")
 <TabItem value="Python" label="Python">
 
 ```python title="app.py"
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 status1 = client.markets.status(from_date="2020-01-01", to_date="2020-12-31")
@@ -98,6 +98,31 @@ func ExampleMarketStatus_relativeDates() {
 }
 ```
 
+</TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="marketStatus.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get market status for a date range
+$statuses = $client->markets->status(
+    country: "US",
+    from: "2020-01-01",
+    to: "2020-12-31"
+);
+
+// Display formatted market statuses
+echo $statuses;
+
+// Get market status for yesterday
+$yesterday = $client->markets->status(
+    country: "US",
+    date: "yesterday"
+);
+echo $yesterday;
+```
 </TabItem>
 </Tabs>
 

@@ -13,7 +13,7 @@ The Market Data Python Client includes functionality for making API requests, ha
 1. Review the [documentation on authentication](/sdk/py/authentication) to learn how to set your API token.
 2. Create a [`MarketDataClient`](#MarketDataClient) instance and use it to make requests to the Market Data API.
 3. Make a test request and review the console output. The SDK includes logging capabilities to help you debug requests.
-4. Check the [rate limit](#RateLimits) in the client to keep track of your requests and how many requests you have remaining.
+4. Check the [rate limit](#RateLimits) in the client to track credit usage and how many API credits remain.
 5. Configure [Settings](/sdk/py/settings) to customize output format, date format, and other universal parameters.
 
 <a name="MarketDataClient"></a>
@@ -84,7 +84,7 @@ Creates and configures a new MarketDataClient instance with default settings. Th
 #### Example
 
 ```python
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 # Token will be automatically obtained from MARKETDATA_TOKEN environment variable
 client = MarketDataClient()
@@ -122,9 +122,9 @@ print(rate_limits)  # Shows: "Rate used X/Y, remaining: Z credits, next reset: I
 ```
 
 **Note:** Rate limits are tracked via the following response headers:
-- `x-api-ratelimit-limit`: Total number of requests allowed
-- `x-api-ratelimit-remaining`: Number of requests remaining
-- `x-api-ratelimit-consumed`: Number of requests consumed
+- `x-api-ratelimit-limit`: Total API credits allowed
+- `x-api-ratelimit-remaining`: Number of API credits remaining
+- `x-api-ratelimit-consumed`: Number of API credits consumed
 - `x-api-ratelimit-reset`: Unix timestamp when the rate limit resets
 
 The `requests_reset` field is automatically converted to a `datetime.datetime` object for easier use.
@@ -132,4 +132,3 @@ The `requests_reset` field is automatically converted to a `datetime.datetime` o
 ## Configuration
 
 The SDK supports flexible configuration of universal parameters through multiple methods. You can configure settings like output format, date format, data mode, and more. See the [Settings](/sdk/py/settings) documentation for complete details on all available configuration options and how to use them.
-

@@ -47,7 +47,7 @@ fetch(
 <TabItem value="Python" label="Python">
 
 ```python title="fundCandles.py"
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 candles = client.funds.candles("VFINX", resolution="D", from_date="2020-01-01", to_date="2020-01-10")
@@ -76,6 +76,23 @@ func ExampleFundCandlesRequest() {
   }
 }
 
+```
+</TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="fundCandles.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$candles = $client->mutual_funds->candles(
+    symbol: "VFINX",
+    from: "2020-01-01",
+    to: "2020-01-10",
+    resolution: "D"
+);
+
+// Display formatted candles summary
+echo $candles;
 ```
 </TabItem>
 </Tabs>

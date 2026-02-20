@@ -50,13 +50,25 @@ fetch("https://api.marketdata.app/v1/stocks/prices/AAPL/")
 <TabItem value="Python" label="Python">
 
 ```python title="app.py"
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 prices = client.stocks.prices("AAPL")
 print(prices)
 ```
 
+</TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="stockPrices.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$prices = $client->stocks->prices("AAPL");
+
+// Display formatted price
+echo $prices;
+```
 </TabItem>
 </Tabs>
 
@@ -85,13 +97,25 @@ fetch("https://api.marketdata.app/v1/stocks/prices/?symbols=AAPL,META,MSFT")
 <TabItem value="Python" label="Python">
 
 ```python title="app.py"
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 prices = client.stocks.prices(["AAPL", "META", "MSFT"])
 print(prices)
 ```
 
+</TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="stockPrices.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$prices = $client->stocks->prices(["AAPL", "META", "MSFT"]);
+
+// Display formatted prices summary
+echo $prices;
+```
 </TabItem>
 </Tabs>
 

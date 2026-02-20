@@ -218,7 +218,7 @@ Fetches the options chain for a given symbol with extensive filtering options. T
 <TabItem value="Example (DataFrame)" label="Example (DataFrame)">
 
 ```python
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 
@@ -255,8 +255,7 @@ AAPL220318C00180000       AAPL  2022-03-18       call   180.0  ...    4609      
 <TabItem value="Example (Internal)" label="Example (Internal)">
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
+from marketdata import MarketDataClient, OutputFormat
 
 client = MarketDataClient()
 
@@ -298,8 +297,7 @@ First option mid: 13.02
 <TabItem value="Example (JSON)" label="Example (JSON)">
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
+from marketdata import MarketDataClient, OutputFormat
 
 client = MarketDataClient()
 
@@ -336,8 +334,7 @@ print(chain)
 <TabItem value="Example (CSV)" label="Example (CSV)">
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
+from marketdata import MarketDataClient, OutputFormat
 from pathlib import Path
 
 client = MarketDataClient()
@@ -359,8 +356,7 @@ print(f"CSV file saved to: {csv_file}")
 <TabItem value="Example (Human Readable)" label="Example (Human Readable)">
 
 ```python
-from marketdata.client import MarketDataClient
-from marketdata.input_types.base import OutputFormat
+from marketdata import MarketDataClient, OutputFormat
 
 client = MarketDataClient()
 
@@ -387,7 +383,7 @@ print(f"First option ask: {chain.Ask[0]}")
 <TabItem value="Example (Filtered)" label="Example (Filtered)">
 
 ```python
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 

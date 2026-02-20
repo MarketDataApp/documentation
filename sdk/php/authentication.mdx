@@ -1,0 +1,125 @@
+---
+title: Authentication
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Market Data PHP SDK requires an API token to authenticate requests. You can obtain a token from the [Market Data Dashboard](https://www.marketdata.app/dashboard/).
+
+## Token Configuration
+
+The SDK supports multiple methods for providing your API token, with the following priority order (highest to lowest):
+
+1. **Explicit token parameter** - Passed directly to the Client constructor
+2. **Environment variable** - `MARKETDATA_TOKEN`
+3. **.env file** - Using phpdotenv
+4. **Empty string** - For accessing free endpoints only
+
+### Setting the Environment Variable
+
+<Tabs>
+<TabItem value="macos" label="Mac/Linux">
+
+Add to your shell profile (`.bashrc`, `.zshrc`, etc.):
+
+```bash
+export MARKETDATA_TOKEN="your_api_token_here"
+```
+
+Then reload your shell:
+
+```bash
+source ~/.bashrc  # or source ~/.zshrc
+```
+
+</TabItem>
+
+<TabItem value="windows" label="Windows">
+
+Using Command Prompt:
+
+```cmd
+setx MARKETDATA_TOKEN "your_api_token_here"
+```
+
+Using PowerShell:
+
+```powershell
+[Environment]::SetEnvironmentVariable("MARKETDATA_TOKEN", "your_api_token_here", "User")
+```
+
+</TabItem>
+</Tabs>
+
+### Using a .env File
+
+Create a `.env` file in your project root:
+
+```env
+MARKETDATA_TOKEN=your_api_token_here
+```
+
+The SDK automatically loads `.env` files using phpdotenv.
+
+### Explicit Token Parameter
+
+Pass the token directly to the Client constructor:
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client('your_api_token_here');
+```
+
+## Token Validation
+
+The SDK validates your token during client initialization by making a request to the `/user/` endpoint. If the token is invalid, an `UnauthorizedException` is thrown:
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Exceptions\UnauthorizedException;
+
+try {
+    $client = new Client('invalid_token');
+} catch (UnauthorizedException $e) {
+    echo "Invalid API token: " . $e->getMessage();
+}
+```
+
+## Testing Your Token
+
+Verify your token is working correctly:
+
+```php
+<?php
+
+require_once 'vendor/autoload.php';
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get rate limit information
+$user = $client->utilities->user();
+
+echo "Requests Used Today: " . $user->requests_made_today . "\n";
+echo "Daily Request Limit: " . $user->daily_requests . "\n";
+echo "Requests Remaining: " . ($user->daily_requests - $user->requests_made_today) . "\n";
+```
+
+## Security Best Practices
+
+- **Never commit your API token** to version control
+- Add `.env` to your `.gitignore` file
+- Use environment variables in production environments
+- Rotate tokens regularly if compromised
+
+## Next Steps
+
+After configuring authentication, learn about the [Client](/sdk/php/client) class to start making API requests.

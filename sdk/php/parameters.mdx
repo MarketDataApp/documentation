@@ -1,0 +1,505 @@
+---
+title: Parameters
+sidebar_position: 5
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Market Data PHP SDK provides flexible configuration options for customizing API requests. You can configure universal parameters like output format, date format, data mode, and more through multiple methods with different priority levels.
+
+## Configuration Priority
+
+The SDK supports multiple ways to configure universal parameters. These configuration methods follow a priority hierarchy, where higher priority settings override lower priority ones.
+
+### Priority Order (Lowest to Highest)
+
+1. **Environment Variables** (Lowest Priority)
+   - Set via environment variables like `MARKETDATA_FORMAT`, `MARKETDATA_DATE_FORMAT`, etc.
+   - Applied globally to all API calls unless overridden
+
+2. **Client Default Parameters** (`$client->default_params`)
+   - Set via the `default_params` property
+   - Applied to all API calls made with that client instance unless overridden
+
+3. **Direct Method Parameters** (Highest Priority)
+   - Passed via the `parameters` argument to resource methods
+   - Applied only to that specific API call
+
+### How It Works
+
+When making an API call, the SDK merges parameters in the following order:
+
+1. **Start with environment variables** (lowest priority)
+   - Parameters are read from environment variables like `MARKETDATA_FORMAT`, `MARKETDATA_DATE_FORMAT`, etc.
+
+2. **Override with `$client->default_params`** (medium priority)
+   - Parameters set via `$client->default_params` override environment variables
+
+3. **Override with direct method parameters** (highest priority)
+   - Parameters passed via the `parameters` argument override both environment variables and `$client->default_params`
+
+### Examples
+
+<Tabs>
+<TabItem value="Environment Variables" label="Environment Variables">
+
+Set universal parameters via environment variables:
+
+```php
+<?php
+
+// Set environment variables (typically done in .env file)
+putenv('MARKETDATA_FORMAT=csv');
+putenv('MARKETDATA_DATE_FORMAT=timestamp');
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// All calls will use CSV format and timestamp date format
+// (unless overridden by default_params or method parameters)
+$quote = $client->stocks->quote('AAPL');
+// Uses: format=CSV, date_format=TIMESTAMP
+```
+
+</TabItem>
+
+<TabItem value="Client Default Params" label="Client Default Params">
+
+Set universal parameters via `$client->default_params`:
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+use MarketDataApp\Enums\DateFormat;
+
+$client = new Client();
+
+// Set default parameters for this client instance
+$client->default_params = new Parameters(
+    format: Format::JSON,
+    date_format: DateFormat::TIMESTAMP
+);
+
+// All calls will use JSON format and timestamp date format
+// (unless overridden by method parameters)
+$quote = $client->stocks->quote('AAPL');
+// Uses: format=JSON, date_format=TIMESTAMP
+
+$quotes = $client->stocks->quotes(['AAPL', 'MSFT']);
+// Uses: format=JSON, date_format=TIMESTAMP
+```
+
+**Note:** `$client->default_params` overrides environment variables.
+
+</TabItem>
+
+<TabItem value="Direct Method Parameters" label="Direct Method Parameters">
+
+Pass parameters directly to resource methods:
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+use MarketDataApp\Enums\DateFormat;
+
+$client = new Client();
+
+// Set default parameters
+$client->default_params = new Parameters(
+    format: Format::JSON,
+    date_format: DateFormat::TIMESTAMP
+);
+
+// Direct method parameters override default_params
+$candles = $client->stocks->candles(
+    'AAPL',
+    '2024-01-01',
+    '2024-01-31',
+    parameters: new Parameters(
+        format: Format::CSV,           // Overrides JSON
+        date_format: DateFormat::UNIX  // Overrides TIMESTAMP
+    )
+);
+// Uses: format=CSV, date_format=UNIX
+
+// This call still uses default_params
+$quote = $client->stocks->quote('AAPL');
+// Uses: format=JSON, date_format=TIMESTAMP
+```
+
+**Note:** Direct method parameters override both environment variables and `$client->default_params`.
+
+</TabItem>
+</Tabs>
+
+## Parameters Constructor
+
+The `Parameters` class accepts the following options:
+
+```php
+<?php
+
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+use MarketDataApp\Enums\Mode;
+use MarketDataApp\Enums\DateFormat;
+
+$params = new Parameters(
+    format: Format::JSON,           // Response format
+    use_human_readable: true,       // Human-readable values
+    mode: Mode::CACHED,             // Data freshness mode
+    maxage: 300,                    // Cache freshness (seconds)
+    date_format: DateFormat::UNIX,  // Date format for CSV/HTML
+    columns: ['open', 'close'],     // Column selection for CSV/HTML
+    add_headers: true,              // Include headers in CSV/HTML
+    filename: '/path/to/output.csv' // Output file path for CSV/HTML
+);
+```
+
+## Available Configuration Options
+
+<a name="format"></a>
+### Format
+
+Controls the format of the API response data.
+
+**Available Values:**
+- `Format::JSON` (default): Returns data as typed PHP objects
+- `Format::CSV`: Returns CSV data (writes to file if `filename` specified)
+- `Format::HTML`: Reserved for future API support (not yet implemented)
+
+:::warning HTML Not Yet Available
+The PHP SDK includes `Format::HTML` so your integration is ready once API support is released, but HTML responses are not currently implemented by the Market Data API.
+:::
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_FORMAT` (values: `json`, `csv`, `html`)
+2. **Client Default:** `$client->default_params = new Parameters(format: Format::CSV)`
+3. **Direct Parameter:** `parameters: new Parameters(format: Format::CSV)`
+
+**Example:**
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Method 1: Environment variable
+// export MARKETDATA_FORMAT=csv
+
+// Method 2: Client default params
+$client->default_params = new Parameters(format: Format::CSV);
+
+// Method 3: Direct parameter (highest priority)
+$candles = $client->stocks->candles(
+    'AAPL',
+    '2024-01-01',
+    '2024-01-31',
+    parameters: new Parameters(format: Format::JSON)
+);
+```
+
+For more details, see the [API Format documentation](/api/universal-parameters/format).
+
+<a name="date-format"></a>
+### Date Format
+
+Specifies the format for date and time information in CSV/HTML responses.
+
+**Available Values:**
+- `DateFormat::TIMESTAMP`: ISO 8601 timestamp format (e.g., `2020-12-30 16:00:00 -05:00`)
+- `DateFormat::UNIX`: Unix timestamp in seconds (e.g., `1609362000`)
+- `DateFormat::SPREADSHEET`: Excel spreadsheet format (e.g., `44195.66667`)
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_DATE_FORMAT` (values: `timestamp`, `unix`, `spreadsheet`)
+2. **Client Default:** `$client->default_params = new Parameters(date_format: DateFormat::UNIX)`
+3. **Direct Parameter:** `parameters: new Parameters(date_format: DateFormat::UNIX)`
+
+**Example:**
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\DateFormat;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Date format only applies to CSV/HTML output
+$candles = $client->stocks->candles(
+    'AAPL',
+    '2024-01-01',
+    '2024-01-31',
+    parameters: new Parameters(
+        format: Format::CSV,
+        date_format: DateFormat::TIMESTAMP
+    )
+);
+```
+
+For more details, see the [API Date Format documentation](/api/universal-parameters/date-format).
+
+<a name="columns"></a>
+### Columns
+
+Limits the response to only the columns you need (CSV/HTML only).
+
+**Type:** `array` of column names
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_COLUMNS` (comma-separated list, e.g., `open,close,volume`)
+2. **Client Default:** `$client->default_params = new Parameters(columns: ['open', 'close'])`
+3. **Direct Parameter:** `parameters: new Parameters(columns: ['open', 'close'])`
+
+**Example:**
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Only include open and close columns in CSV output
+$candles = $client->stocks->candles(
+    'AAPL',
+    '2024-01-01',
+    '2024-01-31',
+    parameters: new Parameters(
+        format: Format::CSV,
+        columns: ['open', 'close', 'volume']
+    )
+);
+```
+
+For more details, see the [API Columns documentation](/api/universal-parameters/columns).
+
+<a name="headers"></a>
+### Headers
+
+Controls whether headers are included in CSV/HTML output.
+
+**Type:** `bool`
+
+**Default:** `true`
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_ADD_HEADERS` (values: `true`, `false`)
+2. **Client Default:** `$client->default_params = new Parameters(add_headers: false)`
+3. **Direct Parameter:** `parameters: new Parameters(add_headers: false)`
+
+**Example:**
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// CSV output without headers
+$candles = $client->stocks->candles(
+    'AAPL',
+    '2024-01-01',
+    '2024-01-31',
+    parameters: new Parameters(
+        format: Format::CSV,
+        add_headers: false
+    )
+);
+```
+
+For more details, see the [API Headers documentation](/api/universal-parameters/headers).
+
+<a name="human-readable"></a>
+### Human Readable
+
+Uses human-readable attribute names in responses instead of camelCase.
+
+**Type:** `bool`
+
+**Default:** `false`
+
+When enabled, response objects use capitalized property names (e.g., `$quote->Ask` instead of `$quote->ask`).
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_USE_HUMAN_READABLE` (values: `true`, `false`)
+2. **Client Default:** `$client->default_params = new Parameters(use_human_readable: true)`
+3. **Direct Parameter:** `parameters: new Parameters(use_human_readable: true)`
+
+**Example:**
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+
+$client = new Client();
+
+// Get quote with human-readable property names
+$quote = $client->stocks->quote(
+    'AAPL',
+    parameters: new Parameters(use_human_readable: true)
+);
+
+// Access using capitalized names
+echo "Ask: " . $quote->Ask . "\n";
+echo "Bid: " . $quote->Bid . "\n";
+echo "Last Price: " . $quote->Last . "\n";
+```
+
+For more details, see the [API Human Readable documentation](/api/universal-parameters/human-readable).
+
+<a name="mode"></a>
+### Mode
+
+Controls how an API request is fulfilled, including data freshness guarantees and credit usage.
+
+**Available Values:**
+- `Mode::LIVE`: Real-time data (default for paid accounts)
+- `Mode::CACHED`: Recently cached data (reduces credit usage for bulk quotes)
+- `Mode::DELAYED`: Data delayed by at least 15 minutes (default for free/trial accounts)
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_MODE` (values: `live`, `cached`, `delayed`)
+2. **Client Default:** `$client->default_params = new Parameters(mode: Mode::CACHED)`
+3. **Direct Parameter:** `parameters: new Parameters(mode: Mode::CACHED)`
+
+**Example:**
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Mode;
+
+$client = new Client();
+
+// Use cached mode for bulk operations to reduce credit usage
+$chain = $client->options->option_chain(
+    'SPY',
+    expiration: '2025-01-17',
+    parameters: new Parameters(mode: Mode::CACHED)
+);
+
+// Use live mode for real-time quotes
+$quote = $client->stocks->quote(
+    'AAPL',
+    parameters: new Parameters(mode: Mode::LIVE)
+);
+```
+
+:::info Premium Parameter
+The `mode` parameter is available only on paid plans. Free and trial plans cannot change the data mode and will always receive delayed data.
+:::
+
+For more details, see the [API Mode documentation](/api/universal-parameters/mode).
+
+<a name="maxage"></a>
+### Max Age
+
+Controls the maximum age of cached data in seconds. Only applies when `mode` is `CACHED`.
+
+**Type:** `int` (seconds)
+
+**Configuration Methods:**
+
+1. **Client Default:** `$client->default_params = new Parameters(mode: Mode::CACHED, maxage: 300)`
+2. **Direct Parameter:** `parameters: new Parameters(mode: Mode::CACHED, maxage: 300)`
+
+**Example:**
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Mode;
+
+$client = new Client();
+
+// Accept cached data up to 5 minutes old
+$quote = $client->stocks->quote(
+    'AAPL',
+    parameters: new Parameters(
+        mode: Mode::CACHED,
+        maxage: 300  // 5 minutes
+    )
+);
+```
+
+<a name="filename"></a>
+### Filename
+
+Specifies the output file path for CSV/HTML format responses.
+
+**Type:** `string`
+
+**Validation Rules:**
+- Must end with `.csv` (for CSV format) or `.html` (for HTML format)
+- Parent directory must exist (SDK does not create directories)
+- File must not already exist (prevents accidental overwrites)
+- Cannot be used with parallel requests
+
+**Example:**
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Save candles to a CSV file
+$candles = $client->stocks->candles(
+    'AAPL',
+    '2024-01-01',
+    '2024-01-31',
+    parameters: new Parameters(
+        format: Format::CSV,
+        filename: '/path/to/candles.csv'
+    )
+);
+```
+
+## Available Environment Variables
+
+You can set the following environment variables to configure universal parameters globally:
+
+| Variable | Values | Description |
+|----------|--------|-------------|
+| `MARKETDATA_FORMAT` | `json`, `csv`, `html` | Output format |
+| `MARKETDATA_DATE_FORMAT` | `timestamp`, `unix`, `spreadsheet` | Date format for CSV/HTML |
+| `MARKETDATA_COLUMNS` | Comma-separated list | Columns to include |
+| `MARKETDATA_ADD_HEADERS` | `true`, `false` | Include headers in CSV/HTML |
+| `MARKETDATA_USE_HUMAN_READABLE` | `true`, `false` | Human-readable format |
+| `MARKETDATA_MODE` | `live`, `cached`, `delayed` | Data mode |
+
+## Best Practices
+
+- **Use environment variables** for global defaults that apply across your entire application
+- **Use `$client->default_params`** when you want different defaults for different client instances
+- **Use direct method parameters** when you need to override defaults for specific API calls
+
+This flexible configuration system allows you to set sensible defaults while still having fine-grained control over individual API calls.

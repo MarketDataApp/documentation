@@ -68,12 +68,27 @@ func ExampleBulkStockCandlesRequest_get() {
 		fmt.Print(err)
 		return
 	}
-  
+
 	for _, candle := range candles {
 		fmt.Println(candle)
 	}
 }
 
+```
+</TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="bulkStockCandles.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$candles = $client->stocks->bulkCandles(
+    symbols: ["AAPL", "META", "MSFT"],
+    resolution: "D"
+);
+
+// Display formatted candles summary
+echo $candles;
 ```
 </TabItem>
 </Tabs>

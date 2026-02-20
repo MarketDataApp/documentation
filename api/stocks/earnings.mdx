@@ -43,7 +43,7 @@ fetch("https://api.marketdata.app/v1/stocks/earnings/AAPL/")
 <TabItem value="Python" label="Python">
 
 ```python title="app.py"
-from marketdata.client import MarketDataClient
+from marketdata import MarketDataClient
 
 client = MarketDataClient()
 earnings = client.stocks.earnings("AAPL")
@@ -72,6 +72,22 @@ func ExampleStockEarningsRequest() {
 		fmt.Println(report)
 	}
 }
+```
+</TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php title="stockEarnings.php"
+use MarketDataApp\Client;
+
+$client = new Client();
+$earnings = $client->stocks->earnings(
+    symbol: "AAPL",
+    from: "2023-01-01",
+    to: "2024-01-01"
+);
+
+// Display formatted earnings summary
+echo $earnings;
 ```
 </TabItem>
 </Tabs>
@@ -123,10 +139,6 @@ func ExampleStockEarningsRequest() {
 - **date** `date`
 
   Retrieve a specific earnings report by date. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
-
-- **report** `datekey`
-
-  Retrieve a specific earnings report by date and quarter. Example: `2023-Q4`. This allows you to retrieve a 4th quarter value without knowing the company's specific fiscal year.
 
 </TabItem>
 </Tabs>

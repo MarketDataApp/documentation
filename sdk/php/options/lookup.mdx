@@ -1,0 +1,196 @@
+---
+title: Lookup
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Convert a human-readable option description to the standard OCC option symbol format.
+
+## Making Requests
+
+Use the `lookup()` method on the `options` resource to convert option descriptions:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **JSON** | `Lookup` | Returns a Lookup object containing the OCC symbol (default). |
+| **CSV** | `Lookup` | Returns a Lookup object with CSV data accessible via `getCsv()`. |
+| **HTML** | `Lookup` | Returns a Lookup object with HTML data accessible via `getHtml()`. |
+
+:::warning HTML Not Yet Available
+`Format::HTML` is included for forward compatibility, but HTML responses are not currently implemented by the Market Data API.
+:::
+
+<a name="lookup"></a>
+## lookup
+
+```php
+public function lookup(
+    string $input,
+    ?Parameters $parameters = null
+): Lookup
+```
+
+Generate a properly formatted OCC option symbol based on a human-readable description of an option. This endpoint converts text such as "AAPL 7/28/23 $200 Call" to OCC option symbol format: `AAPL230728C00200000`.
+
+#### Parameters
+
+- `input` (string)
+
+  A human-readable string containing:
+  1. Stock symbol
+  2. Strike price
+  3. Expiration date
+  4. Option side (put or call)
+
+  Example: `"AAPL 7/28/23 $200 Call"`
+
+- `parameters` ([Parameters](/sdk/php/parameters), optional)
+
+  Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
+
+#### Returns
+
+- `Lookup`
+
+  A Lookup response object containing the OCC-formatted option symbol.
+
+#### Notes
+
+- The OCC (Options Clearing Corporation) symbol format is: `SYMBOL + YYMMDD + C/P + STRIKE(8 digits)`
+- Example: `AAPL230728C00200000` = AAPL July 28, 2023 $200 Call
+- The input parser is flexible and accepts various date formats and orderings.
+
+<Tabs>
+<TabItem value="Example (Basic)" label="Example (Basic)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Convert human-readable description to OCC symbol
+$lookup = $client->options->lookup('AAPL 7/28/23 $200 Call');
+
+echo "Input: AAPL 7/28/23 $200 Call\n";
+echo "OCC Symbol: " . $lookup->option_symbol . "\n";
+```
+
+#### Output
+
+```
+Input: AAPL 7/28/23 $200 Call
+OCC Symbol: AAPL230728C00200000
+```
+
+</TabItem>
+
+<TabItem value="Example (Various Formats)" label="Example (Various Formats)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// The parser accepts various input formats
+$inputs = [
+    'AAPL Jan 17, 2025 $180 Call',
+    'MSFT 2025-01-17 400 put',
+    'GOOGL $150 call 1/17/25',
+    'SPY 500 C 01/19/24',
+];
+
+foreach ($inputs as $input) {
+    $lookup = $client->options->lookup($input);
+    echo sprintf("%-35s → %s\n", $input, $lookup->option_symbol);
+}
+```
+
+#### Output
+
+```
+AAPL Jan 17, 2025 $180 Call         → AAPL250117C00180000
+MSFT 2025-01-17 400 put             → MSFT250117P00400000
+GOOGL $150 call 1/17/25             → GOOGL250117C00150000
+SPY 500 C 01/19/24                  → SPY240119C00500000
+```
+
+</TabItem>
+
+<TabItem value="Example (Use with Quotes)" label="Example (Use with Quotes)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Convert to OCC symbol, then get a quote
+$lookup = $client->options->lookup('AAPL Jan 2025 $180 Call');
+$occSymbol = $lookup->option_symbol;
+
+// Use the OCC symbol to get option quotes
+$quotes = $client->options->quotes($occSymbol);
+
+echo "Option: {$occSymbol}\n";
+foreach ($quotes->quotes as $quote) {
+    echo "Bid: $" . $quote->bid . "\n";
+    echo "Ask: $" . $quote->ask . "\n";
+    echo "Last: $" . $quote->last . "\n";
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Get lookup result as CSV
+$lookup = $client->options->lookup(
+    input: 'AAPL 7/28/23 $200 Call',
+    parameters: new Parameters(format: Format::CSV)
+);
+
+echo $lookup->getCsv();
+```
+
+</TabItem>
+</Tabs>
+
+<a name="Lookup"></a>
+## Lookup
+
+```php
+class Lookup extends ResponseBase
+{
+    public string $status;
+    public string $option_symbol;
+}
+```
+
+Represents the result of an option symbol lookup.
+
+#### Properties
+
+- `status` (string): Response status (`"ok"` or `"error"`).
+- `option_symbol` (string): The OCC-formatted option symbol.
+
+#### Methods
+
+- `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
+- `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
+- `isJson()`: Returns `true` if the response contains JSON data.

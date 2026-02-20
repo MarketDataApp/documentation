@@ -1,0 +1,244 @@
+---
+title: News
+sidebar_position: 6
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve news articles for a stock symbol.
+
+:::caution Beta Endpoint
+The news endpoint is currently in beta. Features and response formats may change.
+:::
+
+## Making Requests
+
+Use the `news()` method on the `stocks` resource to fetch news articles:
+
+| Output Format | Return Type | Description |
+|---------------|-------------|-------------|
+| **JSON** | `News` | Returns a News object containing news articles (default). |
+| **CSV** | `News` | Returns a News object with CSV data accessible via `getCsv()`. |
+| **HTML** | `News` | Returns a News object with HTML data accessible via `getHtml()`. |
+
+:::warning HTML Not Yet Available
+`Format::HTML` is included for forward compatibility, but HTML responses are not currently implemented by the Market Data API.
+:::
+
+<a name="news"></a>
+## news
+
+```php
+public function news(
+    string $symbol,
+    ?string $from = null,
+    ?string $to = null,
+    ?int $countback = null,
+    ?string $date = null,
+    ?Parameters $parameters = null
+): News
+```
+
+Retrieve news articles for a given stock symbol.
+
+#### Parameters
+
+- `symbol` (string)
+
+  The stock ticker symbol (e.g., "AAPL").
+
+- `from` (string, optional)
+
+  The earliest news to include. If omitted without `countback`, returns recent news. Accepted formats: ISO 8601, Unix timestamp.
+
+- `to` (string, optional)
+
+  The latest news to include. Accepted formats: ISO 8601, Unix timestamp.
+
+- `countback` (int, optional)
+
+  Number of news articles to return before `to`. Use instead of `from`.
+
+- `date` (string, optional)
+
+  Retrieve news for a specific day. Accepted formats: ISO 8601, Unix timestamp.
+
+- `parameters` ([Parameters](/sdk/php/parameters), optional)
+
+  Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
+
+#### Returns
+
+- `News`
+
+  A News response object containing the news articles.
+
+<Tabs>
+<TabItem value="Example (Recent News)" label="Example (Recent News)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get recent news for AAPL
+$news = $client->stocks->news('AAPL');
+
+foreach ($news->articles as $article) {
+    echo "Title: " . $article->headline . "\n";
+    echo "Source: " . $article->source . "\n";
+    echo "Published: " . $article->published->format('Y-m-d H:i') . "\n";
+    echo "URL: " . $article->url . "\n\n";
+}
+```
+
+#### Output
+
+```
+Title: Apple Reports Record Q1 Earnings
+Source: Reuters
+Published: 2024-01-25 16:30
+URL: https://example.com/article1
+
+Title: iPhone 15 Sales Exceed Expectations
+Source: Bloomberg
+Published: 2024-01-25 14:15
+URL: https://example.com/article2
+```
+
+</TabItem>
+
+<TabItem value="Example (Date Range)" label="Example (Date Range)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get news for a specific date range
+$news = $client->stocks->news(
+    symbol: 'AAPL',
+    from: '2024-01-01',
+    to: '2024-01-31'
+);
+
+echo "Found " . count($news->articles) . " articles for January 2024\n\n";
+
+// Group by source
+$bySource = [];
+foreach ($news->articles as $article) {
+    $source = $article->source;
+    $bySource[$source] = ($bySource[$source] ?? 0) + 1;
+}
+
+echo "Articles by Source:\n";
+arsort($bySource);
+foreach ($bySource as $source => $count) {
+    echo "  {$source}: {$count}\n";
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (Specific Date)" label="Example (Specific Date)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get news for a specific date
+$news = $client->stocks->news(
+    symbol: 'AAPL',
+    date: '2024-01-25'
+);
+
+echo "News for January 25, 2024:\n";
+echo "==========================\n\n";
+
+foreach ($news->articles as $article) {
+    echo "• " . $article->headline . "\n";
+    echo "  " . $article->source . " | " . $article->published->format('H:i') . "\n\n";
+}
+```
+
+</TabItem>
+
+<TabItem value="Example (CSV)" label="Example (CSV)">
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Endpoints\Requests\Parameters;
+use MarketDataApp\Enums\Format;
+
+$client = new Client();
+
+// Get news as CSV
+$news = $client->stocks->news(
+    symbol: 'AAPL',
+    from: '2024-01-01',
+    parameters: new Parameters(format: Format::CSV)
+);
+
+echo $news->getCsv();
+```
+
+</TabItem>
+</Tabs>
+
+<a name="Article"></a>
+## Article
+
+```php
+class Article
+{
+    public string $headline;
+    public string $source;
+    public Carbon $published;
+    public string $url;
+    public ?string $summary;
+}
+```
+
+Represents a single news article.
+
+#### Properties
+
+- `headline` (string): The article headline/title.
+- `source` (string): The news source (e.g., "Reuters", "Bloomberg").
+- `published` (Carbon): The publication timestamp.
+- `url` (string): URL to the full article.
+- `summary` (string|null): Brief summary of the article (when available).
+
+<a name="News"></a>
+## News
+
+```php
+class News extends ResponseBase
+{
+    public string $status;
+    public array $articles;
+}
+```
+
+Represents a collection of news articles.
+
+#### Properties
+
+- `status` (string): Response status (`"ok"` or `"no_data"`).
+- `articles` (Article[]): Array of Article objects.
+
+#### Methods
+
+- `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
+- `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
+- `isJson()`: Returns `true` if the response contains JSON data.

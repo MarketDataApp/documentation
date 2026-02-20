@@ -1,0 +1,306 @@
+---
+title: Error Handling
+sidebar_position: 7
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Market Data PHP SDK uses a hierarchical exception system to handle different types of errors. Understanding these exceptions helps you build robust applications that gracefully handle failures.
+
+## Exception Hierarchy
+
+```
+MarketDataException (base)
+├── ApiException          - Business logic errors (invalid symbol, no data)
+├── RequestError          - Transient errors (5xx, timeouts) - triggers retry
+└── BadStatusCodeError    - Permanent errors (4xx) - no retry
+    └── UnauthorizedException - 401 authentication errors
+```
+
+## Exception Types
+
+### MarketDataException
+
+Base exception class for all SDK exceptions. All other exceptions extend this class.
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Exceptions\MarketDataException;
+
+try {
+    $client = new Client();
+    $quote = $client->stocks->quote('AAPL');
+} catch (MarketDataException $e) {
+    // Catches all SDK exceptions
+    echo "SDK Error: " . $e->getMessage();
+}
+```
+
+### ApiException
+
+Thrown for business logic errors returned by the API, such as invalid symbols or no data available.
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Exceptions\ApiException;
+
+try {
+    $client = new Client();
+    $quote = $client->stocks->quote('INVALID_SYMBOL_XYZ');
+} catch (ApiException $e) {
+    echo "API Error: " . $e->getMessage() . "\n";
+    echo "HTTP Code: " . $e->getCode() . "\n";
+
+    // Get detailed support information
+    echo "Support Info:\n" . $e->getSupportInfo() . "\n";
+
+    // Get structured context for logging
+    $context = $e->getSupportContext();
+    print_r($context);
+}
+```
+
+**Common causes:**
+- Invalid or unknown symbol
+- No data available for the requested date range
+- Invalid parameter values
+- Premium endpoint accessed without subscription
+
+### RequestError
+
+Thrown for transient errors that may succeed on retry, such as server errors (5xx) or network timeouts.
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Exceptions\RequestError;
+
+try {
+    $client = new Client();
+    $quote = $client->stocks->quote('AAPL');
+} catch (RequestError $e) {
+    echo "Transient Error: " . $e->getMessage() . "\n";
+    echo "This error may be resolved by retrying.\n";
+}
+```
+
+**Common causes:**
+- Server errors (500, 502, 503, 504)
+- Network timeouts
+- Connection failures
+
+**Note:** The SDK automatically retries these errors with exponential backoff before throwing the exception.
+
+### BadStatusCodeError
+
+Thrown for permanent HTTP errors (4xx) that will not succeed on retry.
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Exceptions\BadStatusCodeError;
+
+try {
+    $client = new Client();
+    $quote = $client->stocks->quote('AAPL');
+} catch (BadStatusCodeError $e) {
+    echo "HTTP Error: " . $e->getCode() . "\n";
+    echo "Message: " . $e->getMessage() . "\n";
+}
+```
+
+**Common causes:**
+- 400 Bad Request (invalid parameters)
+- 403 Forbidden (endpoint requires higher subscription tier)
+- 404 Not Found (invalid endpoint)
+- 429 Too Many Requests (rate limit exceeded)
+
+### UnauthorizedException
+
+Thrown specifically for 401 authentication errors. Extends `BadStatusCodeError`.
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Exceptions\UnauthorizedException;
+
+try {
+    $client = new Client('invalid_token');
+} catch (UnauthorizedException $e) {
+    echo "Authentication Failed: " . $e->getMessage() . "\n";
+    echo "Please check your API token.\n";
+}
+```
+
+**Common causes:**
+- Invalid API token
+- Expired API token
+- Missing API token
+
+## Support Information
+
+All SDK exceptions provide methods for getting detailed error context:
+
+### getSupportInfo()
+
+Returns a human-readable string with request details for support tickets:
+
+```php
+<?php
+
+use MarketDataApp\Exceptions\ApiException;
+
+try {
+    // ... API call
+} catch (ApiException $e) {
+    $supportInfo = $e->getSupportInfo();
+    // Returns formatted string like:
+    // Request URL: https://api.marketdata.app/v1/stocks/quotes/?symbol=INVALID
+    // HTTP Status: 400
+    // Error Message: Symbol not found
+    echo $supportInfo;
+}
+```
+
+### getSupportContext()
+
+Returns an associative array with structured error context for logging:
+
+```php
+<?php
+
+use MarketDataApp\Exceptions\ApiException;
+
+try {
+    // ... API call
+} catch (ApiException $e) {
+    $context = $e->getSupportContext();
+    // Returns array like:
+    // [
+    //     'request_url' => 'https://api.marketdata.app/v1/stocks/quotes/?symbol=INVALID',
+    //     'http_status' => 400,
+    //     'error_message' => 'Symbol not found'
+    // ]
+
+    // Log to your monitoring system
+    $logger->error('API call failed', $context);
+}
+```
+
+## Handling Multiple Exception Types
+
+Use a try-catch chain to handle different error types appropriately:
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Exceptions\UnauthorizedException;
+use MarketDataApp\Exceptions\ApiException;
+use MarketDataApp\Exceptions\RequestError;
+use MarketDataApp\Exceptions\BadStatusCodeError;
+use MarketDataApp\Exceptions\MarketDataException;
+
+try {
+    $client = new Client();
+    $quote = $client->stocks->quote('AAPL');
+
+    echo "Quote received: $" . $quote->last . "\n";
+
+} catch (UnauthorizedException $e) {
+    // Handle authentication errors
+    echo "Authentication failed. Please check your API token.\n";
+
+} catch (ApiException $e) {
+    // Handle business logic errors
+    echo "API Error: " . $e->getMessage() . "\n";
+
+    // Log details for troubleshooting
+    error_log("API Exception: " . $e->getSupportInfo());
+
+} catch (RequestError $e) {
+    // Handle transient errors (already retried)
+    echo "Service temporarily unavailable. Please try again later.\n";
+
+} catch (BadStatusCodeError $e) {
+    // Handle other HTTP errors
+    echo "Request failed with HTTP " . $e->getCode() . "\n";
+
+} catch (MarketDataException $e) {
+    // Catch-all for any SDK exception
+    echo "Unexpected SDK error: " . $e->getMessage() . "\n";
+}
+```
+
+## Automatic Retry Behavior
+
+The SDK automatically retries transient errors (`RequestError`) with exponential backoff:
+
+- **Initial delay:** 1 second
+- **Maximum retries:** 3 attempts
+- **Backoff multiplier:** 2x per retry
+- **Jitter:** Random variation to prevent thundering herd
+
+If all retries fail, the exception is thrown to your code.
+
+## Best Practices
+
+1. **Always catch exceptions** - API calls can fail for various reasons
+2. **Handle specific exceptions first** - Catch more specific exceptions before general ones
+3. **Log error context** - Use `getSupportContext()` for structured logging
+4. **Provide user feedback** - Show appropriate messages for different error types
+5. **Don't retry manually** - The SDK handles retries for transient errors
+
+## Example: Robust API Call
+
+```php
+<?php
+
+use MarketDataApp\Client;
+use MarketDataApp\Exceptions\UnauthorizedException;
+use MarketDataApp\Exceptions\ApiException;
+use MarketDataApp\Exceptions\MarketDataException;
+
+function getStockQuote(string $symbol): ?object
+{
+    static $client = null;
+
+    try {
+        if ($client === null) {
+            $client = new Client();
+        }
+
+        return $client->stocks->quote($symbol);
+
+    } catch (UnauthorizedException $e) {
+        // Critical error - cannot recover without new token
+        throw new RuntimeException('API authentication failed', 0, $e);
+
+    } catch (ApiException $e) {
+        // Symbol-specific error - log and return null
+        error_log("Failed to get quote for {$symbol}: " . $e->getMessage());
+        return null;
+
+    } catch (MarketDataException $e) {
+        // Other SDK errors - log and return null
+        error_log("SDK error for {$symbol}: " . $e->getMessage());
+        return null;
+    }
+}
+
+// Usage
+$quote = getStockQuote('AAPL');
+if ($quote) {
+    echo "AAPL: $" . $quote->last . "\n";
+} else {
+    echo "Could not fetch quote for AAPL\n";
+}
+```
