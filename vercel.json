@@ -33,14 +33,6 @@
       "destination": "/docs-staging/sheets"
     },
     {
-      "source": "/docs-staging/sdk-php/",
-      "destination": "/sdk-php/index.html"
-    },
-    {
-      "source": "/docs/sdk-php/",
-      "destination": "/sdk-php/index.html"
-    },
-    {
       "source": "/docs-staging/:subdir*",
       "destination": "https://docs-staging.marketdata.app/:subdir*"
     },
