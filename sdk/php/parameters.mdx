@@ -174,7 +174,11 @@ Controls the format of the API response data.
 **Available Values:**
 - `Format::JSON` (default): Returns data as typed PHP objects
 - `Format::CSV`: Returns CSV data (writes to file if `filename` specified)
-- `Format::HTML`: Returns HTML table (beta)
+- `Format::HTML`: Reserved for future API support (not yet implemented)
+
+:::warning HTML Not Yet Available
+The PHP SDK includes `Format::HTML` so your integration is ready once API support is released, but HTML responses are not currently implemented by the Market Data API.
+:::
 
 **Configuration Methods:**
 

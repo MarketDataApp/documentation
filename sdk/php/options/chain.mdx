@@ -18,6 +18,10 @@ Use the `option_chain()` method on the `options` resource to fetch option chains
 | **CSV** | `OptionChains` | Returns an OptionChains object with CSV data accessible via `getCsv()`. |
 | **HTML** | `OptionChains` | Returns an OptionChains object with HTML data accessible via `getHtml()`. |
 
+:::warning HTML Not Yet Available
+`Format::HTML` is included for forward compatibility, but HTML responses are not currently implemented by the Market Data API.
+:::
+
 <a name="option_chain"></a>
 ## option_chain
 
@@ -71,7 +75,7 @@ Get a current or historical end-of-day options chain for an underlying ticker sy
   Limit to a specific expiration date, or use `Expiration::ALL` to return the complete chain.
 
   :::caution
-  Using `Expiration::ALL` with large chains (SPX, SPY, QQQ) can consume requests quickly. The full SPX chain has 20,000+ contracts.
+  Using `Expiration::ALL` with large chains (SPX, SPY, QQQ) can consume API credits quickly. The full SPX chain has 20,000+ contracts.
   :::
 
 - `from` (string, optional)

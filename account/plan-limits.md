@@ -19,10 +19,10 @@ Most users don't run into trouble with our limits. However, if our standard plan
 | API Endpoints         | Standard     | Premium   | Premium   | Premium + Custom | Premium + Custom |
 
 ## Credits
-Each time you make a request to the API, the system will increase your credits counter. Normally each successful response will increase your counter by 1 and each call to our API will be counted once. However, **if you request multiple symbols in a single API call using the bulkquotes, bulkcandles, or option chain endpoint, a request will be used for each symbol that is included in the response**. 
+Each time you call the API, the system increases your credits counter. Normally each successful response consumes 1 credit. However, **if you request multiple symbols in a single API call using the bulkquotes, bulkcandles, or option chain endpoint, each symbol included in the response consumes credits**.
 
 :::caution 
-For users working with options, take care before repeatedly requesting quotes for an entire option chain. **Each option symbol included in the response will consume a request**. If you were to download the entire SPX option chain (which has 20,000+ option symbols), you would exhaust your request limit very quickly. Use our extensive option chain filtering parameters to request only the strikes/expirations you need. 
+For users working with options, take care before repeatedly requesting quotes for an entire option chain. **Each option symbol included in the response consumes credits**. If you download the entire SPX option chain (which has 20,000+ option symbols), you can exhaust your credit limit very quickly. Use our option chain filters to request only the strikes and expirations you need.
 :::
 
 ## Device Restrictions

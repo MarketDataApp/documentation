@@ -49,7 +49,12 @@ $client = new Client();
 
 // Test the connection
 $status = $client->utilities->api_status();
-echo "API Status: Online\n";
+echo "API Status Response: {$status->status}\n";
+
+if (!empty($status->services)) {
+    $service = $status->services[0];
+    echo "Service Check: {$service->service} is {$service->status}\n";
+}
 ```
 
 ## Updating the SDK
