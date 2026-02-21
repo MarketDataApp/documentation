@@ -55,7 +55,7 @@ Get real-time midpoint prices for stocks using the SmartMid model. Supports both
 
 - `Prices`
 
-  A Prices response object containing the price data.
+  A Prices response object containing an array of Price objects.
 
 #### Notes
 
@@ -64,6 +64,40 @@ Get real-time midpoint prices for stocks using the SmartMid model. Supports both
 - For multiple symbols, the API uses the query format `prices/?symbols={comma-separated}`.
 
 <Tabs>
+<TabItem value="Example (Quick Display)" label="Example (Quick Display)" default>
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get prices and display with a single line
+$prices = $client->stocks->prices(['AAPL', 'MSFT', 'GOOGL']);
+echo $prices;
+
+// Or display individual prices
+foreach ($prices->prices as $price) {
+    echo $price . "\n";
+}
+```
+
+#### Output
+
+```
+Prices: 3 symbols (status: ok)
+  AAPL: $186.19 (+0.71%) Change: +$1.31  Updated: Jan 15, 2024 4:00 PM
+  MSFT: $380.55 (+1.25%) Change: +$4.70  Updated: Jan 15, 2024 4:00 PM
+  GOOGL: $143.12 (-0.50%) Change: -$0.72  Updated: Jan 15, 2024 4:00 PM
+
+AAPL: $186.19 (+0.71%) Change: +$1.31  Updated: Jan 15, 2024 4:00 PM
+MSFT: $380.55 (+1.25%) Change: +$4.70  Updated: Jan 15, 2024 4:00 PM
+GOOGL: $143.12 (-0.50%) Change: -$0.72  Updated: Jan 15, 2024 4:00 PM
+```
+
+</TabItem>
+
 <TabItem value="Example (Single Symbol)" label="Example (Single Symbol)">
 
 ```php
@@ -78,8 +112,9 @@ $prices = $client->stocks->prices('AAPL');
 
 foreach ($prices->prices as $price) {
     echo "Symbol: " . $price->symbol . "\n";
-    echo "Price: $" . number_format($price->price, 2) . "\n";
-    echo "Updated: " . $price->timestamp->format('Y-m-d H:i:s') . "\n";
+    echo "Price: $" . number_format($price->mid, 2) . "\n";
+    echo "Change: $" . number_format($price->change, 2) . "\n";
+    echo "Updated: " . $price->updated->format('Y-m-d H:i:s') . "\n";
 }
 ```
 
@@ -110,9 +145,10 @@ echo "==============\n";
 
 foreach ($prices->prices as $price) {
     echo sprintf(
-        "%s: $%.2f\n",
+        "%s: $%.2f (Change: %+.2f%%)\n",
         $price->symbol,
-        $price->price
+        $price->mid,
+        $price->changepct * 100
     );
 }
 ```
@@ -150,7 +186,7 @@ foreach ($prices->prices as $price) {
     echo sprintf(
         "%s: $%.2f (Regular Session)\n",
         $price->symbol,
-        $price->price
+        $price->mid
     );
 }
 ```
@@ -180,26 +216,6 @@ echo $prices->getCsv();
 </TabItem>
 </Tabs>
 
-<a name="Price"></a>
-## Price
-
-```php
-class Price
-{
-    public string $symbol;
-    public float $price;
-    public Carbon $timestamp;
-}
-```
-
-Represents a single stock price point.
-
-#### Properties
-
-- `symbol` (string): The stock ticker symbol.
-- `price` (float): The SmartMid price.
-- `timestamp` (Carbon): The timestamp of the price.
-
 <a name="Prices"></a>
 ## Prices
 
@@ -207,19 +223,44 @@ Represents a single stock price point.
 class Prices extends ResponseBase
 {
     public string $status;
+    /** @var Price[] */
     public array $prices;
 }
 ```
 
-Represents a collection of stock prices.
+Represents stock prices for one or more symbols. Contains an array of `Price` objects, each representing a single stock's price data.
 
 #### Properties
 
-- `status` (string): Response status (`"ok"` or `"no_data"`).
-- `prices` (Price[]): Array of Price objects.
+- `status` (string): Response status (`"ok"`, `"no_data"`, or `"error"`).
+- `prices` (Price[]): Array of Price objects containing individual stock price data.
 
 #### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
 - `isJson()`: Returns `true` if the response contains JSON data.
+
+<a name="Price"></a>
+## Price
+
+```php
+class Price
+{
+    public string $symbol;
+    public float $mid;
+    public float $change;
+    public float $changepct;
+    public Carbon $updated;
+}
+```
+
+Represents a single stock's price data.
+
+#### Properties
+
+- `symbol` (string): The ticker symbol for this price.
+- `mid` (float): The midpoint price as calculated by the SmartMid model.
+- `change` (float): Price change in currency units compared to the previous day's close.
+- `changepct` (float): Price change as a decimal (e.g., 0.03 = 3%).
+- `updated` (Carbon): Timestamp when this price was last updated.

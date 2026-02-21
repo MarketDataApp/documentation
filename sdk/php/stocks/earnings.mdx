@@ -90,9 +90,9 @@ $earnings = $client->stocks->earnings('AAPL');
 foreach ($earnings->earnings as $report) {
     echo "Date: " . $report->report_date->format('Y-m-d') . "\n";
     echo "Fiscal Year: " . $report->fiscal_year . " Q" . $report->fiscal_quarter . "\n";
-    echo "EPS Estimate: $" . $report->eps_estimate . "\n";
-    echo "EPS Actual: $" . ($report->eps_actual ?? 'N/A') . "\n";
-    echo "Surprise: " . ($report->eps_surprise ?? 'N/A') . "\n\n";
+    echo "EPS Estimate: $" . $report->estimated_eps . "\n";
+    echo "EPS Actual: $" . ($report->reported_eps ?? 'N/A') . "\n";
+    echo "Surprise: " . ($report->surprise_eps ?? 'N/A') . "\n\n";
 }
 ```
 
@@ -103,7 +103,7 @@ Date: 2024-01-25
 Fiscal Year: 2024 Q1
 EPS Estimate: $2.10
 EPS Actual: $2.18
-Surprise: +0.08
+Surprise: 0.08
 
 Date: 2024-04-25
 Fiscal Year: 2024 Q2
@@ -134,15 +134,15 @@ echo "AAPL Earnings for 2023:\n";
 echo "========================\n";
 
 foreach ($earnings->earnings as $report) {
-    $surprise = $report->eps_surprise ?? 0;
+    $surprise = $report->surprise_eps ?? 0;
     $surpriseIndicator = $surprise > 0 ? '↑' : ($surprise < 0 ? '↓' : '-');
 
     echo sprintf(
         "Q%d %d: EPS $%.2f (Est: $%.2f) %s\n",
         $report->fiscal_quarter,
         $report->fiscal_year,
-        $report->eps_actual ?? 0,
-        $report->eps_estimate ?? 0,
+        $report->reported_eps ?? 0,
+        $report->estimated_eps ?? 0,
         $surpriseIndicator
     );
 }
@@ -174,7 +174,7 @@ foreach ($earnings->earnings as $report) {
         $report->report_date->format('Y-m-d'),
         $report->fiscal_quarter,
         $report->fiscal_year,
-        $report->eps_actual ?? 0
+        $report->reported_eps ?? 0
     );
 }
 ```
@@ -214,14 +214,15 @@ class Earning
     public string $symbol;
     public int $fiscal_year;
     public int $fiscal_quarter;
+    public Carbon $date;
     public Carbon $report_date;
-    public ?string $report_time;
-    public ?float $eps_estimate;
-    public ?float $eps_actual;
-    public ?float $eps_surprise;
-    public ?float $revenue_estimate;
-    public ?float $revenue_actual;
-    public ?float $revenue_surprise;
+    public string $report_time;
+    public ?string $currency;
+    public ?float $reported_eps;
+    public ?float $estimated_eps;
+    public ?float $surprise_eps;
+    public ?float $surprise_eps_pct;
+    public Carbon $updated;
 }
 ```
 
@@ -232,14 +233,15 @@ Represents a single earnings report.
 - `symbol` (string): The stock ticker symbol.
 - `fiscal_year` (int): The fiscal year of the earnings report.
 - `fiscal_quarter` (int): The fiscal quarter (1-4).
-- `report_date` (Carbon): The date of the earnings report.
-- `report_time` (string|null): Time of day for the report ("before market", "after market", etc.).
-- `eps_estimate` (float|null): Analyst consensus EPS estimate.
-- `eps_actual` (float|null): Actual reported EPS (null for future reports).
-- `eps_surprise` (float|null): Difference between actual and estimate.
-- `revenue_estimate` (float|null): Analyst consensus revenue estimate.
-- `revenue_actual` (float|null): Actual reported revenue.
-- `revenue_surprise` (float|null): Difference between actual and estimated revenue.
+- `date` (Carbon): The last calendar day that corresponds to this earnings report (period end date).
+- `report_date` (Carbon): The date the earnings report was released or is projected to be released.
+- `report_time` (string): Time of day for the report ("before market open", "after market close", or "during market hours").
+- `currency` (string|null): The currency of the earnings report.
+- `reported_eps` (float|null): Actual reported EPS. Typically non-GAAP unless the company does not report non-GAAP earnings. Null for future reports.
+- `estimated_eps` (float|null): The average consensus EPS estimate by Wall Street analysts.
+- `surprise_eps` (float|null): The difference between reported EPS and estimated EPS.
+- `surprise_eps_pct` (float|null): The percentage difference between reported and estimated EPS.
+- `updated` (Carbon): The date/time the earnings data was last updated.
 
 <a name="Earnings"></a>
 ## Earnings
