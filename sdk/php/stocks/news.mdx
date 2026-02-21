@@ -72,9 +72,43 @@ Retrieve news articles for a given stock symbol.
 
 - `News`
 
-  A News response object containing the news articles.
+  A News response object containing an array of Article objects.
 
 <Tabs>
+<TabItem value="Example (Quick Display)" label="Example (Quick Display)" default>
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get news and display with a single line
+$news = $client->stocks->news('AAPL', from: '2024-01-01');
+echo $news;
+
+// Or display individual articles
+foreach ($news->articles as $article) {
+    echo $article . "\n\n";
+}
+```
+
+#### Output
+
+```
+News: 3 articles (status: ok)
+AAPL: Apple Reports Record Q1 Earnings
+  Published: Jan 25, 2024 4:30 PM  Source: https://www.reuters.com/...
+  Content: Apple Inc reported record quarterly earnings on Thursday...
+
+AAPL: Apple Reports Record Q1 Earnings
+  Published: Jan 25, 2024 4:30 PM  Source: https://www.reuters.com/...
+  Content: Apple Inc reported record quarterly earnings on Thursday...
+```
+
+</TabItem>
+
 <TabItem value="Example (Recent News)" label="Example (Recent News)">
 
 ```php
@@ -87,11 +121,13 @@ $client = new Client();
 // Get recent news for AAPL
 $news = $client->stocks->news('AAPL');
 
-echo "Symbol: " . $news->symbol . "\n";
-echo "Title: " . $news->headline . "\n";
-echo "Source: " . $news->source . "\n";
-echo "Published: " . $news->publication_date->format('Y-m-d H:i') . "\n";
-echo "Content: " . substr($news->content, 0, 100) . "...\n";
+foreach ($news->articles as $article) {
+    echo "Symbol: " . $article->symbol . "\n";
+    echo "Title: " . $article->headline . "\n";
+    echo "Source: " . $article->source . "\n";
+    echo "Published: " . $article->publication_date->format('Y-m-d H:i') . "\n";
+    echo "Content: " . substr($article->content, 0, 100) . "...\n\n";
+}
 ```
 
 #### Output
@@ -123,10 +159,12 @@ $news = $client->stocks->news(
 );
 
 if ($news->status === 'ok') {
-    echo "Symbol: " . $news->symbol . "\n";
-    echo "Headline: " . $news->headline . "\n";
-    echo "Source: " . $news->source . "\n";
-    echo "Published: " . $news->publication_date->format('Y-m-d H:i') . "\n";
+    echo "Found " . count($news->articles) . " articles:\n\n";
+
+    foreach ($news->articles as $article) {
+        echo "- " . $article->headline . "\n";
+        echo "  Published: " . $article->publication_date->format('Y-m-d H:i') . "\n\n";
+    }
 }
 ```
 
@@ -150,9 +188,9 @@ $news = $client->stocks->news(
 echo "News for January 25, 2024:\n";
 echo "==========================\n\n";
 
-if ($news->status === 'ok') {
-    echo "• " . $news->headline . "\n";
-    echo "  " . $news->source . " | " . $news->publication_date->format('H:i') . "\n";
+foreach ($news->articles as $article) {
+    echo "* " . $article->headline . "\n";
+    echo "  " . $article->source . " | " . $article->publication_date->format('H:i') . "\n\n";
 }
 ```
 
@@ -189,27 +227,44 @@ echo $news->getCsv();
 class News extends ResponseBase
 {
     public string $status;
-    public string $symbol;
-    public string $headline;
-    public string $content;
-    public string $source;
-    public ?Carbon $publication_date;
+    /** @var Article[] */
+    public array $articles;
 }
 ```
 
-Represents a news article for a stock.
+Represents news articles for a stock. Contains an array of `Article` objects, each representing a single news article.
 
 #### Properties
 
 - `status` (string): Response status (`"ok"` or `"no_data"`).
-- `symbol` (string): The stock ticker symbol.
-- `headline` (string): The article headline/title.
-- `content` (string): The content of the article, if available. May include captions, copyright notices, and other elements that may need filtering.
-- `source` (string): The source URL where the news appeared.
-- `publication_date` (Carbon|null): The date the news was published on the source website.
+- `articles` (Article[]): Array of Article objects containing individual news article data.
 
 #### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
 - `isJson()`: Returns `true` if the response contains JSON data.
+
+<a name="Article"></a>
+## Article
+
+```php
+class Article
+{
+    public string $symbol;
+    public string $headline;
+    public string $content;
+    public string $source;
+    public Carbon $publication_date;
+}
+```
+
+Represents a single news article.
+
+#### Properties
+
+- `symbol` (string): The stock ticker symbol this article relates to.
+- `headline` (string): The article headline/title.
+- `content` (string): The content of the article, if available. May include captions, copyright notices, and other elements that may need filtering.
+- `source` (string): The source URL where the news appeared.
+- `publication_date` (Carbon): The date the news was published on the source website.

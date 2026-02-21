@@ -55,7 +55,7 @@ Get real-time midpoint prices for stocks using the SmartMid model. Supports both
 
 - `Prices`
 
-  A Prices response object containing the price data.
+  A Prices response object containing an array of Price objects.
 
 #### Notes
 
@@ -64,6 +64,40 @@ Get real-time midpoint prices for stocks using the SmartMid model. Supports both
 - For multiple symbols, the API uses the query format `prices/?symbols={comma-separated}`.
 
 <Tabs>
+<TabItem value="Example (Quick Display)" label="Example (Quick Display)" default>
+
+```php
+<?php
+
+use MarketDataApp\Client;
+
+$client = new Client();
+
+// Get prices and display with a single line
+$prices = $client->stocks->prices(['AAPL', 'MSFT', 'GOOGL']);
+echo $prices;
+
+// Or display individual prices
+foreach ($prices->prices as $price) {
+    echo $price . "\n";
+}
+```
+
+#### Output
+
+```
+Prices: 3 symbols (status: ok)
+  AAPL: $186.19 (+0.71%) Change: +$1.31  Updated: Jan 15, 2024 4:00 PM
+  MSFT: $380.55 (+1.25%) Change: +$4.70  Updated: Jan 15, 2024 4:00 PM
+  GOOGL: $143.12 (-0.50%) Change: -$0.72  Updated: Jan 15, 2024 4:00 PM
+
+AAPL: $186.19 (+0.71%) Change: +$1.31  Updated: Jan 15, 2024 4:00 PM
+MSFT: $380.55 (+1.25%) Change: +$4.70  Updated: Jan 15, 2024 4:00 PM
+GOOGL: $143.12 (-0.50%) Change: -$0.72  Updated: Jan 15, 2024 4:00 PM
+```
+
+</TabItem>
+
 <TabItem value="Example (Single Symbol)" label="Example (Single Symbol)">
 
 ```php
@@ -76,11 +110,11 @@ $client = new Client();
 // Get price for a single symbol
 $prices = $client->stocks->prices('AAPL');
 
-for ($i = 0; $i < count($prices->symbols); $i++) {
-    echo "Symbol: " . $prices->symbols[$i] . "\n";
-    echo "Price: $" . number_format($prices->mid[$i], 2) . "\n";
-    echo "Change: $" . number_format($prices->change[$i], 2) . "\n";
-    echo "Updated: " . $prices->updated[$i]->format('Y-m-d H:i:s') . "\n";
+foreach ($prices->prices as $price) {
+    echo "Symbol: " . $price->symbol . "\n";
+    echo "Price: $" . number_format($price->mid, 2) . "\n";
+    echo "Change: $" . number_format($price->change, 2) . "\n";
+    echo "Updated: " . $price->updated->format('Y-m-d H:i:s') . "\n";
 }
 ```
 
@@ -109,12 +143,12 @@ $prices = $client->stocks->prices(['AAPL', 'MSFT', 'GOOGL', 'AMZN']);
 echo "Current Prices\n";
 echo "==============\n";
 
-for ($i = 0; $i < count($prices->symbols); $i++) {
+foreach ($prices->prices as $price) {
     echo sprintf(
         "%s: $%.2f (Change: %+.2f%%)\n",
-        $prices->symbols[$i],
-        $prices->mid[$i],
-        $prices->changepct[$i] * 100
+        $price->symbol,
+        $price->mid,
+        $price->changepct * 100
     );
 }
 ```
@@ -148,11 +182,11 @@ $prices = $client->stocks->prices(
 );
 
 // During extended hours, returns closing prices from regular session
-for ($i = 0; $i < count($prices->symbols); $i++) {
+foreach ($prices->prices as $price) {
     echo sprintf(
         "%s: $%.2f (Regular Session)\n",
-        $prices->symbols[$i],
-        $prices->mid[$i]
+        $price->symbol,
+        $price->mid
     );
 }
 ```
@@ -189,27 +223,44 @@ echo $prices->getCsv();
 class Prices extends ResponseBase
 {
     public string $status;
-    public array $symbols;
-    public array $mid;
-    public array $change;
-    public array $changepct;
-    public array $updated;
+    /** @var Price[] */
+    public array $prices;
 }
 ```
 
-Represents stock prices for one or more symbols. Uses parallel arrays where index `i` corresponds to the same symbol across all arrays.
+Represents stock prices for one or more symbols. Contains an array of `Price` objects, each representing a single stock's price data.
 
 #### Properties
 
 - `status` (string): Response status (`"ok"`, `"no_data"`, or `"error"`).
-- `symbols` (string[]): Array of ticker symbols.
-- `mid` (float[]): Array of midpoint prices calculated by the SmartMid model.
-- `change` (float[]): Array of price changes in currency units from previous close.
-- `changepct` (float[]): Array of price changes as decimals (e.g., 0.03 = 3%).
-- `updated` (Carbon[]): Array of timestamps for each price.
+- `prices` (Price[]): Array of Price objects containing individual stock price data.
 
 #### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
 - `isJson()`: Returns `true` if the response contains JSON data.
+
+<a name="Price"></a>
+## Price
+
+```php
+class Price
+{
+    public string $symbol;
+    public float $mid;
+    public float $change;
+    public float $changepct;
+    public Carbon $updated;
+}
+```
+
+Represents a single stock's price data.
+
+#### Properties
+
+- `symbol` (string): The ticker symbol for this price.
+- `mid` (float): The midpoint price as calculated by the SmartMid model.
+- `change` (float): Price change in currency units compared to the previous day's close.
+- `changepct` (float): Price change as a decimal (e.g., 0.03 = 3%).
+- `updated` (Carbon): Timestamp when this price was last updated.
