@@ -87,26 +87,21 @@ $client = new Client();
 // Get recent news for AAPL
 $news = $client->stocks->news('AAPL');
 
-foreach ($news->articles as $article) {
-    echo "Title: " . $article->headline . "\n";
-    echo "Source: " . $article->source . "\n";
-    echo "Published: " . $article->published->format('Y-m-d H:i') . "\n";
-    echo "URL: " . $article->url . "\n\n";
-}
+echo "Symbol: " . $news->symbol . "\n";
+echo "Title: " . $news->headline . "\n";
+echo "Source: " . $news->source . "\n";
+echo "Published: " . $news->publication_date->format('Y-m-d H:i') . "\n";
+echo "Content: " . substr($news->content, 0, 100) . "...\n";
 ```
 
 #### Output
 
 ```
+Symbol: AAPL
 Title: Apple Reports Record Q1 Earnings
-Source: Reuters
+Source: https://www.reuters.com/technology/...
 Published: 2024-01-25 16:30
-URL: https://example.com/article1
-
-Title: iPhone 15 Sales Exceed Expectations
-Source: Bloomberg
-Published: 2024-01-25 14:15
-URL: https://example.com/article2
+Content: Apple Inc reported record quarterly earnings on Thursday...
 ```
 
 </TabItem>
@@ -127,19 +122,11 @@ $news = $client->stocks->news(
     to: '2024-01-31'
 );
 
-echo "Found " . count($news->articles) . " articles for January 2024\n\n";
-
-// Group by source
-$bySource = [];
-foreach ($news->articles as $article) {
-    $source = $article->source;
-    $bySource[$source] = ($bySource[$source] ?? 0) + 1;
-}
-
-echo "Articles by Source:\n";
-arsort($bySource);
-foreach ($bySource as $source => $count) {
-    echo "  {$source}: {$count}\n";
+if ($news->status === 'ok') {
+    echo "Symbol: " . $news->symbol . "\n";
+    echo "Headline: " . $news->headline . "\n";
+    echo "Source: " . $news->source . "\n";
+    echo "Published: " . $news->publication_date->format('Y-m-d H:i') . "\n";
 }
 ```
 
@@ -163,9 +150,9 @@ $news = $client->stocks->news(
 echo "News for January 25, 2024:\n";
 echo "==========================\n\n";
 
-foreach ($news->articles as $article) {
-    echo "• " . $article->headline . "\n";
-    echo "  " . $article->source . " | " . $article->published->format('H:i') . "\n\n";
+if ($news->status === 'ok') {
+    echo "• " . $news->headline . "\n";
+    echo "  " . $news->source . " | " . $news->publication_date->format('H:i') . "\n";
 }
 ```
 
@@ -195,30 +182,6 @@ echo $news->getCsv();
 </TabItem>
 </Tabs>
 
-<a name="Article"></a>
-## Article
-
-```php
-class Article
-{
-    public string $headline;
-    public string $source;
-    public Carbon $published;
-    public string $url;
-    public ?string $summary;
-}
-```
-
-Represents a single news article.
-
-#### Properties
-
-- `headline` (string): The article headline/title.
-- `source` (string): The news source (e.g., "Reuters", "Bloomberg").
-- `published` (Carbon): The publication timestamp.
-- `url` (string): URL to the full article.
-- `summary` (string|null): Brief summary of the article (when available).
-
 <a name="News"></a>
 ## News
 
@@ -226,16 +189,24 @@ Represents a single news article.
 class News extends ResponseBase
 {
     public string $status;
-    public array $articles;
+    public string $symbol;
+    public string $headline;
+    public string $content;
+    public string $source;
+    public ?Carbon $publication_date;
 }
 ```
 
-Represents a collection of news articles.
+Represents a news article for a stock.
 
 #### Properties
 
 - `status` (string): Response status (`"ok"` or `"no_data"`).
-- `articles` (Article[]): Array of Article objects.
+- `symbol` (string): The stock ticker symbol.
+- `headline` (string): The article headline/title.
+- `content` (string): The content of the article, if available. May include captions, copyright notices, and other elements that may need filtering.
+- `source` (string): The source URL where the news appeared.
+- `publication_date` (Carbon|null): The date the news was published on the source website.
 
 #### Methods
 

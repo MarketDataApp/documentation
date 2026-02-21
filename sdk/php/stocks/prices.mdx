@@ -76,10 +76,11 @@ $client = new Client();
 // Get price for a single symbol
 $prices = $client->stocks->prices('AAPL');
 
-foreach ($prices->prices as $price) {
-    echo "Symbol: " . $price->symbol . "\n";
-    echo "Price: $" . number_format($price->price, 2) . "\n";
-    echo "Updated: " . $price->timestamp->format('Y-m-d H:i:s') . "\n";
+for ($i = 0; $i < count($prices->symbols); $i++) {
+    echo "Symbol: " . $prices->symbols[$i] . "\n";
+    echo "Price: $" . number_format($prices->mid[$i], 2) . "\n";
+    echo "Change: $" . number_format($prices->change[$i], 2) . "\n";
+    echo "Updated: " . $prices->updated[$i]->format('Y-m-d H:i:s') . "\n";
 }
 ```
 
@@ -108,11 +109,12 @@ $prices = $client->stocks->prices(['AAPL', 'MSFT', 'GOOGL', 'AMZN']);
 echo "Current Prices\n";
 echo "==============\n";
 
-foreach ($prices->prices as $price) {
+for ($i = 0; $i < count($prices->symbols); $i++) {
     echo sprintf(
-        "%s: $%.2f\n",
-        $price->symbol,
-        $price->price
+        "%s: $%.2f (Change: %+.2f%%)\n",
+        $prices->symbols[$i],
+        $prices->mid[$i],
+        $prices->changepct[$i] * 100
     );
 }
 ```
@@ -146,11 +148,11 @@ $prices = $client->stocks->prices(
 );
 
 // During extended hours, returns closing prices from regular session
-foreach ($prices->prices as $price) {
+for ($i = 0; $i < count($prices->symbols); $i++) {
     echo sprintf(
         "%s: $%.2f (Regular Session)\n",
-        $price->symbol,
-        $price->price
+        $prices->symbols[$i],
+        $prices->mid[$i]
     );
 }
 ```
@@ -180,26 +182,6 @@ echo $prices->getCsv();
 </TabItem>
 </Tabs>
 
-<a name="Price"></a>
-## Price
-
-```php
-class Price
-{
-    public string $symbol;
-    public float $price;
-    public Carbon $timestamp;
-}
-```
-
-Represents a single stock price point.
-
-#### Properties
-
-- `symbol` (string): The stock ticker symbol.
-- `price` (float): The SmartMid price.
-- `timestamp` (Carbon): The timestamp of the price.
-
 <a name="Prices"></a>
 ## Prices
 
@@ -207,16 +189,24 @@ Represents a single stock price point.
 class Prices extends ResponseBase
 {
     public string $status;
-    public array $prices;
+    public array $symbols;
+    public array $mid;
+    public array $change;
+    public array $changepct;
+    public array $updated;
 }
 ```
 
-Represents a collection of stock prices.
+Represents stock prices for one or more symbols. Uses parallel arrays where index `i` corresponds to the same symbol across all arrays.
 
 #### Properties
 
-- `status` (string): Response status (`"ok"` or `"no_data"`).
-- `prices` (Price[]): Array of Price objects.
+- `status` (string): Response status (`"ok"`, `"no_data"`, or `"error"`).
+- `symbols` (string[]): Array of ticker symbols.
+- `mid` (float[]): Array of midpoint prices calculated by the SmartMid model.
+- `change` (float[]): Array of price changes in currency units from previous close.
+- `changepct` (float[]): Array of price changes as decimals (e.g., 0.03 = 3%).
+- `updated` (Carbon[]): Array of timestamps for each price.
 
 #### Methods
 
