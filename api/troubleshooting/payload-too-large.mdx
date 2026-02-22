@@ -1,0 +1,42 @@
+---
+title: 413: Payload Too Large
+sidebar_position: 11
+---
+
+A `413 PAYLOAD TOO LARGE` means your request asked for more candle data than is allowed in a single call.
+
+For candles, this is most commonly triggered on **intraday resolutions** when you request **more than 1 year** in one request.
+
+## Fast Fix
+
+For intraday candles, request less than 1 year per API call.
+
+## Why This Happens
+
+The candles endpoints enforce request-size constraints to keep responses bounded and reliable. If your intraday candle range is too large, the API returns `413`.
+
+Daily candles are allowed beyond 1 year.
+
+## What To Change
+
+1. For intraday requests, reduce the date window to less than 1 year.
+2. If you need more history, split your query into multiple requests.
+
+## Example
+
+```http
+# Too large (intraday example)
+GET https://api.marketdata.app/v1/stocks/candles/1/AAPL/?from=2022-01-01&to=2024-12-31
+
+# Valid intraday: keep each request under 1 year
+GET https://api.marketdata.app/v1/stocks/candles/1/AAPL/?from=2024-01-01&to=2024-12-31
+
+# Daily example: multi-year range is allowed
+GET https://api.marketdata.app/v1/stocks/candles/D/AAPL/?from=2015-01-01&to=2024-12-31
+```
+
+## If You Still Get 413
+
+1. Double-check `from`/`to` ranges after timezone normalization.
+2. Verify your client is not expanding ranges unexpectedly.
+3. Contact support with your full request URL and parameters.

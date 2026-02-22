@@ -30,7 +30,7 @@ If you believe your request is correct and you received a 4xx reply in error, pl
 - `402 PAYMENT REQUIRED` - The requested action cannot be performed with your current plan, such as requesting data older than your plan allows, using premium endpoints on Free/Trial, or using `mode=cached` on Free/Trial. See [402: Payment Required](/api/troubleshooting/payment-required).
 - `403 FORBIDDEN` - Access denied. Only one device is permitted to access the API at a time. Your IP address has changed, and your account is temporarily blocked for security reasons. Please wait 5 minutes before trying again. See [Multiple IP Addresses](/api/troubleshooting/multiple-ip-addresses).
 - `404 NOT FOUND` - No data exists for the requested symbol or time period. Consider trying a different symbol or time frame.
-- `413 PAYLOAD TOO LARGE` - The request payload is too large. This is often due to requesting a time frame longer than 1 year for candle data. Resubmit the request with a time frame of 1 year or less.
+- `413 PAYLOAD TOO LARGE` - The request payload is too large. This is often due to requesting more than 1 year of **intraday** candle data in a single request. Reduce the intraday time window (daily candles can span longer ranges). See [413: Payload Too Large](/api/troubleshooting/payload-too-large).
 - `429 TOO MANY REQUESTS` - Credit limit exceeded for your current plan window (daily for Free/Starter/Trader, per-minute for Quant/Prime). See [429: Credit Limit Reached](/api/troubleshooting/running-out-of-credits).
 - `429 TOO MANY REQUESTS` - Concurrent request limit reached (more than 50 simultaneous in-flight requests). See [429: Too Many Concurrent Requests](/api/troubleshooting/too-many-concurrent-requests).
 
