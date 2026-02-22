@@ -1,0 +1,96 @@
+---
+title: 404: Not Found
+sidebar_position: 13
+---
+
+A `404` can mean different things depending on endpoint and request context.
+
+This guide is intentionally detailed and will be built out case by case.
+
+## Case 1: Market Closed on Requested Date
+
+One of the most helpful `404` responses is:
+
+```json
+{
+  "s": "no_data",
+  "errmsg": "Market closed on this date."
+}
+```
+
+What this means:
+
+- Your symbol/request shape is valid.
+- The requested date is not a trading day for that market/session.
+- The API returns `no_data` to explain that the date context is invalid for quote/candle retrieval.
+
+What to do:
+
+1. Check if the requested date is a weekend or market holiday.
+2. Retry with the nearest trading day.
+3. If using automated date logic, add trading-calendar validation before requesting.
+
+## Case 2: Valid OCC Symbol Format, But Contract Does Not Exist
+
+Another common `404` response is:
+
+```json
+{
+  "s": "error",
+  "errmsg": "No option found. No option was found for this strike and expiration."
+}
+```
+
+What this means:
+
+- The option symbol format is valid OCC symbology.
+- But no real option contract exists for that strike/expiration combination.
+- This is not a malformed-parameter case (`400`) and not a date-only no-data case.
+- The API treats this as a non-existent contract and returns `404`.
+
+How this differs from other errors:
+
+1. `400 invalid option symbol`: OCC format itself is malformed.
+2. `404 no_data` market/date cases: symbol can exist, but no data for that date/session.
+3. This case: OCC format is valid, but the contract likely never existed.
+
+What to do:
+
+1. Verify strike and expiration against available contracts for the underlying.
+2. Use `options/chain` or `options/strikes`/`options/expirations` to confirm the contract exists.
+3. Use `options/lookup` to avoid manually constructing symbols.
+
+## Case 3: Valid Symbol, But Requested Time Has No Available Data
+
+Another common `404`/`no_data` response is:
+
+```json
+{
+  "s": "no_data",
+  "nextTime": null,
+  "prevTime": null
+}
+```
+
+What this means:
+
+- The symbol/request can be valid.
+- But there is no data available around the requested time in either direction.
+- This can happen for both stocks and options.
+
+Common reasons:
+
+1. Requested date is outside available historical coverage for that symbol/endpoint.
+2. Valid option contract was requested before it began quoting.
+3. Requested window has no recorded quotes/candles and there is no adjacent data to return.
+
+Important context:
+
+- This is not necessarily customer error.
+- It can represent a legitimate \"data does not exist in this time region\" condition.
+
+What to do:
+
+1. Move the request window forward in time and retry.
+2. For options, confirm the contract had started trading by that date.
+3. Use nearby date probes to find first/last available data for the symbol.

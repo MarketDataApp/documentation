@@ -50,3 +50,35 @@ https://api.marketdata.app/v1/stocks/quotes/SPY/?token=token1234&dateformat=time
 
 - **Incorrect Character Usage**: Ensure you use `?` to start and `&` to separate parameters.
 - **Unencoded Characters**: Encode special characters like spaces (`%20`), plus (`%2B`), etc, using URL encoding.
+
+## Case: `date` Parameter Is Historical-Only
+
+You may receive this `400` error:
+
+```json
+{
+  "s": "error",
+  "errmsg": "Invalid date. The date parameter is used for historical queries only."
+}
+```
+
+What this means:
+
+- Your request can be otherwise valid.
+- But `date` was used for a current-day request context.
+- The `date` parameter is for historical queries only.
+
+How to fix:
+
+1. For current data: omit the `date` parameter entirely.
+2. For historical data: keep `date` and set it to a past trading date.
+
+Example:
+
+```http
+# Current request (correct): no date parameter
+GET https://api.marketdata.app/v1/options/quotes/OPTION_SYMBOL/
+
+# Historical request (correct): includes date
+GET https://api.marketdata.app/v1/options/quotes/OPTION_SYMBOL/?date=2025-01-15
+```
