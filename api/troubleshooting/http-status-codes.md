@@ -1,6 +1,6 @@
 ---
 title: HTTP Status Codes
-sidebar_position: 2
+sidebar_position: 1
 ---
 
 The Market Data API uses standard HTTP status codes to respond to each request. By preparing your application to utilize these status codes, you can often times solve common errors, or retry failed requests.
