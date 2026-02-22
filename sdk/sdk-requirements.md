@@ -100,47 +100,35 @@ client.utilities
 
 ---
 
-## 2. Required Endpoints
+## 2. Required API Coverage (Canonical Docs Are Source of Truth)
 
-### 2.1 Stocks Resource
+Do not duplicate REST paths, payload schemas, or parameter contracts in this document.
 
-| Method | Endpoint | Required Parameters |
-|--------|----------|---------------------|
-| `prices()` | `/v1/stocks/quotes/` | `symbols` (string or array) |
-| `quotes()` | `/v1/stocks/bulkquotes/` | `symbols` (string or array) |
-| `candles()` | `/v1/stocks/candles/{resolution}/` | `symbol`, `resolution`, date params |
-| `earnings()` | `/v1/stocks/earnings/` | `symbol` |
-| `news()` | `/v1/stocks/news/` | `symbol` |
+- **Canonical REST documentation is authoritative** for endpoint paths, request parameters, response schemas, and behavior.
+- If this SDK requirements doc conflicts with REST API docs, the REST API docs win.
+- SDK acceptance should verify method coverage against canonical docs, not against hardcoded paths here.
 
-### 2.2 Options Resource
+### 2.1 Canonical API Documentation
 
-| Method | Endpoint | Required Parameters |
-|--------|----------|---------------------|
-| `chain()` | `/v1/options/chain/` | `symbol` |
-| `expirations()` | `/v1/options/expirations/` | `symbol` |
-| `strikes()` | `/v1/options/strikes/` | `symbol` |
-| `quotes()` | `/v1/options/quotes/` | `symbols` (option symbols) |
-| `lookup()` | `/v1/options/lookup/` | `userInput` |
+- [API Overview](/api/intro)
+- [Stocks API](/api/stocks/index)
+- [Options API](/api/options/index)
+- [Funds API](/api/funds/index)
+- [Markets API](/api/markets/index)
+- [Utilities API](/api/utilities/index)
+- [Universal Parameters](/api/universal-parameters/index)
 
-### 2.3 Funds Resource
+### 2.2 Required SDK Method Coverage
 
-| Method | Endpoint | Required Parameters |
-|--------|----------|---------------------|
-| `candles()` | `/v1/funds/candles/{resolution}/` | `symbol`, `resolution`, date params |
+SDKs must provide first-class methods for the following capabilities (language-idiomatic naming is expected):
 
-### 2.4 Markets Resource
-
-| Method | Endpoint | Required Parameters |
-|--------|----------|---------------------|
-| `status()` | `/v1/markets/status/` | At least one of: `country`, `date`, `from`/`to` |
-
-### 2.5 Utilities Resource
-
-| Method | Endpoint | Required Parameters | Notes |
-|--------|----------|---------------------|-------|
-| `status()` | `/status/` | None | Public, no auth required |
-| `headers()` | `/headers/` | None | Debug endpoint |
-| `user()` | `/user/` | None | Returns rate limit info |
+| Resource | Required SDK Methods (capabilities) |
+|----------|-------------------------------------|
+| `stocks` | `prices`, `quotes`, `candles`, `earnings`, `news` |
+| `options` | `chain`, `expirations`, `strikes`, `quotes`, `lookup` |
+| `funds` | `candles` |
+| `markets` | `status` |
+| `utilities` | `status`, `headers`, `user` |
 
 ---
 
@@ -692,7 +680,7 @@ Integration tests make **actual REST requests** to the live API:
 Before accepting an SDK, verify:
 
 ### Core Functionality
-- [ ] All required endpoints implemented
+- [ ] All required SDK method capabilities implemented (as defined in this doc and canonical API docs)
 - [ ] Bearer authentication works
 - [ ] Token validation defaults to startup (fail fast) and supports constructor override to disable startup validation
 - [ ] Environment variable configuration works
