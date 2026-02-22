@@ -31,8 +31,8 @@ If you believe your request is correct and you received a 4xx reply in error, pl
 - `403 FORBIDDEN` - Access denied. Only one device is permitted to access the API at a time. Your IP address has changed, and your account is temporarily blocked for security reasons. Please wait 5 minutes before trying again.
 - `404 NOT FOUND` - No data exists for the requested symbol or time period. Consider trying a different symbol or time frame.
 - `413 PAYLOAD TOO LARGE` - The request payload is too large. This is often due to requesting a time frame longer than 1 year for candle data. Resubmit the request with a time frame of 1 year or less.
-- `429 TOO MANY REQUESTS` - Your daily API credit limit for the account has been exceeded. New requests will be allowed at 9:30 AM ET (opening bell).
-- `429 TOO MANY REQUESTS` - Concurrent request limit reached. You've reached the limit of 50 requests running simultaneously on our server. Please wait until they are finished to make more.
+- `429 TOO MANY REQUESTS` - Credit limit exceeded for your current plan window (daily for Free/Starter/Trader, per-minute for Quant/Prime). See [429: Credit Limit Reached](/api/troubleshooting/running-out-of-credits).
+- `429 TOO MANY REQUESTS` - Concurrent request limit reached (more than 50 simultaneous in-flight requests). See [429: Too Many Concurrent Requests](/api/troubleshooting/too-many-concurrent-requests).
 
 ## Server Errors (5xx)
 
