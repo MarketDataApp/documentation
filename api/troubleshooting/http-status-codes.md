@@ -26,6 +26,7 @@ If you believe your request is correct and you received a 4xx reply in error, pl
 :::
 
 - `400 BAD REQUEST` - The API endpoint is not being used properly, often due to a parameter that cannot be parsed correctly (e.g., sending a string instead of a number or vice versa). See [URL Parameters](/api/troubleshooting/url-parameters).
+- `400 BAD REQUEST` - Invalid option symbol input (invalid OCC symbology) is also returned as a bad request, even when other request parameters are valid. See [400: Invalid Option Symbol](/api/troubleshooting/invalid-option-symbol).
 - `401 UNAUTHORIZED` - The token supplied with the request is missing, invalid, or cannot be used. See [Authentication](/api/troubleshooting/authentication).
 - `402 PAYMENT REQUIRED` - The requested action cannot be performed with your current plan, such as requesting data older than your plan allows, using premium endpoints on Free/Trial, or using `mode=cached` on Free/Trial. See [402: Payment Required](/api/troubleshooting/payment-required).
 - `403 FORBIDDEN` - Access denied. Only one device is permitted to access the API at a time. Your IP address has changed, and your account is temporarily blocked for security reasons. Please wait 5 minutes before trying again. See [Multiple IP Addresses](/api/troubleshooting/multiple-ip-addresses).
