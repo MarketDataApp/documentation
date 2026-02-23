@@ -1,0 +1,80 @@
+---
+title: "400: Invalid Option Symbol"
+sidebar_position: 4
+---
+
+Use this page when you receive a `400 BAD REQUEST` with:
+
+```json
+{
+  "s": "error",
+  "errmsg": "Invalid option symbol. Use valid OCC symbology for the option symbol."
+}
+```
+
+If you need the broader `400` troubleshooting flow, start here:
+- [400: Bad Request](/api/troubleshooting/bad-request)
+
+## What This Error Means
+
+The endpoint and query string can be valid, but the `optionSymbol` itself is not valid OCC format.
+
+## OCC Option Symbol Format
+
+Expected format:
+
+`UNDERLYING + YYMMDD + C/P + STRIKE`
+
+Example:
+
+- `AAPL250117C00150000`
+
+Field rules:
+
+1. `UNDERLYING`: Root symbol (for example `AAPL`, `SPY`, `INTC`)
+2. `YYMMDD`: Expiration date (2-digit year, month, day)
+3. `C/P`: `C` for call or `P` for put
+4. `STRIKE`: 8 digits, zero-padded, implied 3 decimal places
+
+## Strike Encoding Reference
+
+The strike is represented as an integer with three implied decimal places.
+
+Examples:
+
+- `150` becomes `00150000`
+- `32.5` becomes `00032500`
+- `32.25` becomes `00032250`
+
+## Common Construction Errors
+
+1. Expiration is not in `YYMMDD`
+2. Missing call/put flag (`C` or `P`)
+3. Strike field is not 8 digits
+4. Strike is not zero-padded
+5. Decimal strike is encoded incorrectly
+6. Legacy pre-2010 style symbol is used
+
+## Validate Before Calling Quotes/History
+
+Use the lookup endpoint to build/validate a symbol first.
+
+```http
+# Build/validate OCC symbol from human-readable contract
+GET https://api.marketdata.app/v1/options/lookup/AAPL%201/17/2025%20150%20Call
+
+# Then request data with the returned optionSymbol
+GET https://api.marketdata.app/v1/options/quotes/AAPL250117C00150000/
+```
+
+## 400 vs 404 for Options
+
+- `400`: the option symbol format is invalid
+- `404`: format is valid, but no matching contract/data was found
+
+## Quick Debug Checklist
+
+1. Log the exact `optionSymbol` your client sent
+2. Check `YYMMDD`, `C/P`, and 8-digit strike encoding
+3. Validate with `options/lookup`
+4. Reuse the exact returned symbol in follow-up requests

@@ -1,0 +1,112 @@
+---
+title: "402: Payment Required"
+sidebar_position: 6
+---
+
+A `402 PAYMENT REQUIRED` means your request is valid, but your current plan does not include the specific data or feature you requested.
+
+This is a **plan entitlement** issue, not an authentication issue and not a rate-limit issue.
+
+## Fast Triage
+
+You are likely hitting `402` when one of these is true:
+
+1. You requested historical data older than your plan allows.
+2. You requested a premium endpoint from Free/Trial.
+3. You requested `mode=cached` from Free/Trial.
+
+## What Triggers 402 by Plan
+
+### Free Forever and Trial Plans
+
+Common 402 causes:
+
+1. Historical query older than 1 year.
+2. Premium endpoint request.
+3. `mode=cached` request.
+
+### Starter Plan
+
+Common 402 cause:
+
+1. Historical query older than 5 years.
+
+### Trader, Quant, Prime
+
+Trader, Quant, and Prime should not receive `402 PAYMENT REQUIRED` for standard plan usage.
+
+If you receive `402` on one of these plans, treat it as unexpected and contact support with the full request/response details.
+
+## Historical Age Rules
+
+- Free Forever and Trial plans: up to 1 year of historical data
+- Starter: up to 5 years of historical data
+- Trader/Quant/Prime: no historical age limit
+
+## mode=cached Rule
+
+`mode=cached` is a paid-plan feature.
+
+- Free/Trial: `mode=cached` is not available and can produce `402`
+- Paid plans: available on supported endpoints
+
+For mode details, see [Data Mode](/api/universal-parameters/mode).
+
+## Premium Endpoint Rule
+
+Free/Trial plans can access standard pricing endpoints but not premium endpoint features. Premium endpoint requests from Free/Trial can produce `402`.
+
+For plan-level capability details, see [Plan Limits](/account/plan-limits).
+
+## 30-Second Fix Checklist
+
+1. Confirm your current plan in the dashboard.
+2. If historical request: reduce date range to your plan limit.
+3. If using Free/Trial: remove `mode=cached`.
+4. If using Free/Trial: switch from premium endpoint to standard endpoint (or upgrade).
+5. Retry after adjusting request scope/feature usage.
+
+## Common Scenarios
+
+### Scenario 1: "I requested 3 years of history on Free/Trial"
+
+What happened:
+- Plan allows only 1 year of historical data.
+
+What to do:
+- Reduce to `<= 1 year` or upgrade.
+
+### Scenario 2: "I requested 10 years on Starter"
+
+What happened:
+- Starter allows up to 5 years of historical data.
+
+What to do:
+- Reduce to `<= 5 years` or upgrade to Trader/Quant/Prime.
+
+### Scenario 3: "I used mode=cached on Trial"
+
+What happened:
+- Trial does not support cached mode.
+
+What to do:
+- Remove `mode=cached` on Trial or move to a paid plan.
+
+### Scenario 4: "I called a premium endpoint on Free/Trial"
+
+What happened:
+- Premium endpoint access is not included on Free/Trial.
+
+What to do:
+- Use a standard endpoint or upgrade plan.
+
+## When to Contact Support
+
+Contact support if you believe the request should be allowed on your current plan.
+
+Include:
+
+1. Endpoint and full query parameters
+2. Date range requested
+3. Your current plan
+4. Full response payload and headers

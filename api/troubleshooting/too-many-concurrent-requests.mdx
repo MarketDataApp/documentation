@@ -1,0 +1,195 @@
+---
+title: "429: Too Many Concurrent Requests"
+sidebar_position: 11
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+A `429 TOO MANY REQUESTS` can also mean your account exceeded the concurrent request limit.
+
+This page is only for the **concurrency** case. If your issue is credit depletion, use [429: Credit Limit Reached](/api/troubleshooting/running-out-of-credits).
+
+For full policy details, see [Rate Limits](/api/rate-limiting).
+
+## Fast Triage
+
+Use error context and rate-limit headers to confirm this is concurrency, not credits.
+
+Typical concurrency-limit error payload:
+
+```json
+{
+  "s": "error",
+  "errmsg": "Too many concurrent requests. Please reduce parallel requests and retry.",
+  "troubleshootingGuide": "https://www.marketdata.app/docs/api/troubleshooting/too-many-concurrent-requests"
+}
+```
+
+**Concurrency 429 indicators:**
+- 429 appears during bursts of parallel requests
+- You still have credit budget remaining
+- Workload fan-out is high (many simultaneous in-flight calls)
+
+**Credit-limit 429 indicators:**
+- `X-Api-Ratelimit-Remaining` is `0` (or effectively exhausted)
+- Error message indicates plan-window budget exhaustion
+
+## 30-Second Action Checklist
+
+1. Confirm this is a concurrency 429 (not credit depletion).
+2. If possible, switch to an official Market Data SDK.
+3. If not using SDK, reduce in-flight concurrency immediately.
+4. Add retries with exponential backoff + jitter for 429.
+5. Verify 429 rate falls after reducing burst fan-out.
+
+## What This 429 Means
+
+All plans are limited to **50 simultaneous in-flight requests**. If your application exceeds that, additional requests return `429` until concurrency drops.
+
+## Primary Fix: Use Official SDKs
+
+Official Market Data SDK clients are designed around the 50-request concurrency limit and automatically maximize throughput up to that limit without exceeding it.
+
+If you are using an SDK and still seeing concurrency 429, check for additional parallelism in your own app layer (multiple workers/processes/instances each issuing SDK calls).
+
+## Non-SDK Playbook
+
+If you are using a custom HTTP client:
+
+1. Cap worker/thread pool below 50.
+2. Use bounded queueing to prevent fan-out bursts.
+3. Ensure each worker handles one request at a time.
+4. Add per-request timeout and retry budget.
+5. Log in-flight concurrency and 429 counts.
+
+### Recommended Non-SDK Pattern
+
+1. Fixed max concurrency (for example, 20-40).
+2. Shared request queue.
+3. Retry with exponential backoff + jitter on 429.
+4. Gradual ramp-up instead of burst starts.
+
+## Non-SDK Backoff Examples
+
+These examples are only for custom HTTP clients. If you use an official SDK, skip this section.
+
+<Tabs>
+<TabItem value="Python" label="Python" default>
+
+```python
+import random
+import time
+import requests
+
+def request_with_backoff(url, headers, max_retries=5):
+    for attempt in range(max_retries + 1):
+        response = requests.get(url, headers=headers, timeout=30)
+        if response.status_code != 429:
+            return response
+        backoff = 0.2 * (2 ** attempt)
+        jitter = random.uniform(0, 0.1)
+        time.sleep(backoff + jitter)
+    raise RuntimeError("Exceeded retry budget for 429 concurrency responses")
+```
+
+</TabItem>
+<TabItem value="JSTS" label="JavaScript / TypeScript">
+
+```javascript
+async function requestWithBackoff(fn, maxRetries = 5) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const response = await fn();
+
+    if (response.status !== 429) {
+      return response;
+    }
+
+    const baseMs = 200;
+    const backoffMs = baseMs * Math.pow(2, attempt);
+    const jitterMs = Math.floor(Math.random() * 100);
+    await new Promise((resolve) => setTimeout(resolve, backoffMs + jitterMs));
+  }
+
+  throw new Error("Exceeded retry budget for 429 concurrency responses");
+}
+```
+
+</TabItem>
+<TabItem value="Go" label="Go">
+
+```go
+package main
+
+import (
+	"errors"
+	"math/rand"
+	"net/http"
+	"time"
+)
+
+func requestWithBackoff(client *http.Client, req *http.Request, maxRetries int) (*http.Response, error) {
+	for attempt := 0; attempt <= maxRetries; attempt++ {
+		resp, err := client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		if resp.StatusCode != http.StatusTooManyRequests {
+			return resp, nil
+		}
+		backoff := 200 * time.Millisecond * time.Duration(1<<attempt)
+		jitter := time.Duration(rand.Intn(100)) * time.Millisecond
+		time.Sleep(backoff + jitter)
+	}
+	return nil, errors.New("exceeded retry budget for 429 concurrency responses")
+}
+```
+
+</TabItem>
+<TabItem value="PHP" label="PHP">
+
+```php
+<?php
+
+function requestWithBackoff(string $url, array $headers, int $maxRetries = 5): array {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+    for ($attempt = 0; $attempt <= $maxRetries; $attempt++) {
+        curl_setopt($ch, CURLOPT_URL, $url);
+        $body = curl_exec($ch);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if ($status !== 429) {
+            curl_close($ch);
+            return ['status' => $status, 'body' => $body];
+        }
+        $backoffMs = 200 * (2 ** $attempt);
+        $jitterMs = random_int(0, 100);
+        usleep(($backoffMs + $jitterMs) * 1000);
+    }
+
+    curl_close($ch);
+    throw new RuntimeException('Exceeded retry budget for 429 concurrency responses');
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Common Concurrency Traps
+
+1. Launching many jobs at once without queueing
+2. Multiple app instances each using high internal concurrency
+3. Immediate retries without backoff
+4. Long request timeouts that keep too many requests in-flight
+
+## When to Contact Support
+
+If concurrency 429 persists after reducing fan-out and applying backoff, contact support with:
+
+1. Approximate in-flight concurrency at failure time
+2. Retry policy and worker pool settings
+3. Timestamped request logs around 429 bursts
+4. Whether you are using official SDKs or a custom client

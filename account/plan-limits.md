@@ -12,17 +12,23 @@ Most users don't run into trouble with our limits. However, if our standard plan
 ## Standard Plans
 
 |                       | Free Forever | Starter   | Trader    | Quant      | Prime Plans |
-|-----------------------|--------------|-----------|-----------|------------|--------------|
+|-----------------------|--------------|-----------|-----------|------------|-------------|
 | Daily Credits         | 100          | 10,000    | 100,000   | No Limit   | No Limit    |
+| Per-Minute Credits    | No Limit     | No Limit  | No Limit  | 10,000     | 100,000     |
 | Historical Data       | 1 Year       | 5 Years   | No Limit  | No Limit   | No Limit    |
-| Data Type             | Delayed      | Delayed   | Real-time | Real-time  | Real-time   |
+| Stocks Data Type      | Delayed      | Real-time | Real-time | Real-time  | Real-time   |
+| Options Data Type     | Delayed      | 15-minute delayed | Real-time | Real-time  | Real-time   |
 | API Endpoints         | Standard     | Premium   | Premium   | Premium + Custom | Premium + Custom |
 
 ## Credits
-Each time you call the API, the system increases your credits counter. Normally each successful response consumes 1 credit. However, **if you request multiple symbols in a single API call using the bulkquotes, bulkcandles, or option chain endpoint, each symbol included in the response consumes credits**.
+Each time you call the API, the system increases your credits counter. Normally each successful response consumes 1 credit. However, **if you request multiple symbols in a single API call using `stocks/quotes`, `stocks/prices`, `stocks/bulkcandles`, or `options/chain`, each symbol included in the response consumes credits**.
 
 :::caution 
 For users working with options, take care before repeatedly requesting quotes for an entire option chain. **Each option symbol included in the response consumes credits**. If you download the entire SPX option chain (which has 20,000+ option symbols), you can exhaust your credit limit very quickly. Use our option chain filters to request only the strikes and expirations you need.
+:::
+
+:::note Trial plans
+Starter Trial and Trader Trial do not support `mode=cached`.
 :::
 
 ## Device Restrictions
@@ -45,7 +51,9 @@ The Free Forever and Starter plans include historical age limits on historical d
 
 ## Data Type
 
-The Free Forever and Starter plans provide users with delayed data. Real-time data is available with Trader, Quant, and Prime plans.
+- Free Forever provides delayed stocks/options data.
+- Starter provides real-time stocks and 15-minute delayed options data.
+- Trader, Quant, and Prime provide real-time stocks/options data.
 
 :::info
 Free trials of paid plans provide delayed data. Real-time data is only available with paid versions of the Trader plan and above.
@@ -55,6 +63,8 @@ Free trials of paid plans provide delayed data. Real-time data is only available
 
 The Free Forever plan only provides access to pricing data. Premium endpoints and spreadsheet formulas that contain reference data are not available on free plans. Quant and Prime plans also have access to custom-built endpoints to satisfy the needs of their specific application.
 
-## About Daily Limits
+## About Usage Windows
 
-All usage counters (requests, unique symbols, backtests, etc.) for all plans are reset at 9:30 AM Eastern Time (NYSE opening bell). All limits are hard limits and once reached, you won't be able to continue until the next trading day.
+- Free Forever, Starter, and Trader use daily windows that reset at 9:30 AM Eastern Time (NYSE opening bell).
+- Quant and Prime use per-minute credit windows.
+- All limits are hard limits. Once reached, requests are blocked until the relevant window resets.
