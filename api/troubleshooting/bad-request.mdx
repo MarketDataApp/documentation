@@ -64,34 +64,8 @@ You may receive:
 
 Meaning: request shape is valid, but `optionSymbol` is malformed.
 
-Valid OCC pattern:
-
-`UNDERLYING + YYMMDD + C/P + 8-digit strike`
-
-Example:
-
-- `AAPL251219C00150000`
-
-Common construction errors:
-
-1. Expiration is not `YYMMDD`
-2. Missing `C` or `P`
-3. Strike field is not exactly 8 digits
-4. Strike is not zero-padded
-5. Legacy pre-2010 symbol format is used
-
-Validation workflow:
-
-1. Generate/validate with `options/lookup`
-2. Use returned OCC symbol in quote/history endpoints
-
-```http
-# Generate a valid OCC symbol from human-readable input
-GET https://api.marketdata.app/v1/options/lookup/AAPL%2012/19/2025%20150%20Call
-
-# Then request quote with returned symbol
-GET https://api.marketdata.app/v1/options/quotes/AAPL251219C00150000/
-```
+For detailed format rules, examples, and validation workflow, use:
+- [400: Invalid Option Symbol](/api/troubleshooting/invalid-option-symbol)
 
 ## Case 4: `date` Parameter Is Historical-Only
 
