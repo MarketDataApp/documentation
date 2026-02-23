@@ -13,17 +13,17 @@ const CONTEXT7_WIDGETS = [
     library: '/websites/marketdata_app_sdk_py',
     placeholder: 'Ask about the Python SDK...',
   },
+  {
+    pathPattern: /\/sdk\/php(\/|$)/,
+    library: '/websites/marketdata_app_sdk_php',
+    placeholder: 'Ask about the PHP SDK...',
+  },
+  {
+    pathPattern: /\/sdk\/go(\/|$)/,
+    library: '/websites/marketdata_app_sdk_go',
+    placeholder: 'Ask about the Go SDK...',
+  },
   // Uncomment as widgets are enabled in Context7:
-  // {
-  //   pathPattern: /\/sdk\/go(\/|$)/,
-  //   library: '/websites/marketdata_app_sdk_go',
-  //   placeholder: 'Ask about the Go SDK...',
-  // },
-  // {
-  //   pathPattern: /\/sdk\/php(\/|$)/,
-  //   library: '/websites/marketdata_app_sdk_php',
-  //   placeholder: 'Ask about the PHP SDK...',
-  // },
   // {
   //   pathPattern: /\/sheets(\/|$)/,
   //   library: '/websites/marketdata_app_sheets',
