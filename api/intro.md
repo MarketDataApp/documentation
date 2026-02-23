@@ -1,5 +1,5 @@
 ---
-title: Introduction
+title: Market Data API
 sidebar_position: 1
 slug: /
 ---
