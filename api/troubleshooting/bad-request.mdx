@@ -1,0 +1,138 @@
+---
+title: "400: Bad Request"
+sidebar_position: 2
+---
+
+Use this page for **all `400 BAD REQUEST` errors**.
+
+A `400` means the request could not be parsed or validated as valid input.
+
+## What Usually Causes 400
+
+1. URL is constructed incorrectly (path vs query string mixups)
+   - For path/query parsing issues caused by bad URL construction, see [400: URL Anatomy (Path vs Query Parameters)](/api/troubleshooting/url-parameters).
+2. Query parameters are malformed (`?` / `&` / `key=value` issues)
+3. Parameter type or format is invalid (string where number/date is expected)
+4. Parameter value is unsupported or out of range
+5. Option symbol is not valid OCC format
+6. `date` parameter is used in a current-data request (historical-only usage)
+
+## Case 1: URL Construction Problems (Path vs Query)
+
+Common examples:
+
+- Putting query parameters in the path segment
+- Missing `?` before query parameters
+- Using wrong separators between parameters
+
+Correct structure:
+
+```text
+https://api.marketdata.app/<endpoint-path>/?key=value&key2=value2
+```
+
+If you need a step-by-step URL-building guide, use:
+- [400: URL Anatomy (Path vs Query Parameters)](/api/troubleshooting/url-parameters)
+
+## Case 2: Invalid Parameter Type/Format/Value
+
+You can get `400` when a parameter cannot be parsed correctly or violates endpoint rules.
+
+Examples:
+
+- Sending text where a numeric value is expected
+- Sending a malformed date
+- Sending an unsupported enum/value for a parameter
+- Sending a value outside allowed bounds
+
+Fast check:
+
+1. Confirm parameter names exactly match the endpoint docs.
+2. Confirm each parameter value type/format is valid.
+3. Remove optional parameters and re-add one at a time.
+
+## Case 3: Invalid Option Symbol (OCC)
+
+You may receive:
+
+```json
+{
+  "s": "error",
+  "errmsg": "Invalid option symbol. Use valid OCC symbology for the option symbol."
+}
+```
+
+Meaning: request shape is valid, but `optionSymbol` is malformed.
+
+Valid OCC pattern:
+
+`UNDERLYING + YYMMDD + C/P + 8-digit strike`
+
+Example:
+
+- `AAPL251219C00150000`
+
+Common construction errors:
+
+1. Expiration is not `YYMMDD`
+2. Missing `C` or `P`
+3. Strike field is not exactly 8 digits
+4. Strike is not zero-padded
+5. Legacy pre-2010 symbol format is used
+
+Validation workflow:
+
+1. Generate/validate with `options/lookup`
+2. Use returned OCC symbol in quote/history endpoints
+
+```http
+# Generate a valid OCC symbol from human-readable input
+GET https://api.marketdata.app/v1/options/lookup/AAPL%2012/19/2025%20150%20Call
+
+# Then request quote with returned symbol
+GET https://api.marketdata.app/v1/options/quotes/AAPL251219C00150000/
+```
+
+## Case 4: `date` Parameter Is Historical-Only
+
+You may receive:
+
+```json
+{
+  "s": "error",
+  "errmsg": "Invalid date. The date parameter is used for historical queries only."
+}
+```
+
+Meaning:
+
+- Request can be otherwise valid
+- `date` was used in a current-data context
+
+How to fix:
+
+1. For current data: omit `date`
+2. For historical data: provide a past trading date
+
+```http
+# Current request (correct): no date parameter
+GET https://api.marketdata.app/v1/options/quotes/OPTION_SYMBOL/
+
+# Historical request (correct): includes date
+GET https://api.marketdata.app/v1/options/quotes/OPTION_SYMBOL/?date=2025-01-15
+```
+
+## 400 vs Other Status Codes
+
+- `400`: request input/format is invalid
+- `401`: authentication issue (token missing/invalid)
+- `402`: plan/entitlement limit reached
+- `403`: forbidden by policy (for example multiple IP addresses)
+- `404`: request format is valid, but requested resource was not found
+
+## If You Still Get 400
+
+1. Log full request URL and all query parameters
+2. Compare request against endpoint docs field-by-field
+3. Re-test with only required parameters
+4. Add optional parameters back one at a time

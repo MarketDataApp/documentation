@@ -1,13 +1,20 @@
 ---
-title: URL Parameters
-sidebar_position: 11
+title: "400: URL Anatomy (Path vs Query Parameters)"
+sidebar_position: 3
 ---
+
+## What This Guide Is For
+
+This is a detailed guide for `400 BAD REQUEST` errors caused by incorrect URL construction.
+
+If you are troubleshooting a `400 BAD REQUEST`, use the dedicated guide:
+- [400: Bad Request](/api/troubleshooting/bad-request)
 
 ## Introduction to URL Parameters
 
-URL parameters, also known as query strings, are a way to pass information to a server as part of a URL. They are often used to filter or customize the response from the server. Understanding how to correctly build URL parameters is crucial for interacting with Market Data's APIs effectively.
+URL parameters (query strings) pass optional input to an endpoint after the path.
 
-### Structure of URL Parameters
+### URL Anatomy: Path vs Query String
 
 A URL with parameters has the following structure:
 
@@ -23,11 +30,16 @@ https://<span class="url-host">api.marketdata.app</span>/<span class="url-path">
   - `token1234` and `timestamp` are the values assigned to those parameters.
   - `&` is used to separate multiple parameters.
 
-### Common Uses of URL Parameters in Market Data's APIs
+### What Goes In The Path
 
-- **Filtering**: Retrieve a subset of data based on specific criteria.
-- **Formatting**: Change the format of the data returned by the API.
-- **Authentication**: Send credentials or tokens to access API data.
+- Required route values like symbols, ids, or endpoint-specific path parts.
+- Example: `/v1/stocks/quotes/SPY/`
+
+### What Goes In The Query String
+
+- Optional controls like `token`, `dateformat`, `limit`, and similar parameters.
+- Query values always use `key=value` form.
+- Multiple parameters are separated by `&`.
 
 ## How to Build URL Parameters
 
@@ -46,39 +58,7 @@ Suppose you want to request stock quotes for `SPY` with a specific date format a
 https://api.marketdata.app/v1/stocks/quotes/SPY/?token=token1234&dateformat=timestamp
 ```
 
-### Troubleshooting Common Mistakes
+### Common Mistakes
 
 - **Incorrect Character Usage**: Ensure you use `?` to start and `&` to separate parameters.
 - **Unencoded Characters**: Encode special characters like spaces (`%20`), plus (`%2B`), etc, using URL encoding.
-
-## Case: `date` Parameter Is Historical-Only
-
-You may receive this `400` error:
-
-```json
-{
-  "s": "error",
-  "errmsg": "Invalid date. The date parameter is used for historical queries only."
-}
-```
-
-What this means:
-
-- Your request can be otherwise valid.
-- But `date` was used for a current-day request context.
-- The `date` parameter is for historical queries only.
-
-How to fix:
-
-1. For current data: omit the `date` parameter entirely.
-2. For historical data: keep `date` and set it to a past trading date.
-
-Example:
-
-```http
-# Current request (correct): no date parameter
-GET https://api.marketdata.app/v1/options/quotes/OPTION_SYMBOL/
-
-# Historical request (correct): includes date
-GET https://api.marketdata.app/v1/options/quotes/OPTION_SYMBOL/?date=2025-01-15
-```
