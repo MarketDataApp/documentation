@@ -1,6 +1,6 @@
 ---
 title: "401: Authentication"
-sidebar_position: 3
+sidebar_position: 5
 ---
 
 Authentication issues usually arise due to incorrect headers, omission of the authorization header, or problems with URL parameters. If you encounter a 401 error, it's usually related to issues with your `Authorization` header. The most common issues are:
