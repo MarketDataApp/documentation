@@ -12,6 +12,8 @@ jobs:
       deployments: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - uses: actions/setup-node@v4
         with:
@@ -62,7 +64,7 @@ jobs:
       - name: Check if Worker changed
         id: worker
         run: |
-          if git diff --name-only HEAD~1 HEAD -- worker/ | grep -q .; then
+          if git diff --name-only HEAD~1 HEAD -- worker/ 2>/dev/null | grep -q .; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
