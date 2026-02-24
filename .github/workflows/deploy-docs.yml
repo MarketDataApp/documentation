@@ -2,7 +2,7 @@ name: Deploy Docs to Cloudflare Pages
 
 on:
   push:
-    branches: [staging]
+    branches: [staging, main]
 
 jobs:
   deploy:
