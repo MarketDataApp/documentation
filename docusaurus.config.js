@@ -54,6 +54,21 @@ const config = {
 
   plugins: [
     [
+      "@docusaurus/plugin-client-redirects",
+      {
+        redirects: [
+          {
+            from: "/api/troubleshooting/http-status-codes",
+            to: "/api/troubleshooting",
+          },
+          {
+            from: "/sheets/troubleshooting/common-error-messages",
+            to: "/sheets/troubleshooting",
+          },
+        ],
+      },
+    ],
+    [
       "@docusaurus/plugin-content-docs",
       /** @type {import('@docusaurus/plugin-content-docs').Options} */
       {
