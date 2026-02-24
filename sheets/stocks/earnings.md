@@ -1,8 +1,10 @@
 ---
-title: EARNINGS tg p
+title: EARNINGS
 sidebar_position: 2
 tags:
   - "Sheets: Premium"
+sidebar_custom_props:
+  badge: p
 ---
 
 :::info Premium Formula
