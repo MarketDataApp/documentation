@@ -1,6 +1,8 @@
 ---
 title: Data Mode
 sidebar_position: 1
+tags:
+  - "API: Premium"
 sidebar_custom_props:
   badge: p
 ---
