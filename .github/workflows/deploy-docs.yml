@@ -58,3 +58,21 @@ jobs:
             pages deploy build
             --project-name=${{ steps.env.outputs.project }}
             --commit-dirty=true
+
+      - name: Check if Worker changed
+        id: worker
+        run: |
+          if git diff --name-only HEAD~1 HEAD -- worker/ | grep -q .; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy Worker
+        if: steps.worker.outputs.changed == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          workingDirectory: worker
