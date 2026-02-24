@@ -141,9 +141,9 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       algolia: {
-        apiKey: "61b9ada0eff725c3350523c78c53917d",
-        appId: "XRC74FGPQA",
-        indexName: "prod_index",
+        appId: "IUHZFO750H",
+        apiKey: "c29b76b827a4fa1a0ac3abe15f69ec5c",
+        indexName: "Market Data Documentation",
       },
 
       navbar: {
