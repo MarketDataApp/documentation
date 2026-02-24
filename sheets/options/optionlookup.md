@@ -1,6 +1,6 @@
 ---
 title: OPTIONLOOKUP
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 Look-up the OCC option symbol from text or 4 cell references containing (1) underlying symbol, (2) expiration date, (3) strike, (4) call or put. 
