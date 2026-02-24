@@ -1,29 +1,55 @@
 # Market Data Documentation
 
-This website is built using [Docusaurus 3](https://docusaurus.io/), a modern static website generator.
+The official documentation for [Market Data](https://www.marketdata.app/) — covering the REST API, SDKs, and Google Sheets Add-On. Built with [Docusaurus 3](https://docusaurus.io/).
 
-### Installation
-```
-$ yarn
-```
-### Local Development
-```
-$ yarn start
-```
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-### Build
-```
-$ yarn build
-```
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-### Deployment
-Using SSH:
-```
-$ USE_SSH=true yarn deploy
-```
-Not using SSH:
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
-```
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+**Production:** [www.marketdata.app/docs/](https://www.marketdata.app/docs/)
+**Staging:** [www.marketdata.app/docs-staging/](https://www.marketdata.app/docs-staging/)
 
+## Documentation Sections
+
+| Section | Path | Description |
+|---------|------|-------------|
+| **API** | `/api` | REST API reference — stocks, options, indices, funds, markets, and utilities |
+| **SDKs** | `/sdk` | Client libraries for Go, Python, and PHP |
+| **Sheets Add-On** | `/sheets` | Google Sheets Add-On documentation |
+| **Accounts & Billing** | `/account` | Account management, plans, billing, and entitlements |
+
+## Local Development
+
+```bash
+yarn          # Install dependencies
+yarn start    # Start dev server at localhost:3000
+yarn build    # Production build
+```
+
+## Deployment
+
+The site is hosted on **Cloudflare Pages** with a **Cloudflare Worker** reverse proxy. Deployment is fully automated via GitHub Actions.
+
+1. Push to `staging` — deploys to the staging site
+2. Verify changes at the staging URL
+3. Open a PR from `staging` → `main` and merge — deploys to production
+
+The CI pipeline (`.github/workflows/deploy-docs.yml`) builds the Docusaurus site, restructures the output to match the `/docs/` and `/docs-staging/` URL paths, generates cache headers, and deploys via Wrangler.
+
+## Project Structure
+
+```
+api/              # API reference docs (MDX)
+sdk/              # SDK docs — Go, Python, PHP (MDX)
+sheets/           # Google Sheets Add-On docs (MDX)
+account/          # Account & billing docs (MDX)
+src/
+  theme/          # Swizzled Docusaurus theme components
+  css/            # Custom styles
+worker/           # Cloudflare Worker reverse proxy
+.github/workflows # CI/CD pipeline
+```
+
+## Search
+
+Search is powered by [Algolia DocSearch](https://docsearch.algolia.com/). The crawler configuration is managed in the Algolia dashboard, not in this repository.
+
+## License
+
+MIT
