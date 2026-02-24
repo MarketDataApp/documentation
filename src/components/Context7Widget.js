@@ -94,43 +94,178 @@ function injectWidget(widget) {
   document.body.appendChild(script);
 }
 
+// ---------------------------------------------------------------------------
+// Chat state detection helpers
+// ---------------------------------------------------------------------------
+
+/** Returns true when the chat panel is open AND the user has sent at least one message. */
+function isChatEngaged() {
+  const container = document.getElementById('context7-widget');
+  const sr = container?.shadowRoot;
+  if (!sr) return false;
+
+  const panelOpen = sr.querySelector('.c7-panel')?.classList.contains('open');
+  const hasUserMessages = sr.querySelectorAll('.c7-msg.user').length > 0;
+  return panelOpen && hasUserMessages;
+}
+
+/**
+ * Watch for the chat panel to close (`.c7-panel` loses the `open` class).
+ * Calls `callback` once when that happens, then auto-disconnects.
+ * Returns a cleanup function to cancel the observer early.
+ */
+function observePanelClose(callback) {
+  const container = document.getElementById('context7-widget');
+  const sr = container?.shadowRoot;
+  if (!sr) return () => {};
+
+  const panel = sr.querySelector('.c7-panel');
+  if (!panel) return () => {};
+
+  const observer = new MutationObserver(() => {
+    if (!panel.classList.contains('open')) {
+      observer.disconnect();
+      callback();
+    }
+  });
+
+  observer.observe(panel, {attributes: true, attributeFilter: ['class']});
+  return () => observer.disconnect();
+}
+
+/**
+ * Update the widget's brand color in-place by rewriting the shadow DOM
+ * <style> tag. This avoids destroying & recreating the widget (which would
+ * lose any conversation in progress).
+ */
+function updateWidgetColor(oldColor, newColor) {
+  const container = document.getElementById('context7-widget');
+  const sr = container?.shadowRoot;
+  if (!sr) return;
+
+  const style = sr.querySelector('style');
+  if (style && style.textContent.includes(oldColor)) {
+    style.textContent = style.textContent.replaceAll(oldColor, newColor);
+  }
+
+  // Also update the script tag attribute for consistency.
+  const script = document.getElementById('context7-widget-script');
+  if (script) {
+    script.setAttribute('data-color', newColor);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
 export default function Context7Widget() {
   const {pathname} = useLocation();
-  const activeRef = useRef(false);
 
-  const widget = findWidget(pathname);
+  // What's currently rendered in the DOM.
+  const activeRef = useRef(null);
+  // Widget queued for when the user closes the chat panel.
+  const pendingRef = useRef(null);
+  // Cleanup fn for the panel-close observer.
+  const panelCleanupRef = useRef(null);
+  // Cleanup fn for the theme observer.
+  const themeCleanupRef = useRef(null);
+  // The last color injected (so we can do in-place replacement on theme change).
+  const lastColorRef = useRef(null);
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    if (!widget) {
-      cleanupWidget();
-      activeRef.current = false;
-      return;
+  function cancelPanelObserver() {
+    if (panelCleanupRef.current) {
+      panelCleanupRef.current();
+      panelCleanupRef.current = null;
     }
+  }
+
+  function cancelThemeObserver() {
+    if (themeCleanupRef.current) {
+      themeCleanupRef.current();
+      themeCleanupRef.current = null;
+    }
+  }
+
+  function performSwitch(widget) {
+    cancelPanelObserver();
+    cancelThemeObserver();
+    pendingRef.current = null;
 
     injectWidget(widget);
-    activeRef.current = true;
+    activeRef.current = widget;
+    lastColorRef.current = getThemeColor();
 
-    // Watch for theme changes (re-inject with correct color).
+    // Watch for theme changes — update color in-place instead of re-injecting.
     const themeObserver = new MutationObserver(() => {
-      if (activeRef.current) {
-        injectWidget(widget);
+      if (!activeRef.current) return;
+      const newColor = getThemeColor();
+      const oldColor = lastColorRef.current;
+      if (oldColor && oldColor !== newColor) {
+        updateWidgetColor(oldColor, newColor);
+        lastColorRef.current = newColor;
       }
     });
-
     themeObserver.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['data-theme'],
     });
+    themeCleanupRef.current = () => themeObserver.disconnect();
+  }
 
+  // Main navigation effect — runs on every client-side route change.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const targetWidget = findWidget(pathname);
+
+    // Same widget as what's active (or both null on initial load): nothing to do.
+    if (targetWidget === activeRef.current) {
+      return;
+    }
+
+    // Navigated to a page with no widget: keep current widget open (sticky).
+    if (targetWidget === null) {
+      pendingRef.current = null;
+      cancelPanelObserver();
+      return;
+    }
+
+    // No widget currently active: inject fresh.
+    if (activeRef.current === null) {
+      performSwitch(targetWidget);
+      return;
+    }
+
+    // Different widget requested while one is already active.
+    if (isChatEngaged()) {
+      // User has an active conversation — defer until they close the panel.
+      pendingRef.current = targetWidget;
+      cancelPanelObserver();
+      panelCleanupRef.current = observePanelClose(() => {
+        const pending = pendingRef.current;
+        pendingRef.current = null;
+        if (pending) {
+          performSwitch(pending);
+        }
+      });
+    } else {
+      // Panel closed or no user messages — safe to switch immediately.
+      performSwitch(targetWidget);
+    }
+  }, [pathname]);
+
+  // Cleanup on unmount.
+  useEffect(() => {
     return () => {
-      themeObserver.disconnect();
+      cancelPanelObserver();
+      cancelThemeObserver();
       uninstallShadowPatch();
       cleanupWidget();
-      activeRef.current = false;
+      activeRef.current = null;
+      pendingRef.current = null;
     };
-  }, [widget]);
+  }, []);
 
   return null;
 }
