@@ -5,7 +5,6 @@ import { useDoc } from "@docusaurus/theme-common/internal";
 import Heading from "@theme/Heading";
 import MDXContent from "@theme/MDXContent";
 import RenderTag from "../../RenderTag";
-import { getLabelAndTag } from "@site/src/utils/functions";
 /**
  Title can be declared inside md content or declared through
  front matter and added manually. To make both cases consistent,
@@ -27,7 +26,8 @@ function useSyntheticTitle() {
 }
 export default function DocItemContent({ children }) {
   const syntheticTitle = useSyntheticTitle();
-  let { label, tag } = getLabelAndTag({ label: syntheticTitle || "" });
+  const { frontMatter } = useDoc();
+  const badge = frontMatter.sidebar_custom_props?.badge;
   return (
     <div className={clsx(ThemeClassNames.docs.docMarkdown, "markdown")}>
       {syntheticTitle && (
@@ -38,7 +38,7 @@ export default function DocItemContent({ children }) {
               alignItems: "center",
               display: "flex",
             }}>
-            {`${label} `}
+            {`${syntheticTitle} `}
             <div
               style={{
                 height: "100%",
@@ -47,7 +47,7 @@ export default function DocItemContent({ children }) {
                 justifyContent: "center",
                 paddingTop: 7,
               }}>
-              <RenderTag tag={tag} />
+              <RenderTag tag={badge} />
             </div>
           </Heading>
         </header>

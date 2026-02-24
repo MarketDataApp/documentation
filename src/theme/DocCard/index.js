@@ -9,7 +9,6 @@ import isInternalUrl from "@docusaurus/isInternalUrl";
 import { translate } from "@docusaurus/Translate";
 import Heading from "@theme/Heading";
 import styles from "./styles.module.css";
-import { getLabelAndTag } from "@site/src/utils/functions";
 function CardContainer({ href, children }) {
   return (
     <Link
@@ -20,14 +19,13 @@ function CardContainer({ href, children }) {
   );
 }
 function CardLayout({ href, icon, title, description }) {
-  let { label, tag } = getLabelAndTag({ label: title || "" });
   return (
     <CardContainer href={href}>
       <Heading
         as="h2"
         className={clsx("text--truncate", styles.cardTitle)}
-        title={label}>
-        {icon} {label}
+        title={title}>
+        {icon} {title}
       </Heading>
       {description && (
         <p

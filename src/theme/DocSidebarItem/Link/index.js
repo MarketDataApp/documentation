@@ -7,7 +7,6 @@ import isInternalUrl from "@docusaurus/isInternalUrl";
 import IconExternalLink from "@theme/Icon/ExternalLink";
 import styles from "./styles.module.css";
 import RenderTag from "../../RenderTag";
-import { getLabelAndTag } from "@site/src/utils/functions";
 
 export default function DocSidebarItemLink({
   item,
@@ -17,13 +16,10 @@ export default function DocSidebarItemLink({
   index,
   ...props
 }) {
-  let { href, label, className, autoAddBaseUrl } = item;
-  const labelTag = getLabelAndTag({ label });
-  label = labelTag.label;
-  const tag = labelTag.tag;
+  const { href, label, className, autoAddBaseUrl, customProps } = item;
+  const badge = customProps?.badge;
   const isActive = isActiveSidebarItem(item, activePath);
   const isInternalLink = isInternalUrl(href);
-  // const { metadata, frontMatter, contentTitle } = useDoc();
   return (
     <li
       className={clsx(
@@ -49,7 +45,7 @@ export default function DocSidebarItemLink({
         })}
         {...props}>
         {label}
-        <RenderTag size="small" tag={tag} />
+        <RenderTag size="small" tag={badge} />
         {!isInternalLink && <IconExternalLink />}
       </Link>
     </li>
