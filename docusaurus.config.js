@@ -18,6 +18,7 @@ const config = {
       : "https://www.marketdata.app/",
 
   baseUrl: process.env.PROD == "true" ? "/docs/" : "/docs-staging/",
+  noIndex: process.env.PROD !== "true",
   onBrokenLinks: "ignore",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
