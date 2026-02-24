@@ -2,6 +2,8 @@
  * Cloudflare Worker to proxy /docs/ and /docs-staging/ paths
  * from www.marketdata.app to Cloudflare Pages deployments.
  *
+ * Last deployed: 2026-02-24
+ *
  * Routing:
  * - www.marketdata.app/docs/*         → marketdata-docs.pages.dev/docs/*
  * - www.marketdata.app/docs-staging/* → marketdata-docs-staging.pages.dev/docs-staging/*
