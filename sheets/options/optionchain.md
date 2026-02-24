@@ -1,8 +1,10 @@
 ---
-title: OPTIONCHAIN tg h
+title: OPTIONCHAIN
 sidebar_position: 3
 tags:
   - "Sheets: High Usage"
+sidebar_custom_props:
+  badge: h
 ---
 
 Fetches a current option chain from Market Data.

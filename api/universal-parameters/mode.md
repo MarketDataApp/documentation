@@ -1,6 +1,8 @@
 ---
-title: Data Mode tg p
+title: Data Mode
 sidebar_position: 1
+sidebar_custom_props:
+  badge: p
 ---
 
 The `mode` parameter allows you to control **how an API request is fulfilled**, including data freshness guarantees and credit usage. The `mode` parameter determines the response behavior used to fulfill each request.
