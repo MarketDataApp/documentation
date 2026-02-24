@@ -11,16 +11,19 @@ const CONTEXT7_WIDGETS = [
   {
     pathPattern: /\/sdk\/py(\/|$)/,
     library: '/websites/marketdata_app_sdk_py',
+    displayName: 'the Market Data Python SDK',
     placeholder: 'Ask about the Python SDK...',
   },
   {
     pathPattern: /\/sdk\/php(\/|$)/,
     library: '/websites/marketdata_app_sdk_php',
+    displayName: 'the Market Data PHP SDK',
     placeholder: 'Ask about the PHP SDK...',
   },
   {
     pathPattern: /\/sdk\/go(\/|$)/,
     library: '/websites/marketdata_app_sdk_go',
+    displayName: 'the Market Data Go SDK',
     placeholder: 'Ask about the Go SDK...',
   },
   // Uncomment as widgets are enabled in Context7:

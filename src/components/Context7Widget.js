@@ -26,6 +26,24 @@ function cleanupWidget() {
     .forEach((el) => el.remove());
 }
 
+/** Build a map of library path → display name for all widgets that have one. */
+const DISPLAY_NAME_MAP = Object.fromEntries(
+  CONTEXT7_WIDGETS.filter((w) => w.displayName).map((w) => [w.library, w.displayName]),
+);
+
+/** Walk text nodes inside `root` and replace raw library paths with friendly names. */
+function rewriteLibraryNames(root) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    for (const [path, name] of Object.entries(DISPLAY_NAME_MAP)) {
+      if (node.nodeValue.includes(path)) {
+        node.nodeValue = node.nodeValue.replaceAll(path, name);
+      }
+    }
+  }
+}
+
 function injectWidget(widget) {
   cleanupWidget();
 
@@ -58,19 +76,34 @@ export default function Context7Widget() {
     injectWidget(widget);
     activeRef.current = true;
 
-    const observer = new MutationObserver(() => {
+    // Watch for theme changes (re-inject with correct color).
+    const themeObserver = new MutationObserver(() => {
       if (activeRef.current) {
         injectWidget(widget);
       }
     });
 
-    observer.observe(document.documentElement, {
+    themeObserver.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['data-theme'],
     });
 
+    // Watch for Context7 widget DOM additions and rewrite raw library paths.
+    const nameObserver = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        for (const node of m.addedNodes) {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            rewriteLibraryNames(node);
+          }
+        }
+      }
+    });
+
+    nameObserver.observe(document.body, {childList: true, subtree: true});
+
     return () => {
-      observer.disconnect();
+      themeObserver.disconnect();
+      nameObserver.disconnect();
       cleanupWidget();
       activeRef.current = false;
     };
