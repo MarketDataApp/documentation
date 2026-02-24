@@ -1,0 +1,80 @@
+name: Deploy Docs to Cloudflare Pages
+
+on:
+  push:
+    branches: [staging, main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - name: Set environment
+        id: env
+        env:
+          GIT_REF: ${{ github.ref }}
+        run: |
+          if [ "$GIT_REF" = "refs/heads/main" ]; then
+            echo "prod=true" >> "$GITHUB_OUTPUT"
+            echo "base_url=docs" >> "$GITHUB_OUTPUT"
+            echo "project=marketdata-docs" >> "$GITHUB_OUTPUT"
+          else
+            echo "prod=" >> "$GITHUB_OUTPUT"
+            echo "base_url=docs-staging" >> "$GITHUB_OUTPUT"
+            echo "project=marketdata-docs-staging" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build
+        run: yarn build
+        env:
+          PROD: ${{ steps.env.outputs.prod }}
+
+      - name: Restructure build output
+        env:
+          BASE_URL: ${{ steps.env.outputs.base_url }}
+        run: |
+          mv build build-raw
+          mkdir -p "build/${BASE_URL}"
+          mv build-raw/* "build/${BASE_URL}/"
+          rm -rf build-raw
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: >-
+            pages deploy build
+            --project-name=${{ steps.env.outputs.project }}
+            --commit-dirty=true
+
+      - name: Check if Worker changed
+        id: worker
+        run: |
+          if git diff --name-only HEAD~1 HEAD -- worker/ 2>/dev/null | grep -q .; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy Worker
+        if: steps.worker.outputs.changed == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          workingDirectory: worker

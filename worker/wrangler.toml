@@ -1,0 +1,8 @@
+name = "marketdata-docusaurus-proxy"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+routes = [
+  { pattern = "www.marketdata.app/docs-staging", zone_name = "marketdata.app" },
+  { pattern = "www.marketdata.app/docs-staging/*", zone_name = "marketdata.app" },
+]
