@@ -63,6 +63,11 @@ async function handleRequest(request) {
 
   for (const route of ROUTES) {
     if (matchesRoute(url.pathname, route.prefix)) {
+      // Docs sites don't serve robots.txt; block stale cached copies
+      if (url.pathname.endsWith('/robots.txt')) {
+        return new Response('', { status: 404 });
+      }
+
       url.hostname = route.target;
       const response = await fetch(new Request(url, request), { cf: { cacheEverything: true } });
 
