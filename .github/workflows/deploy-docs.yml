@@ -51,6 +51,21 @@ jobs:
           mv build-raw/* "build/${BASE_URL}/"
           rm -rf build-raw
 
+      - name: Generate cache headers
+        env:
+          BASE_URL: ${{ steps.env.outputs.base_url }}
+        run: |
+          printf '%s\n' \
+            "/${BASE_URL}/assets/*" \
+            "  Cache-Control: public, max-age=31536000, immutable" \
+            "" \
+            "/${BASE_URL}/img/*" \
+            "  Cache-Control: public, max-age=2592000" \
+            "" \
+            "/${BASE_URL}/*.js" \
+            "  Cache-Control: public, max-age=31536000, immutable" \
+            > build/_headers
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
