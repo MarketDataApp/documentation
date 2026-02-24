@@ -9,15 +9,15 @@ From time to time you may encounter different error messages while using the Goo
 
 Sometimes you may get an error when you open your spreadsheet. These errors are usually related to Add-on authorization issues.
 
-- `#NAME?` - This error in your formulas indicates the Add-on is not loaded properly in the current sheet. Open the sidebar in Extensions > Market Data > Start to load the Add-on in the current sheet.
+- `#NAME?` - This error in your formulas indicates the Add-on is not loaded properly in the current sheet. Open the sidebar in Extensions > Market Data > Start to load the Add-on in the current sheet. See [Unknown Function Error](/sheets/troubleshooting/unknown-function).
 - `Error: Unable to start a Market Data session with sidebar closed.` - This error occurs when you first open your sheet for the day. Open the sidebar in Extensions > Market Data > Start. Refresh your data using one of the refresh options provided.
-- `ScriptError: Authorization is required to perform that action.` - The Market Data Add-on is not installed correctly in this spreadsheet or in your Google account. This typically occurs when customers are logged into multiple Google accounts at the same time.
+- `ScriptError: Authorization is required to perform that action.` - The Market Data Add-on is not installed correctly in this spreadsheet or in your Google account. This typically occurs when customers are logged into multiple Google accounts at the same time. See [Permissions Not Granted During Installation](/sheets/troubleshooting/permissions-not-granted).
 
 ## Errors in Market Data Sidebar
 
 The Market Data sidebar can detect service outages and other problems with your Google account. If you begin to have trouble with Market Data, open the sidebar and see if an error message is displayed.
 
-- `Multiple Google accounts error.` - Your browser has multiple Google accounts open at once. Google does not permit multi-login with Sheets Add-ons, such as Market Data. You will need to log out of your other Google accounts or use Google Sheets with a single Google account in a private browsing window.
+- `Multiple Google accounts error.` - Your browser has multiple Google accounts open at once. Google does not permit multi-login with Sheets Add-ons, such as Market Data. You will need to log out of your other Google accounts or use Google Sheets with a single Google account in a private browsing window. See [Multiple Google Accounts Error](/sheets/troubleshooting/multiple-google-accounts).
 - `Invalid token.` - The token input is not valid. This error is usually the result of an incorrect token in the token field. Check the token and try again.
 - `Market Data is offline.` - Your sheet is cannot reach Market Data's servers. Check our status page to see if there is a service outage. As soon as service is restored this error will resolve.
 
@@ -65,5 +65,5 @@ These issues relate to general Market Data technical or service issues. The only
 
 These issues relate to problems with your Google account. Google places strict limits on the use of Add-ons for free (@gmail.com accounts). If you exceed those limits, an error message will be shown and your account will be throttled.
 
-- `Your Google account has exceeded the minute request limit.` - Your account was throttled by Google for making too many requests. Try refreshing your cells using Market Data's refresh options, which are calibrated to avoid throttling issues.
+- `Your Google account has exceeded the minute request limit.` - Your account was throttled by Google for making too many requests. Try refreshing your cells using Market Data's refresh options, which are calibrated to avoid throttling issues. See [Excessive Refreshing](/sheets/troubleshooting/excessive-refreshing).
 - [`Your Google account has exceeded the urlfetch limit.`](/sheets/troubleshooting/urlfetch) - You have exceeded Google's urlfetch limit. For 24 hours your account will be blocked from using all Google Workspace Add-ons, including Market Data. Please try again 24 hours from now.
