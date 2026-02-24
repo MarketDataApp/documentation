@@ -25,6 +25,16 @@ const config = {
   organizationName: "marketdata",
   projectName: "documentation",
 
+  headTags: [
+    {
+      tagName: "meta",
+      attributes: {
+        name: "algolia-site-verification",
+        content: "20865DD38D745690",
+      },
+    },
+  ],
+
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
