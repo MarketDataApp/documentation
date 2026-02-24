@@ -64,7 +64,7 @@ async function handleRequest(request) {
   for (const route of ROUTES) {
     if (matchesRoute(url.pathname, route.prefix)) {
       url.hostname = route.target;
-      return fetch(new Request(url, request));
+      return fetch(new Request(url, request), { cf: { cacheEverything: true } });
     }
   }
 
