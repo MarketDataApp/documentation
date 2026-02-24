@@ -26,17 +26,18 @@ const CONTEXT7_WIDGETS = [
     displayName: 'the Market Data Go SDK',
     placeholder: 'Ask about the Go SDK...',
   },
-  // Uncomment as widgets are enabled in Context7:
-  // {
-  //   pathPattern: /\/sheets(\/|$)/,
-  //   library: '/websites/marketdata_app_sheets',
-  //   placeholder: 'Ask about the Sheets Add-on...',
-  // },
-  // {
-  //   pathPattern: /\/api(\/|$)/,
-  //   library: '/websites/marketdata_app_api',
-  //   placeholder: 'Ask about the Market Data API...',
-  // },
+  {
+    pathPattern: /\/sheets(\/|$)/,
+    library: '/websites/marketdata_app_sheets',
+    displayName: 'the Market Data Sheets Add-on',
+    placeholder: 'Ask about the Sheets Add-on...',
+  },
+  {
+    pathPattern: /\/api(\/|$)/,
+    library: '/websites/marketdata_app_api',
+    displayName: 'the Market Data API',
+    placeholder: 'Ask about the Market Data API...',
+  },
 ];
 
 module.exports = CONTEXT7_WIDGETS;
