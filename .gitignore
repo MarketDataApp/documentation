@@ -17,6 +17,7 @@ llm-docs/
 .env.production.local
 *.draft
 .cursorignore
+.playwright-mcp/
 
 npm-debug.log*
 yarn-debug.log*
