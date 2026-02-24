@@ -76,6 +76,10 @@ const config = {
             from: "/sheets/troubleshooting/common-error-messages",
             to: "/sheets/troubleshooting",
           },
+          {
+            from: "/api/universal-parameters/feed",
+            to: "/api/universal-parameters/mode",
+          },
         ],
       },
     ],

@@ -8,3 +8,7 @@ routes = [
   { pattern = "www.marketdata.app/docs", zone_name = "marketdata.app" },
   { pattern = "www.marketdata.app/docs/*", zone_name = "marketdata.app" },
 ]
+
+[observability]
+enabled = true
+head_sampling_rate = 1
