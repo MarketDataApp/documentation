@@ -11,15 +11,13 @@ import { translate } from "@docusaurus/Translate";
 import HomeBreadcrumbItem from "@theme/DocBreadcrumbs/Items/Home";
 import EditThisPage from "@theme/EditThisPage";
 import styles from "./styles.module.css";
-import { getLabelAndTag } from "@site/src/utils/functions";
 // TODO move to design system folder
 function BreadcrumbsItemLink({ children, href, isLast }) {
-  let { label, tag } = getLabelAndTag({ label: children });
   const className = "breadcrumbs__link";
   if (isLast) {
     return (
       <span className={className} itemProp="name">
-        {label}
+        {children}
       </span>
     );
   }
@@ -60,7 +58,7 @@ export default function DocBreadcrumbs() {
   const { editUrl } = metadata;
   const windowSize = useWindowSize();
   const isDesktop = windowSize === "desktop" || windowSize === "ssr";
-  
+
   if (!breadcrumbs) {
     return null;
   }
