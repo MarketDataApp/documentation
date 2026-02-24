@@ -1,6 +1,6 @@
 ---
 title: EARNINGS tg p
-sidebar_position: 3
+sidebar_position: 2
 tags:
   - "Sheets: Premium"
 ---

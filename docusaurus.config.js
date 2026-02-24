@@ -25,6 +25,16 @@ const config = {
   organizationName: "marketdata",
   projectName: "documentation",
 
+  headTags: [
+    {
+      tagName: "meta",
+      attributes: {
+        name: "algolia-site-verification",
+        content: "20865DD38D745690",
+      },
+    },
+  ],
+
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
@@ -53,6 +63,21 @@ const config = {
   ],
 
   plugins: [
+    [
+      "@docusaurus/plugin-client-redirects",
+      {
+        redirects: [
+          {
+            from: "/api/troubleshooting/http-status-codes",
+            to: "/api/troubleshooting",
+          },
+          {
+            from: "/sheets/troubleshooting/common-error-messages",
+            to: "/sheets/troubleshooting",
+          },
+        ],
+      },
+    ],
     [
       "@docusaurus/plugin-content-docs",
       /** @type {import('@docusaurus/plugin-content-docs').Options} */

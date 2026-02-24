@@ -1,6 +1,6 @@
 ---
 title: Automatic Refreshing
-sidebar_position: 9
+sidebar_position: 5
 ---
 
 The WebSocket protocol is the technology used to deliver streaming quotes, such as the ones provided by your broker platform. Unfortunately, Google Workspace Add-ons do not yet offer support for WebSockets. This is why no Google Sheets Add-on has been able to deliver a product that supports streaming quotes.
