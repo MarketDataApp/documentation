@@ -144,6 +144,12 @@ const config = {
         appId: "IUHZFO750H",
         apiKey: "c29b76b827a4fa1a0ac3abe15f69ec5c",
         indexName: "Market Data Documentation",
+        ...(process.env.PROD !== "true" && {
+          replaceSearchResultPathname: {
+            from: "/docs/",
+            to: "/docs-staging/",
+          },
+        }),
       },
 
       navbar: {
