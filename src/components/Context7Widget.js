@@ -44,8 +44,44 @@ function rewriteLibraryNames(root) {
   }
 }
 
+/**
+ * Monkey-patch attachShadow so we can observe inside closed shadow roots.
+ * When the Context7 widget creates its shadow DOM, we capture the root and
+ * set up a MutationObserver to rewrite library paths in any new text content.
+ */
+let _shadowCleanup = null;
+
+function installShadowPatch() {
+  if (typeof window === 'undefined') return;
+  // Only patch once.
+  if (Element.prototype.__c7PatchedAttachShadow) return;
+
+  const origAttachShadow = Element.prototype.attachShadow;
+  Element.prototype.attachShadow = function (init) {
+    const shadowRoot = origAttachShadow.call(this, {...init, mode: 'open'});
+
+    // Only observe shadow roots created inside the Context7 widget container.
+    if (this.closest?.('#context7-widget') || this.id === 'context7-widget') {
+      const observer = new MutationObserver(() => rewriteLibraryNames(shadowRoot));
+      observer.observe(shadowRoot, {childList: true, subtree: true, characterData: true});
+      _shadowCleanup = () => observer.disconnect();
+    }
+
+    return shadowRoot;
+  };
+  Element.prototype.__c7PatchedAttachShadow = true;
+}
+
+function uninstallShadowPatch() {
+  if (_shadowCleanup) {
+    _shadowCleanup();
+    _shadowCleanup = null;
+  }
+}
+
 function injectWidget(widget) {
   cleanupWidget();
+  installShadowPatch();
 
   const script = document.createElement('script');
   script.id = 'context7-widget-script';
@@ -88,22 +124,9 @@ export default function Context7Widget() {
       attributeFilter: ['data-theme'],
     });
 
-    // Watch for Context7 widget DOM additions and rewrite raw library paths.
-    const nameObserver = new MutationObserver((mutations) => {
-      for (const m of mutations) {
-        for (const node of m.addedNodes) {
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            rewriteLibraryNames(node);
-          }
-        }
-      }
-    });
-
-    nameObserver.observe(document.body, {childList: true, subtree: true});
-
     return () => {
       themeObserver.disconnect();
-      nameObserver.disconnect();
+      uninstallShadowPatch();
       cleanupWidget();
       activeRef.current = false;
     };
