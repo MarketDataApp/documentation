@@ -64,7 +64,15 @@ async function handleRequest(request) {
   for (const route of ROUTES) {
     if (matchesRoute(url.pathname, route.prefix)) {
       url.hostname = route.target;
-      return fetch(new Request(url, request), { cf: { cacheEverything: true } });
+      const response = await fetch(new Request(url, request), { cf: { cacheEverything: true } });
+
+      if (response.status === 404) {
+        const pathname = new URL(request.url).pathname;
+        const referer = request.headers.get('referer');
+        console.log({ level: '404', message: pathname, referer: referer || '' });
+      }
+
+      return response;
     }
   }
 

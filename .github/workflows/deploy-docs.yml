@@ -50,6 +50,7 @@ jobs:
           mkdir -p "build/${BASE_URL}"
           mv build-raw/* "build/${BASE_URL}/"
           rm -rf build-raw
+          cp "build/${BASE_URL}/404.html" build/404.html
 
       - name: Generate cache headers
         env:
