@@ -17,7 +17,9 @@
  *    - api/ → llm-docs/api.md
  *    - sheets/ → llm-docs/sheets.md
  *    - sdk/py/ → llm-docs/sdk-py.md
+ *    - sdk/php/ → llm-docs/sdk-php.md
  *    - sdk/postman.mdx → llm-docs/sdk-postman.md
+ *    - account/ → llm-docs/account.md
  * 
  * 2. Processes each file:
  *    - Extracts title from frontmatter (strips "tg [letter]" tags)
@@ -60,7 +62,9 @@ const TARGETS = [
   { source: 'api', output: 'api.md' },
   { source: 'sheets', output: 'sheets.md' },
   { source: 'sdk/py', output: 'sdk-py.md' },
-  { source: 'sdk/postman.mdx', output: 'sdk-postman.md', isSingleFile: true }
+  { source: 'sdk/php', output: 'sdk-php.md' },
+  { source: 'sdk/postman.mdx', output: 'sdk-postman.md', isSingleFile: true },
+  { source: 'account', output: 'account.md' }
 ];
 
 /**
@@ -328,8 +332,10 @@ function generateMasterDocs() {
     const titleMap = {
       'api': 'API',
       'sdk-py': 'Python SDK',
+      'sdk-php': 'PHP SDK',
       'sdk-postman': 'Postman SDK',
-      'sheets': 'Google Sheets'
+      'sheets': 'Google Sheets',
+      'account': 'Account & Billing'
     };
     if (titleMap[outputTitle]) {
       outputTitle = titleMap[outputTitle];
