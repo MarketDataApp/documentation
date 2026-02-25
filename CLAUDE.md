@@ -7,8 +7,8 @@
 
 | Environment | URL | Pages Project | Branch |
 |-------------|-----|---------------|--------|
-| Production | `www.marketdata.app/docs/` | `marketdata-docs` | `main` |
-| Staging | `www-staging.marketdata.app/docs/` | `marketdata-docs-staging` | `staging` |
+| Production | `www.marketdata.app/docs/` | `www-marketdata-app` | `main` |
+| Staging | `www-staging.marketdata.app/docs/` | `www-staging-marketdata-app` | `staging` |
 
 ## Architecture
 
@@ -17,7 +17,7 @@
 1. DNS resolves the hostname (both are proxied CNAMEs in Cloudflare)
 2. Cloudflare routes `/docs` and `/docs/*` to the Worker (via `wrangler.toml` route patterns)
 3. Worker (`worker/handler.js`) looks up the hostname in the `TARGETS` map to find the Pages target
-4. Worker rewrites the hostname and fetches from the Pages project (e.g. `marketdata-docs.pages.dev/docs/api/stocks`)
+4. Worker rewrites the hostname and fetches from the Pages project (e.g. `www-marketdata-app.pages.dev/docs/api/stocks`)
 5. Pages serves the file from its `docs/` directory (built and nested there by CI)
 6. Worker returns the response to the client — path stays the same throughout
 
@@ -31,18 +31,27 @@
 - **404 logging**: Logs pathname and referer for 404 responses
 - Non-docs paths pass through to the origin (WordPress)
 
-### CI/CD pipeline (`.github/workflows/deploy-docs.yml`)
+### CI/CD pipeline
+
+**Docs repo** (`.github/workflows/deploy-docs.yml`):
 
 1. Builds Docusaurus (`yarn build`)
-2. Restructures build output to nest under `build/docs/` (both environments use same structure)
+2. Restructures build output to nest under `build/docs/`
 3. Generates `_headers` file for asset cache control
-4. Uploads build to R2 (`www-marketdata-app-builds` bucket)
-5. Deploys to Cloudflare Pages via Wrangler
+4. Uploads build to R2 (`www-marketdata-app-builds` bucket) at `{env}/sources/docs/`
+5. Triggers orchestrator via `repository_dispatch`
 6. If `worker/` files changed: runs worker tests, then deploys the worker
+
+**Orchestrator** (`MarketDataApp/www-marketdata-app`, `.github/workflows/deploy-site.yml`):
+
+1. Downloads all sources from R2 (`{env}/sources/`)
+2. Merges into unified `build/` directory
+3. Deploys to Cloudflare Pages (`www-marketdata-app` or `www-staging-marketdata-app`)
+4. Runs post-deploy integration and e2e tests
 
 ### DNS
 
-- `www-staging.marketdata.app` → CNAME to `marketdata-docs-staging.pages.dev` (proxied)
+- `www-staging.marketdata.app` → CNAME to `www-staging-marketdata-app.pages.dev` (proxied)
 - `www.marketdata.app` → existing DNS (proxied)
 
 ## Workflow

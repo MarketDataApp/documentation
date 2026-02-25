@@ -3,8 +3,8 @@
  * and www-staging.marketdata.app to Cloudflare Pages deployments.
  *
  * Routing:
- * - www.marketdata.app/docs/*         → marketdata-docs.pages.dev/docs/*
- * - www-staging.marketdata.app/docs/* → marketdata-docs-staging.pages.dev/docs/*
+ * - www.marketdata.app/docs/*         → www-marketdata-app.pages.dev/docs/*
+ * - www-staging.marketdata.app/docs/* → www-staging-marketdata-app.pages.dev/docs/*
  *
  * The path is preserved as-is (including the /docs/ prefix).
  * Cloudflare Pages serves files from a matching directory structure in the
@@ -18,8 +18,8 @@
  * Hostname-based routing: maps each hostname to its Cloudflare Pages target.
  */
 const TARGETS = {
-  'www.marketdata.app': 'marketdata-docs.pages.dev',
-  'www-staging.marketdata.app': 'marketdata-docs-staging.pages.dev',
+  'www.marketdata.app': 'www-marketdata-app.pages.dev',
+  'www-staging.marketdata.app': 'www-staging-marketdata-app.pages.dev',
 };
 
 /**

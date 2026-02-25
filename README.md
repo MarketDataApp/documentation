@@ -24,7 +24,7 @@ yarn build    # Production build
 
 ## Architecture
 
-The site is hosted on **Cloudflare Pages** with a **Cloudflare Worker** reverse proxy. Both production and staging use the same `/docs/` base path — routing is determined by hostname, not path prefix.
+The site is hosted on **Cloudflare Pages** with a **Cloudflare Worker** reverse proxy. Both production and staging use the same `/docs/` base path — routing is determined by hostname, not path prefix. Deployment is handled by a separate orchestrator repo (`MarketDataApp/www-marketdata-app`) that merges build artifacts from R2 and deploys to unified Pages projects.
 
 ### Request flow
 
@@ -35,7 +35,7 @@ Browser → Cloudflare DNS → Worker (hostname lookup) → Cloudflare Pages →
 1. DNS resolves the hostname (both are proxied CNAMEs in Cloudflare)
 2. Cloudflare routes `/docs` and `/docs/*` to the Worker (via `wrangler.toml` route patterns)
 3. Worker looks up the hostname in a `TARGETS` map to find the Pages deployment target
-4. Worker rewrites the hostname and fetches from Pages (e.g. `marketdata-docs.pages.dev/docs/api/stocks`)
+4. Worker rewrites the hostname and fetches from Pages (e.g. `www-marketdata-app.pages.dev/docs/api/stocks`)
 5. Pages serves the file from its `docs/` directory (built and nested there by CI)
 6. Worker returns the response — the URL path stays the same throughout
 
@@ -43,8 +43,8 @@ Browser → Cloudflare DNS → Worker (hostname lookup) → Cloudflare Pages →
 
 | Environment | Hostname | Pages Project | Git Branch |
 |-------------|----------|---------------|------------|
-| Production | `www.marketdata.app` | `marketdata-docs` | `main` |
-| Staging | `www-staging.marketdata.app` | `marketdata-docs-staging` | `staging` |
+| Production | `www.marketdata.app` | `www-marketdata-app` | `main` |
+| Staging | `www-staging.marketdata.app` | `www-staging-marketdata-app` | `staging` |
 
 ### Worker features
 
@@ -58,13 +58,21 @@ The Worker (`worker/handler.js`) handles more than just proxying:
 
 ## Deployment
 
-Deployment is fully automated via GitHub Actions (`.github/workflows/deploy-docs.yml`).
+Deployment is fully automated via GitHub Actions across two repos:
 
-1. Push to `staging` — builds and deploys to the staging Pages project
+1. **This repo** (`.github/workflows/deploy-docs.yml`) — builds Docusaurus, uploads to R2, triggers orchestrator
+2. **Orchestrator** (`MarketDataApp/www-marketdata-app`) — downloads all sources from R2, merges into unified build, deploys to CF Pages, runs post-deploy tests
+
+```
+Push to staging/main → Build → Upload to R2 → Trigger orchestrator → Deploy to CF Pages → Tests
+```
+
+Workflow:
+1. Push to `staging` — builds and deploys to staging
 2. Verify changes at `www-staging.marketdata.app/docs/`
 3. Open a PR from `staging` → `main` and merge — deploys to production
 
-The CI pipeline builds Docusaurus, restructures the output to nest under `docs/`, generates cache headers, uploads to R2, and deploys to Cloudflare Pages. If files in `worker/` changed, it also runs worker tests and deploys the Worker.
+If files in `worker/` changed, the docs CI also runs worker tests and deploys the Worker.
 
 ## Testing
 

@@ -251,7 +251,7 @@ describe('handleRequest', () => {
       const req = makeRequest('https://www.marketdata.app/docs/api/stocks');
       await handleRequest(req);
       const calledWith = mockFetch.mock.calls[0][0];
-      expect(new URL(calledWith.url).hostname).toBe('marketdata-docs.pages.dev');
+      expect(new URL(calledWith.url).hostname).toBe('www-marketdata-app.pages.dev');
     });
 
     it('proxies /docs/* on www-staging.marketdata.app to staging Pages', async () => {
@@ -259,7 +259,7 @@ describe('handleRequest', () => {
       const req = makeRequest('https://www-staging.marketdata.app/docs/api/stocks');
       await handleRequest(req);
       const calledWith = mockFetch.mock.calls[0][0];
-      expect(new URL(calledWith.url).hostname).toBe('marketdata-docs-staging.pages.dev');
+      expect(new URL(calledWith.url).hostname).toBe('www-staging-marketdata-app.pages.dev');
     });
 
     it('preserves the full path when proxying', async () => {
@@ -283,7 +283,7 @@ describe('handleRequest', () => {
       const req = makeRequest('https://www.marketdata.app/docs');
       await handleRequest(req);
       const calledWith = mockFetch.mock.calls[0][0];
-      expect(new URL(calledWith.url).hostname).toBe('marketdata-docs.pages.dev');
+      expect(new URL(calledWith.url).hostname).toBe('www-marketdata-app.pages.dev');
     });
   });
 
