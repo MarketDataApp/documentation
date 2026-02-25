@@ -54,8 +54,16 @@ function matchesRoute(pathname, prefix) {
  * @returns {string}
  */
 function cleanMarkdown(text) {
-  // Strip frontmatter
+  // Extract title from frontmatter, then strip it
+  const fmMatch = text.match(/^---\n([\s\S]*?)\n---/);
+  let title = '';
+  if (fmMatch) {
+    const titleMatch = fmMatch[1].match(/^title:\s*(.+)$/m);
+    if (titleMatch) title = titleMatch[1].trim().replace(/^["']|["']$/g, '');
+  }
   text = text.replace(/^---\n[\s\S]*?\n---\n*/, '');
+  // Add title as H1 if present
+  if (title) text = `# ${title}\n\n${text}`;
   // Strip import statements
   text = text.replace(/^import\s+.*;\s*\n/gm, '');
   // Convert <TabItem> to ### headings, strip <Tabs> wrappers
