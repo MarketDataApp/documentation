@@ -1,0 +1,62 @@
+name: PR Checks (Staging Integration Tests)
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  worker-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: worker/yarn.lock
+
+      - run: yarn install --frozen-lockfile
+        working-directory: worker
+
+      - run: yarn test
+        working-directory: worker
+
+  staging-integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: worker/yarn.lock
+
+      - run: yarn install --frozen-lockfile
+        working-directory: worker
+
+      - name: Run integration tests against staging
+        working-directory: worker
+        env:
+          TEST_ENV: staging
+        run: yarn test:integration
+
+  staging-e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - run: npx playwright install chromium
+
+      - name: Run e2e tests against staging
+        env:
+          TEST_ENV: staging
+        run: yarn test:e2e
