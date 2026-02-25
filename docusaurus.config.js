@@ -93,8 +93,8 @@ const config = {
         sidebarPath: require.resolve("./sidebars.js"),
 
         editUrl: ({ docPath }) => {
-          const branch = process.env.PROD == "true" ? "main" : "dev";
-          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/api/${docPath}`;
+          const base = process.env.PROD == "true" ? "/docs" : "/docs-staging";
+          return `https://www.marketdata.app${base}/api/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
       },
     ],
@@ -106,8 +106,8 @@ const config = {
         path: "sdk",
         routeBasePath: "sdk",
         editUrl: ({ docPath }) => {
-          const branch = process.env.PROD == "true" ? "main" : "dev";
-          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/sdk/${docPath}`;
+          const base = process.env.PROD == "true" ? "/docs" : "/docs-staging";
+          return `https://www.marketdata.app${base}/sdk/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
         sidebarPath: require.resolve("./sidebars.js"),
       },
@@ -120,8 +120,8 @@ const config = {
         path: "sheets",
         routeBasePath: "sheets",
         editUrl: ({ docPath }) => {
-          const branch = process.env.PROD == "true" ? "main" : "dev";
-          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/sheets/${docPath}`;
+          const base = process.env.PROD == "true" ? "/docs" : "/docs-staging";
+          return `https://www.marketdata.app${base}/sheets/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
         sidebarPath: require.resolve("./sidebars.js"),
       },
@@ -134,8 +134,8 @@ const config = {
         path: "account",
         routeBasePath: "account",
         editUrl: ({ docPath }) => {
-          const branch = process.env.PROD == "true" ? "main" : "dev";
-          return `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}/account/${docPath}`;
+          const base = process.env.PROD == "true" ? "/docs" : "/docs-staging";
+          return `https://www.marketdata.app${base}/account/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
         sidebarPath: require.resolve("./sidebars.js"),
       },
