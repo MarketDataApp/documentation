@@ -47,7 +47,13 @@
 1. Downloads all sources from R2 (`{env}/sources/`)
 2. Merges into unified `build/` directory
 3. Deploys to Cloudflare Pages (`www-marketdata-app` or `www-staging-marketdata-app`)
-4. Runs post-deploy integration and e2e tests
+4. Notifies source repo via `deploy-complete` dispatch
+
+**Post-deploy tests** (`.github/workflows/post-deploy-tests.yml`):
+
+1. Triggered by `deploy-complete` from the orchestrator
+2. Checks out the docs repo at the deployed commit SHA
+3. Runs integration tests and e2e tests against the deployed environment
 
 ### DNS
 

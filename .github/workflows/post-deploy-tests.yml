@@ -1,0 +1,37 @@
+name: Post-Deploy Tests
+
+on:
+  repository_dispatch:
+    types: [deploy-complete]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.client_payload.commit_sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - name: Install worker test dependencies
+        working-directory: worker
+        run: yarn install --frozen-lockfile
+
+      - name: Run integration tests
+        working-directory: worker
+        env:
+          TEST_ENV: ${{ github.event.client_payload.environment }}
+        run: yarn test:integration
+
+      - run: npx playwright install chromium
+
+      - name: Run e2e tests
+        env:
+          TEST_ENV: ${{ github.event.client_payload.environment }}
+        run: yarn test:e2e
