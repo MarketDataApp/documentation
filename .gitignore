@@ -26,4 +26,5 @@ yarn-error.log*
 .env
 
 static/robots.txt
+worker/node_modules
 
