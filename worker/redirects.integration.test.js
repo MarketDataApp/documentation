@@ -1,9 +1,12 @@
 /**
  * Integration test: verifies all client-side redirects defined in
- * docusaurus.config.js work correctly on both staging and production.
+ * docusaurus.config.js work correctly.
  *
  * Redirects are extracted dynamically from the config, so adding a new
  * redirect automatically adds a new test case.
+ *
+ * Set TEST_ENV=staging or TEST_ENV=production to test a single environment.
+ * When unset, tests both.
  *
  * Run with: yarn test:integration
  * Requires network access to www.marketdata.app
@@ -12,10 +15,15 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-const ENVIRONMENTS = {
-  production: 'https://www.marketdata.app/docs',
+const ALL_ENVIRONMENTS = {
   staging: 'https://www.marketdata.app/docs-staging',
+  production: 'https://www.marketdata.app/docs',
 };
+
+const TEST_ENV = process.env.TEST_ENV;
+const envs = TEST_ENV
+  ? { [TEST_ENV]: ALL_ENVIRONMENTS[TEST_ENV] }
+  : ALL_ENVIRONMENTS;
 
 /**
  * Parses the redirects array from docusaurus.config.js so the test
@@ -40,7 +48,7 @@ function extractRedirects() {
 
 const redirects = extractRedirects();
 
-for (const [env, baseUrl] of Object.entries(ENVIRONMENTS)) {
+for (const [env, baseUrl] of Object.entries(envs)) {
   describe(`client-side redirects (${env})`, () => {
     it('found redirects to test', () => {
       expect(redirects.length).toBeGreaterThan(0);
