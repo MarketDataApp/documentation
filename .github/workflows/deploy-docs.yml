@@ -86,6 +86,13 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Test Worker
+        if: steps.worker.outputs.changed == 'true'
+        working-directory: worker
+        run: |
+          yarn install --frozen-lockfile
+          yarn test
+
       - name: Deploy Worker
         if: steps.worker.outputs.changed == 'true'
         uses: cloudflare/wrangler-action@v3
