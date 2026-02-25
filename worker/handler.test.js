@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
 
-const { handleRequest, matchesRoute, cleanMarkdown } = require('./handler');
+const { handleRequest, cleanMarkdown } = require('./handler');
 
 function makeRequest(url, options = {}) {
   return new Request(url, options);
@@ -12,30 +12,6 @@ function makeRequest(url, options = {}) {
 
 beforeEach(() => {
   vi.clearAllMocks();
-});
-
-// --- matchesRoute ---
-
-describe('matchesRoute', () => {
-  it('matches path starting with prefix', () => {
-    expect(matchesRoute('/docs/api', '/docs/')).toBe(true);
-  });
-
-  it('matches exact path without trailing slash', () => {
-    expect(matchesRoute('/docs', '/docs/')).toBe(true);
-  });
-
-  it('does not match unrelated path', () => {
-    expect(matchesRoute('/other', '/docs/')).toBe(false);
-  });
-
-  it('does not match partial prefix', () => {
-    expect(matchesRoute('/documentation', '/docs/')).toBe(false);
-  });
-
-  it('/docs-staging/ does not match /docs/ prefix', () => {
-    expect(matchesRoute('/docs-staging/', '/docs/')).toBe(false);
-  });
 });
 
 // --- cleanMarkdown ---
@@ -82,6 +58,37 @@ describe('handleRequest', () => {
       const passthroughResponse = new Response('origin');
       mockFetch.mockResolvedValueOnce(passthroughResponse);
       const req = makeRequest('https://other.example.com/docs/api');
+      const res = await handleRequest(req);
+      expect(mockFetch).toHaveBeenCalledWith(req);
+      expect(res).toBe(passthroughResponse);
+    });
+  });
+
+  // --- Non-docs paths on known hostnames ---
+
+  describe('non-docs paths on known hostnames', () => {
+    it('passes through non-docs paths on www.marketdata.app', async () => {
+      const passthroughResponse = new Response('wordpress');
+      mockFetch.mockResolvedValueOnce(passthroughResponse);
+      const req = makeRequest('https://www.marketdata.app/blog/some-post');
+      const res = await handleRequest(req);
+      expect(mockFetch).toHaveBeenCalledWith(req);
+      expect(res).toBe(passthroughResponse);
+    });
+
+    it('passes through non-docs paths on www-staging.marketdata.app', async () => {
+      const passthroughResponse = new Response('origin');
+      mockFetch.mockResolvedValueOnce(passthroughResponse);
+      const req = makeRequest('https://www-staging.marketdata.app/other/page');
+      const res = await handleRequest(req);
+      expect(mockFetch).toHaveBeenCalledWith(req);
+      expect(res).toBe(passthroughResponse);
+    });
+
+    it('passes through root path', async () => {
+      const passthroughResponse = new Response('homepage');
+      mockFetch.mockResolvedValueOnce(passthroughResponse);
+      const req = makeRequest('https://www.marketdata.app/');
       const res = await handleRequest(req);
       expect(mockFetch).toHaveBeenCalledWith(req);
       expect(res).toBe(passthroughResponse);
@@ -186,9 +193,9 @@ describe('handleRequest', () => {
       expect(text).toContain('# Found');
     });
 
-    it('serves markdown for docs-staging URLs', async () => {
+    it('serves markdown for staging URLs (www-staging hostname)', async () => {
       mockFetch.mockResolvedValueOnce(new Response('# Staging\n', { status: 200 }));
-      const req = makeRequest('https://www.marketdata.app/docs-staging/api/stocks.md');
+      const req = makeRequest('https://www-staging.marketdata.app/docs/api/stocks.md');
       const res = await handleRequest(req);
       expect(res.headers.get('content-type')).toBe('text/markdown; charset=utf-8');
       // Should fetch from staging branch
@@ -196,7 +203,7 @@ describe('handleRequest', () => {
       expect(fetchedUrl).toContain('/staging/');
     });
 
-    it('fetches from main branch for /docs/ URLs', async () => {
+    it('fetches from main branch for www.marketdata.app URLs', async () => {
       mockFetch.mockResolvedValueOnce(new Response('# Prod\n', { status: 200 }));
       const req = makeRequest('https://www.marketdata.app/docs/api/stocks.md');
       await handleRequest(req);
@@ -221,15 +228,15 @@ describe('handleRequest', () => {
   // --- robots.txt ---
 
   describe('robots.txt blocking', () => {
-    it('returns 404 for /docs/robots.txt', async () => {
+    it('returns 404 for /docs/robots.txt on production', async () => {
       const req = makeRequest('https://www.marketdata.app/docs/robots.txt');
       const res = await handleRequest(req);
       expect(res.status).toBe(404);
       expect(mockFetch).not.toHaveBeenCalled();
     });
 
-    it('returns 404 for /docs-staging/robots.txt', async () => {
-      const req = makeRequest('https://www.marketdata.app/docs-staging/robots.txt');
+    it('returns 404 for /docs/robots.txt on staging', async () => {
+      const req = makeRequest('https://www-staging.marketdata.app/docs/robots.txt');
       const res = await handleRequest(req);
       expect(res.status).toBe(404);
       expect(mockFetch).not.toHaveBeenCalled();
@@ -239,20 +246,20 @@ describe('handleRequest', () => {
   // --- Route proxying ---
 
   describe('route proxying', () => {
-    it('proxies /docs/* to marketdata-docs.pages.dev', async () => {
+    it('proxies /docs/* on www.marketdata.app to production Pages', async () => {
       mockFetch.mockResolvedValueOnce(new Response('page', { status: 200 }));
       const req = makeRequest('https://www.marketdata.app/docs/api/stocks');
       await handleRequest(req);
       const calledWith = mockFetch.mock.calls[0][0];
-      expect(new URL(calledWith.url).hostname).toBe('marketdata-docs.pages.dev');
+      expect(new URL(calledWith.url).hostname).toBe('www-marketdata-app.pages.dev');
     });
 
-    it('proxies /docs-staging/* to staging', async () => {
+    it('proxies /docs/* on www-staging.marketdata.app to staging Pages', async () => {
       mockFetch.mockResolvedValueOnce(new Response('page', { status: 200 }));
-      const req = makeRequest('https://www.marketdata.app/docs-staging/api/stocks');
+      const req = makeRequest('https://www-staging.marketdata.app/docs/api/stocks');
       await handleRequest(req);
       const calledWith = mockFetch.mock.calls[0][0];
-      expect(new URL(calledWith.url).hostname).toBe('marketdata-docs-staging.pages.dev');
+      expect(new URL(calledWith.url).hostname).toBe('www-staging-marketdata-app.pages.dev');
     });
 
     it('preserves the full path when proxying', async () => {
@@ -269,6 +276,14 @@ describe('handleRequest', () => {
       await handleRequest(req);
       const fetchOptions = mockFetch.mock.calls[0][1];
       expect(fetchOptions).toEqual({ cf: { cacheEverything: true } });
+    });
+
+    it('handles bare /docs path (no trailing slash)', async () => {
+      mockFetch.mockResolvedValueOnce(new Response('page', { status: 200 }));
+      const req = makeRequest('https://www.marketdata.app/docs');
+      await handleRequest(req);
+      const calledWith = mockFetch.mock.calls[0][0];
+      expect(new URL(calledWith.url).hostname).toBe('www-marketdata-app.pages.dev');
     });
   });
 
@@ -301,28 +316,6 @@ describe('handleRequest', () => {
         referer: '',
       });
       consoleSpy.mockRestore();
-    });
-  });
-
-  // --- Pass-through ---
-
-  describe('pass-through for non-matching routes', () => {
-    it('passes through requests to non-docs paths', async () => {
-      const passthroughResponse = new Response('wordpress');
-      mockFetch.mockResolvedValueOnce(passthroughResponse);
-      const req = makeRequest('https://www.marketdata.app/blog/some-post');
-      const res = await handleRequest(req);
-      expect(mockFetch).toHaveBeenCalledWith(req);
-      expect(res).toBe(passthroughResponse);
-    });
-
-    it('passes through root path', async () => {
-      const passthroughResponse = new Response('homepage');
-      mockFetch.mockResolvedValueOnce(passthroughResponse);
-      const req = makeRequest('https://www.marketdata.app/');
-      const res = await handleRequest(req);
-      expect(mockFetch).toHaveBeenCalledWith(req);
-      expect(res).toBe(passthroughResponse);
     });
   });
 });

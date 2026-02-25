@@ -3,7 +3,7 @@
 The official documentation for [Market Data](https://www.marketdata.app/) — covering the REST API, SDKs, and Google Sheets Add-On. Built with [Docusaurus 3](https://docusaurus.io/).
 
 **Production:** [www.marketdata.app/docs/](https://www.marketdata.app/docs/)
-**Staging:** [www.marketdata.app/docs-staging/](https://www.marketdata.app/docs-staging/)
+**Staging:** [www-staging.marketdata.app/docs/](https://www-staging.marketdata.app/docs/)
 
 ## Documentation Sections
 
@@ -22,15 +22,70 @@ yarn start    # Start dev server at localhost:3000
 yarn build    # Production build
 ```
 
+## Architecture
+
+The site is hosted on **Cloudflare Pages** with a **Cloudflare Worker** reverse proxy. Both production and staging use the same `/docs/` base path — routing is determined by hostname, not path prefix. Deployment is handled by a separate orchestrator repo (`MarketDataApp/www-marketdata-app`) that merges build artifacts from R2 and deploys to unified Pages projects.
+
+### Request flow
+
+```
+Browser → Cloudflare DNS → Worker (hostname lookup) → Cloudflare Pages → Response
+```
+
+1. DNS resolves the hostname (both are proxied CNAMEs in Cloudflare)
+2. Cloudflare routes `/docs` and `/docs/*` to the Worker (via `wrangler.toml` route patterns)
+3. Worker looks up the hostname in a `TARGETS` map to find the Pages deployment target
+4. Worker rewrites the hostname and fetches from Pages (e.g. `www-marketdata-app.pages.dev/docs/api/stocks`)
+5. Pages serves the file from its `docs/` directory (built and nested there by CI)
+6. Worker returns the response — the URL path stays the same throughout
+
+### Environments
+
+| Environment | Hostname | Pages Project | Git Branch |
+|-------------|----------|---------------|------------|
+| Production | `www.marketdata.app` | `www-marketdata-app` | `main` |
+| Staging | `www-staging.marketdata.app` | `www-staging-marketdata-app` | `staging` |
+
+### Worker features
+
+The Worker (`worker/handler.js`) handles more than just proxying:
+
+- **Markdown serving** — Requests with `.md` extension or `Accept: text/markdown` header return cleaned markdown fetched from the raw GitHub source (frontmatter and JSX stripped)
+- **SDK PHP redirect** — `/docs/sdk-php/*` redirects to GitHub Pages (301)
+- **Edge caching** — Subrequests use `cf.cacheEverything`
+- **404 logging** — Logs pathname and referer for missing pages
+- Non-docs paths pass through to the origin (WordPress)
+
 ## Deployment
 
-The site is hosted on **Cloudflare Pages** with a **Cloudflare Worker** reverse proxy. Deployment is fully automated via GitHub Actions.
+Deployment is fully automated via GitHub Actions across two repos:
 
-1. Push to `staging` — deploys to the staging site
-2. Verify changes at the staging URL
+1. **This repo** (`.github/workflows/deploy-docs.yml`) — builds Docusaurus, uploads to R2, triggers orchestrator
+2. **Orchestrator** (`MarketDataApp/www-marketdata-app`) — downloads all sources from R2, merges into unified build, deploys to CF Pages, runs post-deploy tests
+
+```
+Push to staging/main → Build → Upload to R2 → Trigger orchestrator → Deploy to CF Pages → Tests
+```
+
+Workflow:
+1. Push to `staging` — builds and deploys to staging
+2. Verify changes at `www-staging.marketdata.app/docs/`
 3. Open a PR from `staging` → `main` and merge — deploys to production
 
-The CI pipeline (`.github/workflows/deploy-docs.yml`) builds the Docusaurus site, restructures the output to match the `/docs/` and `/docs-staging/` URL paths, generates cache headers, and deploys via Wrangler.
+If files in `worker/` changed, the docs CI also runs worker tests and deploys the Worker.
+
+## Testing
+
+```bash
+# Worker unit tests
+cd worker && yarn test
+
+# Integration tests (markdown serving against live site)
+cd worker && TEST_ENV=staging yarn test:integration
+
+# E2E tests (Playwright — Context7 widget)
+TEST_ENV=staging yarn test:e2e
+```
 
 ## Project Structure
 
@@ -43,6 +98,7 @@ src/
   theme/          # Swizzled Docusaurus theme components
   css/            # Custom styles
 worker/           # Cloudflare Worker reverse proxy
+e2e/              # Playwright end-to-end tests
 .github/workflows # CI/CD pipeline
 ```
 

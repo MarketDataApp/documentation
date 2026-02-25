@@ -1,4 +1,4 @@
-name: Deploy Docs to Cloudflare Pages
+name: Deploy Docs
 
 on:
   push:
@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      deployments: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,15 +26,12 @@ jobs:
         env:
           GIT_REF: ${{ github.ref }}
         run: |
+          echo "base_url=docs" >> "$GITHUB_OUTPUT"
           if [ "$GIT_REF" = "refs/heads/main" ]; then
             echo "prod=true" >> "$GITHUB_OUTPUT"
-            echo "base_url=docs" >> "$GITHUB_OUTPUT"
-            echo "project=marketdata-docs" >> "$GITHUB_OUTPUT"
             echo "environment=production" >> "$GITHUB_OUTPUT"
           else
             echo "prod=" >> "$GITHUB_OUTPUT"
-            echo "base_url=docs-staging" >> "$GITHUB_OUTPUT"
-            echo "project=marketdata-docs-staging" >> "$GITHUB_OUTPUT"
             echo "environment=staging" >> "$GITHUB_OUTPUT"
           fi
 
@@ -75,34 +71,25 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           AWS_ENDPOINT_URL: https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
           AWS_REGION: auto
+          ENVIRONMENT: ${{ steps.env.outputs.environment }}
         run: |
           aws s3 sync build/ \
-            "s3://www-marketdata-app-builds/${{ steps.env.outputs.environment }}/" \
+            "s3://www-marketdata-app-builds/${ENVIRONMENT}/sources/docs/" \
             --delete
 
-      # - name: Notify orchestrator
-      #   if: success()
-      #   uses: peter-evans/repository-dispatch@v3
-      #   with:
-      #     token: ${{ secrets.ORCHESTRATOR_PAT }}
-      #     repository: MarketDataApp/www-marketdata-app
-      #     event-type: site-built
-      #     client-payload: >-
-      #       {
-      #         "source": "docs",
-      #         "environment": "${{ steps.env.outputs.environment }}",
-      #         "commit_sha": "${{ github.sha }}"
-      #       }
-
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+      - name: Notify orchestrator
+        if: success()
+        uses: peter-evans/repository-dispatch@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: >-
-            pages deploy build
-            --project-name=${{ steps.env.outputs.project }}
-            --commit-dirty=true
+          token: ${{ secrets.ORCHESTRATOR_PAT }}
+          repository: MarketDataApp/www-marketdata-app
+          event-type: site-built
+          client-payload: >-
+            {
+              "source": "docs",
+              "environment": "${{ steps.env.outputs.environment }}",
+              "commit_sha": "${{ github.sha }}"
+            }
 
       - name: Check if Worker changed
         id: worker
@@ -128,34 +115,3 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
           workingDirectory: worker
-
-  post-deploy-tests:
-    needs: deploy
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-
-      - run: yarn install --frozen-lockfile
-
-      - name: Install worker test dependencies
-        working-directory: worker
-        run: yarn install --frozen-lockfile
-
-      - name: Run integration tests against production
-        working-directory: worker
-        env:
-          TEST_ENV: production
-        run: yarn test:integration
-
-      - run: npx playwright install chromium
-
-      - name: Run e2e tests against production
-        env:
-          TEST_ENV: production
-        run: yarn test:e2e

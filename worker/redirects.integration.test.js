@@ -16,7 +16,7 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 const ALL_ENVIRONMENTS = {
-  staging: 'https://www.marketdata.app/docs-staging',
+  staging: 'https://www-staging.marketdata.app/docs',
   production: 'https://www.marketdata.app/docs',
 };
 

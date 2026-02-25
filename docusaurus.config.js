@@ -15,9 +15,9 @@ const config = {
   url:
     process.env.PROD == "true"
       ? "https://www.marketdata.app/"
-      : "https://www.marketdata.app/",
+      : "https://www-staging.marketdata.app/",
 
-  baseUrl: process.env.PROD == "true" ? "/docs/" : "/docs-staging/",
+  baseUrl: "/docs/",
   noIndex: process.env.PROD !== "true",
   onBrokenLinks: "ignore",
   onBrokenMarkdownLinks: "warn",
@@ -121,8 +121,8 @@ const config = {
         sidebarPath: require.resolve("./sidebars.js"),
 
         editUrl: ({ docPath }) => {
-          const base = process.env.PROD == "true" ? "/docs" : "/docs-staging";
-          return `https://www.marketdata.app${base}/api/${docPath.replace(/\.mdx?$/, '.md')}`;
+          const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
+          return `https://${host}/docs/api/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
       },
     ],
@@ -134,8 +134,8 @@ const config = {
         path: "sdk",
         routeBasePath: "sdk",
         editUrl: ({ docPath }) => {
-          const base = process.env.PROD == "true" ? "/docs" : "/docs-staging";
-          return `https://www.marketdata.app${base}/sdk/${docPath.replace(/\.mdx?$/, '.md')}`;
+          const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
+          return `https://${host}/docs/sdk/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
         sidebarPath: require.resolve("./sidebars.js"),
       },
@@ -148,8 +148,8 @@ const config = {
         path: "sheets",
         routeBasePath: "sheets",
         editUrl: ({ docPath }) => {
-          const base = process.env.PROD == "true" ? "/docs" : "/docs-staging";
-          return `https://www.marketdata.app${base}/sheets/${docPath.replace(/\.mdx?$/, '.md')}`;
+          const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
+          return `https://${host}/docs/sheets/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
         sidebarPath: require.resolve("./sidebars.js"),
       },
@@ -162,8 +162,8 @@ const config = {
         path: "account",
         routeBasePath: "account",
         editUrl: ({ docPath }) => {
-          const base = process.env.PROD == "true" ? "/docs" : "/docs-staging";
-          return `https://www.marketdata.app${base}/account/${docPath.replace(/\.mdx?$/, '.md')}`;
+          const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
+          return `https://${host}/docs/account/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
         sidebarPath: require.resolve("./sidebars.js"),
       },
@@ -177,12 +177,6 @@ const config = {
         appId: "IUHZFO750H",
         apiKey: "c29b76b827a4fa1a0ac3abe15f69ec5c",
         indexName: "Market Data Documentation",
-        ...(process.env.PROD !== "true" && {
-          replaceSearchResultPathname: {
-            from: "/docs/",
-            to: "/docs-staging/",
-          },
-        }),
       },
 
       navbar: {
