@@ -41,8 +41,13 @@ describe('matchesRoute', () => {
 // --- cleanMarkdown ---
 
 describe('cleanMarkdown', () => {
-  it('strips frontmatter', () => {
+  it('extracts title from frontmatter as H1', () => {
     const input = '---\ntitle: Test\nsidebar_position: 1\n---\n\n# Hello\n';
+    expect(cleanMarkdown(input)).toBe('# Test\n\n# Hello\n');
+  });
+
+  it('strips frontmatter without title', () => {
+    const input = '---\nsidebar_position: 1\n---\n\n# Hello\n';
     expect(cleanMarkdown(input)).toBe('# Hello\n');
   });
 
@@ -144,9 +149,10 @@ describe('handleRequest', () => {
       const res = await handleRequest(req);
       expect(res.headers.get('content-type')).toBe('text/markdown; charset=utf-8');
       const text = await res.text();
-      expect(text).not.toContain('---');
+      expect(text).not.toContain('sidebar_position');
       expect(text).not.toContain('import ');
       expect(text).toContain('### JavaScript');
+      expect(text).toContain('# Test');
       expect(text).toContain('# Hello');
     });
 
