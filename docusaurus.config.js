@@ -80,6 +80,34 @@ const config = {
             from: "/api/universal-parameters/feed",
             to: "/api/universal-parameters/mode",
           },
+          {
+            from: "/sheets/automatic-refreshing",
+            to: "/sheets/automatic-refresh",
+          },
+          {
+            from: "/sheets/stockdata",
+            to: "/sheets/stocks/stockdata",
+          },
+          {
+            from: "/sheets/earnings",
+            to: "/sheets/stocks/earnings",
+          },
+          {
+            from: "/sheets/optiondata",
+            to: "/sheets/options/optiondata",
+          },
+          {
+            from: "/sheets/optionlookup",
+            to: "/sheets/options/optionlookup",
+          },
+          {
+            from: "/sheets/optionchain",
+            to: "/sheets/options/optionchain",
+          },
+          {
+            from: "/sheets/marketstatus",
+            to: "/sheets/markets/marketstatus",
+          },
         ],
       },
     ],
