@@ -7,20 +7,21 @@
  *
  * Note: The production sitemap is always used as the URL source because
  * staging has noIndex enabled which suppresses sitemap generation. URLs
- * are rewritten to the target environment's base path.
+ * are rewritten to the target environment's host.
  *
  * Run with: yarn test:integration
- * Requires network access to www.marketdata.app
+ * Requires network access to www.marketdata.app and www-staging.marketdata.app
  */
 import { describe, it, expect } from 'vitest';
 
 const PROD_SITEMAP_URL = 'https://www.marketdata.app/docs/sitemap.xml';
-const PROD_BASE = '/docs';
 
 const ENVIRONMENTS = {
-  staging: { basePath: '/docs-staging' },
-  production: { basePath: '/docs' },
+  staging: { host: 'https://www-staging.marketdata.app' },
+  production: { host: 'https://www.marketdata.app' },
 };
+
+const BASE_PATH = '/docs';
 
 const TEST_ENV = process.env.TEST_ENV;
 const envs = TEST_ENV ? { [TEST_ENV]: ENVIRONMENTS[TEST_ENV] } : ENVIRONMENTS;
@@ -44,9 +45,9 @@ const SKIP_SUFFIX_EXACT = [
   '/sdk/options',
 ];
 
-function shouldSkip(path, basePath) {
-  if (SKIP_SUFFIX_EXACT.some((suffix) => path === `${basePath}${suffix}`)) return true;
-  if (SKIP_SUFFIX_PATTERNS.some((suffix) => path.startsWith(`${basePath}${suffix}`))) return true;
+function shouldSkip(path) {
+  if (SKIP_SUFFIX_EXACT.some((suffix) => path === `${BASE_PATH}${suffix}`)) return true;
+  if (SKIP_SUFFIX_PATTERNS.some((suffix) => path.startsWith(`${BASE_PATH}${suffix}`))) return true;
   return SKIP_CONTAINS.some((pattern) => path.includes(pattern));
 }
 
@@ -60,25 +61,17 @@ async function fetchSitemapUrls() {
   return urls;
 }
 
-/** Rewrite a production path to the target environment's base path. */
-function rebasePath(prodPath, targetBasePath) {
-  return prodPath.replace(PROD_BASE, targetBasePath);
-}
-
-for (const [env, { basePath }] of Object.entries(envs)) {
+for (const [env, { host }] of Object.entries(envs)) {
   describe(`markdown serving — ${env} (live sitemap)`, async () => {
-    const prodPaths = await fetchSitemapUrls();
-    const targetPaths = prodPaths
-      .map((p) => rebasePath(p, basePath))
-      .filter((p) => !shouldSkip(p, basePath));
+    const paths = (await fetchSitemapUrls()).filter((p) => !shouldSkip(p));
 
     it(`sitemap has URLs to test`, () => {
-      expect(targetPaths.length).toBeGreaterThan(50);
+      expect(paths.length).toBeGreaterThan(50);
     });
 
-    for (const path of targetPaths) {
+    for (const path of paths) {
       it(`${path} returns markdown`, async () => {
-        const url = `https://www.marketdata.app${path}`;
+        const url = `${host}${path}`;
         const res = await fetch(url, {
           headers: { Accept: 'text/markdown' },
           redirect: 'follow',

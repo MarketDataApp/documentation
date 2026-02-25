@@ -27,14 +27,13 @@ jobs:
         env:
           GIT_REF: ${{ github.ref }}
         run: |
+          echo "base_url=docs" >> "$GITHUB_OUTPUT"
           if [ "$GIT_REF" = "refs/heads/main" ]; then
             echo "prod=true" >> "$GITHUB_OUTPUT"
-            echo "base_url=docs" >> "$GITHUB_OUTPUT"
             echo "project=marketdata-docs" >> "$GITHUB_OUTPUT"
             echo "environment=production" >> "$GITHUB_OUTPUT"
           else
             echo "prod=" >> "$GITHUB_OUTPUT"
-            echo "base_url=docs-staging" >> "$GITHUB_OUTPUT"
             echo "project=marketdata-docs-staging" >> "$GITHUB_OUTPUT"
             echo "environment=staging" >> "$GITHUB_OUTPUT"
           fi

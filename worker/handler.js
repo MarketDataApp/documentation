@@ -1,14 +1,12 @@
 /**
- * Cloudflare Worker to proxy /docs/ and /docs-staging/ paths
- * from www.marketdata.app to Cloudflare Pages deployments.
- *
- * Last deployed: 2026-02-24
+ * Cloudflare Worker to proxy /docs/ paths from www.marketdata.app
+ * and www-staging.marketdata.app to Cloudflare Pages deployments.
  *
  * Routing:
  * - www.marketdata.app/docs/*         → marketdata-docs.pages.dev/docs/*
- * - www.marketdata.app/docs-staging/* → marketdata-docs-staging.pages.dev/docs-staging/*
+ * - www-staging.marketdata.app/docs/* → marketdata-docs-staging.pages.dev/docs/*
  *
- * The path is preserved as-is (including the /docs/ or /docs-staging/ prefix).
+ * The path is preserved as-is (including the /docs/ prefix).
  * Cloudflare Pages serves files from a matching directory structure in the
  * build output, so no path rewriting is needed.
  *
@@ -16,35 +14,13 @@
  * are passed through unchanged.
  */
 
-const ORIGINAL_HOSTNAME = 'www.marketdata.app';
-
 /**
- * Route definitions mapping URL path prefixes to Cloudflare Pages targets.
- * Order matters: /docs-staging/ must come before /docs/ to avoid
- * /docs-staging/* being matched by the /docs/ prefix.
+ * Hostname-based routing: maps each hostname to its Cloudflare Pages target.
  */
-const ROUTES = [
-  {
-    prefix: '/docs-staging/',
-    target: 'marketdata-docs-staging.pages.dev',
-  },
-  {
-    prefix: '/docs/',
-    target: 'marketdata-docs.pages.dev',
-  },
-];
-
-/**
- * Checks whether a URL path matches a route, handling both
- * trailing-slash (/docs-staging/) and no-trailing-slash (/docs-staging) forms.
- *
- * @param {string} pathname - The URL path to check (e.g. "/docs-staging/api")
- * @param {string} prefix - The route prefix to match (e.g. "/docs-staging/")
- * @returns {boolean}
- */
-function matchesRoute(pathname, prefix) {
-  return pathname.startsWith(prefix) || pathname === prefix.slice(0, -1);
-}
+const TARGETS = {
+  'www.marketdata.app': 'marketdata-docs.pages.dev',
+  'www-staging.marketdata.app': 'marketdata-docs-staging.pages.dev',
+};
 
 /**
  * Converts raw MDX/markdown source into clean markdown by stripping
@@ -78,7 +54,7 @@ function cleanMarkdown(text) {
 
 /**
  * Routes incoming requests to the appropriate Cloudflare Pages deployment
- * based on the URL path. Non-matching requests pass through to the
+ * based on the hostname. Non-matching requests pass through to the
  * default origin (WordPress on cPanel).
  *
  * @param {Request} request - The incoming request
@@ -86,8 +62,15 @@ function cleanMarkdown(text) {
  */
 async function handleRequest(request) {
   const url = new URL(request.url);
+  const target = TARGETS[url.hostname];
 
-  if (url.hostname !== ORIGINAL_HOSTNAME) {
+  if (!target) {
+    return fetch(request);
+  }
+
+  const isDocsPath = url.pathname.startsWith('/docs/') || url.pathname === '/docs';
+
+  if (!isDocsPath) {
     return fetch(request);
   }
 
@@ -101,58 +84,48 @@ async function handleRequest(request) {
   }
 
   // Serve raw markdown for .md URLs or Accept: text/markdown header
-  const docsPrefix = url.pathname.startsWith('/docs-staging/') ? '/docs-staging/'
-    : url.pathname.startsWith('/docs/') ? '/docs/' : null;
+  const wantsMd = url.pathname.endsWith('.md');
+  const acceptsMd = (request.headers.get('accept') || '').includes('text/markdown');
 
-  if (docsPrefix) {
-    const wantsMd = url.pathname.endsWith('.md');
-    const acceptsMd = (request.headers.get('accept') || '').includes('text/markdown');
-
-    if (wantsMd || acceptsMd) {
-      const stem = wantsMd
-        ? url.pathname.slice(docsPrefix.length, -3)
-        : url.pathname.replace(/\/$/, '').slice(docsPrefix.length);
-      const branch = docsPrefix === '/docs-staging/' ? 'staging' : 'main';
-      const base = `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}`;
-      const candidates = [
-        `${base}/${stem}.md`,
-        `${base}/${stem}.mdx`,
-        `${base}/${stem}/index.md`,
-        `${base}/${stem}/index.mdx`,
-      ];
-      for (const candidate of candidates) {
-        const res = await fetch(candidate);
-        if (res.ok) {
-          const text = cleanMarkdown(await res.text());
-          return new Response(text, {
-            headers: { 'content-type': 'text/markdown; charset=utf-8' },
-          });
-        }
+  if (wantsMd || acceptsMd) {
+    const docsPrefix = '/docs/';
+    const stem = wantsMd
+      ? url.pathname.slice(docsPrefix.length, -3)
+      : url.pathname.replace(/\/$/, '').slice(docsPrefix.length);
+    const branch = url.hostname === 'www-staging.marketdata.app' ? 'staging' : 'main';
+    const base = `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}`;
+    const candidates = [
+      `${base}/${stem}.md`,
+      `${base}/${stem}.mdx`,
+      `${base}/${stem}/index.md`,
+      `${base}/${stem}/index.mdx`,
+    ];
+    for (const candidate of candidates) {
+      const res = await fetch(candidate);
+      if (res.ok) {
+        const text = cleanMarkdown(await res.text());
+        return new Response(text, {
+          headers: { 'content-type': 'text/markdown; charset=utf-8' },
+        });
       }
     }
   }
 
-  for (const route of ROUTES) {
-    if (matchesRoute(url.pathname, route.prefix)) {
-      // Docs sites don't serve robots.txt; block stale cached copies
-      if (url.pathname.endsWith('/robots.txt')) {
-        return new Response('', { status: 404 });
-      }
-
-      url.hostname = route.target;
-      const response = await fetch(new Request(url, request), { cf: { cacheEverything: true } });
-
-      if (response.status === 404) {
-        const pathname = new URL(request.url).pathname;
-        const referer = request.headers.get('referer');
-        console.log({ level: '404', message: pathname, referer: referer || '' });
-      }
-
-      return response;
-    }
+  // Docs sites don't serve robots.txt; block stale cached copies
+  if (url.pathname.endsWith('/robots.txt')) {
+    return new Response('', { status: 404 });
   }
 
-  return fetch(request);
+  url.hostname = target;
+  const response = await fetch(new Request(url, request), { cf: { cacheEverything: true } });
+
+  if (response.status === 404) {
+    const pathname = new URL(request.url).pathname;
+    const referer = request.headers.get('referer');
+    console.log({ level: '404', message: pathname, referer: referer || '' });
+  }
+
+  return response;
 }
 
-module.exports = { handleRequest, matchesRoute, cleanMarkdown, ROUTES, ORIGINAL_HOSTNAME };
+module.exports = { handleRequest, cleanMarkdown, TARGETS };

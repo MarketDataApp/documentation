@@ -3,7 +3,7 @@
 The official documentation for [Market Data](https://www.marketdata.app/) — covering the REST API, SDKs, and Google Sheets Add-On. Built with [Docusaurus 3](https://docusaurus.io/).
 
 **Production:** [www.marketdata.app/docs/](https://www.marketdata.app/docs/)
-**Staging:** [www.marketdata.app/docs-staging/](https://www.marketdata.app/docs-staging/)
+**Staging:** [www-staging.marketdata.app/docs/](https://www-staging.marketdata.app/docs/)
 
 ## Documentation Sections
 
@@ -30,7 +30,7 @@ The site is hosted on **Cloudflare Pages** with a **Cloudflare Worker** reverse 
 2. Verify changes at the staging URL
 3. Open a PR from `staging` → `main` and merge — deploys to production
 
-The CI pipeline (`.github/workflows/deploy-docs.yml`) builds the Docusaurus site, restructures the output to match the `/docs/` and `/docs-staging/` URL paths, generates cache headers, and deploys via Wrangler.
+The CI pipeline (`.github/workflows/deploy-docs.yml`) builds the Docusaurus site, restructures the output to nest under `/docs/`, generates cache headers, and deploys via Wrangler.
 
 ## Project Structure
 

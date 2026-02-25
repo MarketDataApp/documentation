@@ -10,7 +10,7 @@
 import { test, expect } from '@playwright/test';
 
 const BASE_URL = process.env.TEST_ENV === 'staging'
-  ? 'https://www.marketdata.app/docs-staging'
+  ? 'https://www-staging.marketdata.app/docs'
   : 'https://www.marketdata.app/docs';
 
 // One representative page per widget configuration.
