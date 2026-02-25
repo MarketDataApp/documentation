@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "test": "vitest run --exclude '**/*.integration.test.js'",
-    "test:integration": "vitest run handler.integration.test.js --test-timeout=30000"
+    "test:integration": "vitest run .integration.test. --test-timeout=30000"
   },
   "devDependencies": {
     "vitest": "^3.1.0"
