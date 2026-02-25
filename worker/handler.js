@@ -93,15 +93,19 @@ async function handleRequest(request) {
   }
 
   // Serve raw markdown for .md URLs or Accept: text/markdown header
-  if (url.pathname.startsWith('/docs/')) {
+  const docsPrefix = url.pathname.startsWith('/docs-staging/') ? '/docs-staging/'
+    : url.pathname.startsWith('/docs/') ? '/docs/' : null;
+
+  if (docsPrefix) {
     const wantsMd = url.pathname.endsWith('.md');
     const acceptsMd = (request.headers.get('accept') || '').includes('text/markdown');
 
     if (wantsMd || acceptsMd) {
       const stem = wantsMd
-        ? url.pathname.slice('/docs/'.length, -3)
-        : url.pathname.replace(/\/$/, '').slice('/docs/'.length);
-      const base = `https://raw.githubusercontent.com/MarketDataApp/documentation/main`;
+        ? url.pathname.slice(docsPrefix.length, -3)
+        : url.pathname.replace(/\/$/, '').slice(docsPrefix.length);
+      const branch = docsPrefix === '/docs-staging/' ? 'staging' : 'main';
+      const base = `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}`;
       const candidates = [
         `${base}/${stem}.md`,
         `${base}/${stem}.mdx`,

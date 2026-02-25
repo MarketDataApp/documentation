@@ -180,6 +180,24 @@ describe('handleRequest', () => {
       expect(text).toContain('# Found');
     });
 
+    it('serves markdown for docs-staging URLs', async () => {
+      mockFetch.mockResolvedValueOnce(new Response('# Staging\n', { status: 200 }));
+      const req = makeRequest('https://www.marketdata.app/docs-staging/api/stocks.md');
+      const res = await handleRequest(req);
+      expect(res.headers.get('content-type')).toBe('text/markdown; charset=utf-8');
+      // Should fetch from staging branch
+      const fetchedUrl = mockFetch.mock.calls[0][0];
+      expect(fetchedUrl).toContain('/staging/');
+    });
+
+    it('fetches from main branch for /docs/ URLs', async () => {
+      mockFetch.mockResolvedValueOnce(new Response('# Prod\n', { status: 200 }));
+      const req = makeRequest('https://www.marketdata.app/docs/api/stocks.md');
+      await handleRequest(req);
+      const fetchedUrl = mockFetch.mock.calls[0][0];
+      expect(fetchedUrl).toContain('/main/');
+    });
+
     it('falls through when no markdown candidate found', async () => {
       mockFetch
         .mockResolvedValueOnce(new Response('', { status: 404 }))
