@@ -7,7 +7,7 @@ Each Market Data account may only access the API from one IP address at a time. 
 
 ## Why This Policy Exists
 
-The exchanges that license their data to Market Data prohibit unauthorized redistribution. When you sign an [exchange agreement](./exchange-agreements), you agree to use the data solely for your own personal or business purposes and not to share or redistribute it to others.
+The exchanges that license their data to Market Data prohibit unauthorized redistribution. When you sign an [exchange agreement](/docs/account/data-policies/exchange-agreements/), you agree to use the data solely for your own personal or business purposes and not to share or redistribute it to others.
 
 Allowing a single account to be used from multiple IP addresses simultaneously would make it impossible to enforce this restriction, because it would allow one subscriber to feed data to multiple people or systems at once. The single IP policy is how Market Data enforces the exchange's per-subscriber distribution rules.
 

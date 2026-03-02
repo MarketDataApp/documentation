@@ -9,9 +9,9 @@ Free Forever and trial accounts are limited to data that is at least 24 hours ol
 
 Before an exchange permits a vendor to distribute real-time or intraday delayed data to a subscriber, the subscriber must be identified and their professional status determined. Free and trial account holders have not completed this process.
 
-Market Data is required by the exchanges to collect, verify, and report the identity of all subscribers who receive real-time or intraday data. Until your account is verified and you have signed the required [exchange agreements](./exchange-agreements), Market Data can only provide data that is at least 24 hours old, which is not subject to the same identification requirements.
+Market Data is required by the exchanges to collect, verify, and report the identity of all subscribers who receive real-time or intraday data. Until your account is verified and you have signed the required [exchange agreements](/docs/account/data-policies/exchange-agreements/), Market Data can only provide data that is at least 24 hours old, which is not subject to the same identification requirements.
 
-See [Account Compliance](../compliance) for details on the verification process.
+See [Account Compliance](/docs/account/compliance/) for details on the verification process.
 
 ## Exchange Restrictions on Free Trials
 
@@ -27,5 +27,5 @@ Because Market Data serves a broad base of non-professional subscribers, and bec
 To access real-time or 15-minute delayed data, all of the following are required:
 
 1. **A paid subscription** — real-time and intraday data are not available on free or trial plans.
-2. **Account verification** — your identity and professional status must be confirmed by Market Data before exchange data can be enabled. See [Account Compliance](../compliance).
-3. **Signed exchange agreements** — you must sign the subscriber agreement for each exchange whose data you wish to receive. See [Exchange Entitlements](../entitlements).
+2. **Account verification** — your identity and professional status must be confirmed by Market Data before exchange data can be enabled. See [Account Compliance](/docs/account/compliance/).
+3. **Signed exchange agreements** — you must sign the subscriber agreement for each exchange whose data you wish to receive. See [Exchange Entitlements](/docs/account/entitlements/).
