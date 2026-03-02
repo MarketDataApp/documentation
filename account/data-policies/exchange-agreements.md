@@ -9,16 +9,16 @@ Market Data is an authorized vendor for the exchanges listed below. When you acc
 
 The **Unlisted Trading Privileges (UTP) Plan** provides consolidated stock market data for NASDAQ-listed securities, including quotes, last sale prices, and trade data.
 
-[UTP Plan Subscriber Agreement](/docs/exchange-agreements/utp-subscriber-agreement.pdf)
+[UTP Plan Subscriber Agreement](pathname:///docs/exchange-agreements/utp-subscriber-agreement.pdf)
 
 ## OPRA
 
 The **Options Price Reporting Authority (OPRA)** is the exclusive provider of consolidated options market data in the U.S., including last sale prices and current quotations for all listed options.
 
-[OPRA Subscriber Agreement](/docs/exchange-agreements/opra-subscriber-agreement.pdf)
+[OPRA Subscriber Agreement](pathname:///docs/exchange-agreements/opra-subscriber-agreement.pdf)
 
 ## IEX
 
 The **Investors Exchange (IEX)** is a registered national securities exchange providing real-time stock quotes and trade data.
 
-[IEX Data Subscriber Agreement](/docs/exchange-agreements/iex-data-subscriber-agreement.pdf)
+[IEX Data Subscriber Agreement](pathname:///docs/exchange-agreements/iex-data-subscriber-agreement.pdf)
