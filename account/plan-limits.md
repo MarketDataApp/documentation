@@ -33,13 +33,9 @@ Starter Trial and Trader Trial do not support `mode=cached`.
 
 ## Device Restrictions
 
-To comply with exchange regulations regarding data redistribution, all plans are subject to strict device connection limits:
+All plans are subject to a single IP address limit. Each account may only connect from one IP address at a time. Multiple simultaneous connections, account sharing, and data redistribution are not permitted.
 
-- Each account may only connect from a single IP address at a time
-- Multiple simultaneous connections from different devices are not permitted
-- Account sharing and data redistribution are prohibited without a commercial license
-
-These restrictions are enforced across all plans to ensure compliance with exchange regulations that prohibit unauthorized data redistribution. Prime plans requiring multi-device access should contact sales for appropriate licensing options.
+See the [Single IP Address Policy](/docs/account/data-policies/single-ip-policy/) for details.
 
 #### Throttling
 
