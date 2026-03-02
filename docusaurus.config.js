@@ -64,7 +64,10 @@ const config = {
     ],
   ],
 
+  clientModules: ['./src/clientModules/themeCookieSync.js'],
+
   plugins: [
+    './plugins/theme-cookie-sync',
     [
       "@docusaurus/plugin-client-redirects",
       {
