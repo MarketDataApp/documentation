@@ -51,7 +51,7 @@ Data freshness is not guaranteed. Symbols with higher usage across Market Data c
 * Bulk Candles: Unavailable
 * Other Endpoints: Unavailable
 
-This makes cached mode particularly cost-effective for bulk quote retrieval using endpoints such as [Option Chain](/api/options/chain) and [Bulk Stock Quotes](/api/stocks/bulkquotes).
+This makes cached mode particularly cost-effective for bulk quote retrieval using endpoints such as [Option Chain](/api/options/chain) and [Bulk Stock Quotes](/api/stocks/quotes).
 
 ### Requesting Cached Data
 
