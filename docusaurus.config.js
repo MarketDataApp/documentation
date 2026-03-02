@@ -18,6 +18,7 @@ const config = {
       : "https://www-staging.marketdata.app/",
 
   baseUrl: "/docs/",
+  trailingSlash: true,
   noIndex: process.env.PROD !== "true",
   onBrokenLinks: "ignore",
   onBrokenMarkdownLinks: "warn",
