@@ -35,7 +35,7 @@ Starter Trial and Trader Trial do not support `mode=cached`.
 
 All plans are subject to a single IP address limit. Each account may only connect from one IP address at a time. Multiple simultaneous connections, account sharing, and data redistribution are not permitted.
 
-See the [Single IP Address Policy](/docs/account/data-policies/single-ip-policy/) for details.
+See the [Single IP Address Policy](/docs/account/data-policies/single-ip/) for details.
 
 #### Throttling
 
