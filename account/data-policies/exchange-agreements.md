@@ -21,4 +21,4 @@ The **Options Price Reporting Authority (OPRA)** is the exclusive provider of co
 
 The **Investors Exchange (IEX)** is a registered national securities exchange providing real-time stock quotes and trade data.
 
-[IEX Data Subscriber Agreement](pathname:///docs/exchange-agreements/iex-data-subscriber-agreement.pdf)
+[IEX Controlled Data Recipient Agreement](pathname:///docs/exchange-agreements/iex-controlled-data-recipient-agreement.pdf)
