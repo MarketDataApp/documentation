@@ -25,13 +25,13 @@ While the Free Forever plan offers a great starting point, there are some limita
 
 To help you better understand the differences between our plans, here's a quick comparison:
 
-| Feature               | Free Forever | Paid Plans  |
-|-----------------------|--------------|-------------|
-| Historical Data       | 1 Year       | Full Access |
-| 15-Minute Delayed Data          | ❌           | ✅          |
-| Real-Time Data        | ❌           | ✅          |
-| Standard Endpoints    | ✅           | ✅          |
-| Premium Endpoints     | ❌           | ✅          |
+| Feature                | Free Forever | Paid Plans  |
+|------------------------|--------------|-------------|
+| Historical Data        | 1 Year       | Full Access |
+| 15-Minute Delayed Data | ❌           | ✅          |
+| Real-Time Data         | ❌           | ✅          |
+| Standard Endpoints     | ✅           | ✅          |
+| Premium Endpoints      | ❌           | ✅          |
 
 ## Why Choose Free Forever?
 

@@ -12,11 +12,11 @@ Get real-time price quotes for multiple stocks in a single API request.
 
 Use the `quotes()` method on the `stocks` resource to fetch quotes for multiple symbols:
 
-| Output Format | Return Type | Description |
-|---------------|-------------|-------------|
-| **JSON** | `Quotes` | Returns a Quotes object containing an array of Quote data (default). |
-| **CSV** | `Quotes` | Returns a Quotes object with CSV data accessible via `getCsv()`. |
-| **HTML** | `Quotes` | Returns a Quotes object with HTML data accessible via `getHtml()`. |
+| Output Format | Return Type | Description                                                          |
+|---------------|-------------|----------------------------------------------------------------------|
+| **JSON**      | `Quotes`    | Returns a Quotes object containing an array of Quote data (default). |
+| **CSV**       | `Quotes`    | Returns a Quotes object with CSV data accessible via `getCsv()`.     |
+| **HTML**      | `Quotes`    | Returns a Quotes object with HTML data accessible via `getHtml()`.   |
 
 :::warning HTML Not Yet Available
 `Format::HTML` is included for forward compatibility, but HTML responses are not currently implemented by the Market Data API.

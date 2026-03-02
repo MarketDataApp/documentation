@@ -12,12 +12,12 @@ Retrieve a complete or filtered options chain for a given underlying symbol. Bot
 
 Use the `chain()` method on the `options` resource to fetch options chain data. The method supports multiple output formats:
 
-| Output Format | Return Type | Description |
-|---------------|-------------|-------------|
-| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with options chain data indexed by optionSymbol (default). |
-| **INTERNAL** | `OptionsChain` or `OptionsChainHumanReadable` | Returns an OptionsChain object containing lists of option data. When `use_human_readable=True`, returns an OptionsChainHumanReadable object with capitalized field names. |
-| **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
-| **CSV** | `str` | Writes CSV data to file and returns the filename string. |
+| Output Format | Return Type                                   | Description                                                                                                                                                               |
+|---------------|-----------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame`      | Returns a DataFrame with options chain data indexed by optionSymbol (default).                                                                                            |
+| **INTERNAL**  | `OptionsChain` or `OptionsChainHumanReadable` | Returns an OptionsChain object containing lists of option data. When `use_human_readable=True`, returns an OptionsChainHumanReadable object with capitalized field names. |
+| **JSON**      | `dict`                                        | Returns the raw JSON response as a dictionary.                                                                                                                            |
+| **CSV**       | `str`                                         | Writes CSV data to file and returns the filename string.                                                                                                                  |
 
 <a name="chain"></a>
 ## chain

@@ -16,11 +16,11 @@ Retrieve a a complete or filtered options chain for a given underlying symbol. B
 
 Utilize [OptionChainRequest](<#OptionChainRequest>) for querying the endpoint through one of the three available methods:
 
-| Method     | Execution Level | Return Type                  | Description                                                                                                                      |
-|------------|-----------------|------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| **Get**    | Direct          | `[]OptionQuote`              | Immediately fetches a slice of `[]OptionQuote`, allowing direct access to the options chain data.                                |
-| **Packed** | Intermediate    | `*OptionQuotesResponse`      | Delivers a `*OptionQuotesResponse` object containing the data, which requires unpacking to access the `OptionQuote` data.        |
-| **Raw**    | Low-level       | `*resty.Response`            | Offers the unprocessed `*resty.Response` for those seeking full control and access to the raw JSON or `*http.Response`.          |
+| Method     | Execution Level | Return Type             | Description                                                                                                               |
+|------------|-----------------|-------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| **Get**    | Direct          | `[]OptionQuote`         | Immediately fetches a slice of `[]OptionQuote`, allowing direct access to the options chain data.                         |
+| **Packed** | Intermediate    | `*OptionQuotesResponse` | Delivers a `*OptionQuotesResponse` object containing the data, which requires unpacking to access the `OptionQuote` data. |
+| **Raw**    | Low-level       | `*resty.Response`       | Offers the unprocessed `*resty.Response` for those seeking full control and access to the raw JSON or `*http.Response`.   |
 
 
 <a name="OptionChainRequest"></a>

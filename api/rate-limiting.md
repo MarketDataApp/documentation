@@ -36,11 +36,11 @@ To adhere to this limit, it is advisable to implement a worker or thread pool me
 ## Rate Limits By Plan
 Different plans have specific rate limits. Free/Starter/Trader use daily limits, while Quant/Prime use per-minute limits.
 
-|                          | Free Forever | Starter   | Trader    | Quant      | Prime       |
-|--------------------------|--------------|-----------|-----------|------------|-------------|
-| Daily API Credits        | 100          | 10,000    | 100,000   | No Limit   | No Limit    |
-| Per Minute API Credits   | No Limit     | No Limit  | No Limit  | 10,000     | 100,000     |
-| Concurrent Request Limit | 50           | 50        | 50        | 50         | 50          |
+|                          | Free Forever | Starter  | Trader   | Quant    | Prime    |
+|--------------------------|--------------|----------|----------|----------|----------|
+| Daily API Credits        | 100          | 10,000   | 100,000  | No Limit | No Limit |
+| Per Minute API Credits   | No Limit     | No Limit | No Limit | 10,000   | 100,000  |
+| Concurrent Request Limit | 50           | 50       | 50       | 50       | 50       |
 
 
 #### Summary

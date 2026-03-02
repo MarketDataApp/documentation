@@ -12,12 +12,12 @@ Retrieve stock prices for any supported stock symbol.
 
 Use the `prices()` method on the `stocks` resource to fetch stock prices. The method supports multiple output formats:
 
-| Output Format | Return Type | Description |
-|---------------|-------------|-------------|
-| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with prices indexed by symbol (default). |
-| **INTERNAL** | `list[StockPrice]` or `list[StockPricesHumanReadable]` | Returns a list of StockPrice objects. When `use_human_readable=True`, returns a list of StockPricesHumanReadable objects with capitalized field names. |
-| **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
-| **CSV** | `str` | Writes CSV data to file and returns the filename string. |
+| Output Format | Return Type                                            | Description                                                                                                                                            |
+|---------------|--------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame`               | Returns a DataFrame with prices indexed by symbol (default).                                                                                           |
+| **INTERNAL**  | `list[StockPrice]` or `list[StockPricesHumanReadable]` | Returns a list of StockPrice objects. When `use_human_readable=True`, returns a list of StockPricesHumanReadable objects with capitalized field names. |
+| **JSON**      | `dict`                                                 | Returns the raw JSON response as a dictionary.                                                                                                         |
+| **CSV**       | `str`                                                  | Writes CSV data to file and returns the filename string.                                                                                               |
 
 <a name="prices"></a>
 ## prices

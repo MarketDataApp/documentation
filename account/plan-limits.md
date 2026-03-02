@@ -11,14 +11,14 @@ Most users don't run into trouble with our limits. However, if our standard plan
 
 ## Standard Plans
 
-|                       | Free Forever | Starter   | Trader    | Quant      | Prime Plans |
-|-----------------------|--------------|-----------|-----------|------------|-------------|
-| Daily Credits         | 100          | 10,000    | 100,000   | No Limit   | No Limit    |
-| Per-Minute Credits    | No Limit     | No Limit  | No Limit  | 10,000     | 100,000     |
-| Historical Data       | 1 Year       | 5 Years   | No Limit  | No Limit   | No Limit    |
-| Stocks Data Type      | Delayed      | Real-time | Real-time | Real-time  | Real-time   |
-| Options Data Type     | Delayed      | 15-minute delayed | Real-time | Real-time  | Real-time   |
-| API Endpoints         | Standard     | Premium   | Premium   | Premium + Custom | Premium + Custom |
+|                    | Free Forever | Starter           | Trader    | Quant            | Prime Plans      |
+|--------------------|--------------|-------------------|-----------|------------------|------------------|
+| Daily Credits      | 100          | 10,000            | 100,000   | No Limit         | No Limit         |
+| Per-Minute Credits | No Limit     | No Limit          | No Limit  | 10,000           | 100,000          |
+| Historical Data    | 1 Year       | 5 Years           | No Limit  | No Limit         | No Limit         |
+| Stocks Data Type   | Delayed      | Real-time         | Real-time | Real-time        | Real-time        |
+| Options Data Type  | Delayed      | 15-minute delayed | Real-time | Real-time        | Real-time        |
+| API Endpoints      | Standard     | Premium           | Premium   | Premium + Custom | Premium + Custom |
 
 ## Credits
 Each time you call the API, the system increases your credits counter. Normally each successful response consumes 1 credit. However, **if you request multiple symbols in a single API call using `stocks/quotes`, `stocks/prices`, `stocks/bulkcandles`, or `options/chain`, each symbol included in the response consumes credits**.

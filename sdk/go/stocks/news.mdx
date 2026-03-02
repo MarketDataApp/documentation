@@ -16,11 +16,11 @@ Retrieve news articles for any supported stock symbol.
 
 Use [StockNewsRequest](<#StockNewsRequest>) to make requests to the endpoint using any of the three supported execution methods:
 
-| Method     | Execution     | Return Type                 | Description                                                                                                |
-|------------|---------------|-----------------------------|------------------------------------------------------------------------------------------------------------|
-| **Get**    | Direct        | `[]StockNews  `             | Directly returns a slice of `[]StockNews`, facilitating individual access to each news article.            |
-| **Packed** | Intermediate  | `*StockNewsResponse`        | Returns a packed `*StockNewsResponse` object. Must be unpacked to access the `[]StockNews` slice.          |
-| **Raw**    | Low-level     | `*resty.Response`           | Provides the raw `*resty.Response` for maximum flexibility. Direct access to raw JSON or `*http.Response`. |
+| Method     | Execution    | Return Type          | Description                                                                                                |
+|------------|--------------|----------------------|------------------------------------------------------------------------------------------------------------|
+| **Get**    | Direct       | `[]StockNews  `      | Directly returns a slice of `[]StockNews`, facilitating individual access to each news article.            |
+| **Packed** | Intermediate | `*StockNewsResponse` | Returns a packed `*StockNewsResponse` object. Must be unpacked to access the `[]StockNews` slice.          |
+| **Raw**    | Low-level    | `*resty.Response`    | Provides the raw `*resty.Response` for maximum flexibility. Direct access to raw JSON or `*http.Response`. |
 
 
 <a name="StockNewsRequest"></a>

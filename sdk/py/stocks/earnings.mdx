@@ -12,12 +12,12 @@ Retrieve earnings data for any supported stock symbol.
 
 Use the `earnings()` method on the `stocks` resource to fetch earnings data. The method supports multiple output formats:
 
-| Output Format | Return Type | Description |
-|---------------|-------------|-------------|
-| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with earnings data indexed by symbol (default). |
-| **INTERNAL** | `StockEarnings` or `StockEarningsHumanReadable` | Returns a StockEarnings object. When `use_human_readable=True`, returns a StockEarningsHumanReadable object with capitalized field names. |
-| **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
-| **CSV** | `str` | Writes CSV data to file and returns the filename string. |
+| Output Format | Return Type                                     | Description                                                                                                                               |
+|---------------|-------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame`        | Returns a DataFrame with earnings data indexed by symbol (default).                                                                       |
+| **INTERNAL**  | `StockEarnings` or `StockEarningsHumanReadable` | Returns a StockEarnings object. When `use_human_readable=True`, returns a StockEarningsHumanReadable object with capitalized field names. |
+| **JSON**      | `dict`                                          | Returns the raw JSON response as a dictionary.                                                                                            |
+| **CSV**       | `str`                                           | Writes CSV data to file and returns the filename string.                                                                                  |
 
 <a name="earnings"></a>
 ## earnings

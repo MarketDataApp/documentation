@@ -57,23 +57,23 @@ Entitlements are permissions granted by exchanges that allow access to their dat
 
 When you use `OPTIONDATA` without date parameters, it returns current option quote data. **The data type you receive depends on your user type and OPRA entitlement.** This may include real-time data, 15-minute delayed data, or historical data (1 day old), depending on your entitlements and user classification.
 
-| User Type | OPRA Entitlement | Data Type |
-|-----------|------------------|-----------|
-| Non-Professional | ✅ | Real-time |
-| Non-Professional | ❌ | 15-min delayed |
-| Professional | Any | Historical (1 day old) |
-| Unknown | Any | Historical (1 day old) |
+| User Type        | OPRA Entitlement | Data Type              |
+|------------------|------------------|------------------------|
+| Non-Professional | ✅               | Real-time              |
+| Non-Professional | ❌               | 15-min delayed         |
+| Professional     | Any              | Historical (1 day old) |
+| Unknown          | Any              | Historical (1 day old) |
 
 #### Historical Quotes (With Date Parameters)
 
 When you use `OPTIONDATA` with date parameters, it returns historical option quote data. **Historical data is available to all users regardless of exchange entitlements.** However, the age of historical data you can access depends on your plan:
 
-| Plan | Historical Data Availability |
-|------|------------------------------|
-| Free Forever | 1 year |
-| Trial Plans (Starter, Trader) | 1 year |
-| Starter | 5 years |
-| Trader, Quant, Prime | No limit (full access) |
+| Plan                          | Historical Data Availability |
+|-------------------------------|------------------------------|
+| Free Forever                  | 1 year                       |
+| Trial Plans (Starter, Trader) | 1 year                       |
+| Starter                       | 5 years                      |
+| Trader, Quant, Prime          | No limit (full access)       |
 
 :::info Plan Limits
 If you attempt to access historical data older than your plan's limit permits, the formula will return an error. [Learn more about plan limits](/account/plan-limits).

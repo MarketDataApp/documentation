@@ -12,11 +12,11 @@ Get a current or historical end-of-day options chain for an underlying ticker sy
 
 Use the `option_chain()` method on the `options` resource to fetch option chains:
 
-| Output Format | Return Type | Description |
-|---------------|-------------|-------------|
-| **JSON** | `OptionChains` | Returns an OptionChains object containing option contracts (default). |
-| **CSV** | `OptionChains` | Returns an OptionChains object with CSV data accessible via `getCsv()`. |
-| **HTML** | `OptionChains` | Returns an OptionChains object with HTML data accessible via `getHtml()`. |
+| Output Format | Return Type    | Description                                                               |
+|---------------|----------------|---------------------------------------------------------------------------|
+| **JSON**      | `OptionChains` | Returns an OptionChains object containing option contracts (default).     |
+| **CSV**       | `OptionChains` | Returns an OptionChains object with CSV data accessible via `getCsv()`.   |
+| **HTML**      | `OptionChains` | Returns an OptionChains object with HTML data accessible via `getHtml()`. |
 
 :::warning HTML Not Yet Available
 `Format::HTML` is included for forward compatibility, but HTML responses are not currently implemented by the Market Data API.

@@ -34,14 +34,14 @@ The Trader Trial Plan offers a glimpse into the full capabilities of the Trader 
 
 This comparison helps you understand the Trader Trial in relation to our other offerings:
 
-| Feature               | Free Forever | Trader Trial  | Trader Plan   |
-|-----------------------|--------------|---------------|---------------|
-| API Credits           | 100 per day  | 100,000 per day | 100,000 per day |
-| Stock Data Delay      | 24 hours     | 24 hours      | Real-time     |
-| Options Data Delay    | 24 hours     | 24 hours      | Real-time     |
-| Historical Data       | 1 Year       | 1 Year        | Full Access   |
-| Standard Endpoints    | ✅           | ✅             | ✅            |
-| Premium Endpoints     | ❌           | AAPL Only     | ✅            |
+| Feature            | Free Forever | Trader Trial    | Trader Plan     |
+|--------------------|--------------|-----------------|-----------------|
+| API Credits        | 100 per day  | 100,000 per day | 100,000 per day |
+| Stock Data Delay   | 24 hours     | 24 hours        | Real-time       |
+| Options Data Delay | 24 hours     | 24 hours        | Real-time       |
+| Historical Data    | 1 Year       | 1 Year          | Full Access     |
+| Standard Endpoints | ✅           | ✅              | ✅              |
+| Premium Endpoints  | ❌           | AAPL Only       | ✅              |
 
 ## Why Try the Trader Trial?
 

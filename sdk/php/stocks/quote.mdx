@@ -12,11 +12,11 @@ Get a real-time price quote for a single stock symbol.
 
 Use the `quote()` method on the `stocks` resource to fetch a real-time quote:
 
-| Output Format | Return Type | Description |
-|---------------|-------------|-------------|
-| **JSON** | `Quote` | Returns a Quote object with typed properties (default). |
-| **CSV** | `Quote` | Returns a Quote object with CSV data accessible via `getCsv()`. |
-| **HTML** | `Quote` | Returns a Quote object with HTML data accessible via `getHtml()`. |
+| Output Format | Return Type | Description                                                       |
+|---------------|-------------|-------------------------------------------------------------------|
+| **JSON**      | `Quote`     | Returns a Quote object with typed properties (default).           |
+| **CSV**       | `Quote`     | Returns a Quote object with CSV data accessible via `getCsv()`.   |
+| **HTML**      | `Quote`     | Returns a Quote object with HTML data accessible via `getHtml()`. |
 
 :::warning HTML Not Yet Available
 `Format::HTML` is included for forward compatibility, but HTML responses are not currently implemented by the Market Data API.

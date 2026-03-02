@@ -25,13 +25,13 @@ The Prime Plan is designed with the highest level of access and customization in
 
 Here's how the Prime Plan compares to our other offerings:
 
-| Feature               | Free Forever | Starter | Trader  | Quant    | Prime    |
-|-----------------------|--------------|---------|---------|---------------|---------------|
-| Daily API Credits           | 100/day      | 10,000/day | 100,000/day | Unlimited | Unlimited |
-| Per Minute Rate Limit | No Limit     | No Limit | No Limit | 10,000        | 100,000        |
-| Real-Time Data        | ❌           | ✅       | ✅       | ✅             | ✅             |
-| Premium Endpoints     | ❌           | ✅       | ✅       | ✅ + Custom    | ✅ + Custom    |
-| Historical Data       | 1 Year       | 5 Years  | Full Access | Full Access  | Full Access  |
+| Feature               | Free Forever | Starter    | Trader      | Quant       | Prime       |
+|-----------------------|--------------|------------|-------------|-------------|-------------|
+| Daily API Credits     | 100/day      | 10,000/day | 100,000/day | Unlimited   | Unlimited   |
+| Per Minute Rate Limit | No Limit     | No Limit   | No Limit    | 10,000      | 100,000     |
+| Real-Time Data        | ❌           | ✅         | ✅          | ✅          | ✅          |
+| Premium Endpoints     | ❌           | ✅         | ✅          | ✅ + Custom | ✅ + Custom |
+| Historical Data       | 1 Year       | 5 Years    | Full Access | Full Access | Full Access |
 
 ## Why Choose the Prime Plan?
 

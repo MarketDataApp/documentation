@@ -24,14 +24,14 @@ The Trader Plan is packed with features to support the most demanding projects:
 
 Here's how the Trader Plan compares to our other offerings:
 
-| Feature               | Free Forever | Starter Plan | Trader Plan   |
-|-----------------------|--------------|--------------|---------------|
-| API Credits           | 100 per day  | 10,000 per day | 100,000 per day |
-| Stock Data Delay      | 24 hours     | Real-time    | Real-time     |
-| Options Data Delay    | 24 hours     | 15 minutes   | Real-time     |
-| Standard Endpoints    | ✅           | ✅            | ✅             |
-| Premium Endpoints     | ❌           | ✅            | ✅             |
-| Historical Data       | 1 Year       | 5 Years       | Full Access    |
+| Feature            | Free Forever | Starter Plan   | Trader Plan     |
+|--------------------|--------------|----------------|-----------------|
+| API Credits        | 100 per day  | 10,000 per day | 100,000 per day |
+| Stock Data Delay   | 24 hours     | Real-time      | Real-time       |
+| Options Data Delay | 24 hours     | 15 minutes     | Real-time       |
+| Standard Endpoints | ✅           | ✅             | ✅              |
+| Premium Endpoints  | ❌           | ✅             | ✅              |
+| Historical Data    | 1 Year       | 5 Years        | Full Access     |
 
 ## Why Choose the Trader Plan?
 

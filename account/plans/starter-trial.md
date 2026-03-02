@@ -32,14 +32,14 @@ The Starter Trial Plan mirrors the full Starter Plan in terms of features, with 
 
 Here's a quick comparison to help you understand the Starter Trial in relation to our other offerings:
 
-| Feature               | Free Forever | Starter Trial | Starter Plan  |
-|-----------------------|--------------|---------------|---------------|
-| API Credits           | 100 per day  | 10,000 per day | 10,000 per day |
-| Stock Data Delay      | 24 hours     | 24 hours      | Real-time     |
-| Options Data Delay    | 24 hours     | 24 hours      | 15 minutes    |
-| Historical Data       | 1 Year       | 1 Year        | 5 Years       |
-| Standard Endpoints    | ✅           | ✅            | ✅             |
-| Premium Endpoints     | ❌           | AAPL Only     | ✅             |
+| Feature            | Free Forever | Starter Trial  | Starter Plan   |
+|--------------------|--------------|----------------|----------------|
+| API Credits        | 100 per day  | 10,000 per day | 10,000 per day |
+| Stock Data Delay   | 24 hours     | 24 hours       | Real-time      |
+| Options Data Delay | 24 hours     | 24 hours       | 15 minutes     |
+| Historical Data    | 1 Year       | 1 Year         | 5 Years        |
+| Standard Endpoints | ✅           | ✅             | ✅             |
+| Premium Endpoints  | ❌           | AAPL Only      | ✅             |
 
 ## Why Take A Trail of the Starter Plan?
 

@@ -6,14 +6,14 @@ sidebar_position: 4
 Market Data offers two ways for users to use our service for free. We offer the "Free Forever" plan, which allows for 100 API requests per day. We also offer a free 30 day trial (no credit card required) so that users can test our services and determine which plan best meets their needs. Trial accounts work almost exactly the same as paid accounts and have the same [plan limits](/account/plan-limits). There are a few differences, however.
 
 #### Comparison Table
-| Feature               | Free Forever | Trial Plans | Paid Plans  |
-|-----------------------|--------------|-------------|-------------|
-| 24 Hour Delayed Data  | ✅           | ✅           | ❌          |
-| 15 Minute Delayed Data | ❌           | ❌           | ✅          |
-| Real-Time Data        | ❌           | ❌           | ✅          |
-| Standard Endpoints    | ✅           | ✅           | ✅          |
-| Premium Endpoints     | ❌           | AAPL Only   | ✅          |
-| Historical Data       | 1 Year       | 1 Year      | Full Access |
+| Feature                | Free Forever | Trial Plans | Paid Plans  |
+|------------------------|--------------|-------------|-------------|
+| 24 Hour Delayed Data   | ✅           | ✅          | ❌          |
+| 15 Minute Delayed Data | ❌           | ❌          | ✅          |
+| Real-Time Data         | ❌           | ❌          | ✅          |
+| Standard Endpoints     | ✅           | ✅          | ✅          |
+| Premium Endpoints      | ❌           | AAPL Only   | ✅          |
+| Historical Data        | 1 Year       | 1 Year      | Full Access |
 
 ## 24 Hour Delayed Data
 
