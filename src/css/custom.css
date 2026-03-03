@@ -202,6 +202,27 @@
   background-color: #E65100; /* Beta: Orange */
 }
 
+/* Navbar user profile button */
+.navbar-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.navbar-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: block;
+}
+
+@media (max-width: 996px) {
+  .navbar-user-avatar {
+    display: none;
+  }
+}
+
 /* Clear floats so following content starts below (e.g. after float: right images) */
 .clear-float {
   clear: both;

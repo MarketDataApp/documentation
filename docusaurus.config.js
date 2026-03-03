@@ -222,8 +222,7 @@ const config = {
             position: "right",
           },
           {
-            href: "https://github.com/MarketDataApp/documentation",
-            label: "GitHub",
+            type: "custom-UserProfile",
             position: "right",
           },
         ],
