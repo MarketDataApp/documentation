@@ -57,7 +57,7 @@ export default function UserProfile({ mobile }) {
     return (
       <li className="menu__list-item">
         <a href="https://www.marketdata.app/dashboard/" className="menu__link" target="_blank" rel="noopener noreferrer">
-          Customer Dashboard <IconExternalLink />
+          {user ? <>Customer Dashboard <IconExternalLink /></> : 'Log in'}
         </a>
       </li>
     );
