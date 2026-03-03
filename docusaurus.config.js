@@ -49,7 +49,10 @@ const config = {
       ({
         blog: false,
         theme: {
-          customCss: require.resolve("./src/css/custom.css"),
+          customCss: [
+            require.resolve("@marketdataapp/ui/css/components"),
+            require.resolve("./src/css/custom.css"),
+          ],
         },
         sitemap:
           process.env.PROD == "true"

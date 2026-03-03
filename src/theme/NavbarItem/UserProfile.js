@@ -65,7 +65,7 @@ export default function UserProfile({ mobile }) {
 
   if (!user) {
     return (
-      <a href="https://www.marketdata.app/dashboard/" className="navbar__item navbar__link">
+      <a href="https://www.marketdata.app/dashboard/" className="btn-hover-orange">
         Log in
       </a>
     );
