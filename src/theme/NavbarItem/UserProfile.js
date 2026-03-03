@@ -75,9 +75,14 @@ export default function UserProfile({ mobile }) {
   const avatarUrl = `https://www.gravatar.com/avatar/${hash}?s=32&d=mp`;
 
   return (
-    <a href="https://www.marketdata.app/dashboard/" className="navbar__item navbar-user-profile">
-      <img src={avatarUrl} alt={user.login} className="navbar-user-avatar" />
-      <span className="navbar-user-name">{user.login}</span>
-    </a>
+    <>
+      <a href="https://www.marketdata.app/dashboard/" className="navbar__item navbar-user-profile">
+        <img src={avatarUrl} alt={user.login} className="navbar-user-avatar" />
+        <span className="navbar-user-name">{user.login}</span>
+      </a>
+      <a href="https://dashboard.marketdata.app/marketdata/login" className="btn-hover-orange">
+        Log out
+      </a>
+    </>
   );
 }
