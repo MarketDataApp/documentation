@@ -3,7 +3,7 @@ title: Professional Status Policy
 sidebar_position: 4
 ---
 
-All Market Data self-service plans are available to **non-professional subscribers only**. Exchange rules require vendors to classify and certify the status of every subscriber who receives real-time or intraday market data. It is your responsibility to subscribe under the correct classification.
+All Market Data self-service plans are available to **non-professional subscribers only**. Exchange rules require vendors to classify and certify the status of every subscriber who receives real-time market data. It is your responsibility to subscribe under the correct classification. Business use of market data is only available under a commercial plan.
 
 For a full explanation of how the exchanges define professional status and how to determine your own classification, see [Professional Status Explained](https://www.marketdata.app/education/stocks/professional-status-explained/).
 
