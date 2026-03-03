@@ -13,11 +13,11 @@ Get a list of current or historical option expiration dates for an underlying sy
 
 Utilize [OptionsExpirationsRequest](<#OptionsExpirationsRequest>) for querying the endpoint through one of the three available methods:
 
-| Method     | Execution       | Return Type                   | Description                                                                                                                      |
-|------------|-----------------|-------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| **Get**    | Direct          | `[]time.Time`                 | Immediately fetches and returns a slice of `[]time.Time`, allowing direct access to each expiration date.                        |
-| **Packed** | Intermediate    | `*OptionsExpirationsResponse` | Delivers a `*OptionsExpirationsResponse` object containing the data, which requires unpacking to access the `[]time.Time` slice. |
-| **Raw**    | Low-level       | `*resty.Response`             | Offers the unprocessed `*resty.Response` for those seeking full control and access to the raw JSON or `*http.Response`.          |
+| Method     | Execution    | Return Type                   | Description                                                                                                                      |
+|------------|--------------|-------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| **Get**    | Direct       | `[]time.Time`                 | Immediately fetches and returns a slice of `[]time.Time`, allowing direct access to each expiration date.                        |
+| **Packed** | Intermediate | `*OptionsExpirationsResponse` | Delivers a `*OptionsExpirationsResponse` object containing the data, which requires unpacking to access the `[]time.Time` slice. |
+| **Raw**    | Low-level    | `*resty.Response`             | Offers the unprocessed `*resty.Response` for those seeking full control and access to the raw JSON or `*http.Response`.          |
 
 
 <a name="OptionsExpirationsRequest"></a>

@@ -12,12 +12,12 @@ Retrieve market status information (open/closed) for dates and countries.
 
 Use the `status()` method on the `markets` resource to fetch market status information. The method supports multiple output formats:
 
-| Output Format | Return Type | Description |
-|---------------|-------------|-------------|
-| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with market status data (default). |
-| **INTERNAL** | `list[MarketStatus]` or `list[MarketStatusHumanReadable]` | Returns a list of MarketStatus objects. When `use_human_readable=True`, returns a list of MarketStatusHumanReadable objects with capitalized field names. |
-| **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
-| **CSV** | `str` | Writes CSV data to file and returns the filename string. |
+| Output Format | Return Type                                               | Description                                                                                                                                               |
+|---------------|-----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame`                  | Returns a DataFrame with market status data (default).                                                                                                    |
+| **INTERNAL**  | `list[MarketStatus]` or `list[MarketStatusHumanReadable]` | Returns a list of MarketStatus objects. When `use_human_readable=True`, returns a list of MarketStatusHumanReadable objects with capitalized field names. |
+| **JSON**      | `dict`                                                    | Returns the raw JSON response as a dictionary.                                                                                                            |
+| **CSV**       | `str`                                                     | Writes CSV data to file and returns the filename string.                                                                                                  |
 
 <a name="status"></a>
 ## status

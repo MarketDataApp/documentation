@@ -12,11 +12,11 @@ Get real-time midpoint prices for one or more stocks using the SmartMid model.
 
 Use the `prices()` method on the `stocks` resource to fetch midpoint prices:
 
-| Output Format | Return Type | Description |
-|---------------|-------------|-------------|
-| **JSON** | `Prices` | Returns a Prices object containing price data (default). |
-| **CSV** | `Prices` | Returns a Prices object with CSV data accessible via `getCsv()`. |
-| **HTML** | `Prices` | Returns a Prices object with HTML data accessible via `getHtml()`. |
+| Output Format | Return Type | Description                                                        |
+|---------------|-------------|--------------------------------------------------------------------|
+| **JSON**      | `Prices`    | Returns a Prices object containing price data (default).           |
+| **CSV**       | `Prices`    | Returns a Prices object with CSV data accessible via `getCsv()`.   |
+| **HTML**      | `Prices`    | Returns a Prices object with HTML data accessible via `getHtml()`. |
 
 :::warning HTML Not Yet Available
 `Format::HTML` is included for forward compatibility, but HTML responses are not currently implemented by the Market Data API.

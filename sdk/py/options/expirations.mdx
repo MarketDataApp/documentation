@@ -12,12 +12,12 @@ Get a list of current or historical option expiration dates for an underlying sy
 
 Use the `expirations()` method on the `options` resource to fetch expiration dates. The method supports multiple output formats:
 
-| Output Format | Return Type | Description |
-|---------------|-------------|-------------|
-| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with expiration dates indexed by expirations (default). |
-| **INTERNAL** | `OptionsExpirations` or `OptionsExpirationsHumanReadable` | Returns an OptionsExpirations object. When `use_human_readable=True`, returns an OptionsExpirationsHumanReadable object with capitalized field names. |
-| **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
-| **CSV** | `str` | Writes CSV data to file and returns the filename string. |
+| Output Format | Return Type                                               | Description                                                                                                                                           |
+|---------------|-----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame`                  | Returns a DataFrame with expiration dates indexed by expirations (default).                                                                           |
+| **INTERNAL**  | `OptionsExpirations` or `OptionsExpirationsHumanReadable` | Returns an OptionsExpirations object. When `use_human_readable=True`, returns an OptionsExpirationsHumanReadable object with capitalized field names. |
+| **JSON**      | `dict`                                                    | Returns the raw JSON response as a dictionary.                                                                                                        |
+| **CSV**       | `str`                                                     | Writes CSV data to file and returns the filename string.                                                                                              |
 
 <a name="expirations"></a>
 ## expirations

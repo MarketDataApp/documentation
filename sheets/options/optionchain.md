@@ -82,13 +82,13 @@ Fetches a current option chain from Market Data.
 
 The `OPTIONCHAIN` function fetches current option chain data. The type of data you receive depends on your user type and OPRA entitlement. This may include real-time data, 15-minute delayed data, or historical data, depending on the plan or access level. To get real-time options data, users need to sign the OPRA agreement.
 
-| User Type | OPRA Entitlement | Data Type |
-|-----------|------------------|-----------|
-| Non-Professional | ✅ | Real-time |
-| Non-Professional | ❌ | 15-min delayed |
-| Professional | ✅ | 15-min delayed |
-| Professional | ❌ | Historical (1 day old) |
-| Unknown | Any | Historical (1 day old) |
+| User Type        | OPRA Entitlement | Data Type              |
+|------------------|------------------|------------------------|
+| Non-Professional | ✅               | Real-time              |
+| Non-Professional | ❌               | 15-min delayed         |
+| Professional     | ✅               | 15-min delayed         |
+| Professional     | ❌               | Historical (1 day old) |
+| Unknown          | Any              | Historical (1 day old) |
 
 :::info What are entitlements?
 Entitlements are permissions granted by exchanges that allow access to their data. To get real-time options data, users need to sign the [OPRA agreement](/account/entitlements). [Learn more about entitlements](/account/entitlements).

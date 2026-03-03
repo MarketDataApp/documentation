@@ -16,11 +16,11 @@ The news endpoint is currently in beta. Features and response formats may change
 
 Use the `news()` method on the `stocks` resource to fetch news articles:
 
-| Output Format | Return Type | Description |
-|---------------|-------------|-------------|
-| **JSON** | `News` | Returns a News object containing news articles (default). |
-| **CSV** | `News` | Returns a News object with CSV data accessible via `getCsv()`. |
-| **HTML** | `News` | Returns a News object with HTML data accessible via `getHtml()`. |
+| Output Format | Return Type | Description                                                      |
+|---------------|-------------|------------------------------------------------------------------|
+| **JSON**      | `News`      | Returns a News object containing news articles (default).        |
+| **CSV**       | `News`      | Returns a News object with CSV data accessible via `getCsv()`.   |
+| **HTML**      | `News`      | Returns a News object with HTML data accessible via `getHtml()`. |
 
 :::warning HTML Not Yet Available
 `Format::HTML` is included for forward compatibility, but HTML responses are not currently implemented by the Market Data API.

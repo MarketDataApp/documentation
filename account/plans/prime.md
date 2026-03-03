@@ -1,6 +1,6 @@
 ---
 title: Prime Plan
-sidebar_position: 6
+sidebar_position: 7
 ---
 
 The **Prime Plan** is Market Data's most robust offering, designed for high-powered traders and investors who require extensive data access and customization options. This plan is tailored to meet the needs of sophisticated trading operations, offering unparalleled data access with the flexibility to handle massive volumes of API requests. Here's a comprehensive overview of the Prime Plan.
@@ -25,13 +25,13 @@ The Prime Plan is designed with the highest level of access and customization in
 
 Here's how the Prime Plan compares to our other offerings:
 
-| Feature               | Free Forever | Starter | Trader  | Quant    | Prime    |
-|-----------------------|--------------|---------|---------|---------------|---------------|
-| Daily API Credits           | 100/day      | 10,000/day | 100,000/day | Unlimited | Unlimited |
-| Per Minute Rate Limit | No Limit     | No Limit | No Limit | 10,000        | 100,000        |
-| Real-Time Data        | ❌           | ✅       | ✅       | ✅             | ✅             |
-| Premium Endpoints     | ❌           | ✅       | ✅       | ✅ + Custom    | ✅ + Custom    |
-| Historical Data       | 1 Year       | 5 Years  | Full Access | Full Access  | Full Access  |
+| Feature               | Free Forever | Starter    | Trader      | Quant       | Prime       |
+|-----------------------|--------------|------------|-------------|-------------|-------------|
+| Daily API Credits     | 100/day      | 10,000/day | 100,000/day | Unlimited   | Unlimited   |
+| Per Minute Rate Limit | No Limit     | No Limit   | No Limit    | 10,000      | 100,000     |
+| Real-Time Data        | ❌           | ✅         | ✅          | ✅          | ✅          |
+| Premium Endpoints     | ❌           | ✅         | ✅          | ✅ + Custom | ✅ + Custom |
+| Historical Data       | 1 Year       | 5 Years    | Full Access | Full Access | Full Access |
 
 ## Why Choose the Prime Plan?
 

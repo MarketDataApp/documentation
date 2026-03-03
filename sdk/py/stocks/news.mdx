@@ -12,12 +12,12 @@ Retrieve news articles for any supported stock symbol.
 
 Use the `news()` method on the `stocks` resource to fetch news articles. The method supports multiple output formats:
 
-| Output Format | Return Type | Description |
-|---------------|-------------|-------------|
-| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with news articles indexed by symbol (default). |
-| **INTERNAL** | `list[StockNews]` or `list[StockNewsHumanReadable]` | Returns a list of StockNews objects. When `use_human_readable=True`, returns a list of StockNewsHumanReadable objects with capitalized field names. |
-| **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
-| **CSV** | `str` | Writes CSV data to file and returns the filename string. |
+| Output Format | Return Type                                         | Description                                                                                                                                         |
+|---------------|-----------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame`            | Returns a DataFrame with news articles indexed by symbol (default).                                                                                 |
+| **INTERNAL**  | `list[StockNews]` or `list[StockNewsHumanReadable]` | Returns a list of StockNews objects. When `use_human_readable=True`, returns a list of StockNewsHumanReadable objects with capitalized field names. |
+| **JSON**      | `dict`                                              | Returns the raw JSON response as a dictionary.                                                                                                      |
+| **CSV**       | `str`                                               | Writes CSV data to file and returns the filename string.                                                                                            |
 
 <a name="news"></a>
 ## news

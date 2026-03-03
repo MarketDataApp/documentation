@@ -12,11 +12,11 @@ Get the past, present, or future market status (open/closed) for any trading day
 
 Use the `status()` method on the `markets` resource to check market status:
 
-| Output Format | Return Type | Description |
-|---------------|-------------|-------------|
-| **JSON** | `Statuses` | Returns a Statuses object containing market status data (default). |
-| **CSV** | `Statuses` | Returns a Statuses object with CSV data accessible via `getCsv()`. |
-| **HTML** | `Statuses` | Returns a Statuses object with HTML data accessible via `getHtml()`. |
+| Output Format | Return Type | Description                                                          |
+|---------------|-------------|----------------------------------------------------------------------|
+| **JSON**      | `Statuses`  | Returns a Statuses object containing market status data (default).   |
+| **CSV**       | `Statuses`  | Returns a Statuses object with CSV data accessible via `getCsv()`.   |
+| **HTML**      | `Statuses`  | Returns a Statuses object with HTML data accessible via `getHtml()`. |
 
 :::warning HTML Not Yet Available
 `Format::HTML` is included for forward compatibility, but HTML responses are not currently implemented by the Market Data API.

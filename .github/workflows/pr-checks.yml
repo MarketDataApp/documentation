@@ -5,6 +5,18 @@ on:
     branches: [main]
 
 jobs:
+  table-alignment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check markdown table alignment
+        run: node scripts/fix-table-alignment.js
+
   worker-unit-tests:
     runs-on: ubuntu-latest
     steps:

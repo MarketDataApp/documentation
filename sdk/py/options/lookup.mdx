@@ -12,12 +12,12 @@ Lookup an option symbol from a human-readable string format.
 
 Use the `lookup()` method on the `options` resource to lookup option symbols. The method supports multiple output formats:
 
-| Output Format | Return Type | Description |
-|---------------|-------------|-------------|
-| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame` | Returns a DataFrame with option lookup data indexed by optionSymbol (default). |
-| **INTERNAL** | `OptionsLookup` or `OptionsLookupHumanReadable` | Returns an OptionsLookup object. When `use_human_readable=True`, returns an OptionsLookupHumanReadable object with capitalized field names. |
-| **JSON** | `dict` | Returns the raw JSON response as a dictionary. |
-| **CSV** | `str` | Writes CSV data to file and returns the filename string. |
+| Output Format | Return Type                                     | Description                                                                                                                                 |
+|---------------|-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| **DATAFRAME** | `pandas.DataFrame` or `polars.DataFrame`        | Returns a DataFrame with option lookup data indexed by optionSymbol (default).                                                              |
+| **INTERNAL**  | `OptionsLookup` or `OptionsLookupHumanReadable` | Returns an OptionsLookup object. When `use_human_readable=True`, returns an OptionsLookupHumanReadable object with capitalized field names. |
+| **JSON**      | `dict`                                          | Returns the raw JSON response as a dictionary.                                                                                              |
+| **CSV**       | `str`                                           | Writes CSV data to file and returns the filename string.                                                                                    |
 
 <a name="lookup"></a>
 ## lookup

@@ -127,13 +127,13 @@ This request returns market data that is delayed by a minimum of 15 minutes.
 ## Mode Comparison
 
 | Feature                        | Live Mode                            | Cached Mode                | Delayed Mode                    |
-| ------------------------------ | ------------------------------------ | -------------------------- | ------------------------------- |
+|--------------------------------|--------------------------------------|----------------------------|---------------------------------|
 | **Data Timeliness**            | Real-time                            | Seconds to minutes old     | ≥ 15 minutes delayed            |
 | **Pricing**                    | 1 credit per symbol with quote data  | 1 credit per request       | Same as live                    |
 | **Ideal Use-Case**             | Time-sensitive decisions             | Bulk quote retrieval       | Non-time-sensitive applications |
 | **Default Behavior**           | Paid accounts (if `mode` is omitted) | Must specify `mode=cached` | Free & trial accounts           |
-| **Paid Accounts Access**       | ✅                                    | ✅                          | ✅                               |
-| **Free/Trial Accounts Access** | ❌                                    | ❌                          | ✅                               |
+| **Paid Accounts Access**       | ✅                                   | ✅                         | ✅                              |
+| **Free/Trial Accounts Access** | ❌                                   | ❌                         | ✅                              |
 
 * Choose **`mode=live`** when immediate data freshness is required.
 * Use **`mode=cached`** to reduce credit usage when working with large symbol sets.

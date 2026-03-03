@@ -1,6 +1,6 @@
 ---
 title: Trader Plan
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 The **Trader Plan** is specifically designed for high-volume users and traders who demand the utmost from their financial data services. With an enormous allocation of API credits and access to the most comprehensive data sets available, the Trader Plan is the ultimate choice for those who need maximum performance and depth in their financial analysis. Here's what you can expect from the Trader Plan.
@@ -24,14 +24,14 @@ The Trader Plan is packed with features to support the most demanding projects:
 
 Here's how the Trader Plan compares to our other offerings:
 
-| Feature               | Free Forever | Starter Plan | Trader Plan   |
-|-----------------------|--------------|--------------|---------------|
-| API Credits           | 100 per day  | 10,000 per day | 100,000 per day |
-| Stock Data Delay      | 24 hours     | Real-time    | Real-time     |
-| Options Data Delay    | 24 hours     | 15 minutes   | Real-time     |
-| Standard Endpoints    | ✅           | ✅            | ✅             |
-| Premium Endpoints     | ❌           | ✅            | ✅             |
-| Historical Data       | 1 Year       | 5 Years       | Full Access    |
+| Feature            | Free Forever | Starter Plan   | Trader Plan     |
+|--------------------|--------------|----------------|-----------------|
+| API Credits        | 100 per day  | 10,000 per day | 100,000 per day |
+| Stock Data Delay   | 24 hours     | Real-time      | Real-time       |
+| Options Data Delay | 24 hours     | 15 minutes     | Real-time       |
+| Standard Endpoints | ✅           | ✅             | ✅              |
+| Premium Endpoints  | ❌           | ✅             | ✅              |
+| Historical Data    | 1 Year       | 5 Years        | Full Access     |
 
 ## Why Choose the Trader Plan?
 

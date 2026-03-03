@@ -24,28 +24,28 @@ This means:
 
 ### Required Style Guides
 
-| Language | Style Guide / Best Practices |
-|----------|------------------------------|
-| Python | [PEP 8](https://peps.python.org/pep-0008/), [PEP 257](https://peps.python.org/pep-0257/) (docstrings) |
-| PHP | [PSR-12](https://www.php-fig.org/psr/psr-12/), [PSR-4](https://www.php-fig.org/psr/psr-4/) (autoloading) |
+| Language   | Style Guide / Best Practices                                                                                                      |
+|------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| Python     | [PEP 8](https://peps.python.org/pep-0008/), [PEP 257](https://peps.python.org/pep-0257/) (docstrings)                             |
+| PHP        | [PSR-12](https://www.php-fig.org/psr/psr-12/), [PSR-4](https://www.php-fig.org/psr/psr-4/) (autoloading)                          |
 | JavaScript | [MDN Guidelines](https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Writing_style_guide/Code_style_guide/JavaScript) |
-| TypeScript | [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/) |
-| Go | [Effective Go](https://go.dev/doc/effective_go), [Go Code Review Comments](https://go.dev/wiki/CodeReviewComments) |
-| Java | [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) |
-| C# | [.NET Framework Design Guidelines](https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/) |
-| Rust | [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/) |
+| TypeScript | [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/)                                                              |
+| Go         | [Effective Go](https://go.dev/doc/effective_go), [Go Code Review Comments](https://go.dev/wiki/CodeReviewComments)                |
+| Java       | [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html)                                                     |
+| C#         | [.NET Framework Design Guidelines](https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/)                           |
+| Rust       | [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/)                                                                |
 
 SDKs must pass the standard linter for their language (e.g., `ruff` for Python, `phpcs` for PHP, `golint` for Go).
 
-| Language | Error Handling | Async Pattern | Default Output | Naming |
-|----------|---------------|---------------|----------------|--------|
-| Python | Exceptions* | Sync (async optional) | pandas DataFrame | snake_case |
-| JavaScript | Promise rejection | async/await | Plain objects | camelCase |
-| PHP | Exceptions | Sync | Objects/arrays | camelCase |
-| Go | Return `error` | Blocking + context | Structs | PascalCase exported |
-| Java | Exceptions | CompletableFuture | POJOs | camelCase |
-| C# | Exceptions | Task async/await | Objects | PascalCase |
-| Rust | Return `Result<T, E>` | async with runtime | Structs | snake_case |
+| Language   | Error Handling        | Async Pattern         | Default Output   | Naming              |
+|------------|-----------------------|-----------------------|------------------|---------------------|
+| Python     | Exceptions*           | Sync (async optional) | pandas DataFrame | snake_case          |
+| JavaScript | Promise rejection     | async/await           | Plain objects    | camelCase           |
+| PHP        | Exceptions            | Sync                  | Objects/arrays   | camelCase           |
+| Go         | Return `error`        | Blocking + context    | Structs          | PascalCase exported |
+| Java       | Exceptions            | CompletableFuture     | POJOs            | camelCase           |
+| C#         | Exceptions            | Task async/await      | Objects          | PascalCase          |
+| Rust       | Return `Result<T, E>` | async with runtime    | Structs          | snake_case          |
 
 > **\* Python SDK Technical Debt:** The current Python SDK (v1.x) returns `MarketDataClientErrorResult` instead of raising exceptions. This is non-idiomatic and will be fixed in v2.0. **New SDKs must use idiomatic patterns from day one.**
 
@@ -53,20 +53,20 @@ SDKs must pass the standard linter for their language (e.g., `ruff` for Python, 
 
 ## Quick Reference
 
-| Requirement | Priority |
-|-------------|----------|
-| Bearer token authentication | Must |
-| Environment-based configuration | Must |
-| Connection pooling | Must |
-| Fixed 99-second timeout | Must |
-| Typed input validation | Must |
-| Typed output models | Must |
-| Structured error handling | Must |
-| API credit tracking | Must |
-| Retry with exponential backoff | Must |
-| API status awareness | Should |
-| Multiple output formats | Should |
-| Batch/concurrency helpers | Should |
+| Requirement                       | Priority |
+|-----------------------------------|----------|
+| Bearer token authentication       | Must     |
+| Environment-based configuration   | Must     |
+| Connection pooling                | Must     |
+| Fixed 99-second timeout           | Must     |
+| Typed input validation            | Must     |
+| Typed output models               | Must     |
+| Structured error handling         | Must     |
+| API credit tracking               | Must     |
+| Retry with exponential backoff    | Must     |
+| API status awareness              | Should   |
+| Multiple output formats           | Should   |
+| Batch/concurrency helpers         | Should   |
 | Ecosystem-native advanced formats | Optional |
 
 ---
@@ -122,13 +122,13 @@ Do not duplicate REST paths, payload schemas, or parameter contracts in this doc
 
 SDKs must provide first-class methods for the following capabilities (language-idiomatic naming is expected):
 
-| Resource | Required SDK Methods (capabilities) |
-|----------|-------------------------------------|
-| `stocks` | `prices`, `quotes`, `candles`, `earnings`, `news` |
-| `options` | `chain`, `expirations`, `strikes`, `quotes`, `lookup` |
-| `funds` | `candles` |
-| `markets` | `status` |
-| `utilities` | `status`, `headers`, `user` |
+| Resource    | Required SDK Methods (capabilities)                   |
+|-------------|-------------------------------------------------------|
+| `stocks`    | `prices`, `quotes`, `candles`, `earnings`, `news`     |
+| `options`   | `chain`, `expirations`, `strikes`, `quotes`, `lookup` |
+| `funds`     | `candles`                                             |
+| `markets`   | `status`                                              |
+| `utilities` | `status`, `headers`, `user`                           |
 
 ---
 
@@ -136,12 +136,12 @@ SDKs must provide first-class methods for the following capabilities (language-i
 
 All endpoint methods must support these parameters:
 
-| Parameter | Values | Description |
-|-----------|--------|-------------|
-| `dateformat` | `timestamp`, `unix`, `spreadsheet` | Controls date output format |
-| `columns` | array of strings | Filter response to specific columns |
-| `headers` | boolean | Include headers in CSV output |
-| `human` | boolean | Use human-readable field names |
+| Parameter    | Values                             | Description                         |
+|--------------|------------------------------------|-------------------------------------|
+| `dateformat` | `timestamp`, `unix`, `spreadsheet` | Controls date output format         |
+| `columns`    | array of strings                   | Filter response to specific columns |
+| `headers`    | boolean                            | Include headers in CSV output       |
+| `human`      | boolean                            | Use human-readable field names      |
 
 ---
 
@@ -151,12 +151,12 @@ All SDKs must implement a three-tier configuration system where more specific se
 
 ### Priority Order (Lowest → Highest)
 
-| Priority | Source | Scope | Example |
-|----------|--------|-------|---------|
-| 1 (lowest) | `.env` file | Project-level | `.env` file in project root |
-| 2 | Environment variables | System/shell | `export MARKETDATA_TOKEN=...` |
-| 3 | Client defaults | Per-client instance | `client.default_params.output_format = "json"` |
-| 4 (highest) | Method parameters | Per-request | `client.stocks.prices("AAPL", output_format="csv")` |
+| Priority    | Source                | Scope               | Example                                             |
+|-------------|-----------------------|---------------------|-----------------------------------------------------|
+| 1 (lowest)  | `.env` file           | Project-level       | `.env` file in project root                         |
+| 2           | Environment variables | System/shell        | `export MARKETDATA_TOKEN=...`                       |
+| 3           | Client defaults       | Per-client instance | `client.default_params.output_format = "json"`      |
+| 4 (highest) | Method parameters     | Per-request         | `client.stocks.prices("AAPL", output_format="csv")` |
 
 SDKs should automatically load `.env` files from the current working directory if present.
 
@@ -181,18 +181,18 @@ Result: output_format="csv" (method parameter wins)
 
 ### Supported Environment Variables
 
-| Variable | Purpose | Default |
-|----------|---------|---------|
-| `MARKETDATA_TOKEN` | API authentication token | (none) |
-| `MARKETDATA_BASE_URL` | API base URL | `https://api.marketdata.app` |
-| `MARKETDATA_API_VERSION` | API version | `v1` |
-| `MARKETDATA_LOGGING_LEVEL` | SDK logging level | `INFO` |
-| `MARKETDATA_OUTPUT_FORMAT` | Default output format | (language default) |
-| `MARKETDATA_DATE_FORMAT` | Default date format | `timestamp` |
-| `MARKETDATA_COLUMNS` | Columns to include | (all) |
-| `MARKETDATA_ADD_HEADERS` | Include headers in CSV | `true` |
-| `MARKETDATA_USE_HUMAN_READABLE` | Human-readable field names | `false` |
-| `MARKETDATA_MODE` | Data mode (live/cached/delayed) | `live` |
+| Variable                        | Purpose                         | Default                      |
+|---------------------------------|---------------------------------|------------------------------|
+| `MARKETDATA_TOKEN`              | API authentication token        | (none)                       |
+| `MARKETDATA_BASE_URL`           | API base URL                    | `https://api.marketdata.app` |
+| `MARKETDATA_API_VERSION`        | API version                     | `v1`                         |
+| `MARKETDATA_LOGGING_LEVEL`      | SDK logging level               | `INFO`                       |
+| `MARKETDATA_OUTPUT_FORMAT`      | Default output format           | (language default)           |
+| `MARKETDATA_DATE_FORMAT`        | Default date format             | `timestamp`                  |
+| `MARKETDATA_COLUMNS`            | Columns to include              | (all)                        |
+| `MARKETDATA_ADD_HEADERS`        | Include headers in CSV          | `true`                       |
+| `MARKETDATA_USE_HUMAN_READABLE` | Human-readable field names      | `false`                      |
+| `MARKETDATA_MODE`               | Data mode (live/cached/delayed) | `live`                       |
 
 ---
 
@@ -225,28 +225,28 @@ When no token is provided:
 
 All SDKs must define these error types:
 
-| Error Type | When to Use |
-|------------|-------------|
+| Error Type            | When to Use                          |
+|-----------------------|--------------------------------------|
 | `AuthenticationError` | 401 responses, invalid/missing token |
-| `BadRequestError` | 400 responses, invalid parameters |
-| `NotFoundError` | 404 responses |
-| `RateLimitError` | 429 responses, rate limit exceeded |
-| `ServerError` | 5xx responses |
-| `NetworkError` | Connection failures, timeouts |
-| `ParseError` | Failed to parse response |
+| `BadRequestError`     | 400 responses, invalid parameters    |
+| `NotFoundError`       | 404 responses                        |
+| `RateLimitError`      | 429 responses, rate limit exceeded   |
+| `ServerError`         | 5xx responses                        |
+| `NetworkError`        | Connection failures, timeouts        |
+| `ParseError`          | Failed to parse response             |
 
 ### 6.2 Support Context
 
 Every error must include these fields for support staff troubleshooting:
 
-| Field | Source | Example |
-|-------|--------|---------|
-| `request_id` | `cf-ray` response header | `"8a1b2c3d4e5f6g7h-SJC"` |
-| `request_url` | Full request URL | `"https://api.marketdata.app/v1/stocks/quotes/"` |
-| `status_code` | HTTP status code | `429` |
-| `timestamp` | SDK-generated (US/Eastern) | `"2025-02-21 12:00:00"` |
-| `message` | Error description | `"Rate limit exceeded"` |
-| `exception_type` | Error class name | `"RateLimitError"` |
+| Field            | Source                     | Example                                          |
+|------------------|----------------------------|--------------------------------------------------|
+| `request_id`     | `cf-ray` response header   | `"8a1b2c3d4e5f6g7h-SJC"`                         |
+| `request_url`    | Full request URL           | `"https://api.marketdata.app/v1/stocks/quotes/"` |
+| `status_code`    | HTTP status code           | `429`                                            |
+| `timestamp`      | SDK-generated (US/Eastern) | `"2025-02-21 12:00:00"`                          |
+| `message`        | Error description          | `"Rate limit exceeded"`                          |
+| `exception_type` | Error class name           | `"RateLimitError"`                               |
 
 In exception-based SDKs (Python, PHP, Java, C#, JavaScript/TypeScript), these support-context fields must be properties on the thrown exception object. In returned-error SDKs (Go, Rust), these fields must be present on the returned error value/type.
 
@@ -271,15 +271,15 @@ This must be accessible via `error.support_info` or equivalent.
 
 Follow the idiomatic error handling pattern for each language:
 
-| Language | Pattern | Example |
-|----------|---------|---------|
-| Python | Raise exceptions | `raise RateLimitError(...)` |
-| JavaScript | Reject promises | `throw new RateLimitError(...)` |
-| PHP | Throw exceptions | `throw new RateLimitException(...)` |
-| Go | Return error | `return nil, &RateLimitError{...}` |
-| Java | Throw exceptions | `throw new RateLimitException(...)` |
-| C# | Throw exceptions | `throw new RateLimitException(...)` |
-| Rust | Return Result | `Err(MarketDataError::RateLimit {...})` |
+| Language   | Pattern          | Example                                 |
+|------------|------------------|-----------------------------------------|
+| Python     | Raise exceptions | `raise RateLimitError(...)`             |
+| JavaScript | Reject promises  | `throw new RateLimitError(...)`         |
+| PHP        | Throw exceptions | `throw new RateLimitException(...)`     |
+| Go         | Return error     | `return nil, &RateLimitError{...}`      |
+| Java       | Throw exceptions | `throw new RateLimitException(...)`     |
+| C#         | Throw exceptions | `throw new RateLimitException(...)`     |
+| Rust       | Return Result    | `Err(MarketDataError::RateLimit {...})` |
 
 **Do not** force exception-based error handling onto Go or Rust. **Do not** force Result types onto Python or PHP.
 
@@ -301,12 +301,12 @@ Example: `2025-02-21 12:00:00 - marketdata.client - INFO - Making request to /v1
 
 Configurable via `MARKETDATA_LOGGING_LEVEL` environment variable:
 
-| Level | What to Log |
-|-------|-------------|
-| DEBUG | Token (redacted), request details, response headers |
-| INFO | Client initialization, base URL, API version |
-| WARNING | Demo mode, deprecated features |
-| ERROR | Request failures, rate limit errors |
+| Level   | What to Log                                         |
+|---------|-----------------------------------------------------|
+| DEBUG   | Token (redacted), request details, response headers |
+| INFO    | Client initialization, base URL, API version        |
+| WARNING | Demo mode, deprecated features                      |
+| ERROR   | Request failures, rate limit errors                 |
 
 ### Required Log Points
 
@@ -371,16 +371,16 @@ client.rate_limits
 
 ### 9.1 HTTP Status Code Handling
 
-| Status Code | Action |
-|-------------|--------|
-| 200 | Success - parse response |
-| 203 | Success - non-authoritative (cached data) - parse response |
-| 400 | Throw `BadRequestError` - do not retry |
-| 401 | Throw `AuthenticationError` - **fail immediately**, do not retry |
-| 404 | Return empty/no-data response (not an error for most endpoints) |
-| 429 | Throw `RateLimitError` - do not retry, expose retry-after |
-| 500 | Throw `ServerError` - do not retry |
-| 501-599 | Retry with exponential backoff |
+| Status Code | Action                                                           |
+|-------------|------------------------------------------------------------------|
+| 200         | Success - parse response                                         |
+| 203         | Success - non-authoritative (cached data) - parse response       |
+| 400         | Throw `BadRequestError` - do not retry                           |
+| 401         | Throw `AuthenticationError` - **fail immediately**, do not retry |
+| 404         | Return empty/no-data response (not an error for most endpoints)  |
+| 429         | Throw `RateLimitError` - do not retry, expose retry-after        |
+| 500         | Throw `ServerError` - do not retry                               |
+| 501-599     | Retry with exponential backoff                                   |
 
 **Note on 404**: Most endpoints return 404 when no data exists (e.g., no quotes for a delisted symbol). SDKs should return an empty result object with `no_data = true` rather than throwing an exception.
 
@@ -452,28 +452,28 @@ The API wire format uses compressed, array-keyed JSON. SDKs must decode this int
 
 Each SDK should return data in the format most natural for that language ecosystem:
 
-| Language | Default Output | Notes |
-|----------|---------------|-------|
-| Python | pandas DataFrame | DataFrames are the standard for financial data in Python |
-| R | data.frame / tibble | DataFrames are standard in R workflows |
-| JavaScript | Plain objects/arrays | Native JS objects, easily JSON-serializable |
-| PHP | Objects or associative arrays | Follow PHP conventions |
-| Go | Typed structs | Strongly typed, no reflection magic |
-| Java | POJOs | Standard Java bean patterns |
-| C# | Typed objects | .NET conventions |
-| Rust | Typed structs | With serde for serialization |
+| Language   | Default Output                | Notes                                                    |
+|------------|-------------------------------|----------------------------------------------------------|
+| Python     | pandas DataFrame              | DataFrames are the standard for financial data in Python |
+| R          | data.frame / tibble           | DataFrames are standard in R workflows                   |
+| JavaScript | Plain objects/arrays          | Native JS objects, easily JSON-serializable              |
+| PHP        | Objects or associative arrays | Follow PHP conventions                                   |
+| Go         | Typed structs                 | Strongly typed, no reflection magic                      |
+| Java       | POJOs                         | Standard Java bean patterns                              |
+| C#         | Typed objects                 | .NET conventions                                         |
+| Rust       | Typed structs                 | With serde for serialization                             |
 
 ### 11.3 Additional Format Support
 
 SDKs may support additional formats only when they are idiomatic for that language:
 
-| Language / Ecosystem | Additional Formats to Support |
-|----------------------|-------------------------------|
-| Python | Optional Polars DataFrame output |
-| R | Optional tibble/data.table output |
+| Language / Ecosystem  | Additional Formats to Support                        |
+|-----------------------|------------------------------------------------------|
+| Python                | Optional Polars DataFrame output                     |
+| R                     | Optional tibble/data.table output                    |
 | JavaScript/TypeScript | Plain JSON objects/arrays (no DataFrame requirement) |
-| PHP | Objects/arrays and optional CSV export |
-| Go/Java/C#/Rust | Typed models; no DataFrame requirement |
+| PHP                   | Objects/arrays and optional CSV export               |
+| Go/Java/C#/Rust       | Typed models; no DataFrame requirement               |
 
 Do not add ecosystem-misaligned formats just for parity across SDKs.
 
@@ -489,10 +489,10 @@ All response objects must provide:
 
 #### Format Detection Methods
 
-| Method | Returns |
-|--------|---------|
+| Method     | Returns                           |
+|------------|-----------------------------------|
 | `isJson()` | `true` if response is JSON format |
-| `isCsv()` | `true` if response is CSV format |
+| `isCsv()`  | `true` if response is CSV format  |
 | `isHtml()` | `true` if response is HTML format |
 
 #### File Saving
@@ -650,14 +650,14 @@ Integration tests make **actual REST requests** to the live API:
 
 ### Package Registry
 
-| Language | Registry |
-|----------|----------|
-| Python | PyPI |
-| JavaScript | npm |
-| Java | Maven Central |
-| Go | Go modules (pkg.go.dev) |
-| C# | NuGet |
-| Rust | crates.io |
+| Language   | Registry                |
+|------------|-------------------------|
+| Python     | PyPI                    |
+| JavaScript | npm                     |
+| Java       | Maven Central           |
+| Go         | Go modules (pkg.go.dev) |
+| C#         | NuGet                   |
+| Rust       | crates.io               |
 
 ### License
 

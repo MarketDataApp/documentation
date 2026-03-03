@@ -16,11 +16,11 @@ Retrieve current, future, and historical open / closed status information.
 
 Utilize [MarketStatusRequest](<#MarketStatusRequest>) to make requests to the endpoint through one of the three supported execution methods:
 
-| Method     | Execution     | Return Type                 | Description                                                                                                     |
-|------------|---------------|-----------------------------|-----------------------------------------------------------------------------------------------------------------|
-| **Get**    | Direct        | `[]MarketStatusReport`      | Directly returns a slice of `[]MarketStatusReport`, facilitating individual access to each market status entry. |
-| **Packed** | Intermediate  | `*MarketStatusResponse`     | Returns a packed `*MarketStatusResponse` object. Must be unpacked to access the `[]MarketStatusReport` slice.   |
-| **Raw**    | Low-level     | `*resty.Response`           | Offers the raw `*resty.Response` for utmost flexibility. Direct access to raw JSON or `*http.Response`.         |
+| Method     | Execution    | Return Type             | Description                                                                                                     |
+|------------|--------------|-------------------------|-----------------------------------------------------------------------------------------------------------------|
+| **Get**    | Direct       | `[]MarketStatusReport`  | Directly returns a slice of `[]MarketStatusReport`, facilitating individual access to each market status entry. |
+| **Packed** | Intermediate | `*MarketStatusResponse` | Returns a packed `*MarketStatusResponse` object. Must be unpacked to access the `[]MarketStatusReport` slice.   |
+| **Raw**    | Low-level    | `*resty.Response`       | Offers the raw `*resty.Response` for utmost flexibility. Direct access to raw JSON or `*http.Response`.         |
 
 
 <a name="MarketStatusRequest"></a>

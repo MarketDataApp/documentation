@@ -158,14 +158,6 @@ You can try stock, option, and index endpoints with several different symbols th
 
 ## IP Address Restrictions
 
-Due to exchange regulations prohibiting data redistribution without a license, Market Data strictly enforces a single device policy. This means:
+Each account may only connect from one IP address at a time. You can switch devices, but you cannot use two devices simultaneously. Back-and-forth switching between IP addresses within a 5-minute window triggers a temporary block.
 
-1. Only one device/IP address is allowed per account at any given time
-2. Multiple simultaneous connections from different devices/IP addresses are not permitted
-3. Account sharing or data redistribution is strictly prohibited
-
-You can switch devices, such as moving from your laptop to your desktop or from your laptop to a cloud instance. You cannot use both at the same time. Market Data allows one active device/IP at a time. If we detect back-and-forth usage that looks like simultaneous access, your account will be temporarily blocked for 5 minutes.
-
-:::warning
-Attempting to circumvent these restrictions by sharing accounts or redistributing data will result in permanent account suspension.
-:::
+See the [Single IP Address Policy](/docs/account/data-policies/single-ip/) for full details, or [403: Multiple IP Addresses](/docs/api/troubleshooting/multiple-ip-addresses/) if your account is blocked.

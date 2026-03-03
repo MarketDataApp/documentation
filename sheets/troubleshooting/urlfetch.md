@@ -11,14 +11,14 @@ Each time Market Data recalculates the data in a cell, that will consume one cal
 Urlfetch calls are different from Market Data requests. Even if you have our Trader plan and can make 100,000 requests per day, if you use a consumer (gmail.com) account, you'll only be able to make 20,000 urlfetch calls with your spreadsheet. Your urlfetch limit is set by Google and cannot be modified by Market Data.
 :::
 
-| Feature                  | Consumer Accounts (Gmail) | Google Workspace Accounts |
-|--------------------------|---------------------------|---------------------------|
-| **Daily Urlfetch Limit** | 20,000 urlfetch calls              | 100,000 urlfetch calls             |
-| **Typical Use Case**     | Personal use, small projects | Business use, large projects |
-| **Recalculation Impact** | Higher risk of hitting limit with frequent recalculations | Lower risk due to higher limit |
-| **Market Data Requests** | Limited by lower urlfetch quota | More flexibility with higher quota |
-| **Account Blocking**     | 24-hour block after exceeding limit | 24-hour block after exceeding limit |
-| **Strategies Needed**    | More aggressive strategies to reduce usage | Fewer strategies needed due to higher limit |
+| Feature                  | Consumer Accounts (Gmail)                                 | Google Workspace Accounts                   |
+|--------------------------|-----------------------------------------------------------|---------------------------------------------|
+| **Daily Urlfetch Limit** | 20,000 urlfetch calls                                     | 100,000 urlfetch calls                      |
+| **Typical Use Case**     | Personal use, small projects                              | Business use, large projects                |
+| **Recalculation Impact** | Higher risk of hitting limit with frequent recalculations | Lower risk due to higher limit              |
+| **Market Data Requests** | Limited by lower urlfetch quota                           | More flexibility with higher quota          |
+| **Account Blocking**     | 24-hour block after exceeding limit                       | 24-hour block after exceeding limit         |
+| **Strategies Needed**    | More aggressive strategies to reduce usage                | Fewer strategies needed due to higher limit |
 
 ## Error Messages You May See In The Add-on Due to Urlfetch Issues
 

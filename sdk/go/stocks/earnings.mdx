@@ -16,11 +16,11 @@ Retrieve earnings data for any supported stock symbol.
 
 Use [StockEarningsRequest](<#StockEarningsRequest>) to make requests to the endpoint using any of the three supported execution methods:
 
-| Method     | Execution     | Return Type                 | Description                                                                                                     |
-|------------|---------------|-----------------------------|-----------------------------------------------------------------------------------------------------------------|
-| **Get**    | Direct        | `[]StockEarningsReport`     | Directly returns a slice of `[]StockEarningsReport`, facilitating individual access to each earnings report.    |
-| **Packed** | Intermediate  | `*StockEarningsResponse`    | Returns a packed `*StockEarningsResponse` object. Must be unpacked to access the `[]StockEarningsReport` slice. |
-| **Raw**    | Low-level     | `*resty.Response`           | Provides the raw `*resty.Response` for maximum flexibility. Direct access to raw JSON or `*http.Response`.      |
+| Method     | Execution    | Return Type              | Description                                                                                                     |
+|------------|--------------|--------------------------|-----------------------------------------------------------------------------------------------------------------|
+| **Get**    | Direct       | `[]StockEarningsReport`  | Directly returns a slice of `[]StockEarningsReport`, facilitating individual access to each earnings report.    |
+| **Packed** | Intermediate | `*StockEarningsResponse` | Returns a packed `*StockEarningsResponse` object. Must be unpacked to access the `[]StockEarningsReport` slice. |
+| **Raw**    | Low-level    | `*resty.Response`        | Provides the raw `*resty.Response` for maximum flexibility. Direct access to raw JSON or `*http.Response`.      |
 
 
 <a name="StockEarningsRequest"></a>

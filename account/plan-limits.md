@@ -1,6 +1,6 @@
 ---
 title: Plan Limits
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 Each Market Data plan comes with certain limitations to allow for shared use of our servers. We offer several plans with different price points depending on the quantity of data needed.
@@ -11,14 +11,14 @@ Most users don't run into trouble with our limits. However, if our standard plan
 
 ## Standard Plans
 
-|                       | Free Forever | Starter   | Trader    | Quant      | Prime Plans |
-|-----------------------|--------------|-----------|-----------|------------|-------------|
-| Daily Credits         | 100          | 10,000    | 100,000   | No Limit   | No Limit    |
-| Per-Minute Credits    | No Limit     | No Limit  | No Limit  | 10,000     | 100,000     |
-| Historical Data       | 1 Year       | 5 Years   | No Limit  | No Limit   | No Limit    |
-| Stocks Data Type      | Delayed      | Real-time | Real-time | Real-time  | Real-time   |
-| Options Data Type     | Delayed      | 15-minute delayed | Real-time | Real-time  | Real-time   |
-| API Endpoints         | Standard     | Premium   | Premium   | Premium + Custom | Premium + Custom |
+|                    | Free Forever | Starter           | Trader    | Quant            | Prime Plans      |
+|--------------------|--------------|-------------------|-----------|------------------|------------------|
+| Daily Credits      | 100          | 10,000            | 100,000   | No Limit         | No Limit         |
+| Per-Minute Credits | No Limit     | No Limit          | No Limit  | 10,000           | 100,000          |
+| Historical Data    | 1 Year       | 5 Years           | No Limit  | No Limit         | No Limit         |
+| Stocks Data Type   | Delayed      | Real-time         | Real-time | Real-time        | Real-time        |
+| Options Data Type  | Delayed      | 15-minute delayed | Real-time | Real-time        | Real-time        |
+| API Endpoints      | Standard     | Premium           | Premium   | Premium + Custom | Premium + Custom |
 
 ## Credits
 Each time you call the API, the system increases your credits counter. Normally each successful response consumes 1 credit. However, **if you request multiple symbols in a single API call using `stocks/quotes`, `stocks/prices`, `stocks/bulkcandles`, or `options/chain`, each symbol included in the response consumes credits**.
@@ -33,13 +33,9 @@ Starter Trial and Trader Trial do not support `mode=cached`.
 
 ## Device Restrictions
 
-To comply with exchange regulations regarding data redistribution, all plans are subject to strict device connection limits:
+All plans are subject to a single IP address limit. Each account may only connect from one IP address at a time. Multiple simultaneous connections, account sharing, and data redistribution are not permitted.
 
-- Each account may only connect from a single IP address at a time
-- Multiple simultaneous connections from different devices are not permitted
-- Account sharing and data redistribution are prohibited without a commercial license
-
-These restrictions are enforced across all plans to ensure compliance with exchange regulations that prohibit unauthorized data redistribution. Prime plans requiring multi-device access should contact sales for appropriate licensing options.
+See the [Single IP Address Policy](/docs/account/data-policies/single-ip/) for details.
 
 #### Throttling
 

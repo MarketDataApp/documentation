@@ -12,11 +12,11 @@ Retrieve bulk daily candle data for multiple stocks in a single request. This en
 
 Use the `bulkCandles()` method on the `stocks` resource to fetch bulk candle data:
 
-| Output Format | Return Type | Description |
-|---------------|-------------|-------------|
-| **JSON** | `BulkCandles` | Returns a BulkCandles object containing an array of Candle objects (default). |
-| **CSV** | `BulkCandles` | Returns a BulkCandles object with CSV data accessible via `getCsv()`. |
-| **HTML** | `BulkCandles` | Returns a BulkCandles object with HTML data accessible via `getHtml()`. |
+| Output Format | Return Type   | Description                                                                   |
+|---------------|---------------|-------------------------------------------------------------------------------|
+| **JSON**      | `BulkCandles` | Returns a BulkCandles object containing an array of Candle objects (default). |
+| **CSV**       | `BulkCandles` | Returns a BulkCandles object with CSV data accessible via `getCsv()`.         |
+| **HTML**      | `BulkCandles` | Returns a BulkCandles object with HTML data accessible via `getHtml()`.       |
 
 :::warning HTML Not Yet Available
 `Format::HTML` is included for forward compatibility, but HTML responses are not currently implemented by the Market Data API.

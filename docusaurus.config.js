@@ -112,6 +112,10 @@ const config = {
             from: "/sheets/marketstatus",
             to: "/sheets/markets/marketstatus",
           },
+          {
+            from: "/account/compliance",
+            to: "/account/data-policies/account-verification",
+          },
         ],
       },
     ],
