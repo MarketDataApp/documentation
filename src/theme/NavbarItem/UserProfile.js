@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import md5 from 'md5';
+import IconExternalLink from '@theme/Icon/ExternalLink';
 
 // Module-level cache: undefined = not fetched, null = logged out, object = user
 // Persists across SPA navigations within the same page session.
@@ -61,8 +62,8 @@ export default function UserProfile({ mobile }) {
   if (mobile) {
     return (
       <li className="menu__list-item">
-        <a href="https://www.marketdata.app/dashboard/" className="menu__link">
-          {label}
+        <a href="https://www.marketdata.app/dashboard/" className="menu__link" target="_blank" rel="noopener noreferrer">
+          Customer Dashboard <IconExternalLink />
         </a>
       </li>
     );
