@@ -23,8 +23,9 @@ function writeSessionCache(user) {
 }
 
 export default function UserProfile({ mobile }) {
-  const [user, setUser] = useState(moduleCache);
-  const [loaded, setLoaded] = useState(moduleCache !== undefined);
+  // Default to null (renders "Log in") so there's no blank gap before the API returns.
+  // If we already have cached data, initialize from it immediately.
+  const [user, setUser] = useState(moduleCache ?? null);
 
   useEffect(() => {
     // Already have data from module cache — skip fetch
@@ -35,7 +36,6 @@ export default function UserProfile({ mobile }) {
     if (cached !== undefined) {
       moduleCache = cached;
       setUser(cached);
-      setLoaded(true);
       return;
     }
 
@@ -46,18 +46,12 @@ export default function UserProfile({ mobile }) {
         moduleCache = result;
         writeSessionCache(result);
         setUser(result);
-        setLoaded(true);
       })
       .catch(() => {
         moduleCache = null;
         writeSessionCache(null);
-        setLoaded(true);
       });
   }, []);
-
-  if (!loaded) return null;
-
-  const label = user ? user.login : 'Log in';
 
   if (mobile) {
     return (
