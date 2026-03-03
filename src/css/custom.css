@@ -202,7 +202,7 @@
   background-color: #E65100; /* Beta: Orange */
 }
 
-/* Navbar user profile button */
+/* Navbar user profile (logged-in state) */
 .navbar-user-profile {
   display: flex;
   align-items: center;
