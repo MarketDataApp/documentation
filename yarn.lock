@@ -1581,9 +1581,9 @@
   resolved "https://registry.npmjs.org/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
-"@marketdataapp/ui@github:MarketDataApp/ui":
-  version "1.2.0"
-  resolved "https://codeload.github.com/MarketDataApp/ui/tar.gz/deec041ddded7a58ccc3fd969a44504cbb68b1d4"
+"@marketdataapp/ui@github:MarketDataApp/ui#v2.0.0":
+  version "2.0.0"
+  resolved "https://codeload.github.com/MarketDataApp/ui/tar.gz/8d3c10261efdd3edaf72c615630d74d27ca19cd1"
 
 "@mdx-js/mdx@^3.0.0":
   version "3.0.0"
