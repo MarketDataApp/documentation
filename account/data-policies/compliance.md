@@ -1,6 +1,6 @@
 ---
 title: Account Compliance
-sidebar_position: 10
+sidebar_position: 6
 ---
 
 Exchange regulations require us to collect a broad range of information from all users for the purpose of account verification and compliance. Market Data is committed to protecting your privacy and will only use this information to verify your account and comply with these exchange regulations.

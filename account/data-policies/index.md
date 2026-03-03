@@ -12,3 +12,4 @@ Market Data distributes financial data under agreements with stock and options e
 - [Single IP Address](/docs/account/data-policies/single-ip/) — Why each account may only connect from one IP address at a time
 - [Professional Status](/docs/account/data-policies/professional-status/) — Self-service plans are for non-professional subscribers only; certification and misclassification obligations
 - [Data Redistribution](/docs/account/data-policies/data-redistribution/) — What you may and may not do with the data you receive, and how to obtain redistribution rights
+- [Account Compliance](/docs/account/data-policies/compliance/) — What information Market Data is required to collect and verify on behalf of the exchanges
