@@ -21,7 +21,7 @@ function writeSessionCache(user) {
   } catch {}
 }
 
-export default function UserProfile() {
+export default function UserProfile({ mobile }) {
   const [user, setUser] = useState(moduleCache);
   const [loaded, setLoaded] = useState(moduleCache !== undefined);
 
@@ -55,6 +55,18 @@ export default function UserProfile() {
   }, []);
 
   if (!loaded) return null;
+
+  const label = user ? user.login : 'Log in';
+
+  if (mobile) {
+    return (
+      <li className="menu__list-item">
+        <a href="https://www.marketdata.app/dashboard/" className="menu__link">
+          {label}
+        </a>
+      </li>
+    );
+  }
 
   if (!user) {
     return (
