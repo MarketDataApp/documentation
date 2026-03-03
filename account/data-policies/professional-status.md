@@ -30,4 +30,4 @@ Refunds are not available on the basis of unexpected classification outcomes. Al
 
 ## Unverified Accounts
 
-If Market Data is unable to confirm your non-professional status — for example, because your profile is incomplete or your information cannot be verified — your account will be restricted to delayed and historical data until verification is complete. See [Account Compliance](/docs/account/data-policies/compliance/) for details on the verification process.
+If Market Data is unable to confirm your non-professional status — for example, because your profile is incomplete or your information cannot be verified — your account will be restricted to delayed and historical data until verification is complete. See [Account Compliance](/docs/account/data-policies/account-verification/) for details on the verification process.
