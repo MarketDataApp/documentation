@@ -1,6 +1,6 @@
 ---
 title: Plan Upgrades
-sidebar_position: 9
+sidebar_position: 7
 ---
 
 At Market Data, we strive to make your experience with our services as seamless and positive as possible. When you decide to upgrade your plan, we ensure that your unused time is not wasted. The method we use to calculate your savings is the same, but the way you receive the credit is slightly different depending on whether you're moving from a monthly plan to an annual plan or from an annual plan to a monthly plan. Here's how we calculate and apply your unused time towards your new plan:

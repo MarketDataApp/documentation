@@ -1,6 +1,6 @@
 ---
 title: Data Policies
-sidebar_position: 12
+sidebar_position: 9
 ---
 
 Market Data distributes financial data under agreements with stock and options exchanges. These policies explain the obligations those agreements impose on subscribers and how they affect your access to data.

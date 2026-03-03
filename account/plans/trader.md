@@ -1,6 +1,6 @@
 ---
 title: Trader Plan
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 The **Trader Plan** is specifically designed for high-volume users and traders who demand the utmost from their financial data services. With an enormous allocation of API credits and access to the most comprehensive data sets available, the Trader Plan is the ultimate choice for those who need maximum performance and depth in their financial analysis. Here's what you can expect from the Trader Plan.

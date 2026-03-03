@@ -1,6 +1,6 @@
 ---
 title: Plan Limits
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 Each Market Data plan comes with certain limitations to allow for shared use of our servers. We offer several plans with different price points depending on the quantity of data needed.

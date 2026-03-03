@@ -1,6 +1,6 @@
 ---
 title: Exchange Entitlements
-sidebar_position: 3
+sidebar_position: 5
 ---
 
 Exchange entitlements are permissions granted by exchanges that allow Market Data to distribute their data to you. Each entitlement requires you to sign the relevant exchange agreement and adhere to the exchange's data usage policies.

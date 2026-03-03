@@ -1,11 +1,15 @@
 ---
 title: Billing Portal
-sidebar_position: 10
+sidebar_position: 6
 ---
 
 For heightened security, Market Data uses an independent third-party billing system to process your transactions. We do not store your credit card information and we do not have access to your billing details. Customers can manage their own subscriptions and billing details via the [Billing Portal](https://cc.payproglobal.com/Customer/Account/Login). 
 
 ## How to Access the Billing Portal for the First Time
+
+:::note
+The Billing Portal is only available to **paid customers**. A billing portal account is created automatically when you make your first purchase. If you have a free or trial account and want to subscribe, you can do so directly from the Market Data [Customer Dashboard](https://www.marketdata.app/dashboard/).
+:::
 
 To access your billing information for the first time, follow these steps:
 
