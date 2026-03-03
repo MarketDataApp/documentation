@@ -202,25 +202,6 @@
   background-color: #E65100; /* Beta: Orange */
 }
 
-/* @marketdataapp/ui button color fix:
-   Tailwind v4 puts component styles in @layer components, but Docusaurus ships
-   unlayered CSS. Unlayered styles always beat layered ones regardless of
-   specificity, so Docusaurus's `a { color: var(--ifm-link-color) }` was
-   overriding the library's intended button text color. These unlayered rules
-   restore the correct colors. */
-a.btn-hover-orange,
-a.btn-hover-blue,
-a.btn-orange-to-blue {
-  color: var(--color-marketdata-darkblue);
-  text-decoration: none;
-}
-
-[data-theme="dark"] a.btn-hover-orange,
-[data-theme="dark"] a.btn-hover-blue,
-[data-theme="dark"] a.btn-orange-to-blue {
-  color: white;
-}
-
 /* Navbar user profile (logged-in state) */
 .navbar-user-profile {
   display: flex;
