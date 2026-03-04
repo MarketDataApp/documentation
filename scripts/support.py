@@ -52,7 +52,7 @@ def run_agent(question, script_dir, repo_dir):
     cmd = [
         "claude", "-p",
         "--append-system-prompt-file", prompt_file,
-        "--add-dir", sdk_py, sdk_php,
+        "--add-dir", sdk_py, sdk_php, "/tmp/lookup",
         "--output-format", "stream-json",
         "--verbose",
         question,

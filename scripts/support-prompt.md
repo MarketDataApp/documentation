@@ -12,8 +12,24 @@ You have access to:
 - **Live API**: The `MARKETDATA_TOKEN` environment variable is set. Use it with curl or the SDKs to test endpoints and reproduce issues.
 - **Python SDK**: Available at `../sdk-py`
 - **PHP SDK**: Available at `../sdk-php`
+- **Lookup tool**: `lookup` — inspect customer accounts, API requests, and upstream provider data from the production database. Run `lookup --help` for usage.
 
 You can run code, make API calls, and test endpoints to verify customer-reported behavior.
+
+### Lookup Tool
+
+Use `lookup` when you need to investigate a specific customer's account or request history:
+
+- `lookup account <username>` — plan, entitlements, permissions, OPRA status
+- `lookup user <username> [date] [time] [--status]` — list their API requests
+- `lookup request <id>` — full detail on a single request with upstream provider summary
+- `lookup upstream <id>` — drill into what an upstream provider returned
+
+Typical investigation flow:
+1. `lookup account <username>` to understand their plan and permissions
+2. `lookup user <username> <date> [time]` to find the relevant requests
+3. `lookup request <id>` on a specific request to see what happened
+4. `lookup upstream <id>` if you need to compare what the provider sent vs what we returned
 
 ## Investigation Process
 
