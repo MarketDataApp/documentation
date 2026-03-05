@@ -207,6 +207,9 @@
   .navbar__inner {
     flex-wrap: nowrap;
   }
+  .navbar__items .navbar__link {
+    white-space: nowrap;
+  }
 }
 
 /* Navbar login/logout button spacing */
