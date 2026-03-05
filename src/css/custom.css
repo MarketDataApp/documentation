@@ -202,6 +202,11 @@
   background-color: #E65100; /* Beta: Orange */
 }
 
+/* Navbar login/logout button spacing */
+.navbar__items--right .btn-hover-orange {
+  margin-right: 12px;
+}
+
 /* Navbar user profile (logged-in state) */
 .navbar-user-profile {
   display: flex;
