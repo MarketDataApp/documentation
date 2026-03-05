@@ -222,9 +222,20 @@
   }
 }
 
-/* Navbar login/logout button — 12px gap before dark-mode toggle */
-.navbar__items--right .btn-hover-orange {
-  margin-right: 12px;
+/* Navbar login/logout button
+   Desktop: 12px gap before the dark-mode toggle.
+   Mobile: compact padding so the button fits beside the search icon
+   without overlapping (the dark-mode toggle is hidden on mobile). */
+@media (min-width: 997px) {
+  .navbar__items--right .btn-hover-orange {
+    margin-right: 12px;
+  }
+}
+@media (max-width: 996px) {
+  .navbar__items--right .btn-hover-orange {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 }
 
 /* Navbar user profile (logged-in state)
