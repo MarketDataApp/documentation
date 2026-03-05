@@ -202,7 +202,17 @@
   background-color: #E65100; /* Beta: Orange */
 }
 
-/* Prevent navbar wrapping on desktop — JS handles overflow */
+/* ==========================================================================
+   Navbar overflow prevention
+   At desktop widths (≥997px) the right-side items (search, avatar, username,
+   logout button, dark-mode toggle) can overflow the navbar when a user is
+   logged in. These rules keep everything on one line:
+   - flex-wrap: nowrap on .navbar__inner stops the two halves from stacking.
+   - white-space: nowrap on nav links stops multi-word labels ("Sheets Add-On",
+     "Accounts & Billing") from wrapping inside their flex item at ~1024px.
+   - The JS utility (navbarOverflow.js) then hides lower-priority right-side
+     items one at a time until nothing is compressed.
+   ========================================================================== */
 @media (min-width: 997px) {
   .navbar__inner {
     flex-wrap: nowrap;
@@ -212,12 +222,14 @@
   }
 }
 
-/* Navbar login/logout button spacing */
+/* Navbar login/logout button — 12px gap before dark-mode toggle */
 .navbar__items--right .btn-hover-orange {
   margin-right: 12px;
 }
 
-/* Navbar user profile (logged-in state) */
+/* Navbar user profile (logged-in state)
+   min-width: 0 allows the flex child to shrink below its content size
+   so the username truncation actually works. */
 .navbar-user-profile {
   display: flex;
   align-items: center;
@@ -226,7 +238,9 @@
   min-width: 0;
 }
 
-/* Truncate long usernames */
+/* Truncate long usernames — keeps the right side compact.
+   The overflow JS will hide the username entirely before touching
+   higher-priority items like the logout button or search. */
 .navbar-user-name {
   max-width: 7rem;
   overflow: hidden;
@@ -234,6 +248,7 @@
   white-space: nowrap;
 }
 
+/* Avatar circle — hidden on mobile where the hamburger menu is used */
 .navbar-user-avatar {
   width: 28px;
   height: 28px;
