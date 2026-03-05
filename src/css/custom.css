@@ -207,6 +207,18 @@
   margin-right: 12px;
 }
 
+/* Keep navbar button compact at 1024-1079px to prevent nav links wrapping.
+   components.no-reset.css grows padding + font at 64rem (1024px), which
+   overflows the navbar until ~1080px. */
+@media (min-width: 64rem) and (max-width: 67.49rem) {
+  .navbar__items--right .btn-hover-orange {
+    padding-inline: calc(var(--spacing) * 7);
+    padding-block: calc(var(--spacing) * 2.5);
+    font-size: var(--text-xs);
+    line-height: 1;
+  }
+}
+
 /* Navbar user profile (logged-in state) */
 .navbar-user-profile {
   display: flex;
