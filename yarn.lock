@@ -1583,7 +1583,7 @@
 
 "@marketdataapp/ui@github:MarketDataApp/ui#v2.2.0":
   version "2.2.0"
-  resolved "https://codeload.github.com/MarketDataApp/ui/tar.gz/1d392a4530c689b5b13cd8966c857e85272878da"
+  resolved "https://codeload.github.com/MarketDataApp/ui/tar.gz/9b9c008c649451854bdac9e25bd7f2ce4ac79a44"
 
 "@mdx-js/mdx@^3.0.0":
   version "3.0.0"

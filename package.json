@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
-    "start": "docusaurus start",
-    "build": "docusaurus build",
+    "copy:ui-css": "mkdir -p static/css && cp node_modules/@marketdataapp/ui/css/components.no-reset.css static/css/",
+    "start": "yarn copy:ui-css && docusaurus start",
+    "build": "yarn copy:ui-css && docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",

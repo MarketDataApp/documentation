@@ -35,6 +35,13 @@ const config = {
         content: "BAA3BC0EFD344D0C",
       },
     },
+    {
+      tagName: "link",
+      attributes: {
+        rel: "stylesheet",
+        href: "/docs/css/components.no-reset.css",
+      },
+    },
   ],
 
   i18n: {
@@ -49,10 +56,7 @@ const config = {
       ({
         blog: false,
         theme: {
-          customCss: [
-            require.resolve("@marketdataapp/ui/css/components.no-reset"),
-            require.resolve("./src/css/custom.css"),
-          ],
+          customCss: [require.resolve("./src/css/custom.css")],
         },
         sitemap:
           process.env.PROD == "true"
