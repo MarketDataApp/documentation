@@ -89,9 +89,18 @@ async function handleRequest(request) {
 
   if (wantsMd || acceptsMd) {
     const docsPrefix = '/docs/';
-    const stem = wantsMd
-      ? url.pathname.slice(docsPrefix.length, -3)
-      : url.pathname.replace(/\/$/, '').slice(docsPrefix.length);
+    let stem;
+    if (wantsMd) {
+      // Support llms.txt spec: /docs/options/index.html.md → stem "options"
+      const indexHtmlMd = '/index.html.md';
+      if (url.pathname.endsWith(indexHtmlMd)) {
+        stem = url.pathname.slice(docsPrefix.length, -indexHtmlMd.length);
+      } else {
+        stem = url.pathname.slice(docsPrefix.length, -3);
+      }
+    } else {
+      stem = url.pathname.replace(/\/$/, '').slice(docsPrefix.length);
+    }
     const branch = url.hostname === 'www-staging.marketdata.app' ? 'staging' : 'main';
     const base = `https://raw.githubusercontent.com/MarketDataApp/documentation/${branch}`;
     const candidates = [
@@ -104,8 +113,12 @@ async function handleRequest(request) {
       const res = await fetch(candidate);
       if (res.ok) {
         const text = cleanMarkdown(await res.text());
+        const canonicalUrl = `https://www.marketdata.app/docs/${stem}/`;
         return new Response(text, {
-          headers: { 'content-type': 'text/markdown; charset=utf-8' },
+          headers: {
+            'content-type': 'text/markdown; charset=utf-8',
+            'link': `<${canonicalUrl}>; rel="canonical"`,
+          },
         });
       }
     }
