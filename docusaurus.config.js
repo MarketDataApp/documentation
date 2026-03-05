@@ -50,7 +50,7 @@ const config = {
         blog: false,
         theme: {
           customCss: [
-            require.resolve("@marketdataapp/ui/css/components"),
+            require.resolve("@marketdataapp/ui/css/components.no-reset"),
             require.resolve("./src/css/custom.css"),
           ],
         },
