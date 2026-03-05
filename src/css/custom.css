@@ -202,21 +202,16 @@
   background-color: #E65100; /* Beta: Orange */
 }
 
+/* Prevent navbar wrapping on desktop — JS handles overflow */
+@media (min-width: 997px) {
+  .navbar__inner {
+    flex-wrap: nowrap;
+  }
+}
+
 /* Navbar login/logout button spacing */
 .navbar__items--right .btn-hover-orange {
   margin-right: 12px;
-}
-
-/* Keep navbar button compact at 1024-1079px to prevent nav links wrapping.
-   components.no-reset.css grows padding + font at 64rem (1024px), which
-   overflows the navbar until ~1080px. */
-@media (min-width: 64rem) and (max-width: 67.49rem) {
-  .navbar__items--right .btn-hover-orange {
-    padding-inline: calc(var(--spacing) * 7);
-    padding-block: calc(var(--spacing) * 2.5);
-    font-size: var(--text-xs);
-    line-height: 1;
-  }
 }
 
 /* Navbar user profile (logged-in state) */
@@ -225,6 +220,15 @@
   align-items: center;
   gap: 8px;
   text-decoration: none;
+  min-width: 0;
+}
+
+/* Truncate long usernames */
+.navbar-user-name {
+  max-width: 7rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .navbar-user-avatar {

@@ -72,7 +72,10 @@ const config = {
     ],
   ],
 
-  clientModules: ['./src/clientModules/themeCookieSync.js'],
+  clientModules: [
+    './src/clientModules/themeCookieSync.js',
+    './src/clientModules/navbarOverflow.js',
+  ],
 
   plugins: [
     './plugins/theme-cookie-sync',
