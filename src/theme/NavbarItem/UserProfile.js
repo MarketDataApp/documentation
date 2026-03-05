@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import md5 from 'md5';
 import IconExternalLink from '@theme/Icon/ExternalLink';
 
-// Module-level cache: undefined = not fetched, null = logged out, object = user
-// Persists across SPA navigations within the same page session.
-let moduleCache;
+// Module-level state persists across SPA navigations within one page session.
+let moduleCache;   // undefined = not fetched, null = logged out, object = user
+let fetched = false; // true once the API call has completed this session
 
 function readSessionCache() {
   try {
@@ -28,17 +28,24 @@ export default function UserProfile({ mobile }) {
   const [user, setUser] = useState(moduleCache ?? null);
 
   useEffect(() => {
-    // Already have data from module cache — skip fetch
-    if (moduleCache !== undefined) return;
+    // Stale-while-revalidate: serve cached data immediately, then
+    // revalidate in the background so login/logout state changes
+    // are picked up without a manual refresh.
 
-    // Check sessionStorage (covers hard refresh within the same tab session)
-    const cached = readSessionCache();
-    if (cached !== undefined) {
-      moduleCache = cached;
-      setUser(cached);
-      return;
+    // 1. Serve from cache instantly (no flicker)
+    if (moduleCache === undefined) {
+      const cached = readSessionCache();
+      if (cached !== undefined) {
+        moduleCache = cached;
+        setUser(cached);
+      }
     }
 
+    // 2. Skip fetch on SPA navigations — already revalidated this session
+    if (fetched) return;
+    fetched = true;
+
+    // 3. Revalidate against the API
     fetch('https://dashboard.marketdata.app/api/user/', { credentials: 'include' })
       .then(r => r.json())
       .then(data => {
@@ -47,10 +54,7 @@ export default function UserProfile({ mobile }) {
         writeSessionCache(result);
         setUser(result);
       })
-      .catch(() => {
-        moduleCache = null;
-        writeSessionCache(null);
-      });
+      .catch(() => {});
   }, []);
 
   if (mobile) {
