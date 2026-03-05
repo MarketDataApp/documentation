@@ -1,4 +1,4 @@
-name: PR Checks (Staging Integration Tests)
+name: "Docs: PR Checks"
 
 on:
   pull_request:

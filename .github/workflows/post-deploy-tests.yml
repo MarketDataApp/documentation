@@ -1,4 +1,4 @@
-name: Post-Deploy Tests
+name: "Docs: Post-Deploy Integration & E2E Tests"
 
 on:
   repository_dispatch:
