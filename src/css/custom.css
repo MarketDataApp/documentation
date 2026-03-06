@@ -249,22 +249,25 @@
   }
 }
 
-/* Navbar user-profile avatar (logged-in state)
+/* Navbar user-profile container (logged-in state)
    Same clearance logic as the login button above.
+   The margin must be on .navbar-user-profile (the flex child) rather than
+   the inner .user-profile-wrapper, because only direct flex children
+   participate in the navbar's flex layout.
    Desktop (≥997px): 12px gap before the dark-mode toggle.
    Mobile: push left of the absolutely-positioned search. */
 @media (min-width: 997px) {
-  .navbar__items--right .user-profile-wrapper {
+  .navbar__items--right .navbar-user-profile {
     margin-right: 12px;
   }
 }
 @media (max-width: 768px) {
-  .navbar__items--right .user-profile-wrapper {
+  .navbar__items--right .navbar-user-profile {
     margin-right: 40px; /* clearance for the 36px search icon */
   }
 }
 @media (min-width: 769px) and (max-width: 996px) {
-  .navbar__items--right .user-profile-wrapper {
+  .navbar__items--right .navbar-user-profile {
     margin-right: 168px; /* clearance for the 155px expanded search bar */
   }
 }
