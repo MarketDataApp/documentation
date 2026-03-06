@@ -163,6 +163,54 @@ describe('handleRequest', () => {
       expect(text).toContain('# Hello');
     });
 
+    it('includes canonical Link header pointing to production HTML URL', async () => {
+      mockFetch.mockResolvedValueOnce(new Response('# Page\n', { status: 200 }));
+      const req = makeRequest('https://www.marketdata.app/docs/api/stocks.md');
+      const res = await handleRequest(req);
+      expect(res.headers.get('link')).toBe(
+        '<https://www.marketdata.app/docs/api/stocks/>; rel="canonical"'
+      );
+    });
+
+    it('canonical Link header points to production even for staging requests', async () => {
+      mockFetch.mockResolvedValueOnce(new Response('# Staging\n', { status: 200 }));
+      const req = makeRequest('https://www-staging.marketdata.app/docs/api/stocks.md');
+      const res = await handleRequest(req);
+      expect(res.headers.get('link')).toBe(
+        '<https://www.marketdata.app/docs/api/stocks/>; rel="canonical"'
+      );
+    });
+
+    it('serves markdown for llms.txt spec index.html.md URL', async () => {
+      mockFetch.mockResolvedValueOnce(new Response('# Options\n', { status: 200 }));
+      const req = makeRequest('https://www.marketdata.app/docs/options/index.html.md');
+      const res = await handleRequest(req);
+      expect(res.headers.get('content-type')).toBe('text/markdown; charset=utf-8');
+      const text = await res.text();
+      expect(text).toContain('# Options');
+      // Should try options.md first (stem = "options")
+      const fetchedUrl = mockFetch.mock.calls[0][0];
+      expect(fetchedUrl).toContain('/options.md');
+    });
+
+    it('canonical URL is correct for index.html.md requests', async () => {
+      mockFetch.mockResolvedValueOnce(new Response('# Options\n', { status: 200 }));
+      const req = makeRequest('https://www.marketdata.app/docs/options/index.html.md');
+      const res = await handleRequest(req);
+      expect(res.headers.get('link')).toBe(
+        '<https://www.marketdata.app/docs/options/>; rel="canonical"'
+      );
+    });
+
+    it('handles nested path with index.html.md', async () => {
+      mockFetch.mockResolvedValueOnce(new Response('# Candles\n', { status: 200 }));
+      const req = makeRequest('https://www.marketdata.app/docs/api/stocks/candles/index.html.md');
+      const res = await handleRequest(req);
+      expect(res.headers.get('content-type')).toBe('text/markdown; charset=utf-8');
+      const fetchedUrl = mockFetch.mock.calls[0][0];
+      expect(fetchedUrl).toContain('/api/stocks/candles.md');
+    });
+
     it('serves markdown for Accept: text/markdown header', async () => {
       mockFetch.mockResolvedValueOnce(new Response('# Heading\n', { status: 200 }));
       const req = makeRequest('https://www.marketdata.app/docs/api/stocks', {

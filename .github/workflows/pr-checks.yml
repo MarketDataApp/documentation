@@ -1,4 +1,4 @@
-name: PR Checks (Staging Integration Tests)
+name: "Docs: PR Checks"
 
 on:
   pull_request:
@@ -54,6 +54,22 @@ jobs:
           TEST_ENV: staging
         run: yarn test:integration
 
+      - name: Notify Slack on failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_ALERTS_WEBHOOK_URL }}
+          REPO: ${{ github.repository }}
+          WORKFLOW: ${{ github.workflow }}
+          BRANCH: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          SHORT_SHA="${SHA:0:7}"
+          printf '🔴 WORKFLOW FAILED — %s\nRepo: %s\nBranch: %s @ %s\n%s' \
+            "$WORKFLOW" "$REPO" "$BRANCH" "$SHORT_SHA" "$RUN_URL" \
+            | jq -Rs '{text: .}' \
+            | curl -s -X POST "$SLACK_WEBHOOK" -H 'Content-Type: application/json' -d @-
+
   staging-e2e-tests:
     runs-on: ubuntu-latest
     steps:
@@ -72,3 +88,19 @@ jobs:
         env:
           TEST_ENV: staging
         run: yarn test:e2e
+
+      - name: Notify Slack on failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_ALERTS_WEBHOOK_URL }}
+          REPO: ${{ github.repository }}
+          WORKFLOW: ${{ github.workflow }}
+          BRANCH: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          SHORT_SHA="${SHA:0:7}"
+          printf '🔴 WORKFLOW FAILED — %s\nRepo: %s\nBranch: %s @ %s\n%s' \
+            "$WORKFLOW" "$REPO" "$BRANCH" "$SHORT_SHA" "$RUN_URL" \
+            | jq -Rs '{text: .}' \
+            | curl -s -X POST "$SLACK_WEBHOOK" -H 'Content-Type: application/json' -d @-

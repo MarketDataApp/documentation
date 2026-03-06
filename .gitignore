@@ -18,6 +18,7 @@ llm-docs/
 *.draft
 .cursorignore
 .playwright-mcp/
+e2e/.auth/
 test-results/
 
 npm-debug.log*
@@ -27,5 +28,6 @@ yarn-error.log*
 .env
 
 static/robots.txt
+static/css/
 worker/node_modules
 

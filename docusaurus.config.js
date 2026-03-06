@@ -9,7 +9,7 @@ require("dotenv").config();
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title:
-    process.env.PROD == "true" ? "Market Data" : "Market Data Docs (dev)",
+    process.env.PROD == "true" ? "Market Data" : "Market Data Docs (staging)",
   tagline: "Complete Documentation For All Market Data Products & Services",
 
   url:
@@ -35,6 +35,13 @@ const config = {
         content: "BAA3BC0EFD344D0C",
       },
     },
+    {
+      tagName: "link",
+      attributes: {
+        rel: "stylesheet",
+        href: "/docs/css/components.no-reset.css",
+      },
+    },
   ],
 
   i18n: {
@@ -47,9 +54,10 @@ const config = {
       "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
+        docs: false,
         blog: false,
         theme: {
-          customCss: require.resolve("./src/css/custom.css"),
+          customCss: [require.resolve("./src/css/custom.css")],
         },
         sitemap:
           process.env.PROD == "true"
@@ -64,7 +72,10 @@ const config = {
     ],
   ],
 
-  clientModules: ['./src/clientModules/themeCookieSync.js'],
+  clientModules: [
+    './src/clientModules/themeCookieSync.js',
+    './src/clientModules/navbarOverflow.js',
+  ],
 
   plugins: [
     './plugins/theme-cookie-sync',
@@ -222,8 +233,7 @@ const config = {
             position: "right",
           },
           {
-            href: "https://github.com/MarketDataApp/documentation",
-            label: "GitHub",
+            type: "custom-UserProfile",
             position: "right",
           },
         ],

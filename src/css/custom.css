@@ -202,6 +202,57 @@
   background-color: #E65100; /* Beta: Orange */
 }
 
+/* ==========================================================================
+   Navbar overflow prevention
+   At desktop widths (≥997px) the right-side items (search, avatar, username,
+   logout button, dark-mode toggle) can overflow the navbar when a user is
+   logged in. These rules keep everything on one line:
+   - flex-wrap: nowrap on .navbar__inner stops the two halves from stacking.
+   - white-space: nowrap on nav links stops multi-word labels ("Sheets Add-On",
+     "Accounts & Billing") from wrapping inside their flex item at ~1024px.
+   - The JS utility (navbarOverflow.js) then hides lower-priority right-side
+     items one at a time until nothing is compressed.
+   ========================================================================== */
+@media (min-width: 997px) {
+  .navbar__inner {
+    flex-wrap: nowrap;
+  }
+  .navbar__items .navbar__link {
+    white-space: nowrap;
+  }
+}
+
+/* Navbar user-profile positioning
+   Desktop (≥997px): 12px gap before the dark-mode toggle.
+   Below desktop (<997px): Docusaurus absolutely-positions the search bar to
+   the right, which puts the profile to its left. Override search back to
+   normal flow so both items participate in flex layout and the profile
+   (later in DOM order) stays on the far right. */
+.navbar__items--right .user-profile-wrapper {
+  align-self: center;
+  line-height: 0;
+}
+@media (min-width: 997px) {
+  .navbar__items--right .user-profile-wrapper {
+    margin-right: 12px;
+  }
+}
+@media (max-width: 996px) {
+  .navbar__items--right [class*="navbarSearchContainer"] {
+    position: relative;
+    right: auto;
+  }
+  .navbar__items--right .user-profile-wrapper {
+    margin-left: 12px;
+  }
+}
+
+/* Generic hidden utility — required by the UI library's dropdown toggle
+   (classList.add('hidden') / classList.remove('hidden')). */
+.hidden {
+  display: none;
+}
+
 /* Clear floats so following content starts below (e.g. after float: right images) */
 .clear-float {
   clear: both;
