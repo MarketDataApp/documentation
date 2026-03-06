@@ -204,19 +204,19 @@
 
 /* ==========================================================================
    Navbar overflow prevention
-   At desktop widths (≥997px) the right-side items (search, avatar, username,
-   logout button, dark-mode toggle) can overflow the navbar when a user is
-   logged in. These rules keep everything on one line:
-   - flex-wrap: nowrap on .navbar__inner stops the two halves from stacking.
-   - white-space: nowrap on nav links stops multi-word labels ("Sheets Add-On",
-     "Accounts & Billing") from wrapping inside their flex item at ~1024px.
+   Right-side items (search, avatar, username, logout button, dark-mode toggle)
+   can overflow the navbar at any width. These rules keep everything on one line:
+   - flex-wrap: nowrap on .navbar__inner (all widths) stops the two halves from
+     stacking, so the JS overflow utility can detect flex-item compression.
+   - white-space: nowrap on nav links (≥997px only) stops multi-word labels
+     ("Sheets Add-On", "Accounts & Billing") from wrapping at ~1024px.
    - The JS utility (navbarOverflow.js) then hides lower-priority right-side
      items one at a time until nothing is compressed.
    ========================================================================== */
+.navbar__inner {
+  flex-wrap: nowrap;
+}
 @media (min-width: 997px) {
-  .navbar__inner {
-    flex-wrap: nowrap;
-  }
   .navbar__items .navbar__link {
     white-space: nowrap;
   }
