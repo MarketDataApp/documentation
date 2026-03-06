@@ -34,4 +34,5 @@ jobs:
       - name: Run e2e tests
         env:
           TEST_ENV: ${{ github.event.client_payload.environment }}
+          AMEMBER_TEST_PASS: ${{ secrets.AMEMBER_TEST_PASS }}
         run: yarn test:e2e

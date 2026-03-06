@@ -71,4 +71,5 @@ jobs:
       - name: Run e2e tests against staging
         env:
           TEST_ENV: staging
+          AMEMBER_TEST_PASS: ${{ secrets.AMEMBER_TEST_PASS }}
         run: yarn test:e2e
