@@ -230,6 +230,7 @@
    (later in DOM order) stays on the far right. */
 .navbar__items--right .user-profile-wrapper {
   align-self: center;
+  line-height: 0;
 }
 @media (min-width: 997px) {
   .navbar__items--right .user-profile-wrapper {
