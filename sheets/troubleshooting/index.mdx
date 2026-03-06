@@ -19,7 +19,7 @@ Sometimes you may get an error when you open your spreadsheet. These errors are 
 The Market Data sidebar can detect service outages and other problems with your Google account. If you begin to have trouble with Market Data, open the sidebar and see if an error message is displayed.
 
 - `Multiple Google accounts error.` - Your browser has multiple Google accounts open at once. Google does not permit multi-login with Sheets Add-ons, such as Market Data. You will need to log out of your other Google accounts or use Google Sheets with a single Google account in a private browsing window. See [Multiple Google Accounts Error](/sheets/troubleshooting/multiple-google-accounts).
-- `Invalid token.` - The token input is not valid. This error is usually the result of an incorrect token in the token field. Check the token and try again.
+- `Authentication error.` - The add-on could not authenticate your Google account. Make sure the Google account you use to login to Sheets matches the e-mail address on your Market Data account. See [Authentication](/sheets/authentication).
 - `Market Data is offline.` - Your sheet is cannot reach Market Data's servers. Check our status page to see if there is a service outage. As soon as service is restored this error will resolve.
 
 ## Errors in Formulas
@@ -48,7 +48,7 @@ The following errors are usually easily correceted by modifying the input to you
 
 These issues are related to problems with your specific Market Data account and are usually easily solvable.
 
-- `Missing token.` - You haven't yet added your token in the Market Data sidebar. The token must be added to each new spreadsheet that you create. Open the side bar in Extensions > Market Data > Start and add your token to the sheet.
+- `Authentication error.` - The add-on could not authenticate your Google account with Market Data. Make sure the e-mail address on your Market Data account matches the Google account you use to login to Sheets. See [Authentication](/sheets/authentication).
 - `Unable to start a Market Data session with sidebar closed.` - This error occurs when you first open your sheet for the day. Open the sidebar in Extensions > Market Data > Start and refresh your data using one of the refresh options provided.
 - `Your Market Data plan has exceeded its daily limit.` - You have used all your Market Data requests for the day. Your account will be refilled with new requests at opening bell (9:30 AM Eastern Time) tomorrow.
 
