@@ -1,4 +1,5 @@
 name: "Docs: Post-Deploy Integration & E2E Tests"
+run-name: "Docs: Post-Deploy Tests (${{ github.event.client_payload.environment || 'unknown' }})"
 
 on:
   repository_dispatch:
