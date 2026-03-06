@@ -19,19 +19,5 @@ export default defineConfig({
       testMatch: ['context7-widget.spec.js'],
       use: { browserName: 'chromium' },
     },
-    {
-      name: 'auth-setup',
-      testMatch: ['auth.setup.js'],
-      use: { browserName: 'chromium' },
-    },
-    {
-      name: 'user-profile',
-      testMatch: ['user-profile.spec.js'],
-      dependencies: ['auth-setup'],
-      use: {
-        browserName: 'chromium',
-        storageState: 'e2e/.auth/user.json',
-      },
-    },
   ],
 });

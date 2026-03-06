@@ -29,5 +29,5 @@ export default function UserProfile({ mobile }) {
   }, [mobile]);
 
   if (mobile) return null;
-  return <div ref={ref} />;
+  return <div ref={ref} className="user-profile-container" />;
 }
