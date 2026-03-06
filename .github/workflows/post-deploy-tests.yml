@@ -34,5 +34,20 @@ jobs:
       - name: Run e2e tests
         env:
           TEST_ENV: ${{ github.event.client_payload.environment }}
-          AMEMBER_TEST_PASS: ${{ secrets.AMEMBER_TEST_PASS }}
         run: yarn test:e2e
+
+      - name: Notify Slack on failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_ALERTS_WEBHOOK_URL }}
+          REPO: ${{ github.repository }}
+          WORKFLOW: ${{ github.workflow }}
+          BRANCH: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          SHORT_SHA="${SHA:0:7}"
+          printf '🔴 WORKFLOW FAILED — %s\nRepo: %s\nBranch: %s @ %s\n%s' \
+            "$WORKFLOW" "$REPO" "$BRANCH" "$SHORT_SHA" "$RUN_URL" \
+            | jq -Rs '{text: .}' \
+            | curl -s -X POST "$SLACK_WEBHOOK" -H 'Content-Type: application/json' -d @-
