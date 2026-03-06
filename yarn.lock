@@ -1725,8 +1725,8 @@
   integrity sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==
 
 "@marketdataapp/ui@github:MarketDataApp/ui#main":
-  version "2.9.0"
-  resolved "https://codeload.github.com/MarketDataApp/ui/tar.gz/a585941980cf4a82bcad7ccc8bf8e538e621681e"
+  version "2.9.1"
+  resolved "https://codeload.github.com/MarketDataApp/ui/tar.gz/901691a64557afa52754a0697e0b49b2cd01c31c"
 
 "@mdx-js/mdx@^3.0.0":
   version "3.1.1"
