@@ -10,7 +10,7 @@ export function onRouteDidUpdate() {
     items: [
       // Priority order: lowest number = hidden first
       { selector: '.navbar__items--right [class*="colorModeToggle"]', priority: 1 },
-      { selector: '.user-profile-wrapper', priority: 2 },
+      { selector: '.user-profile-container', priority: 2 },
       { selector: '.navbar__items--right .DocSearch-Button', priority: 3 },
     ],
   });
