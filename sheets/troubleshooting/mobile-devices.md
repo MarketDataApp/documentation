@@ -11,14 +11,7 @@ The following recommendations are only for users who want to experiment with Mar
 
 ## Enable Your Sheet For Mobile
 
-There are two steps needed to enable your sheet for mobile device use:
-
-1. Add your token.
-2. Disable the sidebar check.
-
-#### Adding Your Token
-
-To use your sheet with a mobile device, you must first open the sheet on a computer and add your token to the sheet. Since there is no way to open the sidebar on a mobile device, this step can only be completed on your computer.
+To use Market Data on a mobile device, you need to disable the sidebar check. The add-on authenticates automatically using your Google account, but since there is no way to open the sidebar on a mobile device, you must disable the sidebar requirement first from a computer.
 
 #### Disable the Sidebar Check
 
