@@ -222,12 +222,12 @@
   }
 }
 
-/* Navbar user-profile (logged-in and logged-out states)
+/* Navbar user-profile positioning
    Desktop (≥997px): 12px gap before the dark-mode toggle.
-   Mobile: push left of the absolutely-positioned search.
-   Gap is kept at ~12px in both search states:
-     ≤768px: 36px icon  + 12px gap = 48px margin
-     769–996px: 155px bar + 13px gap = 168px margin */
+   Below desktop (<997px): Docusaurus absolutely-positions the search bar to
+   the right, which puts the profile to its left. Override search back to
+   normal flow so both items participate in flex layout and the profile
+   (later in DOM order) stays on the far right. */
 .navbar__items--right .user-profile-wrapper {
   align-self: center;
 }
@@ -236,14 +236,13 @@
     margin-right: 12px;
   }
 }
-@media (max-width: 768px) {
-  .navbar__items--right .user-profile-wrapper {
-    margin-right: 48px; /* 36px search icon + 12px gap */
+@media (max-width: 996px) {
+  .navbar__items--right [class*="navbarSearchContainer"] {
+    position: relative;
+    right: auto;
   }
-}
-@media (min-width: 769px) and (max-width: 996px) {
   .navbar__items--right .user-profile-wrapper {
-    margin-right: 168px; /* 155px expanded search bar + 13px gap */
+    margin-left: 12px;
   }
 }
 
