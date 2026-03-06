@@ -249,39 +249,10 @@
   }
 }
 
-/* Navbar user profile (logged-in state)
-   min-width: 0 allows the flex child to shrink below its content size
-   so the username truncation actually works. */
-.navbar-user-profile {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  min-width: 0;
-}
-
-/* Truncate long usernames — keeps the right side compact.
-   The overflow JS will hide the username entirely before touching
-   higher-priority items like the logout button or search. */
-.navbar-user-name {
-  max-width: 7rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Avatar circle — hidden on mobile where the hamburger menu is used */
-.navbar-user-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: block;
-}
-
-@media (max-width: 996px) {
-  .navbar-user-avatar {
-    display: none;
-  }
+/* Generic hidden utility — required by the UI library's dropdown toggle
+   (classList.add('hidden') / classList.remove('hidden')). */
+.hidden {
+  display: none;
 }
 
 /* Clear floats so following content starts below (e.g. after float: right images) */

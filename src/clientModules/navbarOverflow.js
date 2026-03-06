@@ -9,11 +9,10 @@ export function onRouteDidUpdate() {
     container,
     items: [
       // Priority order: lowest number = hidden first
-      { selector: '.navbar-user-name', priority: 1 },
-      { selector: '.navbar__items--right [class*="colorModeToggle"]', priority: 2 },
-      { selector: '.navbar-user-avatar', priority: 3 },
-      { selector: '.navbar__items--right .btn-hover-orange', priority: 4 },
-      { selector: '.navbar__items--right .DocSearch-Button', priority: 5 },
+      { selector: '.navbar__items--right [class*="colorModeToggle"]', priority: 1 },
+      { selector: '.user-profile-wrapper', priority: 2 },
+      { selector: '.navbar__items--right .btn-hover-orange', priority: 3 },
+      { selector: '.navbar__items--right .DocSearch-Button', priority: 4 },
     ],
   });
 }
