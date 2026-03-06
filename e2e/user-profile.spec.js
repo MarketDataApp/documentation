@@ -19,12 +19,12 @@ test.describe('User profile component', () => {
   });
 
   test('user profile avatar is visible when logged in', async ({ page }) => {
-    const avatar = page.locator('#avatarButton');
+    const avatar = page.locator('.user-profile-avatar');
     await expect(avatar).toBeVisible({ timeout: 10_000 });
   });
 
   test('dropdown opens on avatar click', async ({ page }) => {
-    const avatar = page.locator('#avatarButton');
+    const avatar = page.locator('.user-profile-avatar');
     await expect(avatar).toBeVisible({ timeout: 10_000 });
 
     await avatar.click();
@@ -52,7 +52,7 @@ test.describe('User profile component', () => {
   });
 
   test('dropdown closes on outside click', async ({ page }) => {
-    const avatar = page.locator('#avatarButton');
+    const avatar = page.locator('.user-profile-avatar');
     await expect(avatar).toBeVisible({ timeout: 10_000 });
 
     await avatar.click();
@@ -65,7 +65,7 @@ test.describe('User profile component', () => {
   });
 
   test('dropdown closes on Escape key', async ({ page }) => {
-    const avatar = page.locator('#avatarButton');
+    const avatar = page.locator('.user-profile-avatar');
     await expect(avatar).toBeVisible({ timeout: 10_000 });
 
     await avatar.click();
@@ -77,7 +77,7 @@ test.describe('User profile component', () => {
   });
 
   test('logout redirects to dashboard login', async ({ page }) => {
-    const avatar = page.locator('#avatarButton');
+    const avatar = page.locator('.user-profile-avatar');
     await expect(avatar).toBeVisible({ timeout: 10_000 });
 
     await avatar.click();
