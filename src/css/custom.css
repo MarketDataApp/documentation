@@ -222,52 +222,21 @@
   }
 }
 
-/* Navbar login/logout button
-   Desktop (≥997px): 12px gap before the dark-mode toggle.
-   Mobile: Docusaurus absolute-positions the search, so it floats over
-   the right group without taking flow space. We add margin-right to push
-   the button left of the search and reduce padding to keep it compact.
-   The search bar expands from a 36px icon to a 155px "Search ⌘K" bar
-   at 769px, so margin-right must increase to match. */
-@media (min-width: 997px) {
-  .navbar__items--right .btn-hover-orange {
-    margin-right: 12px;
-  }
-}
-@media (max-width: 768px) {
-  .navbar__items--right .btn-hover-orange {
-    padding-left: 16px;
-    padding-right: 16px;
-    margin-right: 40px; /* clearance for the 36px search icon */
-  }
-}
-@media (min-width: 769px) and (max-width: 996px) {
-  .navbar__items--right .btn-hover-orange {
-    padding-left: 16px;
-    padding-right: 16px;
-    margin-right: 168px; /* clearance for the 155px expanded search bar */
-  }
-}
-
-/* Navbar user-profile container (logged-in state)
-   Same clearance logic as the login button above.
-   The margin must be on .navbar-user-profile (the flex child) rather than
-   the inner .user-profile-wrapper, because only direct flex children
-   participate in the navbar's flex layout.
+/* Navbar user-profile (logged-in and logged-out states)
    Desktop (≥997px): 12px gap before the dark-mode toggle.
    Mobile: push left of the absolutely-positioned search. */
 @media (min-width: 997px) {
-  .navbar__items--right .navbar-user-profile {
+  .navbar__items--right .user-profile-wrapper {
     margin-right: 12px;
   }
 }
 @media (max-width: 768px) {
-  .navbar__items--right .navbar-user-profile {
+  .navbar__items--right .user-profile-wrapper {
     margin-right: 40px; /* clearance for the 36px search icon */
   }
 }
 @media (min-width: 769px) and (max-width: 996px) {
-  .navbar__items--right .navbar-user-profile {
+  .navbar__items--right .user-profile-wrapper {
     margin-right: 168px; /* clearance for the 155px expanded search bar */
   }
 }
