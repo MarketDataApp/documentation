@@ -96,7 +96,7 @@ async function handleRequest(request) {
       if (url.pathname.endsWith(indexHtmlMd)) {
         stem = url.pathname.slice(docsPrefix.length, -indexHtmlMd.length);
       } else {
-        stem = url.pathname.slice(docsPrefix.length, -3);
+        stem = url.pathname.slice(docsPrefix.length, -3).replace(/\/index$/, '');
       }
     } else {
       stem = url.pathname.replace(/\/$/, '').slice(docsPrefix.length);

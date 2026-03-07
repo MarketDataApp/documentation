@@ -202,6 +202,15 @@ describe('handleRequest', () => {
       );
     });
 
+    it('canonical URL strips /index from index.md requests', async () => {
+      mockFetch.mockResolvedValueOnce(new Response('# Plans\n', { status: 200 }));
+      const req = makeRequest('https://www.marketdata.app/docs/account/plans/index.md');
+      const res = await handleRequest(req);
+      expect(res.headers.get('link')).toBe(
+        '<https://www.marketdata.app/docs/account/plans/>; rel="canonical"'
+      );
+    });
+
     it('handles nested path with index.html.md', async () => {
       mockFetch.mockResolvedValueOnce(new Response('# Candles\n', { status: 200 }));
       const req = makeRequest('https://www.marketdata.app/docs/api/stocks/candles/index.html.md');

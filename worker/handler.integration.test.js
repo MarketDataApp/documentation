@@ -95,4 +95,41 @@ for (const [env, { host }] of Object.entries(envs)) {
       });
     }
   });
+
+  describe(`canonical Link header — ${env} (live sitemap)`, async () => {
+    const paths = (await fetchSitemapUrls()).filter((p) => !shouldSkip(p));
+
+    it(`sitemap has URLs to test`, () => {
+      expect(paths.length).toBeGreaterThan(50);
+    });
+
+    for (const path of paths) {
+      it(`${path} canonical URL returns 200`, async () => {
+        const url = `${host}${path}`;
+        const mdRes = await fetch(url, {
+          headers: { Accept: 'text/markdown' },
+          redirect: 'follow',
+        });
+
+        // Skip if markdown serving itself failed
+        if (mdRes.status !== 200) return;
+
+        const linkHeader = mdRes.headers.get('link');
+        expect(linkHeader, `${path} has no Link header`).toBeTruthy();
+
+        // Extract canonical URL from Link header: <URL>; rel="canonical"
+        const match = linkHeader.match(/^<([^>]+)>;\s*rel="canonical"$/);
+        expect(match, `${path} Link header malformed: ${linkHeader}`).toBeTruthy();
+
+        const canonicalUrl = match[1];
+
+        // Fetch the canonical URL without following redirects
+        const canonicalRes = await fetch(canonicalUrl, { redirect: 'manual' });
+        expect(
+          canonicalRes.status,
+          `${path} canonical ${canonicalUrl} returned ${canonicalRes.status} (expected 200)`
+        ).toBe(200);
+      });
+    }
+  });
 }
