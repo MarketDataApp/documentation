@@ -11,10 +11,6 @@ export default function UserProfile({ mobile }) {
     initUserProfile({
       container: ref.current,
       dropdown: true,
-      loginUrl: 'https://www.marketdata.app/dashboard/',
-      logoutUrl: 'https://dashboard.marketdata.app/marketdata/logout',
-      dashboardUrl: 'https://www.marketdata.app/dashboard/',
-      loginText: 'Log in',
     }).then((fn) => {
       if (cancelled) {
         fn();
