@@ -21,14 +21,14 @@ GET
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-**GET** [https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31](https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31)
+**GET** [https://api.marketdata.app/v1/stocks/candles/D/AAPL/?from=2020-01-01&to=2020-12-31](https://api.marketdata.app/v1/stocks/candles/D/AAPL/?from=2020-01-01&to=2020-12-31)
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
 
 ```js title="app.js"
 fetch(
-  "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31"
+  "https://api.marketdata.app/v1/stocks/candles/D/AAPL/?from=2020-01-01&to=2020-12-31"
 )
   .then((res) => {
     console.log(res);

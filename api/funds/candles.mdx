@@ -27,14 +27,14 @@ GET
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-**GET** [https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-01-10](https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-01-10)
+**GET** [https://api.marketdata.app/v1/funds/candles/D/VFINX/?from=2020-01-01&to=2020-01-10](https://api.marketdata.app/v1/funds/candles/D/VFINX/?from=2020-01-01&to=2020-01-10)
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
 
 ```js title="fundCandles.js"
 fetch(
-  "https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-01-10"
+  "https://api.marketdata.app/v1/funds/candles/D/VFINX/?from=2020-01-01&to=2020-01-10"
 )
   .then((res) => {
     console.log(res);
