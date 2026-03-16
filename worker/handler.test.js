@@ -282,23 +282,6 @@ describe('handleRequest', () => {
     });
   });
 
-  // --- robots.txt ---
-
-  describe('robots.txt blocking', () => {
-    it('returns 404 for /docs/robots.txt on production', async () => {
-      const req = makeRequest('https://www.marketdata.app/docs/robots.txt');
-      const res = await handleRequest(req);
-      expect(res.status).toBe(404);
-      expect(mockFetch).not.toHaveBeenCalled();
-    });
-
-    it('returns 404 for /docs/robots.txt on staging', async () => {
-      const req = makeRequest('https://www-staging.marketdata.app/docs/robots.txt');
-      const res = await handleRequest(req);
-      expect(res.status).toBe(404);
-      expect(mockFetch).not.toHaveBeenCalled();
-    });
-  });
 
   // --- Route proxying ---
 

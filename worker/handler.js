@@ -124,11 +124,6 @@ async function handleRequest(request) {
     }
   }
 
-  // Docs sites don't serve robots.txt; block stale cached copies
-  if (url.pathname.endsWith('/robots.txt')) {
-    return new Response('', { status: 404 });
-  }
-
   url.hostname = target;
   const response = await fetch(new Request(url, request), { cf: { cacheEverything: true } });
 
