@@ -74,6 +74,14 @@ async function handleRequest(request) {
     return fetch(request);
   }
 
+  // Redirect misrouted cdn-cgi paths (e.g. Zaraz relative URL requests from deep doc pages)
+  // e.g. /docs/api/stocks/prices/cdn-cgi/zaraz/i.js → /cdn-cgi/zaraz/i.js
+  const cdnCgiIndex = url.pathname.indexOf('/cdn-cgi/');
+  if (cdnCgiIndex !== -1) {
+    const cdnCgiPath = url.pathname.slice(cdnCgiIndex);
+    return Response.redirect(`https://${url.hostname}${cdnCgiPath}`, 302);
+  }
+
   // Redirect legacy SDK PHP docs to GitHub Pages
   const sdkPhpPrefix = '/docs/sdk-php/';
   if (url.pathname.startsWith(sdkPhpPrefix) || url.pathname === '/docs/sdk-php') {
