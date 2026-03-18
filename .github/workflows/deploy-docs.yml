@@ -87,6 +87,7 @@ jobs:
           client-payload: >-
             {
               "source": "docs",
+              "source_repo": "MarketDataApp/documentation",
               "environment": "${{ steps.env.outputs.environment }}",
               "commit_sha": "${{ github.sha }}"
             }
