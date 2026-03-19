@@ -21,14 +21,14 @@ GET
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-**GET** [https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31](https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31)
+**GET** [https://api.marketdata.app/v1/stocks/candles/D/AAPL/?from=2020-01-01&to=2020-12-31](https://api.marketdata.app/v1/stocks/candles/D/AAPL/?from=2020-01-01&to=2020-12-31)
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
 
 ```js title="app.js"
 fetch(
-  "https://api.marketdata.app/v1/stocks/candles/D/AAPL?from=2020-01-01&to=2020-12-31"
+  "https://api.marketdata.app/v1/stocks/candles/D/AAPL/?from=2020-01-01&to=2020-12-31"
 )
   .then((res) => {
     console.log(res);
@@ -201,7 +201,12 @@ There is no maximum date range limit on daily candles. When requesting intraday 
   Volume.
 
 - **t** `array[number]`
-  Candle time (Unix timestamp, UTC). Daily, weekly, monthly, yearly candles are returned without times.
+
+  Candle time (Unix timestamp). For intraday candles, this is the candle's start time in UTC. For daily and longer resolutions, this is midnight US Eastern Time on the session date (e.g., 05:00 UTC during EST or 04:00 UTC during EDT).
+
+  :::tip Understanding Daily Candle Timestamps
+  A daily candle for **Friday, March 6, 2026** has Unix timestamp `1772773200`, which equals **05:00 UTC on March 6** (= 00:00 Eastern). The 05:00 UTC time does not represent a market event — it is simply midnight Eastern expressed in UTC. The date portion (March 6) identifies the trading session.
+  :::
 
 </TabItem>
 <TabItem value="NoData" label="No Data">

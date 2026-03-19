@@ -27,14 +27,14 @@ GET
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-**GET** [https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-01-10](https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-01-10)
+**GET** [https://api.marketdata.app/v1/funds/candles/D/VFINX/?from=2020-01-01&to=2020-01-10](https://api.marketdata.app/v1/funds/candles/D/VFINX/?from=2020-01-01&to=2020-01-10)
 
 </TabItem>
 <TabItem value="NodeJS" label="NodeJS">
 
 ```js title="fundCandles.js"
 fetch(
-  "https://api.marketdata.app/v1/funds/candles/D/VFINX?from=2020-01-01&to=2020-01-10"
+  "https://api.marketdata.app/v1/funds/candles/D/VFINX/?from=2020-01-01&to=2020-01-10"
 )
   .then((res) => {
     console.log(res);
@@ -172,7 +172,7 @@ echo $candles;
 
 - **t** `array[number]`
 
-  Candle time (Unix timestamp, Eastern Time Zone). Daily, weekly, monthly, yearly candles are returned without times.
+  Candle time (Unix timestamp). This is midnight US Eastern Time on the session date (e.g., 05:00 UTC during EST or 04:00 UTC during EDT).
 
 </TabItem>
 <TabItem value="NoData" label="No Data">

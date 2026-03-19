@@ -13,7 +13,7 @@ For troubleshooting, use:
 
 Normally each API call consumes a single credit. However, **if the response includes more than a single symbol, it can consume multiple credits**. Often, users can navigate around a rate limit by making the most of the diverse filters we provide (e.g. instead of retrieving an entire option chain, apply specific filters to narrow down the results).
 
-**The credit limit is a hard limit. Once the limit has been reached, you can no longer make API calls until the credit counter resets.** Calls in excess of the limit return `429` responses.
+**Any single API request is permitted as long as you have at least 1 credit remaining**, even if the request will consume more credits than your current balance. After such a request, your balance may go negative and further requests will return `429` responses until the credit window resets.
 
 ### Usage Counter Reset Time
 

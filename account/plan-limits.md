@@ -63,4 +63,4 @@ The Free Forever plan only provides access to pricing data. Premium endpoints an
 
 - Free Forever, Starter, and Trader use daily windows that reset at 9:30 AM Eastern Time (NYSE opening bell).
 - Quant and Prime use per-minute credit windows.
-- All limits are hard limits. Once reached, requests are blocked until the relevant window resets.
+- Any single API request is permitted as long as you have at least 1 credit remaining in the current window, even if the request consumes more credits than you have available. After the request, your balance may go negative and further requests will be blocked until the window resets.

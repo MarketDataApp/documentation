@@ -95,6 +95,31 @@ describe('handleRequest', () => {
     });
   });
 
+  // --- cdn-cgi redirect ---
+
+  describe('cdn-cgi redirect', () => {
+    it('redirects misrouted cdn-cgi paths embedded in docs paths', async () => {
+      const req = makeRequest('https://www.marketdata.app/docs/api/stocks/prices/cdn-cgi/zaraz/i.js');
+      const res = await handleRequest(req);
+      expect(res.status).toBe(302);
+      expect(res.headers.get('location')).toBe('https://www.marketdata.app/cdn-cgi/zaraz/i.js');
+    });
+
+    it('redirects cdn-cgi at top-level docs path', async () => {
+      const req = makeRequest('https://www.marketdata.app/docs/cdn-cgi/zaraz/i.js');
+      const res = await handleRequest(req);
+      expect(res.status).toBe(302);
+      expect(res.headers.get('location')).toBe('https://www.marketdata.app/cdn-cgi/zaraz/i.js');
+    });
+
+    it('redirects misrouted cdn-cgi on staging hostname', async () => {
+      const req = makeRequest('https://www-staging.marketdata.app/docs/api/stocks/cdn-cgi/zaraz/i.js');
+      const res = await handleRequest(req);
+      expect(res.status).toBe(302);
+      expect(res.headers.get('location')).toBe('https://www-staging.marketdata.app/cdn-cgi/zaraz/i.js');
+    });
+  });
+
   // --- SDK PHP redirects ---
 
   describe('SDK PHP redirect', () => {
@@ -202,6 +227,15 @@ describe('handleRequest', () => {
       );
     });
 
+    it('canonical URL strips /index from index.md requests', async () => {
+      mockFetch.mockResolvedValueOnce(new Response('# Plans\n', { status: 200 }));
+      const req = makeRequest('https://www.marketdata.app/docs/account/plans/index.md');
+      const res = await handleRequest(req);
+      expect(res.headers.get('link')).toBe(
+        '<https://www.marketdata.app/docs/account/plans/>; rel="canonical"'
+      );
+    });
+
     it('handles nested path with index.html.md', async () => {
       mockFetch.mockResolvedValueOnce(new Response('# Candles\n', { status: 200 }));
       const req = makeRequest('https://www.marketdata.app/docs/api/stocks/candles/index.html.md');
@@ -273,23 +307,6 @@ describe('handleRequest', () => {
     });
   });
 
-  // --- robots.txt ---
-
-  describe('robots.txt blocking', () => {
-    it('returns 404 for /docs/robots.txt on production', async () => {
-      const req = makeRequest('https://www.marketdata.app/docs/robots.txt');
-      const res = await handleRequest(req);
-      expect(res.status).toBe(404);
-      expect(mockFetch).not.toHaveBeenCalled();
-    });
-
-    it('returns 404 for /docs/robots.txt on staging', async () => {
-      const req = makeRequest('https://www-staging.marketdata.app/docs/robots.txt');
-      const res = await handleRequest(req);
-      expect(res.status).toBe(404);
-      expect(mockFetch).not.toHaveBeenCalled();
-    });
-  });
 
   // --- Route proxying ---
 

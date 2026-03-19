@@ -3,6 +3,12 @@ title: Dates and Times
 sidebar_position: 5
 ---
 
+## Response Timestamps
+
+By default, all timestamps returned by the API are **Unix timestamps** (seconds since January 1, 1970 UTC). You can change the output format using the [`dateformat`](/docs/api/universal-parameters/date-format) universal parameter, which supports `unix` (default), `timestamp` (ISO 8601 with timezone), and `spreadsheet` formats. Refer to individual endpoint documentation for details on how timestamps are set for each response type.
+
+## Request Date Formats
+
 All Market Data endpoints support advanced date-handling features to allow you to work with dates in a way that works best for your application. Our API will accept date inputs in any of the following formats:
 
 - **American Numeric Notation** Dates and times in MM/DD/YYYY format. For example, closing bell on Dec 30, 2020 for the NYSE would be: 12/30/2020 4:00 PM.

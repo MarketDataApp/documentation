@@ -74,6 +74,14 @@ async function handleRequest(request) {
     return fetch(request);
   }
 
+  // Redirect misrouted cdn-cgi paths (e.g. Zaraz relative URL requests from deep doc pages)
+  // e.g. /docs/api/stocks/prices/cdn-cgi/zaraz/i.js → /cdn-cgi/zaraz/i.js
+  const cdnCgiIndex = url.pathname.indexOf('/cdn-cgi/');
+  if (cdnCgiIndex !== -1) {
+    const cdnCgiPath = url.pathname.slice(cdnCgiIndex);
+    return Response.redirect(`https://${url.hostname}${cdnCgiPath}`, 302);
+  }
+
   // Redirect legacy SDK PHP docs to GitHub Pages
   const sdkPhpPrefix = '/docs/sdk-php/';
   if (url.pathname.startsWith(sdkPhpPrefix) || url.pathname === '/docs/sdk-php') {
@@ -96,7 +104,7 @@ async function handleRequest(request) {
       if (url.pathname.endsWith(indexHtmlMd)) {
         stem = url.pathname.slice(docsPrefix.length, -indexHtmlMd.length);
       } else {
-        stem = url.pathname.slice(docsPrefix.length, -3);
+        stem = url.pathname.slice(docsPrefix.length, -3).replace(/\/index$/, '');
       }
     } else {
       stem = url.pathname.replace(/\/$/, '').slice(docsPrefix.length);
@@ -122,11 +130,6 @@ async function handleRequest(request) {
         });
       }
     }
-  }
-
-  // Docs sites don't serve robots.txt; block stale cached copies
-  if (url.pathname.endsWith('/robots.txt')) {
-    return new Response('', { status: 404 });
   }
 
   url.hostname = target;
