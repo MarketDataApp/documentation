@@ -1,6 +1,6 @@
 ---
 title: Cancellations
-sidebar_position: 8
+sidebar_position: 9
 ---
 
 Your Market Data account can be cancelled at any time. 
