@@ -49,3 +49,7 @@ Fetches current or historical earnings data for a stock ticker.
 ## Notes
 
 Non-GAAP earnings are reported for most tickers. If the company does not report non-GAAP earnings, GAAP earnings will be used instead.
+
+:::warning Estimated Dates for Future Earnings
+For upcoming earnings events, the report date is an **estimate** based on historical reporting patterns and is not a confirmed date. These dates frequently change as companies update their reporting schedules. Only after a company has actually reported its earnings does the report date become a confirmed, historical data point. Do not make trading decisions based on estimated future earnings dates.
+:::
