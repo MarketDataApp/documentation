@@ -24,18 +24,35 @@ After sign-up, we verify that the information you provided matches third-party d
 
 Profiles with missing or incomplete information cannot be classified. Your account will not be activated for real-time data until verification is complete.
 
+### Missing or Mismatching Information
+
+All fields are required and must match third-party databases. If your profile contains missing, incomplete, or mismatched information, we will request additional documentation — such as a CV, employment letter, or other materials that clarify your job function.
+
 ### LinkedIn Profiles
 
-A LinkedIn profile is not required, but it is the easiest way for us to verify your employment information because it is a widely used, publicly accessible professional database. If you do not have a LinkedIn profile or prefer not to share it, you can provide any of the following as an alternative:
+A LinkedIn profile is not required, but it is the easiest way for us to verify your employment information because it is a widely used, publicly accessible professional database. If you do not have a LinkedIn profile or prefer not to share it, just write `https://www.linkedin.com` in the form field and you can provide any of the following as an alternative:
 
 - A current resume or CV
 - A photo of your business card showing your current job title and employer
 - A recent paystub (please redact any sensitive financial data)
 - Any other document that confirms your current employer and role
 
-### Missing or Mismatching Information
+### Retired or Unemployed Subscribers
 
-All fields are required and must match third-party databases. If your profile contains missing, incomplete, or mismatched information, we will request additional documentation — such as a CV, employment letter, or other materials that clarify your job function.
+If you are retired or unemployed, your LinkedIn profile, resume, or CV should show your work history along with the date your most recent position ended. This helps us confirm that you are not currently employed in a role that would qualify as professional use under exchange rules. See [Professional Status Policy](/docs/account/data-policies/professional-status/) for details on how professional status is determined.
+
+### Self-Employed and Business Owners
+
+If you are self-employed or own a business, your professional status will depend on the nature of the business itself — specifically, whether the business has a need for market data as part of its products or services. This triggers an additional verification step beyond what is required for employed subscribers.
+
+You must provide at least one document that confirms what your business does. Acceptable documentation includes:
+
+- A company LinkedIn page
+- A business website
+- A brochure or marketing materials describing your products or services
+- A business registration or filing that describes the nature of the business
+
+A self-reported business name and description alone is not sufficient. We need independent documentation that confirms the business is not involved in financial services, trading, or other activities that would classify you as a professional user under exchange rules. See [Professional Status Policy](/docs/account/data-policies/professional-status/) for details.
 
 ### Verification Timeframe
 
@@ -49,4 +66,4 @@ If your employment or professional registration has changed in a way that affect
 
 ## Privacy
 
-The information we collect is used solely to verify your account and comply with exchange regulations. We do not sell your information to third parties. We are required to share it with the exchanges, who review it periodically for accuracy.
+The information we collect is used solely to verify your account and comply with exchange regulations. We do not sell your information to third parties. We are required to share it with the stock and options exchanges, who review it periodically for accuracy.
