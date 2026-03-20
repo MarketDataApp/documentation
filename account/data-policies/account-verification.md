@@ -24,6 +24,15 @@ After sign-up, we verify that the information you provided matches third-party d
 
 Profiles with missing or incomplete information cannot be classified. Your account will not be activated for real-time data until verification is complete.
 
+### LinkedIn Profiles
+
+A LinkedIn profile is not required, but it is the easiest way for us to verify your employment information because it is a widely used, publicly accessible professional database. If you do not have a LinkedIn profile or prefer not to share it, you can provide any of the following as an alternative:
+
+- A current resume or CV
+- A photo of your business card showing your current job title and employer
+- A recent paystub (please redact any sensitive financial data)
+- Any other document that confirms your current employer and role
+
 ### Missing or Mismatching Information
 
 All fields are required and must match third-party databases. If your profile contains missing, incomplete, or mismatched information, we will request additional documentation — such as a CV, employment letter, or other materials that clarify your job function.
