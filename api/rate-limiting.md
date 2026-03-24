@@ -1,6 +1,6 @@
 ---
 title: Rate Limits
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 We enforce rate limits to ensure our API remains accessible and efficient for all users. We have two types of limits: API credits (total credits per unit of time) and a concurrent request limit (simultaneous requests).
