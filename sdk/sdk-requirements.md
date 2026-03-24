@@ -11,7 +11,9 @@ unlisted: true
 
 This document defines the requirements for official Market Data SDKs. Use this as acceptance criteria when building or evaluating SDK implementations.
 
-## Core Principle: Language-Idiomatic Design
+## Core Principles
+
+### Language-Idiomatic Design
 
 **SDKs must feel native to their language.** We adapt to the language's conventions—the language does not adapt to us.
 
@@ -21,6 +23,39 @@ This means:
 - Return data types that developers in that ecosystem expect
 - Don't force patterns from one language onto another
 - **Follow official style guides and best practices for each language**
+
+### Easy Default Requests
+
+**Customers must be able to make a request and inspect the result in 2–3 lines of code.** Every endpoint must have a simple, zero-configuration path (beyond authentication) that returns a useful, printable result.
+
+This means:
+- Every endpoint method must work with just required parameters (e.g., a symbol) — no mandatory configuration or boilerplate
+- Response objects must support string conversion that produces a readable summary (see §11.5)
+- Environment-based token loading (`MARKETDATA_TOKEN`) must work automatically so users can skip explicit auth setup
+- The combination of env-based auth + simple method call + print/log must produce a meaningful result
+
+#### Examples
+
+**Python (3 lines):**
+```python
+from marketdata import MarketDataClient
+client = MarketDataClient()
+print(client.stocks.quotes("AAPL"))
+```
+
+**Go (3 lines, excluding package/import):**
+```go
+client, _ := marketdata.NewClient()
+quotes, _ := client.Stocks.Quotes("AAPL")
+fmt.Println(quotes)
+```
+
+**PHP (3 lines):**
+```php
+$client = new MarketDataClient();
+$quote = $client->stocks->quotes("AAPL");
+echo $quote;
+```
 
 ### Required Style Guides
 
@@ -55,6 +90,7 @@ SDKs must pass the standard linter for their language (e.g., `ruff` for Python, 
 
 | Requirement                       | Priority |
 |-----------------------------------|----------|
+| Easy default requests (2–3 lines) | Must     |
 | Bearer token authentication       | Must     |
 | Environment-based configuration   | Must     |
 | Connection pooling                | Must     |
@@ -624,7 +660,7 @@ Integration tests make **actual REST requests** to the live API:
 ### README Must Include
 
 - [ ] Installation instructions
-- [ ] Quick start example (auth + first request)
+- [ ] Quick start example showing a complete request in 2–3 lines of code
 - [ ] Environment variable configuration
 - [ ] Error handling example
 - [ ] String conversion example(s) showing ergonomic object output
@@ -680,6 +716,7 @@ Integration tests make **actual REST requests** to the live API:
 Before accepting an SDK, verify:
 
 ### Core Functionality
+- [ ] Every endpoint works in 2–3 lines of code (env auth + method call + print)
 - [ ] All required SDK method capabilities implemented (as defined in this doc and canonical API docs)
 - [ ] Bearer authentication works
 - [ ] Token validation defaults to startup (fail fast) and supports constructor override to disable startup validation
