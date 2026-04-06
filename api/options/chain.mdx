@@ -309,7 +309,7 @@ The `am` and `pm` parameters are only applicable for index options such as SPX, 
 
 - **expiration** `array[number]`
 
-  The option's expiration date in Unix time.
+  The option's expiration date and time. Equity options expire at 4:00 PM Eastern and index options expire at 4:15 PM Eastern. All timestamps use US Eastern Time (America/New_York). See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
 
 - **side** `array[string]`
 
@@ -377,7 +377,7 @@ The `am` and `pm` parameters are only applicable for index options such as SPX, 
 
 - **updated** `array[number]`
 
-  The date and time of this quote snapshot in Unix time.
+  The date and time of this quote snapshot. All timestamps use US Eastern Time (America/New_York). See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
 
 - **iv** `array[number]`
 

@@ -1,11 +1,43 @@
 ---
 title: Dates and Times
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 ## Response Timestamps
 
 By default, all timestamps returned by the API are **Unix timestamps** (seconds since January 1, 1970 UTC). You can change the output format using the [`dateformat`](/docs/api/universal-parameters/date-format) universal parameter, which supports `unix` (default), `timestamp` (ISO 8601 with timezone), and `spreadsheet` formats. Refer to individual endpoint documentation for details on how timestamps are set for each response type.
+
+## Response Timezone
+
+:::info All Timestamps Use Eastern Time
+All US market timestamps returned by the Market Data API are anchored to the **America/New_York** timezone (US Eastern Time). This applies to **all asset classes**, including equities and options. Even though many US-listed options trade on Chicago exchanges, the API normalizes all US timestamps to Eastern Time. The API automatically adjusts for **daylight saving time** (EST/EDT).
+:::
+
+During Eastern Standard Time (EST, UTC-5), midnight Eastern is 05:00 UTC. During Eastern Daylight Time (EDT, UTC-4), midnight Eastern is 04:00 UTC. You do not need to handle this offset yourself — simply parse all timestamps using the `America/New_York` timezone identifier and your date library will resolve the correct date.
+
+### Date-Based Timestamps
+
+For responses that represent a **calendar date** rather than a specific moment in time — such as daily stock candles — the Unix timestamp is set to **midnight Eastern Time (00:00 America/New_York)** on the relevant date.
+
+For example, a daily candle for **March 6, 2026** has Unix timestamp `1772773200`, which equals **05:00 UTC** (= 00:00 Eastern during EST). The 05:00 UTC value does not represent a market event — it is simply midnight Eastern expressed as a UTC-based Unix timestamp. The date portion (March 6) identifies the trading session.
+
+:::caution Common Mistake
+If you parse a daily timestamp as UTC instead of Eastern Time, the date may appear shifted. For example, Unix timestamp `1772773200` is `2026-03-06 05:00:00 UTC` but `2026-03-06 00:00:00 America/New_York`. If your code extracts the date using UTC, it will produce the correct result in this case, but during EDT the offset changes to 04:00 UTC and edge cases can cause the date to shift by a day. Always use `America/New_York` when extracting dates from these timestamps.
+:::
+
+:::tip SDK Users
+If you use an official [Market Data SDK](/docs/sdk), timezone handling is done for you automatically. The SDKs convert all API timestamps to proper date and time objects in America/New_York — for example, Carbon in PHP, datetime in Python, and time.Time in Go — so you don't need to manage timezone conversion yourself.
+:::
+
+### Real-Time and Intraday Timestamps
+
+For real-time quotes, intraday candles, and `updated` fields, the timestamp represents the actual moment the data was captured or last refreshed. These are standard Unix timestamps and can be converted to any timezone, but they correspond to Eastern Time market hours (regular session 9:30 AM – 4:00 PM ET).
+
+### Options Timestamps
+
+Although US-listed options primarily trade on exchanges in Chicago (CBOE), the API returns all option timestamps in **Eastern Time**, consistent with the rest of the API. The `updated` field on option quotes and chain responses reflects the Eastern Time snapshot of the data.
+
+Option expiration timestamps reflect the **actual expiration time**, not midnight. Equity options expire at **4:00 PM Eastern** and index options expire at **4:15 PM Eastern**.
 
 ## Request Date Formats
 

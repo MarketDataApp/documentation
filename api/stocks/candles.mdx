@@ -202,11 +202,7 @@ There is no maximum date range limit on daily candles. When requesting intraday 
 
 - **t** `array[number]`
 
-  Candle time (Unix timestamp). For intraday candles, this is the candle's start time in UTC. For daily and longer resolutions, this is midnight US Eastern Time on the session date (e.g., 05:00 UTC during EST or 04:00 UTC during EDT).
-
-  :::tip Understanding Daily Candle Timestamps
-  A daily candle for **Friday, March 6, 2026** has Unix timestamp `1772773200`, which equals **05:00 UTC on March 6** (= 00:00 Eastern). The 05:00 UTC time does not represent a market event — it is simply midnight Eastern expressed in UTC. The date portion (March 6) identifies the trading session.
-  :::
+  Candle time. For intraday candles, this is the candle's start time. For daily and longer resolutions, this is midnight US Eastern Time on the session date. All timestamps use US Eastern Time (America/New_York). See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
 
 </TabItem>
 <TabItem value="NoData" label="No Data">

@@ -43,7 +43,7 @@ All plans are subject to a maximum of 50 simultaneous requests at any given time
 
 ## Historical Data Age Limit
 
-The Free Forever and Starter plans include historical age limits on historical data queries. If you attempt to access data older than the plan's limits permit, the request will be denied.
+Free Forever accounts can access up to 1 year of historical data and Starter accounts can access up to 5 years. Trader, Quant, and Prime plans have no historical data age limit. If you request data older than your plan allows, the request will be denied.
 
 ## Data Type
 

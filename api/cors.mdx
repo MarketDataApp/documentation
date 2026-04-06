@@ -1,0 +1,61 @@
+---
+title: CORS
+sidebar_position: 4
+---
+
+The Market Data API includes **Cross-Origin Resource Sharing (CORS)** headers as a convenience for subscribers who want to make API requests directly from a browser during development or for personal use. CORS support is not an invitation to build public-facing applications — self-service plans are personal licenses and [data redistribution](/docs/account/data-policies/data-redistribution) is not permitted.
+
+## Permitted Use Cases
+
+CORS is intended for **personal, non-public use** of the API in a browser environment. Examples of permitted use:
+
+- **Local development and prototyping** — building and testing apps on `localhost`.
+- **Personal dashboards and tools** — browser-based apps that only you access.
+
+These use cases are consistent with your self-service plan's personal license. The data you retrieve is for your own consumption — you are not making it available to others.
+
+## What Is Not Permitted
+
+Using CORS to serve market data to other people is **redistribution**, regardless of whether your app is free or paid. This includes:
+
+- Public websites or apps that display market data to visitors
+- Browser-based products or services that expose Market Data's data to your users or customers
+- Shared dashboards or tools accessible to people outside your organization
+
+These use cases require a commercial redistribution license. See the [Data Redistribution Policy](/docs/account/data-policies/data-redistribution) for details, or [contact our sales team](https://www.marketdata.app/contact/) to discuss licensing.
+
+## CORS Headers
+
+The API returns the following CORS headers on all responses, including preflight (`OPTIONS`) requests:
+
+| Header                         | Value                                                                                                          |
+|--------------------------------|----------------------------------------------------------------------------------------------------------------|
+| `Access-Control-Allow-Origin`  | `*`                                                                                                            |
+| `Access-Control-Allow-Methods` | `DELETE, GET, OPTIONS, PATCH, POST, PUT`                                                                       |
+| `Access-Control-Allow-Headers` | `accept, accept-encoding, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with` |
+| `Access-Control-Max-Age`       | `86400` (24 hours)                                                                                             |
+
+## Token Security
+
+When you use the API from a browser, your token is included in client-side code that **anyone with access to the page can inspect**. Only use your token in browser environments where you control who has access.
+
+:::danger Never Expose Your Token on a Public Website
+Do not embed your API token in any website, page, or app that is accessible to the public internet without authentication. Anyone who visits the page can extract your token from the network requests or source code and use it to make requests on your account, consuming your credits and accessing your data.
+
+If your token is compromised, contact our helpdesk via the [customer dashboard](https://www.marketdata.app/dashboard/) immediately to have it revoked and reissued.
+:::
+
+## Example
+
+The following example is suitable for local development or a personal/internal app:
+
+```javascript
+const response = await fetch("https://api.marketdata.app/v1/stocks/quotes/AAPL/", {
+  headers: {
+    Authorization: "Bearer YOUR_TOKEN",
+  },
+});
+
+const data = await response.json();
+console.log(data);
+```
