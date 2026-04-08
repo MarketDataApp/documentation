@@ -24,7 +24,7 @@
     "@docusaurus/plugin-client-redirects": "3.0.1",
     "@docusaurus/plugin-content-docs": "3.0.1",
     "@docusaurus/preset-classic": "3.0.1",
-    "@marketdataapp/ui": "github:MarketDataApp/ui#main",
+    "@marketdataapp/ui": "github:MarketDataApp/ui#v4.3.0",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
     "dotenv": "^16.0.2",
