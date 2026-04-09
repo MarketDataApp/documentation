@@ -160,11 +160,11 @@ SDKs must provide first-class methods for the following capabilities (language-i
 
 | Resource    | Required SDK Methods (capabilities)                   |
 |-------------|-------------------------------------------------------|
-| `stocks`    | `prices`, `quotes`, `candles`, `earnings`, `news`     |
-| `options`   | `chain`, `expirations`, `strikes`, `quotes`, `lookup` |
-| `funds`     | `candles`                                             |
-| `markets`   | `status`                                              |
-| `utilities` | `status`, `headers`, `user`                           |
+| `stocks`    | `prices`, `quotes`, `candles`, `earnings`, `news` |
+| `options`   | `chain`, `expirations`, `quotes`, `lookup`        |
+| `funds`     | `candles`                                         |
+| `markets`   | `status`                                          |
+| `utilities` | `status`, `headers`, `user`                       |
 
 ---
 
