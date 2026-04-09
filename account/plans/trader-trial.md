@@ -5,6 +5,12 @@ sidebar_position: 5
 
 Market Data is thrilled to introduce a **30-day free trial** of our Trader Plan, no credit card required. This trial is crafted to allow users to experience the capabilities of the Trader Plan, ensuring it aligns with their high-volume data needs before making a subscription commitment. Here's an overview of what the Trader Trial Plan entails.
 
+## Pricing
+
+**$0 for 30 days** — no credit card required. The trial is strictly limited to 30 days and **cannot be renewed or extended**.
+
+Because no credit card is required to start the trial, **you will never be auto-billed when it ends**. If you take no action, your account automatically converts to the [Free Forever Plan](./free-forever) at the end of the 30 days. To keep premium features, you can subscribe to the [Trader Plan](./trader) for $30/month (billed annually) or $75/month at any time.
+
 ## What You Get with the Trader Trial
 
 - **100,000 API Credits per Day**: Test the limits with a substantial increase in daily API requests, catering to the most demanding projects.

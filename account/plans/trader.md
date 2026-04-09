@@ -5,6 +5,11 @@ sidebar_position: 4
 
 The **Trader Plan** is specifically designed for high-volume users and traders who demand the utmost from their financial data services. With an enormous allocation of API credits and access to the most comprehensive data sets available, the Trader Plan is the ultimate choice for those who need maximum performance and depth in their financial analysis. Here's what you can expect from the Trader Plan.
 
+## Pricing
+
+- **Annual**: $30/month (billed annually at $360/year)
+- **Monthly**: $75/month
+
 ## What You Get with the Trader Plan
 
 - **100,000 API Credits per Day**: Cater to high-demand projects with an extensive number of daily API requests.

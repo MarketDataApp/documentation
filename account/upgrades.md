@@ -23,19 +23,19 @@ Let's look at two specific examples to understand how the discounts are calculat
 #### Example 1: From Monthly Starter Plan to Annual Starter Plan
 
 - **Original Plan**: Monthly Starter Plan costing $30/month.
-- **New Plan**: Annual Starter Plan costing $108/year.
+- **New Plan**: Annual Starter Plan costing $144/year ($12/month billed annually).
 
 **Scenario**: Suppose you are halfway through your monthly cycle when you decide to upgrade.
 
 - **Unused Time Calculation**: 15 days remaining in the month.
 - **Daily Rate**: $30 / 30 = $1 per day.
 - **Credit Amount**: 15 days x $1/day = $15.
-- **Discount Applied**: Your new annual plan will be discounted by $15, so you pay $108 - $15 = $93 initially.
+- **Discount Applied**: Your new annual plan will be discounted by $15, so you pay $144 - $15 = $129 initially.
 
 #### Example 2: From Monthly Trader Plan to Annual Trader Plan
 
 - **Original Plan**: Monthly Trader Plan costing $75/month.
-- **New Plan**: Annual Trader Plan costing $360/year.
+- **New Plan**: Annual Trader Plan costing $360/year ($30/month billed annually).
 
 **Scenario**: Suppose you decide to upgrade with 10 days left in your monthly plan.
 
@@ -61,7 +61,7 @@ To give you a clearer picture, here are two examples of how the credit is calcul
 
 #### Example 1: Upgrading from Annual Trader Plan to Prime Plan
 
-- **Original Plan**: Annual Trader Plan costing $360/year.
+- **Original Plan**: Annual Trader Plan costing $360/year ($30/month billed annually).
 - **New Plan**: Prime Plan costing $250/month ($8.33 per day)
 
 **Scenario**: Suppose you decide to upgrade with 90 days left in your subscription year.
@@ -72,14 +72,14 @@ To give you a clearer picture, here are two examples of how the credit is calcul
 
 #### Example 2: Upgrading from Annual Starter Plan to Prime Plan
 
-- **Original Plan**: Annual Starter Plan costing $108/year.
+- **Original Plan**: Annual Starter Plan costing $144/year ($12/month billed annually).
 - **New Plan**: Prime Plan costing $250/month. ($8.33 per day)
 
 **Scenario**: Suppose you decide to upgrade with 200 days left in your subscription year.
 
 - **Unused Time Calculation**: 200 days / 365 days = ~54.8% of the year left.
-- **Credit Amount**: 54.8% of $108 = $59.18.
-- **Application of Credit**: This $59.18 will be credited to your new Prime plan, extending the renewal date by 8 days.
+- **Credit Amount**: 54.8% of $144 = $78.91.
+- **Application of Credit**: This $78.91 will be credited to your new Prime plan, extending the renewal date by 9 days.
 
 ## How To Get More Information
 

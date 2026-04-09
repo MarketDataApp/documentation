@@ -127,6 +127,22 @@ const config = {
             from: "/account/compliance",
             to: "/account/data-policies/account-verification",
           },
+          {
+            from: "/api/options/strikes",
+            to: "/api/options/chain",
+          },
+          {
+            from: "/sdk/py/options/strikes",
+            to: "/sdk/py/options/chain",
+          },
+          {
+            from: "/sdk/php/options/strikes",
+            to: "/sdk/php/options/chain",
+          },
+          {
+            from: "/sdk/go/options/strikes",
+            to: "/sdk/go/options/chain",
+          },
         ],
       },
     ],

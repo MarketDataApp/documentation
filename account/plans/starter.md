@@ -5,6 +5,11 @@ sidebar_position: 2
 
 The **Starter Plan** is tailored for users who require more from their financial data access, with extensive historical records and premium features. It's an ideal choice for growing projects that need deeper insights and more data points. Here's a detailed overview of what the Starter Plan offers.
 
+## Pricing
+
+- **Annual**: $12/month (billed annually at $144/year)
+- **Monthly**: $30/month
+
 ## What You Get with the Starter Plan
 
 - **10,000 API Credits per Day**: A significant increase in daily API requests to support larger projects.

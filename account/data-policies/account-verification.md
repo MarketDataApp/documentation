@@ -37,9 +37,17 @@ A LinkedIn profile is not required, but it is the easiest way for us to verify y
 - A recent paystub (please redact any sensitive financial data)
 - Any other document that confirms your current employer and role
 
-### Retired or Unemployed Subscribers
+### Subscribers Who Are Retired or Not Currently Working
 
-If you are retired or unemployed, your LinkedIn profile, resume, or CV should show your work history along with the date your most recent position ended. This helps us confirm that you are not currently employed in a role that would qualify as professional use under exchange rules. See [Professional Status Policy](/docs/account/data-policies/professional-status/) for details on how professional status is determined.
+If you are retired or not currently working, you must provide work history that clearly documents your most recent position. Your LinkedIn profile, resume, or CV must show all of the following:
+
+- **Employer** — the name of the company or organization
+- **Job title** — the role you held
+- **End date** — the month and year your most recent position ended
+
+We cannot accept a profile or resume that only lists a job title or employer without a clear end date, as this does not allow us to confirm that you are no longer employed. If your LinkedIn profile does not show this information, please provide a resume or CV that does.
+
+This helps us confirm that you are not currently employed in a role that would qualify as professional use under exchange rules. See [Professional Status Policy](/docs/account/data-policies/professional-status/) for details on how professional status is determined.
 
 ### Self-Employed and Business Owners
 

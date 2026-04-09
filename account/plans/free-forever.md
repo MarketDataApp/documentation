@@ -5,6 +5,10 @@ sidebar_position: 1
 
 The **Free Forever Plan** is designed for users who want to explore Market Data's capabilities without any cost. It's perfect for individuals or small projects needing basic access to financial data. Here's everything you need to know about what the Free Forever plan offers and its limitations.
 
+## Pricing
+
+**Free** — $0/month, no credit card required.
+
 ## What You Get with Free Forever
 
 - **100 API Credits per Day**: Ideal for small-scale applications or personal projects.
