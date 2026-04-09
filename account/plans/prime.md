@@ -5,6 +5,10 @@ sidebar_position: 7
 
 The **Prime Plan** is Market Data's most robust offering, designed for high-powered traders and investors who require extensive data access and customization options. This plan is tailored to meet the needs of sophisticated trading operations, offering unparalleled data access with the flexibility to handle massive volumes of API requests. Here's a comprehensive overview of the Prime Plan.
 
+## Pricing
+
+**$250/month** — month-to-month billing only. The Prime Plan does not offer an annual billing option.
+
 ## What You Get with the Prime Plan
 
 - **No Daily Limit on API Credits**: Enjoy unrestricted access to our API, designed to support the most demanding data needs without the worry of hitting daily limits.

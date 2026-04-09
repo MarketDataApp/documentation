@@ -5,6 +5,12 @@ sidebar_position: 3
 
 Market Data is excited to offer a **30-day free trial** of our Starter Plan, no credit card required. This trial is designed to let users explore the capabilities of the Starter Plan, ensuring it's the right fit for their needs before committing to a subscription. Here's what you need to know about the Starter Trial Plan.
 
+## Pricing
+
+**$0 for 30 days** — no credit card required. The trial is strictly limited to 30 days and **cannot be renewed or extended**.
+
+Because no credit card is required to start the trial, **you will never be auto-billed when it ends**. If you take no action, your account automatically converts to the [Free Forever Plan](./free-forever) at the end of the 30 days. To keep premium features, you can subscribe to the [Starter Plan](./starter) for $12/month (billed annually) or $30/month at any time.
+
 ## What You Get with the Starter Trial Plan
 
 - **10,000 API Credits per Day**: Experience the increased capacity for API requests and see how it supports larger projects.
