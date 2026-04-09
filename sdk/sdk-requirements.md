@@ -158,8 +158,8 @@ Do not duplicate REST paths, payload schemas, or parameter contracts in this doc
 
 SDKs must provide first-class methods for the following capabilities (language-idiomatic naming is expected):
 
-| Resource    | Required SDK Methods (capabilities)                   |
-|-------------|-------------------------------------------------------|
+| Resource    | Required SDK Methods (capabilities)               |
+|-------------|---------------------------------------------------|
 | `stocks`    | `prices`, `quotes`, `candles`, `earnings`, `news` |
 | `options`   | `chain`, `expirations`, `quotes`, `lookup`        |
 | `funds`     | `candles`                                         |
