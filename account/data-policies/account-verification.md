@@ -37,7 +37,7 @@ A LinkedIn profile is not required, but it is the easiest way for us to verify y
 - A recent paystub (please redact any sensitive financial data)
 - Any other document that confirms your current employer and role
 
-### Retired or Not Currently Working Subscribers
+### Subscribers Who Are Retired or Not Currently Working
 
 If you are retired or not currently working, you must provide work history that clearly documents your most recent position. Your LinkedIn profile, resume, or CV must show all of the following:
 
