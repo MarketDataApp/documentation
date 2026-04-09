@@ -62,7 +62,8 @@ function cleanMarkdown(text) {
  */
 async function handleRequest(request) {
   const url = new URL(request.url);
-  const target = TARGETS[url.hostname];
+  const publicHostname = url.hostname;
+  const target = TARGETS[publicHostname];
 
   if (!target) {
     return fetch(request);
@@ -134,6 +135,27 @@ async function handleRequest(request) {
 
   url.hostname = target;
   const response = await fetch(new Request(url, request), { cf: { cacheEverything: true } });
+
+  // Convert Docusaurus client-redirect stubs into proper HTTP 301 redirects.
+  // The plugin-client-redirects plugin emits tiny HTML files with a
+  // <meta http-equiv="refresh"> tag. Intercepting them here gives us proper
+  // redirect semantics for non-browser clients (curl, fetch, bots, LLM scrapers).
+  const contentType = response.headers.get('content-type') || '';
+  if (response.ok && contentType.startsWith('text/html')) {
+    const body = await response.clone().text();
+    if (body.length < 4096) {
+      const refreshMatch = body.match(
+        /<meta\s+http-equiv=["']refresh["']\s+content=["']\s*\d+\s*;\s*url=([^"']+)["']/i
+      );
+      if (refreshMatch) {
+        const redirectPath = refreshMatch[1];
+        const absoluteTarget = redirectPath.startsWith('http')
+          ? redirectPath
+          : `https://${publicHostname}${redirectPath}`;
+        return Response.redirect(absoluteTarget, 301);
+      }
+    }
+  }
 
   if (response.status === 404) {
     const pathname = new URL(request.url).pathname;

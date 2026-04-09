@@ -352,6 +352,132 @@ describe('handleRequest', () => {
     });
   });
 
+  // --- Client-redirect stub → 301 conversion ---
+
+  describe('client-redirect stub conversion', () => {
+    const stubHtml = (target) => [
+      '<!DOCTYPE html>',
+      '<html>',
+      '  <head>',
+      '    <meta charset="UTF-8">',
+      `    <meta http-equiv="refresh" content="0; url=${target}">`,
+      `    <link rel="canonical" href="${target}" />`,
+      '  </head>',
+      '  <script>',
+      `    window.location.href = '${target}' + window.location.search + window.location.hash;`,
+      '  </script>',
+      '</html>',
+    ].join('\n');
+
+    it('converts meta-refresh stub into 301 with absolute Location', async () => {
+      mockFetch.mockResolvedValueOnce(
+        new Response(stubHtml('/docs/api/options/chain/'), {
+          status: 200,
+          headers: { 'content-type': 'text/html; charset=utf-8' },
+        })
+      );
+      const req = makeRequest('https://www.marketdata.app/docs/api/options/strikes/');
+      const res = await handleRequest(req);
+      expect(res.status).toBe(301);
+      expect(res.headers.get('location')).toBe(
+        'https://www.marketdata.app/docs/api/options/chain/'
+      );
+    });
+
+    it('uses staging hostname in Location for staging requests', async () => {
+      mockFetch.mockResolvedValueOnce(
+        new Response(stubHtml('/docs/api/options/chain/'), {
+          status: 200,
+          headers: { 'content-type': 'text/html; charset=utf-8' },
+        })
+      );
+      const req = makeRequest('https://www-staging.marketdata.app/docs/api/options/strikes/');
+      const res = await handleRequest(req);
+      expect(res.status).toBe(301);
+      expect(res.headers.get('location')).toBe(
+        'https://www-staging.marketdata.app/docs/api/options/chain/'
+      );
+    });
+
+    it('passes through absolute URL targets unchanged', async () => {
+      mockFetch.mockResolvedValueOnce(
+        new Response(stubHtml('https://example.com/somewhere'), {
+          status: 200,
+          headers: { 'content-type': 'text/html; charset=utf-8' },
+        })
+      );
+      const req = makeRequest('https://www.marketdata.app/docs/some/page/');
+      const res = await handleRequest(req);
+      expect(res.status).toBe(301);
+      expect(res.headers.get('location')).toBe('https://example.com/somewhere');
+    });
+
+    it('does not transform large HTML responses', async () => {
+      const largeBody = '<!DOCTYPE html><html><body>' + 'x'.repeat(5000) + '</body></html>';
+      mockFetch.mockResolvedValueOnce(
+        new Response(largeBody, {
+          status: 200,
+          headers: { 'content-type': 'text/html; charset=utf-8' },
+        })
+      );
+      const req = makeRequest('https://www.marketdata.app/docs/api/stocks/');
+      const res = await handleRequest(req);
+      expect(res.status).toBe(200);
+    });
+
+    it('does not transform small HTML responses without meta-refresh', async () => {
+      const html = '<!DOCTYPE html><html><body><p>Tiny real page</p></body></html>';
+      mockFetch.mockResolvedValueOnce(
+        new Response(html, {
+          status: 200,
+          headers: { 'content-type': 'text/html; charset=utf-8' },
+        })
+      );
+      const req = makeRequest('https://www.marketdata.app/docs/api/stocks/');
+      const res = await handleRequest(req);
+      expect(res.status).toBe(200);
+      expect(await res.text()).toContain('Tiny real page');
+    });
+
+    it('does not transform non-HTML responses that happen to contain meta-refresh text', async () => {
+      mockFetch.mockResolvedValueOnce(
+        new Response('meta http-equiv="refresh" content="0; url=/somewhere"', {
+          status: 200,
+          headers: { 'content-type': 'text/plain' },
+        })
+      );
+      const req = makeRequest('https://www.marketdata.app/docs/api/stocks/');
+      const res = await handleRequest(req);
+      expect(res.status).toBe(200);
+    });
+
+    it('does not transform non-2xx responses', async () => {
+      mockFetch.mockResolvedValueOnce(
+        new Response(stubHtml('/docs/api/options/chain/'), {
+          status: 404,
+          headers: { 'content-type': 'text/html; charset=utf-8' },
+        })
+      );
+      const req = makeRequest('https://www.marketdata.app/docs/api/options/strikes/');
+      const res = await handleRequest(req);
+      expect(res.status).toBe(404);
+    });
+
+    it('accepts single-quoted meta-refresh attributes', async () => {
+      const body = "<html><head><meta http-equiv='refresh' content='0; url=/docs/other/'></head></html>";
+      mockFetch.mockResolvedValueOnce(
+        new Response(body, {
+          status: 200,
+          headers: { 'content-type': 'text/html; charset=utf-8' },
+        })
+      );
+      const req = makeRequest('https://www.marketdata.app/docs/api/other/redirect/');
+      const res = await handleRequest(req);
+      expect(res.status).toBe(301);
+      expect(res.headers.get('location')).toBe('https://www.marketdata.app/docs/other/');
+    });
+  });
+
   // --- 404 logging ---
 
   describe('404 logging', () => {
