@@ -10,9 +10,9 @@ For your obligations under these agreements, see [Exchange Agreements](/docs/acc
 ## Available Entitlements
 
 ### IEX Entitlement
-- **Data Type**: Real-time stock quotes and trades
+- **Data Type**: Stock quotes and trades
 - **Exchange**: Investors Exchange (IEX)
-- **Benefit**: Access to real-time stock data
+- **Benefit**: Access to stock quote and trade data
 - **Plan Requirement**: Any paid Market Data plan
 
 ### UTP Entitlement
@@ -22,9 +22,9 @@ For your obligations under these agreements, see [Exchange Agreements](/docs/acc
 - **Plan Requirement**: Any paid Market Data plan
 
 ### OPRA Entitlement
-- **Data Type**: Real-time options quotes and trades
+- **Data Type**: Options quotes and trades
 - **Exchange**: Options Price Reporting Authority (OPRA)
-- **Benefit**: Access to real-time options data
+- **Benefit**: Access to options data
 - **Plan Requirement**: Paid Trader plan or above
 
 ## How to Get Your Entitlement
