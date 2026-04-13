@@ -7,6 +7,10 @@ Market Data verifies the identity and employment information of all paid subscri
 
 See [Professional Status Policy](/docs/account/data-policies/professional-status/) for details on what the classifications mean and the consequences of misclassification.
 
+:::tip Having trouble with verification?
+If your account verification is delayed or you've been asked to provide additional documentation, see [Account Troubleshooting](/docs/account/troubleshooting/) for help with common issues.
+:::
+
 ## Information We Collect
 
 | Contact Information | Employer Information |
