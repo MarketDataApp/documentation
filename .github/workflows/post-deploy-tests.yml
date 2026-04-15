@@ -40,15 +40,8 @@ jobs:
       - name: Notify Slack on failure
         if: failure()
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_ALERTS_WEBHOOK_URL }}
-          REPO: ${{ github.repository }}
-          WORKFLOW: ${{ github.workflow }}
-          BRANCH: ${{ github.ref_name }}
-          SHA: ${{ github.sha }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SLACK_NOTIFY_URL: ${{ secrets.SLACK_NOTIFY_URL }}
+          SLACK_NOTIFY_TOKEN: ${{ secrets.SLACK_NOTIFY_TOKEN }}
         run: |
-          SHORT_SHA="${SHA:0:7}"
-          printf '🔴 WORKFLOW FAILED — %s\nRepo: %s\nBranch: %s @ %s\n%s' \
-            "$WORKFLOW" "$REPO" "$BRANCH" "$SHORT_SHA" "$RUN_URL" \
-            | jq -Rs '{text: .}' \
-            | curl -s -X POST "$SLACK_WEBHOOK" -H 'Content-Type: application/json' -d @-
+          curl -s -d "" \
+            "${SLACK_NOTIFY_URL}?token=${SLACK_NOTIFY_TOKEN}&type=ci_failure&channel=alerts&workflow=${GITHUB_WORKFLOW}&repo=${GITHUB_REPOSITORY}&branch=${GITHUB_REF_NAME}&sha=${GITHUB_SHA:0:7}&run_id=${GITHUB_RUN_ID}"

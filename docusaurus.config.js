@@ -84,6 +84,10 @@ const config = {
       {
         redirects: [
           {
+            from: "/account/troubleshooting/linkedin-missing",
+            to: "/account/troubleshooting/linkedin-issues",
+          },
+          {
             from: "/api/troubleshooting/http-status-codes",
             to: "/api/troubleshooting",
           },
