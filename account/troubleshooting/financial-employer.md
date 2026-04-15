@@ -11,18 +11,18 @@ Your account verification requires additional review because your employer is a 
 
 Exchange regulations require Market Data to classify every subscriber as either a professional or non-professional data user. For most subscribers, a job title and employer are enough to make this determination. But at financial institutions, the same company can employ both professional and non-professional users depending on the role:
 
-| Role | Classification | Reason |
-|------|---------------|--------|
-| Portfolio Manager | Professional | Makes investment decisions |
-| Investment Adviser | Professional | Provides tailored investment advice to clients |
-| Trader | Professional | Executes securities or derivatives trades |
-| Research Analyst | Professional | Produces investment research that influences trading decisions |
-| Software Developer (fin-tech) | Professional | Develops software that supports investment activities |
-| Administrative Assistant | Non-Professional | Provides administrative support without engaging in investment activities |
-| Customer Service Rep | Non-Professional | Handles inquiries without providing investment advice |
-| Compliance Officer | Non-Professional | Ensures regulatory compliance but does not engage in investment decisions |
-| HR Manager | Non-Professional | Manages human resources, not involved in investment activities |
-| Accountant | Non-Professional | Handles financial records and reporting, not directly involved in investments |
+| Role                          | Classification   | Reason                                                                        |
+|-------------------------------|------------------|-------------------------------------------------------------------------------|
+| Portfolio Manager             | Professional     | Makes investment decisions                                                    |
+| Investment Adviser            | Professional     | Provides tailored investment advice to clients                                |
+| Trader                        | Professional     | Executes securities or derivatives trades                                     |
+| Research Analyst              | Professional     | Produces investment research that influences trading decisions                |
+| Software Developer (fin-tech) | Professional     | Develops software that supports investment activities                         |
+| Administrative Assistant      | Non-Professional | Provides administrative support without engaging in investment activities     |
+| Customer Service Rep          | Non-Professional | Handles inquiries without providing investment advice                         |
+| Compliance Officer            | Non-Professional | Ensures regulatory compliance but does not engage in investment decisions     |
+| HR Manager                    | Non-Professional | Manages human resources, not involved in investment activities                |
+| Accountant                    | Non-Professional | Handles financial records and reporting, not directly involved in investments |
 
 Because we cannot determine your classification from your employer name alone, we need to understand what you actually do day-to-day.
 
