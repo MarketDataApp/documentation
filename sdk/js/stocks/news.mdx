@@ -12,11 +12,11 @@ Retrieve news articles for any supported stock symbol.
 
 Use the `news()` method on the `stocks` resource to fetch news.
 
-| Output Format | Result Payload                                   | Description                                          |
-|---------------|--------------------------------------------------|------------------------------------------------------|
-| **internal** (default) | `StockNews[]` or `StockNewsHuman[]`     | Array of decoded news articles.                      |
-| **json**      | Raw JSON object                                  | The compressed, array-keyed response object.         |
-| **csv**       | `Blob`                                           | CSV payload. Use `.save(filename)` to write it.      |
+| Output Format          | Result Payload                      | Description                                     |
+|------------------------|-------------------------------------|-------------------------------------------------|
+| **internal** (default) | `StockNews[]` or `StockNewsHuman[]` | Array of decoded news articles.                 |
+| **json**               | Raw JSON object                     | The compressed, array-keyed response object.    |
+| **csv**                | `Blob`                              | CSV payload. Use `.save(filename)` to write it. |
 
 <a name="news"></a>
 ## news

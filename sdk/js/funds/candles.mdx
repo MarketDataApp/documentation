@@ -16,11 +16,11 @@ Use the `candles()` method on the `funds` resource to fetch fund candles.
 Mutual fund candles are daily-resolution only (unlike stock candles). They do not include a `volume` field.
 :::
 
-| Output Format | Result Payload                                      | Description                                         |
-|---------------|-----------------------------------------------------|-----------------------------------------------------|
-| **internal** (default) | `FundsCandle[]` or `FundsCandleHuman[]`    | Array of decoded candle records, one per bar.       |
-| **json**      | Raw JSON object                                     | The compressed, array-keyed response object.        |
-| **csv**       | `Blob`                                              | CSV payload. Use `.save(filename)` to write it.     |
+| Output Format          | Result Payload                          | Description                                     |
+|------------------------|-----------------------------------------|-------------------------------------------------|
+| **internal** (default) | `FundsCandle[]` or `FundsCandleHuman[]` | Array of decoded candle records, one per bar.   |
+| **json**               | Raw JSON object                         | The compressed, array-keyed response object.    |
+| **csv**                | `Blob`                                  | CSV payload. Use `.save(filename)` to write it. |
 
 <a name="candles"></a>
 ## candles

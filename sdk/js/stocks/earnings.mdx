@@ -12,11 +12,11 @@ Retrieve historical and upcoming earnings information for any supported stock sy
 
 Use the `earnings()` method on the `stocks` resource to fetch earnings data.
 
-| Output Format | Result Payload                                             | Description                                          |
-|---------------|------------------------------------------------------------|------------------------------------------------------|
-| **internal** (default) | `StockEarnings[]` or `StockEarningsHuman[]`       | Array of decoded earnings records.                   |
-| **json**      | Raw JSON object                                            | The compressed, array-keyed response object.         |
-| **csv**       | `Blob`                                                     | CSV payload. Use `.save(filename)` to write it.      |
+| Output Format          | Result Payload                              | Description                                     |
+|------------------------|---------------------------------------------|-------------------------------------------------|
+| **internal** (default) | `StockEarnings[]` or `StockEarningsHuman[]` | Array of decoded earnings records.              |
+| **json**               | Raw JSON object                             | The compressed, array-keyed response object.    |
+| **csv**                | `Blob`                                      | CSV payload. Use `.save(filename)` to write it. |
 
 <a name="earnings"></a>
 ## earnings

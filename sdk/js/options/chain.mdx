@@ -12,11 +12,11 @@ Retrieve the full option chain — every call and put contract — for any suppo
 
 Use the `chain()` method on the `options` resource to fetch an option chain. The response includes Greeks (delta, gamma, theta, vega, IV), intrinsic/extrinsic value, and underlying price alongside the quote fields.
 
-| Output Format | Result Payload                                      | Description                                             |
-|---------------|-----------------------------------------------------|---------------------------------------------------------|
-| **internal** (default) | `OptionsChain[]` or `OptionsChainHuman[]`  | Array of decoded option-contract records.               |
-| **json**      | Raw JSON object                                     | The compressed, array-keyed response object.            |
-| **csv**       | `Blob`                                              | CSV payload. Use `.save(filename)` to write it.         |
+| Output Format          | Result Payload                            | Description                                     |
+|------------------------|-------------------------------------------|-------------------------------------------------|
+| **internal** (default) | `OptionsChain[]` or `OptionsChainHuman[]` | Array of decoded option-contract records.       |
+| **json**               | Raw JSON object                           | The compressed, array-keyed response object.    |
+| **csv**                | `Blob`                                    | CSV payload. Use `.save(filename)` to write it. |
 
 <a name="chain"></a>
 ## chain

@@ -299,28 +299,28 @@ For more details, see the [API Data Mode documentation](/api/universal-parameter
 
 ## Environment Variables Reference
 
-| Variable                          | Purpose                                       | Default                         |
-|-----------------------------------|-----------------------------------------------|---------------------------------|
-| `MARKETDATA_TOKEN`                | API authentication token                      | _(none)_                        |
-| `MARKETDATA_BASE_URL`             | API base URL                                  | `https://api.marketdata.app`    |
-| `MARKETDATA_API_VERSION`          | API version                                   | `v1`                            |
-| `MARKETDATA_OUTPUT_FORMAT`        | Default output format                         | `internal`                      |
-| `MARKETDATA_DATE_FORMAT`          | Default date format                           | _(API default)_                 |
-| `MARKETDATA_USE_HUMAN_READABLE`   | Use human-readable field names by default     | `false`                         |
-| `MARKETDATA_ADD_HEADERS`          | Include headers in CSV output                 | `true`                          |
-| `MARKETDATA_MODE`                 | Default data mode                             | _(API default)_                 |
-| `MARKETDATA_MAX_RETRIES`          | Maximum retry attempts                        | `3`                             |
-| `MARKETDATA_RETRY_INITIAL_WAIT`   | Initial retry wait (seconds)                  | `0.5`                           |
-| `MARKETDATA_RETRY_MAX_WAIT`       | Maximum retry wait (seconds)                  | `10`                            |
-| `MARKETDATA_RETRY_FACTOR`         | Exponential backoff factor                    | `2`                             |
+| Variable                        | Purpose                                   | Default                      |
+|---------------------------------|-------------------------------------------|------------------------------|
+| `MARKETDATA_TOKEN`              | API authentication token                  | _(none)_                     |
+| `MARKETDATA_BASE_URL`           | API base URL                              | `https://api.marketdata.app` |
+| `MARKETDATA_API_VERSION`        | API version                               | `v1`                         |
+| `MARKETDATA_OUTPUT_FORMAT`      | Default output format                     | `internal`                   |
+| `MARKETDATA_DATE_FORMAT`        | Default date format                       | _(API default)_              |
+| `MARKETDATA_USE_HUMAN_READABLE` | Use human-readable field names by default | `false`                      |
+| `MARKETDATA_ADD_HEADERS`        | Include headers in CSV output             | `true`                       |
+| `MARKETDATA_MODE`               | Default data mode                         | _(API default)_              |
+| `MARKETDATA_MAX_RETRIES`        | Maximum retry attempts                    | `3`                          |
+| `MARKETDATA_RETRY_INITIAL_WAIT` | Initial retry wait (seconds)              | `0.5`                        |
+| `MARKETDATA_RETRY_MAX_WAIT`     | Maximum retry wait (seconds)              | `10`                         |
+| `MARKETDATA_RETRY_FACTOR`       | Exponential backoff factor                | `2`                          |
 
 ## Parameter Aliases
 
 For convenience, the SDK accepts both the short form used by the REST API and the camelCase TypeScript form. Both resolve to the same underlying parameter:
 
-| Short (REST style)   | Long (camelCase)       |
-|----------------------|------------------------|
-| `dateformat`         | `dateFormat`           |
-| `format`             | `outputFormat`         |
-| `headers`            | `addHeaders`           |
-| `human`              | `useHumanReadable`     |
+| Short (REST style) | Long (camelCase)   |
+|--------------------|--------------------|
+| `dateformat`       | `dateFormat`       |
+| `format`           | `outputFormat`     |
+| `headers`          | `addHeaders`       |
+| `human`            | `useHumanReadable` |

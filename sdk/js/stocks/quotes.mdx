@@ -12,11 +12,11 @@ Retrieve stock quotes (bid, ask, mid, last, volume, etc.) for one or more suppor
 
 Use the `quotes()` method on the `stocks` resource to fetch stock quotes. The method returns a [`MarketDataResult`](/sdk/js/client#MarketDataResult) which resolves to decoded records by default.
 
-| Output Format | Result Payload                                     | Description                                         |
-|---------------|----------------------------------------------------|-----------------------------------------------------|
-| **internal** (default) | `StockQuote[]` or `StockQuoteHuman[]`     | Array of decoded quote records, one per symbol.     |
-| **json**      | Raw JSON object                                    | The compressed, array-keyed response object.        |
-| **csv**       | `Blob`                                             | CSV payload. Use `.save(filename)` to write it.     |
+| Output Format          | Result Payload                        | Description                                     |
+|------------------------|---------------------------------------|-------------------------------------------------|
+| **internal** (default) | `StockQuote[]` or `StockQuoteHuman[]` | Array of decoded quote records, one per symbol. |
+| **json**               | Raw JSON object                       | The compressed, array-keyed response object.    |
+| **csv**                | `Blob`                                | CSV payload. Use `.save(filename)` to write it. |
 
 <a name="quotes"></a>
 ## quotes

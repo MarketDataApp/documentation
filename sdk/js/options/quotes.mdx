@@ -12,11 +12,11 @@ Retrieve quotes for one or more specific option contracts, including full Greeks
 
 Use the `quotes()` method on the `options` resource to fetch quotes for individual option contracts identified by their OCC symbol. When multiple symbols are provided, the SDK fans out concurrently and merges the results.
 
-| Output Format | Result Payload                                          | Description                                             |
-|---------------|---------------------------------------------------------|---------------------------------------------------------|
-| **internal** (default) | `OptionsQuotes[]` or `OptionsQuotesHuman[]`    | Array of decoded quote records, one per contract.       |
-| **json**      | Raw JSON object                                         | The compressed, array-keyed response object.            |
-| **csv**       | `Blob`                                                  | CSV payload. Use `.save(filename)` to write it.         |
+| Output Format          | Result Payload                              | Description                                       |
+|------------------------|---------------------------------------------|---------------------------------------------------|
+| **internal** (default) | `OptionsQuotes[]` or `OptionsQuotesHuman[]` | Array of decoded quote records, one per contract. |
+| **json**               | Raw JSON object                             | The compressed, array-keyed response object.      |
+| **csv**                | `Blob`                                      | CSV payload. Use `.save(filename)` to write it.   |
 
 <a name="quotes"></a>
 ## quotes

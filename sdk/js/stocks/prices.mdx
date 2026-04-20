@@ -12,11 +12,11 @@ Retrieve stock prices for any supported stock symbol.
 
 Use the `prices()` method on the `stocks` resource to fetch stock prices. The method returns a [`MarketDataResult`](/sdk/js/client#MarketDataResult) which resolves to decoded records by default. The output format is controlled by the `outputFormat` parameter (or `MARKETDATA_OUTPUT_FORMAT` env var):
 
-| Output Format | Result Payload                                         | Description                                                             |
-|---------------|--------------------------------------------------------|-------------------------------------------------------------------------|
-| **internal** (default) | `StockPrice[]` or `StockPriceHuman[]`         | Array of decoded price records, one per symbol.                         |
-| **json**      | Raw JSON object                                        | The compressed, array-keyed response object as returned by the API.     |
-| **csv**       | `Blob`                                                 | CSV payload. Use `.save(filename)` on the result to write it to disk.   |
+| Output Format          | Result Payload                        | Description                                                           |
+|------------------------|---------------------------------------|-----------------------------------------------------------------------|
+| **internal** (default) | `StockPrice[]` or `StockPriceHuman[]` | Array of decoded price records, one per symbol.                       |
+| **json**               | Raw JSON object                       | The compressed, array-keyed response object as returned by the API.   |
+| **csv**                | `Blob`                                | CSV payload. Use `.save(filename)` on the result to write it to disk. |
 
 <a name="prices"></a>
 ## prices

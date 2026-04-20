@@ -12,11 +12,11 @@ Retrieve historical OHLCV (open/high/low/close/volume) candles for any supported
 
 Use the `candles()` method on the `stocks` resource to fetch candles. The method handles large intraday date ranges automatically by splitting them into year-sized chunks and fetching them concurrently (up to 50 in-flight at once), then merging the results.
 
-| Output Format | Result Payload                                      | Description                                         |
-|---------------|-----------------------------------------------------|-----------------------------------------------------|
-| **internal** (default) | `StockCandle[]` or `StockCandleHuman[]`    | Array of decoded candle records, one per bar.       |
-| **json**      | Raw JSON object                                     | The compressed, array-keyed response object.        |
-| **csv**       | `Blob`                                              | CSV payload. Use `.save(filename)` to write it.     |
+| Output Format          | Result Payload                          | Description                                     |
+|------------------------|-----------------------------------------|-------------------------------------------------|
+| **internal** (default) | `StockCandle[]` or `StockCandleHuman[]` | Array of decoded candle records, one per bar.   |
+| **json**               | Raw JSON object                         | The compressed, array-keyed response object.    |
+| **csv**                | `Blob`                                  | CSV payload. Use `.save(filename)` to write it. |
 
 <a name="candles"></a>
 ## candles
