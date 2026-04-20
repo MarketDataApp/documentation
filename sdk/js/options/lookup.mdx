@@ -1,0 +1,111 @@
+---
+title: Lookup
+sidebar_position: 4
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Convert a human-readable option description (e.g. `"AAPL 7/28/2023 200 Call"`) into its standard OCC option symbol.
+
+## Making Requests
+
+Use the `lookup()` method on the `options` resource to resolve an OCC symbol from a natural-language description. The URL-encoded lookup string is handled for you by the SDK.
+
+<a name="lookup"></a>
+## lookup
+
+```typescript
+// Positional form
+lookup<P>(
+  lookupStr: string,
+  params?: P,
+): MarketDataResult<OptionsLookupResponse | OptionsLookupHumanResponse>
+
+// Object form
+lookup<P>(
+  params: P & { lookup: string },
+): MarketDataResult<OptionsLookupResponse | OptionsLookupHumanResponse>
+```
+
+Resolves a human-readable option description to its OCC symbol.
+
+#### Parameters
+
+- `lookupStr` (string)
+
+  A natural-language description of the option contract (e.g. `"AAPL 7/28/2023 200 Call"`, `"TSLA Jan 2025 300 Put"`).
+
+- [`outputFormat`](/sdk/js/settings#output-format) (optional): The format of the returned data. Alias: `format`.
+- [`useHumanReadable`](/sdk/js/settings#human-readable) (optional): Use human-readable field names. Alias: `human`.
+
+#### Returns
+
+- [`MarketDataResult<OptionsLookupResponse | OptionsLookupHumanResponse>`](/sdk/js/client#MarketDataResult)
+
+<Tabs>
+<TabItem value="Default" label="Default">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+const result = await client.options.lookup("AAPL 7/28/2023 200 Call");
+
+result.match(
+  (data) => console.log(data.optionSymbol),  // "AAPL230728C00200000"
+  (error) => console.error(error.message),
+);
+```
+
+</TabItem>
+
+<TabItem value="Human" label="Human Readable">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+const result = await client.options.lookup("AAPL 7/28/2023 200 Call", {
+  human: true,
+});
+
+result.match(
+  (data) => console.log(data.Symbol),
+  (error) => console.error(error.message),
+);
+```
+
+</TabItem>
+</Tabs>
+
+<a name="OptionsLookupResponse"></a>
+## OptionsLookupResponse
+
+```typescript
+interface OptionsLookupResponse {
+  s: string;
+  optionSymbol: string;
+  updated?: number;
+}
+```
+
+#### Properties
+
+- `s` (string): Status indicator.
+- `optionSymbol` (string): The OCC-format option symbol.
+- `updated` (number, optional): Unix timestamp when the lookup resolved.
+
+<a name="OptionsLookupHumanResponse"></a>
+## OptionsLookupHumanResponse
+
+```typescript
+interface OptionsLookupHumanResponse {
+  s?: string;
+  Symbol: string;
+}
+```
+
+`OptionsLookupHumanResponse` is returned when `human: true` is set.

@@ -1,0 +1,270 @@
+---
+title: Client
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Market Data JavaScript Client handles API requests, response parsing, rate-limit tracking, retries, and logging. The SDK supports stocks, options, funds, and market status data.
+
+### Get Started Quickly with the MarketDataClient
+
+1. Review the [documentation on authentication](/sdk/js/authentication) to learn how to set your API token.
+2. Create a [`MarketDataClient`](#MarketDataClient) instance and use it to make requests to the Market Data API.
+3. Make a test request and review the console output. The SDK includes logging capabilities to help you debug requests.
+4. Check the [rate limit](#RateLimits) in the client to track credit usage and how many API credits remain.
+5. Configure [Settings](/sdk/js/settings) to customize output format, date format, and other universal parameters.
+
+<a name="MarketDataClient"></a>
+## MarketDataClient
+
+```typescript
+class MarketDataClient {
+  constructor(config?: MarketDataConfig);
+}
+
+interface MarketDataConfig {
+  token?: string;
+  baseUrl?: string;
+  apiVersion?: string;
+  maxRetries?: number;
+  retryInitialWait?: number;
+  retryMaxWait?: number;
+  retryFactor?: number;
+  debug?: boolean;
+  logger?: Logger;
+}
+```
+
+[MarketDataClient](#MarketDataClient) is the main client class for interacting with the Market Data API. It provides access to all resources (stocks, options, funds, markets) and handles authentication, rate limiting, and request management.
+
+#### Properties
+
+- `token` (string, optional): The authentication token for API requests. See [authentication documentation](/sdk/js/authentication) for details.
+- `rateLimits` ([UserRateLimits](#RateLimits), optional): Current rate limit information. Populated after the first successful API request.
+- `baseUrl` (string): The base URL for API requests (default: `https://api.marketdata.app`).
+- `apiVersion` (string): The API version to use (default: `v1`).
+- `headers` (Record&lt;string, string&gt;): HTTP headers including `Authorization` and `User-Agent`.
+- `logger` ([Logger](#Logger)): The logger instance used for diagnostic output.
+- `settings` ([MarketDataSettings](/sdk/js/settings)): Resolved configuration including env-var defaults. See [Settings](/sdk/js/settings) for details.
+
+#### Resources
+
+- `stocks` ([StocksResource](/sdk/js/stocks)): Access to stocks endpoints (prices, quotes, candles, earnings, news)
+- `options` ([OptionsResource](/sdk/js/options)): Access to options endpoints (chain, expirations, quotes, lookup)
+- `funds` ([FundsResource](/sdk/js/funds)): Access to funds endpoints (candles)
+- `markets` ([MarketsResource](/sdk/js/markets)): Access to markets endpoints (status)
+
+<a name="MarketDataClient.constructor"></a>
+### constructor
+
+```typescript
+new MarketDataClient(config?: MarketDataConfig)
+```
+
+Creates and configures a new `MarketDataClient` instance. This initializes the client with the provided token (or reads it from the `MARKETDATA_TOKEN` environment variable), sets up HTTP headers, and prepares the resource namespaces.
+
+#### Parameters
+
+- `config` ([MarketDataConfig](#MarketDataClient), optional)
+
+  Configuration object. All properties are optional:
+
+  - `token` (string): The authentication token. Falls back to `MARKETDATA_TOKEN` environment variable if not provided.
+  - `baseUrl` (string): Override the API base URL. Defaults to `https://api.marketdata.app`.
+  - `apiVersion` (string): Override the API version. Defaults to `v1`.
+  - `maxRetries` (number): Maximum retry attempts for retriable errors. Defaults to `3`.
+  - `retryInitialWait` (number): Initial wait in seconds before the first retry. Defaults to `0.5`.
+  - `retryMaxWait` (number): Maximum wait in seconds between retries. Defaults to `10`.
+  - `retryFactor` (number): Exponential backoff factor. Defaults to `2`.
+  - `debug` (boolean): If `true`, sets the default logger level to `DEBUG`. Defaults to `false`.
+  - `logger` ([Logger](#Logger)): A custom logger instance. If omitted, the SDK uses its built-in `DefaultLogger`.
+
+#### Returns
+
+- `MarketDataClient`
+
+  A new `MarketDataClient` instance ready to make API requests.
+
+#### Notes
+
+- The client sets a `User-Agent` header of the form `marketdata-js-{version}` (e.g. `marketdata-js-0.0.1`).
+- All authenticated requests include an `Authorization: Bearer {token}` header.
+- The client reuses a single underlying `fetch` client, which benefits from Node's global connection pooling.
+- Configuration properties can also be provided via environment variables — see [Settings](/sdk/js/settings) for the full list and their resolution order.
+
+#### Example
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+// Token will be read from MARKETDATA_TOKEN environment variable
+const client = new MarketDataClient();
+
+// Or provide the token explicitly
+const clientWithToken = new MarketDataClient({ token: "your_token_here" });
+
+// Enable debug logging for troubleshooting
+const debugClient = new MarketDataClient({ debug: true });
+
+// Provide a custom logger
+import { DefaultLogger, LogLevel } from "marketdata-sdk-js";
+const logger = new DefaultLogger(LogLevel.WARN);
+const quietClient = new MarketDataClient({ logger });
+```
+
+<a name="ResultPattern"></a>
+## The Result Pattern
+
+Every resource method returns a [`MarketDataResult<T>`](#MarketDataResult) — a `ResultAsync` from the [neverthrow](https://github.com/supermacro/neverthrow) library. Errors are **not thrown**; they are represented as failed results.
+
+This means your code never needs a `try`/`catch` around SDK calls. You handle success and failure explicitly.
+
+### Handling Results
+
+<Tabs>
+<TabItem value="match" label=".match()">
+
+The idiomatic way. Pattern-match on success and error with two callbacks.
+
+```typescript
+const result = await client.stocks.prices("AAPL");
+
+result.match(
+  (prices) => console.log("Success:", prices),
+  (error) => console.error("Failed:", error.message),
+);
+```
+
+</TabItem>
+
+<TabItem value="isOk" label=".isOk() / .isErr()">
+
+Branch on result state and access `.value` or `.error` directly.
+
+```typescript
+const result = await client.stocks.prices("AAPL");
+
+if (result.isOk()) {
+  console.log("Prices:", result.value);
+} else {
+  console.error("Error:", result.error.message);
+}
+```
+
+</TabItem>
+
+<TabItem value="unwrap" label=".unwrap()">
+
+Convert to a thrown exception if you prefer `try`/`catch`.
+
+```typescript
+try {
+  const result = await client.stocks.prices("AAPL");
+  const prices = result._unsafeUnwrap();
+  console.log(prices);
+} catch (error) {
+  console.error("Failed:", error);
+}
+```
+
+</TabItem>
+
+<TabItem value="compose" label=".map() / .andThen()">
+
+Chain operations on the success value without unwrapping.
+
+```typescript
+const result = await client.stocks.prices("AAPL")
+  .map((prices) => prices.filter((p) => p.mid > 100));
+
+if (result.isOk()) {
+  console.log("Filtered:", result.value);
+}
+```
+
+</TabItem>
+</Tabs>
+
+<a name="MarketDataResult"></a>
+### MarketDataResult
+
+```typescript
+interface MarketDataResult<T> extends ResultAsync<T, MarketDataClientError> {
+  save(filename?: string): Promise<string>;
+  blob(): Promise<Blob>;
+}
+```
+
+Every resource method returns a `MarketDataResult<T>`. In addition to the standard `ResultAsync` interface from neverthrow, it exposes two convenience methods:
+
+- `save(filename?: string)`: Write the response to a file. Returns a `Promise<string>` resolving to the filename. Format is inferred from the extension when possible.
+- `blob()`: Materialise the response as a [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob). Useful for downloading CSV responses.
+
+<a name="RateLimits"></a>
+## Accessing Rate Limits
+
+The client tracks rate limits from the API by reading the `X-Api-Ratelimit-*` headers on every response. The `client.rateLimits` property is populated after the first successful API call.
+
+```typescript
+const client = new MarketDataClient();
+
+// Make a request to populate rate limits
+await client.stocks.prices("AAPL");
+
+// Access current rate limits
+if (client.rateLimits) {
+  console.log(`Limit: ${client.rateLimits.requestsLimit}`);
+  console.log(`Remaining: ${client.rateLimits.requestsRemaining}`);
+  console.log(`Consumed: ${client.rateLimits.requestsConsumed}`);
+  console.log(`Reset at: ${new Date(client.rateLimits.requestsReset * 1000)}`);
+}
+```
+
+#### UserRateLimits
+
+```typescript
+interface UserRateLimits {
+  requestsLimit: number;       // Total API credits allowed
+  requestsRemaining: number;   // API credits remaining
+  requestsConsumed: number;    // API credits consumed
+  requestsReset: number;       // Unix timestamp when the limit resets
+}
+```
+
+**Note:** Rate limits are tracked via the following response headers:
+
+- `x-api-ratelimit-limit`: Total API credits allowed
+- `x-api-ratelimit-remaining`: Number of API credits remaining
+- `x-api-ratelimit-consumed`: Number of API credits consumed
+- `x-api-ratelimit-reset`: Unix timestamp when the rate limit resets
+
+If rate limits have been fetched and `requestsRemaining` is `0`, the next resource call will fail fast with a `RateLimitError` rather than hitting the API.
+
+<a name="Logger"></a>
+## Logging
+
+The SDK includes a built-in logger that outputs diagnostic information. You can pass a custom logger or use the default.
+
+```typescript
+import { MarketDataClient, DefaultLogger, LogLevel } from "marketdata-sdk-js";
+
+// Default logger (INFO level)
+const client1 = new MarketDataClient();
+
+// Debug logging (more verbose — shows request URLs, response timings, token suffix)
+const client2 = new MarketDataClient({ debug: true });
+
+// Custom log level
+const logger = new DefaultLogger(LogLevel.WARN);
+const client3 = new MarketDataClient({ logger });
+```
+
+**Log levels** (in order of verbosity): `DEBUG`, `INFO`, `WARN`, `ERROR`.
+
+The default logger obfuscates tokens in log output, showing only the last 4 characters.
+
+## Configuration
+
+The SDK supports flexible configuration of universal parameters through environment variables, constructor arguments, and per-method overrides. See the [Settings](/sdk/js/settings) documentation for complete details on all available configuration options and how they interact.

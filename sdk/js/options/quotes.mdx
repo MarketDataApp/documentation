@@ -1,0 +1,136 @@
+---
+title: Quotes
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve quotes for one or more specific option contracts, including full Greeks.
+
+## Making Requests
+
+Use the `quotes()` method on the `options` resource to fetch quotes for individual option contracts identified by their OCC symbol. When multiple symbols are provided, the SDK fans out concurrently and merges the results.
+
+| Output Format          | Result Payload                              | Description                                       |
+|------------------------|---------------------------------------------|---------------------------------------------------|
+| **internal** (default) | `OptionsQuotes[]` or `OptionsQuotesHuman[]` | Array of decoded quote records, one per contract. |
+| **json**               | Raw JSON object                             | The compressed, array-keyed response object.      |
+| **csv**                | `Blob`                                      | CSV payload. Use `.save(filename)` to write it.   |
+
+<a name="quotes"></a>
+## quotes
+
+```typescript
+// Positional form
+quotes<P>(
+  symbols: string | string[],
+  params?: P,
+): MarketDataResult<OptionsQuotes[] | OptionsQuotesHuman[]>
+
+// Object form
+quotes<P>(
+  params: P & { symbols: string | string[] },
+): MarketDataResult<OptionsQuotes[] | OptionsQuotesHuman[]>
+```
+
+Fetches quotes for one or more option contracts.
+
+#### Parameters
+
+- `symbols` (string | string[])
+
+  A single OCC-format option symbol (e.g. `"AAPL271217C00250000"`) or an array of symbols. When you pass an array, the SDK fetches each contract concurrently and merges the results.
+
+- [`outputFormat`](/sdk/js/settings#output-format) (optional): The format of the returned data. Alias: `format`.
+- [`dateFormat`](/sdk/js/settings#date-format) (optional): Date format. Alias: `dateformat`.
+- [`columns`](/sdk/js/settings#columns) (optional): Columns to include.
+- [`addHeaders`](/sdk/js/settings#headers) (optional): Whether to include headers in CSV output. Alias: `headers`.
+- [`useHumanReadable`](/sdk/js/settings#human-readable) (optional): Use human-readable field names. Alias: `human`.
+- [`mode`](/sdk/js/settings#data-mode) (optional): The data mode to use.
+
+Additional endpoint-specific parameters like `from`, `to`, and `date` are passed through to the REST API. See [REST API Options Quotes](/api/options/quotes) for the full list.
+
+#### Returns
+
+- [`MarketDataResult<OptionsQuotes[] | OptionsQuotesHuman[] | Blob>`](/sdk/js/client#MarketDataResult)
+
+<Tabs>
+<TabItem value="Single" label="Single Contract">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+const result = await client.options.quotes("AAPL271217C00250000");
+
+result.match(
+  (quotes) => {
+    const q = quotes[0];
+    console.log(
+      `${q.optionSymbol}: bid=${q.bid} ask=${q.ask} delta=${q.delta}`
+    );
+  },
+  (error) => console.error(error.message),
+);
+```
+
+</TabItem>
+
+<TabItem value="Multi" label="Multiple Contracts">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+const result = await client.options.quotes([
+  "AAPL271217C00250000",
+  "AAPL271217P00250000",
+  "AAPL271217C00300000",
+]);
+
+result.match(
+  (quotes) => {
+    for (const q of quotes) {
+      console.log(`${q.optionSymbol}: mid=${q.mid}`);
+    }
+  },
+  (error) => console.error(error.message),
+);
+```
+
+</TabItem>
+
+<TabItem value="Human" label="Human Readable">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+const result = await client.options.quotes("AAPL271217C00250000", {
+  human: true,
+});
+
+result.match(
+  (quotes) => console.log(quotes[0]),
+  (error) => console.error(error.message),
+);
+```
+
+</TabItem>
+</Tabs>
+
+<a name="OptionsQuotes"></a>
+## OptionsQuotes
+
+`OptionsQuotes` uses the same field shape as [`OptionsChain`](/sdk/js/options/chain#OptionsChain): `optionSymbol`, `underlying`, `expiration`, `side`, `strike`, `bid`, `ask`, `mid`, `last`, `openInterest`, `volume`, `inTheMoney`, `intrinsicValue`, `extrinsicValue`, `iv`, `delta`, `gamma`, `theta`, `vega`, and so on.
+
+See [OptionsChain](/sdk/js/options/chain#OptionsChain) for the complete list of fields.
+
+<a name="OptionsQuotesHuman"></a>
+## OptionsQuotesHuman
+
+`OptionsQuotesHuman` is returned when `human: true` is set. Field shape mirrors [`OptionsChainHuman`](/sdk/js/options/chain#OptionsChainHuman) — same columns, `Title_Case` names.

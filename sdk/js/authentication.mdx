@@ -1,0 +1,120 @@
+---
+title: Authentication
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Market Data API uses a **Bearer Token** for authentication. The token is required for each request you make to the API. Your token should have been e-mailed to you when you first signed up for an account. If you do not have a token or have lost your sign-up email, request a new token from the [Market Data Dashboard](https://www.marketdata.app/dashboard/).
+
+There are three ways to set your token when using the JavaScript SDK:
+
+1. Set it from an environment variable _(recommended for production)_
+2. Load it from a `.env` file _(recommended for local development)_
+3. Pass it directly when creating the [client](/sdk/js/client)
+
+On startup, the SDK will look for the `MARKETDATA_TOKEN` environment variable. If found, it will use the token for all requests. The SDK also loads a `.env` file automatically via `dotenv` if one is present in the working directory.
+
+:::tip
+When your code is running in a production environment, we recommend using an environment variable to ensure your token is not stored with your code. This is the most secure way to set your token.
+:::
+
+## How To Set-Up The Environment Variable
+
+Set the token in the environment variable `MARKETDATA_TOKEN`. Alternatively, you can pass it directly when creating the client, but please be aware that this is not secure and could pose a risk if your code is shared.
+
+### Set The Environment Variable In The Console
+
+<Tabs>
+<TabItem value="MacLinux" label="Mac / Linux">
+
+This command should be run in the terminal. It sets the environment variable for the current session only. If you open a new terminal window or restart your computer, the environment variable will not persist.
+
+```bash
+export MARKETDATA_TOKEN="your_api_token"
+```
+
+#### Verify the Variable
+
+To verify that the `MARKETDATA_TOKEN` environment variable has been set properly, run `echo $MARKETDATA_TOKEN`. If set correctly, this prints the token value; if unset, the output is blank.
+
+#### Make The Variable Persistent
+
+Add the `export` line to your shell's profile script (`~/.bash_profile`, `~/.bashrc`, `~/.zshrc`, etc.), then either restart your terminal or run `source ~/.bashrc` (adjusting for your shell) to apply.
+
+</TabItem>
+<TabItem value="Windows" label="Windows">
+
+This command should be run in the Command Prompt. `setx` sets the variable permanently, but the new value is not available in the current Command Prompt session — you will need to open a new session.
+
+```bash
+setx MARKETDATA_TOKEN "your_api_token"
+```
+
+#### Verify The Variable
+
+Open a new Command Prompt and run `echo %MARKETDATA_TOKEN%`. If the output prints the token, the variable is set correctly. If it prints `%MARKETDATA_TOKEN%` unchanged, the variable is not set.
+
+</TabItem>
+</Tabs>
+
+### Using a .env File
+
+The SDK automatically loads a `.env` file from your working directory at import time (via [`dotenv`](https://github.com/motdotla/dotenv)). Create a file named `.env` in your project root:
+
+```env title=".env"
+MARKETDATA_TOKEN=your_api_token
+```
+
+:::warning
+Add `.env` to your `.gitignore` so the token is not committed to source control.
+:::
+
+### Make A Test Request
+
+Use the following code to verify that your authentication is working by making a test request to `SPY` or any other symbol that requires authentication. Do not use `AAPL` to test your authentication because `AAPL` is a free test symbol and will return data even if you are not authenticated properly.
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+// No need to pass a token here — the SDK reads it from
+// the MARKETDATA_TOKEN environment variable automatically.
+const client = new MarketDataClient();
+
+const result = await client.stocks.quotes("SPY");
+
+result.match(
+  (quotes) => console.log(quotes),
+  (error) => console.error(`Error: ${error.message}`),
+);
+```
+
+If your token is set correctly, you should see the output of the test request. If you see an error, double-check that you have set the token correctly.
+
+## How To Create a Client and Assign a Token Directly
+
+If you decide to pass the token directly when creating the client, you can do so by passing it as a property of the configuration object. This is not recommended for production code.
+
+### Example Code
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const token = "your_token_here";
+
+const client = new MarketDataClient({ token });
+
+const result = await client.stocks.quotes("SPY");
+
+result.match(
+  (quotes) => console.log(quotes),
+  (error) => console.error(`Error: ${error.message}`),
+);
+```
+
+## Next Steps
+
+After successful authentication, you will be able to begin making requests to the Market Data API. We recommend reading the brief overview of how the [client](/sdk/js/client) works, so you can get familiar with interacting with the SDK.
+
+You may also want to configure [Settings](/sdk/js/settings) to customize output format, date format, and other universal parameters.

@@ -1,0 +1,184 @@
+---
+title: Candles
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve historical OHLC (open/high/low/close) candles for any supported mutual fund symbol.
+
+## Making Requests
+
+Use the `candles()` method on the `funds` resource to fetch fund candles.
+
+:::info
+Mutual fund candles are daily-resolution only (unlike stock candles). They do not include a `volume` field.
+:::
+
+| Output Format          | Result Payload                          | Description                                     |
+|------------------------|-----------------------------------------|-------------------------------------------------|
+| **internal** (default) | `FundsCandle[]` or `FundsCandleHuman[]` | Array of decoded candle records, one per bar.   |
+| **json**               | Raw JSON object                         | The compressed, array-keyed response object.    |
+| **csv**                | `Blob`                                  | CSV payload. Use `.save(filename)` to write it. |
+
+<a name="candles"></a>
+## candles
+
+```typescript
+// Positional form
+candles<P>(
+  symbol: string,
+  params?: P,
+): MarketDataResult<FundsCandle[] | FundsCandleHuman[]>
+
+// Object form
+candles<P>(
+  params: P & { symbol: string },
+): MarketDataResult<FundsCandle[] | FundsCandleHuman[]>
+```
+
+Fetches historical daily candles for a single fund symbol.
+
+#### Parameters
+
+- `symbol` (string)
+
+  The fund symbol (e.g. `"VFINX"`).
+
+- `resolution` (string, optional, default `"D"`)
+
+  The candle resolution. Funds support daily-and-up only: `"D"`, `"daily"`, `"1D"`, `"W"`, `"weekly"`, `"1W"`, `"M"`, `"monthly"`, `"1M"`, `"Y"`, `"yearly"`, `"1Y"`, or any integer prefix of those units.
+
+- `from` (string | Date, optional)
+
+  Start of the date range.
+
+- `to` (string | Date, optional)
+
+  End of the date range.
+
+- `countback` (number, optional)
+
+  Fetch `N` candles before `to` (mutually exclusive with `from`).
+
+- [`outputFormat`](/sdk/js/settings#output-format) (optional): The format of the returned data. Alias: `format`.
+- [`dateFormat`](/sdk/js/settings#date-format) (optional): Date format. Alias: `dateformat`.
+- [`columns`](/sdk/js/settings#columns) (optional): Columns to include.
+- [`addHeaders`](/sdk/js/settings#headers) (optional): Whether to include headers in CSV output. Alias: `headers`.
+- [`useHumanReadable`](/sdk/js/settings#human-readable) (optional): Use human-readable field names. Alias: `human`.
+- [`mode`](/sdk/js/settings#data-mode) (optional): The data mode to use.
+
+#### Returns
+
+- [`MarketDataResult<FundsCandle[] | FundsCandleHuman[] | Blob>`](/sdk/js/client#MarketDataResult)
+
+<Tabs>
+<TabItem value="Default" label="Default">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+// VFINX is available without authentication (free test symbol).
+const result = await client.funds.candles("VFINX", { countback: 30 });
+
+result.match(
+  (candles) => {
+    for (const c of candles) {
+      console.log(`t=${c.t} o=${c.o} h=${c.h} l=${c.l} c=${c.c}`);
+    }
+  },
+  (error) => console.error(error.message),
+);
+```
+
+</TabItem>
+
+<TabItem value="DateRange" label="Date Range">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+const result = await client.funds.candles("VFINX", {
+  resolution: "M",
+  from: "2020-01-01",
+  to: "2024-12-31",
+});
+
+result.match(
+  (candles) => console.log(`${candles.length} monthly bars`),
+  (error) => console.error(error.message),
+);
+```
+
+</TabItem>
+
+<TabItem value="Human" label="Human Readable">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+const result = await client.funds.candles("VFINX", {
+  countback: 10,
+  human: true,
+});
+
+result.match(
+  (candles) => {
+    for (const c of candles) {
+      console.log(`Date=${c.Date} Open=${c.Open} Close=${c.Close}`);
+    }
+  },
+  (error) => console.error(error.message),
+);
+```
+
+</TabItem>
+</Tabs>
+
+<a name="FundsCandle"></a>
+## FundsCandle
+
+```typescript
+interface FundsCandle {
+  s?: string;
+  t: number;  // timestamp
+  o: number;  // open
+  h: number;  // high
+  l: number;  // low
+  c: number;  // close
+}
+```
+
+`FundsCandle` uses the API's short, machine-readable field names.
+
+#### Properties
+
+- `s` (string, optional): Status indicator.
+- `t` (number): Unix timestamp of the bar.
+- `o` (number): Opening NAV.
+- `h` (number): High NAV.
+- `l` (number): Low NAV.
+- `c` (number): Closing NAV.
+
+<a name="FundsCandleHuman"></a>
+## FundsCandleHuman
+
+```typescript
+interface FundsCandleHuman {
+  s?: string;
+  Date: number;
+  Open: number;
+  High: number;
+  Low: number;
+  Close: number;
+}
+```
+
+`FundsCandleHuman` is returned when `human: true` is set.
