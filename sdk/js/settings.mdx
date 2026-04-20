@@ -1,0 +1,326 @@
+---
+title: Settings
+sidebar_position: 4
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Market Data JavaScript SDK provides flexible configuration for customizing API requests. You can configure universal parameters like output format, date format, data mode, and more through multiple methods with different priority levels.
+
+## Configuration Priority
+
+The SDK supports three ways to configure universal parameters, with a clear priority hierarchy.
+
+### Priority Order (Lowest to Highest)
+
+1. **Environment Variables** (lowest priority)
+   - Read from variables like `MARKETDATA_OUTPUT_FORMAT`, `MARKETDATA_DATE_FORMAT`, etc.
+   - A `.env` file in your working directory is loaded automatically via [`dotenv`](https://github.com/motdotla/dotenv).
+   - Applied globally to all API calls unless overridden.
+
+2. **Client Constructor Arguments** (medium priority)
+   - Set via the `MarketDataConfig` object passed to `new MarketDataClient({ ... })`.
+   - Applied to all API calls made with that client instance unless overridden.
+   - Only applies to config-level settings (`token`, `baseUrl`, `apiVersion`, retry options).
+
+3. **Direct Method Parameters** (highest priority)
+   - Passed directly as parameters to resource methods.
+   - Applied only to that specific API call.
+
+### How It Works
+
+When making an API call, the SDK merges parameters in this order:
+
+1. **Start with environment variables** (lowest priority)
+   - Values are read from `MARKETDATA_*` variables on startup.
+
+2. **Override with constructor arguments** (medium priority)
+   - Values passed to `new MarketDataClient({ ... })` replace env values for config-level settings.
+
+3. **Override with direct method parameters** (highest priority)
+   - Parameters passed directly to resource methods like `client.stocks.prices("AAPL", { human: true })` take final priority.
+
+### Examples
+
+<Tabs>
+<TabItem value="Environment Variables" label="Environment Variables">
+
+Set universal parameters via environment variables:
+
+```bash
+export MARKETDATA_OUTPUT_FORMAT=json
+export MARKETDATA_DATE_FORMAT=timestamp
+export MARKETDATA_USE_HUMAN_READABLE=true
+```
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+// All calls will use the env-var defaults unless overridden.
+const result = await client.stocks.prices("AAPL");
+```
+
+</TabItem>
+
+<TabItem value="Constructor" label="Constructor Arguments">
+
+Set client-level configuration via the constructor:
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient({
+  token: "your_token_here",
+  baseUrl: "https://api.marketdata.app",
+  apiVersion: "v1",
+  maxRetries: 5,
+  retryInitialWait: 1,
+  retryMaxWait: 15,
+  retryFactor: 2,
+  debug: true,
+});
+```
+
+Constructor arguments override environment variables for the settings they cover.
+
+</TabItem>
+
+<TabItem value="Direct Method Parameters" label="Direct Method Parameters">
+
+Pass parameters directly to resource methods:
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+// Override per call — these parameters apply to this request only.
+const result = await client.stocks.prices("AAPL", {
+  human: true,
+  dateformat: "timestamp",
+  columns: ["ask", "bid", "mid"],
+});
+```
+
+Direct method parameters override both environment variables and constructor arguments.
+
+</TabItem>
+</Tabs>
+
+## Available Configuration Options
+
+### Output Format
+
+Controls the format of the API response data.
+
+**Available Values:**
+- `"internal"` (default): Returns decoded plain JavaScript objects (the array-keyed wire format is unpacked into one record per row).
+- `"json"`: Returns the raw JSON response from the API, without unpacking.
+- `"csv"`: Returns a `Blob` containing CSV data. Use `.save(filename)` on the result to write it to disk.
+
+The SDK also exposes an `OutputFormat` enum you can import for type safety:
+
+```typescript
+import { OutputFormat } from "marketdata-sdk-js";
+// OutputFormat.INTERNAL, OutputFormat.JSON, OutputFormat.CSV
+```
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_OUTPUT_FORMAT` (values: `internal`, `json`, `csv`)
+2. **Per-call parameter:** `format: "csv"` or `outputFormat: "csv"`
+
+**Example:**
+
+```typescript
+import { MarketDataClient, OutputFormat } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+// Default (internal) — returns plain JS objects
+const defaultResult = await client.stocks.prices("AAPL");
+
+// CSV — returns a Blob
+const csvResult = await client.stocks.prices("AAPL", { outputFormat: OutputFormat.CSV });
+await csvResult.save("prices.csv"); // writes to disk
+```
+
+For more details, see the [API Format documentation](/api/universal-parameters/format).
+
+### Date Format
+
+Specifies the format for date and time information in responses.
+
+**Available Values:**
+- `"timestamp"`: ISO 8601 timestamp format (e.g., `2020-12-30 16:00:00 -05:00`)
+- `"unix"`: Unix timestamp in seconds (e.g., `1609362000`)
+- `"spreadsheet"`: Excel spreadsheet format (e.g., `44195.66667`)
+
+The SDK also exposes a `DateFormat` enum:
+
+```typescript
+import { DateFormat } from "marketdata-sdk-js";
+// DateFormat.TIMESTAMP, DateFormat.UNIX, DateFormat.SPREADSHEET
+```
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_DATE_FORMAT` (values: `timestamp`, `unix`, `spreadsheet`)
+2. **Per-call parameter:** `dateformat: "unix"` or `dateFormat: "unix"`
+
+**Example:**
+
+```typescript
+import { MarketDataClient, DateFormat } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+const candles = await client.stocks.candles("AAPL", { dateFormat: DateFormat.TIMESTAMP });
+```
+
+For more details, see the [API Date Format documentation](/api/universal-parameters/date-format).
+
+### Columns
+
+Limits the response to only the columns you need, reducing data transfer and processing time.
+
+**Type:** `string[]`
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_COLUMNS` (comma-separated list, e.g., `ask,bid`)
+2. **Per-call parameter:** `columns: ["ask", "bid"]`
+
+**Example:**
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+const quotes = await client.stocks.quotes("AAPL", { columns: ["ask", "bid"] });
+```
+
+For more details, see the [API Columns documentation](/api/universal-parameters/columns).
+
+### Headers
+
+Controls whether headers are included in CSV output.
+
+**Type:** `boolean`
+
+**Default:** `true`
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_ADD_HEADERS` (values: `true`, `false`)
+2. **Per-call parameter:** `headers: false` or `addHeaders: false`
+
+**Example:**
+
+```typescript
+import { MarketDataClient, OutputFormat } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+const csv = await client.stocks.candles("AAPL", {
+  outputFormat: OutputFormat.CSV,
+  addHeaders: false,
+});
+```
+
+For more details, see the [API Headers documentation](/api/universal-parameters/headers).
+
+### Human Readable
+
+Uses human-readable field names in responses instead of short, machine-friendly ones. Field names are returned in `Title_Case` (e.g. `Symbol`, `Change_Price`) rather than `camelCase`.
+
+**Type:** `boolean`
+
+**Default:** `false`
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_USE_HUMAN_READABLE` (values: `true`, `false`)
+2. **Per-call parameter:** `human: true` or `useHumanReadable: true`
+
+**Example:**
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+const quotes = await client.stocks.quotes("AAPL", { human: true });
+
+quotes.match(
+  (data) => console.log(data[0].Symbol, data[0].Mid),
+  (err) => console.error(err.message),
+);
+```
+
+For more details, see the [API Human Readable documentation](/api/universal-parameters/human-readable).
+
+### Data Mode
+
+Controls whether the API returns live, cached, or delayed data.
+
+**Available Values:**
+- `"live"`: Real-time data (paid plans).
+- `"cached"`: Cached data. Lower cost per request; honours an optional `maxage` freshness window.
+- `"delayed"`: 15+ minute delayed data.
+
+The SDK also exposes a `Mode` enum:
+
+```typescript
+import { Mode } from "marketdata-sdk-js";
+// Mode.LIVE, Mode.CACHED, Mode.DELAYED
+```
+
+**Configuration Methods:**
+
+1. **Environment Variable:** `MARKETDATA_MODE` (values: `live`, `cached`, `delayed`)
+2. **Per-call parameter:** `mode: "cached"`
+
+**Example:**
+
+```typescript
+import { MarketDataClient, Mode } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+const quotes = await client.stocks.quotes("AAPL", { mode: Mode.CACHED });
+```
+
+For more details, see the [API Data Mode documentation](/api/universal-parameters/mode).
+
+## Environment Variables Reference
+
+| Variable                          | Purpose                                       | Default                         |
+|-----------------------------------|-----------------------------------------------|---------------------------------|
+| `MARKETDATA_TOKEN`                | API authentication token                      | _(none)_                        |
+| `MARKETDATA_BASE_URL`             | API base URL                                  | `https://api.marketdata.app`    |
+| `MARKETDATA_API_VERSION`          | API version                                   | `v1`                            |
+| `MARKETDATA_OUTPUT_FORMAT`        | Default output format                         | `internal`                      |
+| `MARKETDATA_DATE_FORMAT`          | Default date format                           | _(API default)_                 |
+| `MARKETDATA_USE_HUMAN_READABLE`   | Use human-readable field names by default     | `false`                         |
+| `MARKETDATA_ADD_HEADERS`          | Include headers in CSV output                 | `true`                          |
+| `MARKETDATA_MODE`                 | Default data mode                             | _(API default)_                 |
+| `MARKETDATA_MAX_RETRIES`          | Maximum retry attempts                        | `3`                             |
+| `MARKETDATA_RETRY_INITIAL_WAIT`   | Initial retry wait (seconds)                  | `0.5`                           |
+| `MARKETDATA_RETRY_MAX_WAIT`       | Maximum retry wait (seconds)                  | `10`                            |
+| `MARKETDATA_RETRY_FACTOR`         | Exponential backoff factor                    | `2`                             |
+
+## Parameter Aliases
+
+For convenience, the SDK accepts both the short form used by the REST API and the camelCase TypeScript form. Both resolve to the same underlying parameter:
+
+| Short (REST style)   | Long (camelCase)       |
+|----------------------|------------------------|
+| `dateformat`         | `dateFormat`           |
+| `format`             | `outputFormat`         |
+| `headers`            | `addHeaders`           |
+| `human`              | `useHumanReadable`     |

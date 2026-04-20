@@ -1,0 +1,269 @@
+---
+title: Chain
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve the full option chain — every call and put contract — for any supported underlying symbol, with extensive filtering options.
+
+## Making Requests
+
+Use the `chain()` method on the `options` resource to fetch an option chain. The response includes Greeks (delta, gamma, theta, vega, IV), intrinsic/extrinsic value, and underlying price alongside the quote fields.
+
+| Output Format | Result Payload                                      | Description                                             |
+|---------------|-----------------------------------------------------|---------------------------------------------------------|
+| **internal** (default) | `OptionsChain[]` or `OptionsChainHuman[]`  | Array of decoded option-contract records.               |
+| **json**      | Raw JSON object                                     | The compressed, array-keyed response object.            |
+| **csv**       | `Blob`                                              | CSV payload. Use `.save(filename)` to write it.         |
+
+<a name="chain"></a>
+## chain
+
+```typescript
+// Positional form
+chain<P>(
+  symbol: string,
+  params?: P,
+): MarketDataResult<OptionsChain[] | OptionsChainHuman[]>
+
+// Object form
+chain<P>(
+  params: P & { symbol: string },
+): MarketDataResult<OptionsChain[] | OptionsChainHuman[]>
+```
+
+Fetches the option chain for a single underlying symbol.
+
+#### Parameters
+
+- `symbol` (string)
+
+  The underlying stock symbol (e.g. `"AAPL"`).
+
+- `date` (string | Date, optional)
+
+  Fetch the chain as-of a specific historical date (end-of-day snapshot).
+
+- `expiration` (string | Date, optional)
+
+  Filter by specific expiration date.
+
+- `days_to_expiration` (number, optional)
+
+  Filter by number of days to expiration.
+
+- `from` / `to` (string | Date, optional)
+
+  Range filter for expiration dates.
+
+- `month` (number, optional, 1–12), `year` (number, optional)
+
+  Filter by expiration month and/or year.
+
+- `weekly` / `monthly` / `quarterly` (boolean, optional)
+
+  Filter by expiration cycle type.
+
+- `strike` (number | string, optional)
+
+  Filter by specific strike price.
+
+- `delta` (number, optional)
+
+  Filter by target delta value.
+
+- `strike_limit` (number, optional)
+
+  Limit the response to the N strikes nearest the underlying price.
+
+- `range` (string, optional)
+
+  Filter by in-the-money / out-of-the-money range (e.g. `"itm"`, `"otm"`).
+
+- `min_bid` / `max_bid` / `min_ask` / `max_ask` (number, optional)
+
+  Filter by quote price thresholds.
+
+- `max_bid_ask_spread` (number, optional), `max_bid_ask_spread_pct` (number, optional)
+
+  Filter by spread thresholds.
+
+- `min_open_interest` (number, optional), `min_volume` (number, optional)
+
+  Filter by liquidity thresholds.
+
+- `nonstandard` (boolean, optional)
+
+  Include or exclude non-standard contracts.
+
+- `side` (`"call"` | `"put"` | `"both"`, optional)
+
+  Filter by option side.
+
+- `am` / `pm` (boolean, optional)
+
+  Filter by AM-settled or PM-settled contracts.
+
+- [`outputFormat`](/sdk/js/settings#output-format) (optional): The format of the returned data. Alias: `format`.
+- [`dateFormat`](/sdk/js/settings#date-format) (optional): Date format. Alias: `dateformat`.
+- [`columns`](/sdk/js/settings#columns) (optional): Columns to include.
+- [`addHeaders`](/sdk/js/settings#headers) (optional): Whether to include headers in CSV output. Alias: `headers`.
+- [`useHumanReadable`](/sdk/js/settings#human-readable) (optional): Use human-readable field names. Alias: `human`.
+- [`mode`](/sdk/js/settings#data-mode) (optional): The data mode to use.
+
+#### Returns
+
+- [`MarketDataResult<OptionsChain[] | OptionsChainHuman[] | Blob>`](/sdk/js/client#MarketDataResult)
+
+<Tabs>
+<TabItem value="Full Chain" label="Full Chain">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+const result = await client.options.chain("AAPL");
+
+result.match(
+  (contracts) => console.log(`Got ${contracts.length} contracts`),
+  (error) => console.error(error.message),
+);
+```
+
+</TabItem>
+
+<TabItem value="Filtered" label="Filtered">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+// Calls only, narrow strike window, high open interest
+const result = await client.options.chain("AAPL", {
+  side: "call",
+  strike_limit: 10,
+  min_open_interest: 100,
+});
+
+result.match(
+  (contracts) => {
+    for (const c of contracts) {
+      console.log(
+        `${c.optionSymbol} strike=${c.strike} mid=${c.mid} delta=${c.delta} oi=${c.openInterest}`
+      );
+    }
+  },
+  (error) => console.error(error.message),
+);
+```
+
+</TabItem>
+
+<TabItem value="Historical" label="Historical">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+const result = await client.options.chain("AAPL", {
+  date: "2024-01-15",
+  expiration: "2024-02-16",
+  side: "call",
+});
+
+result.match(
+  (contracts) => console.log(contracts),
+  (error) => console.error(error.message),
+);
+```
+
+</TabItem>
+
+<TabItem value="Human" label="Human Readable">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk-js";
+
+const client = new MarketDataClient();
+
+const result = await client.options.chain("AAPL", {
+  side: "put",
+  human: true,
+});
+
+result.match(
+  (contracts) => {
+    for (const c of contracts) {
+      console.log(
+        `${c.Symbol} Strike=${c.Strike} Mid=${c.Mid} Delta=${c.Delta}`
+      );
+    }
+  },
+  (error) => console.error(error.message),
+);
+```
+
+</TabItem>
+</Tabs>
+
+<a name="OptionsChain"></a>
+## OptionsChain
+
+```typescript
+interface OptionsChain {
+  s?: string;
+  optionSymbol: string;
+  underlying: string;
+  expiration: number;
+  side: string;
+  strike: number;
+  firstTraded: number;
+  dte: number;
+  updated: number;
+  bid: number | null;
+  bidSize: number | null;
+  mid: number | null;
+  ask: number | null;
+  askSize: number | null;
+  last: number | null;
+  openInterest: number | null;
+  volume: number | null;
+  inTheMoney: boolean;
+  intrinsicValue: number;
+  extrinsicValue: number;
+  underlyingPrice: number;
+  iv: number | null;
+  delta: number | null;
+  gamma: number | null;
+  theta: number | null;
+  vega: number | null;
+}
+```
+
+#### Properties
+
+- `optionSymbol` (string): OCC-format option symbol (e.g. `"AAPL271217C00250000"`).
+- `underlying` (string): The underlying stock symbol.
+- `expiration` (number): Unix timestamp of the expiration date.
+- `side` (string): `"call"` or `"put"`.
+- `strike` (number): The strike price.
+- `firstTraded` (number): Unix timestamp when the contract first traded.
+- `dte` (number): Days to expiration.
+- `updated` (number): Unix timestamp when the quote was last updated.
+- `bid`, `ask`, `mid`, `last` (number | null): Quote prices.
+- `bidSize`, `askSize` (number | null): Quote sizes.
+- `openInterest`, `volume` (number | null): Liquidity metrics.
+- `inTheMoney` (boolean): Whether the contract is currently in the money.
+- `intrinsicValue`, `extrinsicValue` (number): Value decomposition.
+- `underlyingPrice` (number): Price of the underlying at quote time.
+- `iv`, `delta`, `gamma`, `theta`, `vega` (number | null): Implied volatility and Greeks.
+
+<a name="OptionsChainHuman"></a>
+## OptionsChainHuman
+
+When `human: true` is set, field names are returned in `Title_Case`: `Symbol`, `Underlying`, `Expiration_Date`, `Option_Side`, `Strike`, `Days_To_Expiration`, `Bid`, `Ask`, `Mid`, `Open_Interest`, `Volume`, `In_The_Money`, `IV`, `Delta`, `Gamma`, `Theta`, `Vega`, etc.
