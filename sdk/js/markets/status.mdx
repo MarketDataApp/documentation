@@ -24,7 +24,7 @@ Use the `status()` method on the `markets` resource to fetch market status infor
 ```typescript
 status<P>(
   params?: P,
-): MarketDataResult<MarketStatus[] | MarketStatusHuman[]>
+): MarketDataPromise<MarketStatus[] | MarketStatusHuman[]>
 ```
 
 Fetches market status information. All parameters are optional.
@@ -60,26 +60,24 @@ Fetches market status information. All parameters are optional.
 
 #### Returns
 
-- [`MarketDataResult<MarketStatus[] | MarketStatusHuman[] | Blob>`](/sdk/js/client#MarketDataResult)
+- [`MarketDataPromise<MarketStatus[] | MarketStatusHuman[] | Blob>`](/sdk/js/client#MarketDataPromise)
 
 <Tabs>
 <TabItem value="Today" label="Today">
 
 ```typescript
-import { MarketDataClient } from "marketdata-sdk-js";
+import { MarketDataClient } from "marketdata-sdk";
 
 const client = new MarketDataClient();
 
-const result = await client.markets.status();
-
-result.match(
-  (days) => {
-    for (const d of days) {
-      console.log(`date=${d.date} status=${d.status}`);
-    }
-  },
-  (error) => console.error(error.message),
-);
+try {
+  const days = await client.markets.status();
+  for (const d of days) {
+    console.log(`date=${d.date} status=${d.status}`);
+  }
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>
@@ -87,20 +85,20 @@ result.match(
 <TabItem value="Range" label="Date Range">
 
 ```typescript
-import { MarketDataClient } from "marketdata-sdk-js";
+import { MarketDataClient } from "marketdata-sdk";
 
 const client = new MarketDataClient();
 
-const result = await client.markets.status({
-  from: "2024-01-01",
-  to: "2024-01-31",
-  country: "US",
-});
-
-result.match(
-  (days) => console.log(days),
-  (error) => console.error(error.message),
-);
+try {
+  const days = await client.markets.status({
+    from: "2024-01-01",
+    to: "2024-01-31",
+    country: "US",
+  });
+  console.log(days);
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>
@@ -108,17 +106,17 @@ result.match(
 <TabItem value="Countback" label="Countback">
 
 ```typescript
-import { MarketDataClient } from "marketdata-sdk-js";
+import { MarketDataClient } from "marketdata-sdk";
 
 const client = new MarketDataClient();
 
-// Last 7 trading-status days
-const result = await client.markets.status({ countback: 7 });
-
-result.match(
-  (days) => console.log(days),
-  (error) => console.error(error.message),
-);
+try {
+  // Last 7 trading-status days
+  const days = await client.markets.status({ countback: 7 });
+  console.log(days);
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>
@@ -126,20 +124,18 @@ result.match(
 <TabItem value="Human" label="Human Readable">
 
 ```typescript
-import { MarketDataClient } from "marketdata-sdk-js";
+import { MarketDataClient } from "marketdata-sdk";
 
 const client = new MarketDataClient();
 
-const result = await client.markets.status({ countback: 7, human: true });
-
-result.match(
-  (days) => {
-    for (const d of days) {
-      console.log(`Date=${d.Date} Status=${d.Status}`);
-    }
-  },
-  (error) => console.error(error.message),
-);
+try {
+  const days = await client.markets.status({ countback: 7, human: true });
+  for (const d of days) {
+    console.log(`Date=${d.Date} Status=${d.Status}`);
+  }
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>
