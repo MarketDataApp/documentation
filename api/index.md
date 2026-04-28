@@ -10,6 +10,12 @@ The Market Data API is designed around REST and supports standard HTTP response 
 https://api.marketdata.app/
 :::
 
+:::caution Accept HTTP 203 as success
+Any endpoint may return HTTP `203 Non-Authoritative Information` instead of `200 OK` when the response is served from our caching tier. This is normal — the body is identical in shape, and you should treat 203 exactly the same as 200. Many HTTP clients (and many OpenAPI-generated SDKs) default to treating only 200 as success; you must update your client to also accept 203 or your integration will silently fail in production.
+
+A `204 No Content` response can also occur when `mode=cached` is requested and no cached data is available — see [Data Mode](/api/universal-parameters/mode) and [Troubleshooting](/troubleshooting) for the full list of status codes.
+:::
+
 ## Try Our API
 
 The easiest way to try out our API is using our [Swagger User Interface](https://api.marketdata.app/), which will allow you to try out your API requests directly from your browser.

@@ -108,6 +108,8 @@ When `mode=cached` is used, successful responses do not return `200 OK`. Instead
 * `203 NON-AUTHORITATIVE INFORMATION` – Request succeeded and was fulfilled from cache
 * `204 NO CONTENT` – No cached data available within constraints; no credits charged
 
+`204` is the deterministic cache-miss signal — it can only be returned by `mode=cached` (or `mode=cache` / `mode=stale`). For the full mapping of status codes across all modes, see [Status Codes](#status-codes) below.
+
 ## Delayed Mode
 
 The `delayed` mode returns data delayed by **at least 15 minutes**. This mode is the default for all free and trial accounts. Paid accounts may also request delayed data explicitly.
@@ -138,3 +140,47 @@ This request returns market data that is delayed by a minimum of 15 minutes.
 * Choose **`mode=live`** when immediate data freshness is required.
 * Use **`mode=cached`** to reduce credit usage when working with large symbol sets.
 * Select **`mode=delayed`** for applications where timing precision is not critical.
+
+## Status Codes
+
+Market Data uses HTTP status codes to communicate where a successful response came from. **All three of `200`, `203`, and `204` are success responses — your client must accept all of them.**
+
+| Status                              | Meaning                                                                                                       | When it occurs                                                                                                                                     |
+|-------------------------------------|---------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `200 OK`                            | Response was freshly fetched from the upstream provider.                                                      | Any mode, when no cache layer can satisfy the request.                                                                                             |
+| `203 Non-Authoritative Information` | Response was served from a cache layer (Redis, database quote cache, response log, option-chain cache, etc.). | Any mode. Common during market hours regardless of `mode=live`, `mode=delayed`, or no `mode` specified. The body is identical in shape to a `200`. |
+| `204 No Content`                    | No cached data is available within the requested constraints. No credits charged.                             | Only when `mode=cached` (also `mode=cache` / `mode=stale`). Never returned by other modes.                                                         |
+
+:::caution Mode does not deterministically map to status code
+A common (incorrect) assumption is that `mode=live` always returns `200` and `mode=delayed` always returns `203`. Both can return either `200` or `203` depending on whether a cache layer can satisfy the request at the moment. Only `mode=cached` is deterministic — it returns `203` on cache hit or `204` on cache miss, never `200`.
+:::
+
+### Handling `204` (cache miss on `mode=cached`)
+
+When `mode=cached` returns `204`, the typical pattern is to fall back to a live request. A short Python example:
+
+```python
+import requests
+
+def get_option_chain(token):
+    url = "https://api.marketdata.app/v1/options/chain/AAPL/"
+    headers = {"Authorization": f"Bearer {token}"}
+
+    r = requests.get(url, params={"mode": "cached"}, headers=headers)
+    if r.status_code in (200, 203):
+        return r.json()
+    if r.status_code == 204:
+        # Cache miss — fall back to live (incurs normal live-mode credit cost)
+        r = requests.get(url, params={"mode": "live"}, headers=headers)
+        if r.status_code in (200, 203):
+            return r.json()
+    r.raise_for_status()
+```
+
+A few notes on the retry pattern:
+
+- A retry with `mode=live` is billed at the full live-mode credit cost — see [Pricing for Live Mode](#pricing-for-live-mode). The original `204` response is free.
+- Cap the retry at one attempt. A subsequent `204` should not occur on `mode=live`, but a circuit breaker is still wise.
+- If your plan does not include `mode=cached` access (Free/Trial), `mode=cached` requests return `402 Payment Required` rather than `204`. See [402: Payment Required](/api/troubleshooting/payment-required).
+
+For the full list of HTTP status codes returned by the API (including `4xx` and `5xx`), see [Troubleshooting](/troubleshooting).

@@ -8,6 +8,10 @@ import TabItem from "@theme/TabItem";
 
 The Market Data API uses a **Bearer Token** for authentication. The token is a programmatic representation of your username and password credentials, so you must keep it secret just as you would your username and password. The token is required for each request you make to the API.
 
+:::caution Accept HTTP 203 as success
+Any endpoint may return HTTP `203 Non-Authoritative Information` instead of `200 OK` when the response is served from our caching tier. The body is identical in shape — treat 203 exactly the same as 200. Code samples below that use raw HTTP libraries (rather than our SDKs) must accept both status codes; checking only `status == 200` will silently drop valid responses. See [Troubleshooting](/troubleshooting) for the full list of status codes.
+:::
+
 ## Obtaining a Token
 
 To obtain it, sign-in to your customer dashboard using your username and password and request a token. It will be delivered by email to the address you used to sign-in.  
