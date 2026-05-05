@@ -1,0 +1,92 @@
+---
+title: Commercial Plan
+unlisted: true
+description: Market Data's commercially-licensed plan for businesses, indie developers, and apps that distribute derived data to end users.
+---
+
+import Head from '@docusaurus/Head';
+
+<Head>
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+</Head>
+
+The **Commercial Plan** is the most common starting point for businesses launching an app, dashboard, or product on top of Market Data. At **$250/month** it's the most affordable commercially-licensed market data subscription on the market — and it includes a generous package of data that you can redistribute to your end users under our [Commercial Use Addendum](https://www.marketdata.app/terms/commercial-use-addendum/). It's enough to get a product to market, on budget, with the option to add exchange licensing later as your business grows.
+
+## Pricing
+
+**$250/month** — month-to-month billing only. The Commercial Plan does not offer an annual billing option.
+
+## What You Get with the Commercial Plan
+
+- **Commercial Use License**: The only Market Data plan that permits business and commercial use of our data, governed by our [Commercial Use Addendum](https://www.marketdata.app/terms/commercial-use-addendum/).
+- **No Daily API Credit Limit**: Use our API as much as your application needs, with no daily cap.
+- **100,000 Credits Per Minute**: A generous per-minute rate limit suited to production workloads.
+- **50 Concurrent Requests**: Run requests in parallel to keep latency low under load.
+- **Real-Time SmartMid Stock Prices**: Get current-day real-time stock prices on the [`/stocks/prices`](/api/stocks/prices) endpoint via our proprietary **SmartMid** model — a Market Data product that you can redistribute to your end users under our Commercial Use Addendum. **SmartMid is the only real-time data source included on the Commercial Plan.**
+- **Historical Data, Full Depth**: Full historical access on every endpoint — stocks, options, and more — for backtesting, analytics, and historical charts.
+- **Premium Endpoints**: Full access to all premium endpoints, including fundamentals and earnings data.
+
+### Exchange Data Is Historical Only
+
+The Commercial Plan does **not** include any real-time exchange data. All exchange-sourced data — stock bid/ask quotes, daily and intraday candles, options chains and quotes, all of it — is delivered **historical only**, available starting from the **T+1 session** (today's session becomes available the following session).
+
+The single exception is **SmartMid stock prices**, which are real-time because SmartMid is our own derived product and not exchange data.
+
+This is what keeps the plan affordable and lets you redistribute data to your end users without additional exchange paperwork. When your business is ready, exchange licensing can be added on top of your Commercial Plan — see [Why SmartMid Instead of Exchange Real-Time?](#why-smartmid-instead-of-exchange-real-time) below.
+
+## Who the Commercial Plan Is For
+
+The Commercial Plan is the entry point for businesses bringing a product to market on top of Market Data. Common use cases include:
+
+- **Stock and options apps** that display data to paying users
+- **Financial dashboards** distributed to clients or employees
+- **Research products and newsletters** that publish data-driven content
+- **Charting and analytics tools** built on historical data
+- **Internal business analytics** at firms that need market data for internal use
+
+Most businesses start here when launching and add exchange licensing later, as their product matures and their budget grows.
+
+If you're an indie developer **still in development** and not yet charging users or distributing data, you can build on the [Starter Plan](starter) until you're ready to launch. Once you go live with a commercial product, the Commercial Plan is your next step. See our guide on [how stock market data licensing works](https://www.marketdata.app/education/stocks/stock-market-data-licensing) for background.
+
+### Not Suitable for Trading
+
+The Commercial Plan is **not suitable for trading applications** or any product where users make execution decisions based on the data. SmartMid is a derived midpoint price — useful for display, charting, and informational purposes — but it is not a live bid/ask quote and should not be used to determine trade prices, route orders, or trigger execution logic. Trading platforms and order-routing tools require real-time exchange data, which means direct exchange licensing. [Contact our sales team](https://www.marketdata.app/contact/) to discuss licensing options for trading use cases.
+
+## Redistribution Rules
+
+The Commercial Plan permits you to **distribute your own derived data** through your application — including via your own API — but does **not** permit redistributing Market Data's raw API responses. In other words:
+
+- ✅ You can build a UI, dashboard, or product that displays Market Data's data to your users.
+- ✅ You can compute derived metrics, signals, or aggregates from our data and serve those to your users (including over your own API).
+- ❌ You cannot resell or proxy our raw API responses to your customers.
+
+If you're looking to offer a market data API to other businesses, you'll need direct exchange licensing — which the Commercial Plan does not provide. [Contact our sales team](https://www.marketdata.app/contact/) if you'd like to discuss your use case.
+
+## Why SmartMid Instead of Exchange Real-Time?
+
+Real-time data sourced directly from exchanges has its own [licensing requirements](https://www.marketdata.app/education/stocks/stock-market-data-licensing) that apply on top of any data subscription. By using SmartMid for real-time prices, the Commercial Plan keeps the cost of launching low — most businesses don't need exchange licensing on day one.
+
+**SmartMid** is our own proprietary derived midpoint price. Because it's a Market Data product rather than exchange data, your application can deliver SmartMid prices to any end user under our Commercial Use Addendum.
+
+When your business is ready to add real-time exchange data — bid/ask quotes, intraday candles, or real-time options — exchange licensing can be added on top of your Commercial Plan. [Contact our sales team](https://www.marketdata.app/contact/) when you're ready.
+
+## Comparison with Other Plans
+
+| Feature                 | Starter       | Trader        | Prime         | **Commercial**           |
+|-------------------------|---------------|---------------|---------------|--------------------------|
+| Price                   | $30/mo        | $75/mo        | $250/mo       | **$250/mo**              |
+| Commercial Use License  | ❌            | ❌            | ❌            | ✅                       |
+| Daily API Credits       | 10,000/day    | 100,000/day   | Unlimited     | Unlimited                |
+| Per-Minute Rate Limit   | No Limit      | No Limit      | 100,000       | 100,000                  |
+| Concurrent Requests     | 50            | 50            | 50            | 50                       |
+| Real-Time Stock Prices  | Exchange data | Exchange data | Exchange data | SmartMid (derived)       |
+| Real-Time Exchange Data | ✅            | ✅            | ✅            | ❌ (T+1 historical only) |
+| Real-Time Options       | 15-min delay  | Real-time     | Real-time     | ❌ (T+1 historical only) |
+| Premium Endpoints       | ✅            | ✅            | ✅            | ✅                       |
+| Historical Data         | 5 Years       | Full Access   | Full Access   | Full Access (T+1)        |
+
+## Why Choose the Commercial Plan?
+
+The Commercial Plan is where most businesses start. At **$250/month**, it's the cheapest commercially-licensed market data subscription on the market — and it's enough to launch a real product, with real-time SmartMid stock prices, full historical depth, no daily credit caps, and generous concurrency. Add exchange licensing later, when your business is ready for it.
+
+The Commercial Plan is sold through our sales team. [Contact us](https://www.marketdata.app/contact/) to get started or to discuss your specific use case.
