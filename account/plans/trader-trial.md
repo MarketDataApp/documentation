@@ -49,6 +49,8 @@ This comparison helps you understand the Trader Trial in relation to our other o
 | Standard Endpoints | ✅           | ✅              | ✅              |
 | Premium Endpoints  | ❌           | AAPL Only       | ✅              |
 
+For endpoint-level freshness rules and the Delayed → Historical rollover timing (especially for options, where data only rolls at 9:30 AM ET the next trading day), see [Data Freshness](../data-freshness.md).
+
 ## Why Try the Trader Trial?
 
 The Trader Trial offers an unparalleled opportunity to experience the full depth and breadth of our financial data services tailored for high-volume users and professional traders. It's a risk-free way to determine if the Trader Plan's extensive data access and capabilities align with your project's needs.

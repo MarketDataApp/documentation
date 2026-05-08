@@ -37,6 +37,8 @@ To help you better understand the differences between our plans, here's a quick 
 | Standard Endpoints     | ✅           | ✅          |
 | Premium Endpoints      | ❌           | ✅          |
 
+For endpoint-level freshness rules and the Delayed → Historical rollover timing (especially for options, where data only rolls at 9:30 AM ET the next trading day), see [Data Freshness](../data-freshness.md).
+
 ## Why Choose Free Forever?
 
 The Free Forever plan is an excellent choice for those new to Market Data or for projects that are in the early stages of development. It allows you to test our services and understand how our data can enhance your projects without any financial commitment. Plus, you can upgrade to a paid plan anytime as your needs grow.

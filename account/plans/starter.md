@@ -39,6 +39,8 @@ To give you a clear idea of how the Starter Plan stands against our other offeri
 | Premium Endpoints  | ❌           | ✅             | ✅              |
 | Historical Data    | 1 Year       | 5 Years        | Full Access     |
 
+For endpoint-level freshness rules and the Delayed → Historical rollover timing (especially for options), see [Data Freshness](../data-freshness.md).
+
 ## Why Choose the Starter Plan?
 
 The Starter Plan is perfect for users who have outgrown the Free Forever plan and need more robust data access and capabilities. Whether you're scaling up your project or need more detailed financial data for analysis, the Starter Plan provides the tools and data you need to succeed.

@@ -114,6 +114,8 @@ When `mode=cached` is used, successful responses do not return `200 OK`. Instead
 
 The `delayed` mode returns data delayed by **at least 15 minutes**. This mode is the default for all free and trial accounts. Paid accounts may also request delayed data explicitly.
 
+For when delayed data crosses into "historical" (a fully-closed prior session) — and why that happens at different times for stocks (4:15 PM ET) vs options (9:30 AM ET the next trading day) — see [Data Freshness](/docs/account/data-freshness).
+
 ### Pricing for Delayed Mode
 
 * Pricing is identical to live mode.

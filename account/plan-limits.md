@@ -51,6 +51,8 @@ Free Forever accounts can access up to 1 year of historical data and Starter acc
 Free trials of paid plans provide delayed data. Real-time data is only available with paid versions of the Trader plan and above.
 :::
 
+For endpoint-level freshness rules and the Delayed → Historical rollover timing — including why options data only rolls at 9:30 AM ET the next trading day rather than at the prior session's close — see [Data Freshness](./data-freshness).
+
 ## API Endpoints
 
 The Free Forever plan only provides access to pricing data. Premium endpoints and spreadsheet formulas that contain reference data are not available on free plans. Quant and Prime plans also have access to custom-built endpoints to satisfy the needs of their specific application.

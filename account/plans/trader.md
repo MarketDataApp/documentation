@@ -38,6 +38,8 @@ Here's how the Trader Plan compares to our other offerings:
 | Premium Endpoints  | ❌           | ✅             | ✅              |
 | Historical Data    | 1 Year       | 5 Years        | Full Access     |
 
+For endpoint-level freshness rules, see [Data Freshness](../data-freshness.md).
+
 ## Why Choose the Trader Plan?
 
 The Trader Plan is ideal for professional traders, high-volume users, and projects that require the most detailed and up-to-date financial data available. It's designed to provide the tools and data necessary for sophisticated analysis and decision-making.
