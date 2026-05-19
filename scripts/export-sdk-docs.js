@@ -73,32 +73,50 @@ function main() {
   emptyDir(outDir);
 
   const files = walkMdx(sourceDir);
+
+  // Build the source-aware link target map BEFORE writing any file. For each
+  // source .mdx, compute what /sdk/{sdk}/... URLs in *other* docs would point
+  // at, and which output file we'll write it as. Directory indices land as
+  // README.md so GitHub auto-renders them at the directory URL.
+  // Map keys are Docusaurus subpaths (no leading slash, no extension); values
+  // are repo-relative POSIX output paths.
+  const linkTargets = {};
+  for (const sourceAbs of files) {
+    const relFromSdk = path.relative(sourceDir, sourceAbs).split(path.sep).join('/');
+    const noExt = relFromSdk.replace(/\.(mdx?|md)$/, '');
+    const isIndex = path.posix.basename(noExt) === 'index';
+    if (isIndex) {
+      const dirSub = path.posix.dirname(noExt);
+      const key = dirSub === '.' ? '' : dirSub;
+      const out = key === '' ? 'README.md' : `${key}/README.md`;
+      linkTargets[key] = out;
+    } else {
+      linkTargets[noExt] = `${noExt}.md`;
+    }
+  }
+
   const manifest = [];
 
   for (const sourceAbs of files) {
-    const relFromSdk = path.relative(sourceDir, sourceAbs); // e.g. "stocks/quotes.mdx"
-    const sourcePathRel = path.posix.join('sdk', args.sdk, relFromSdk.split(path.sep).join('/'));
-    const outRelative = relFromSdk.replace(/\.mdx$/, '.md');
-    const outAbs = path.join(outDir, outRelative);
+    const relPosix = path.relative(sourceDir, sourceAbs).split(path.sep).join('/');
+    const sourcePathRel = path.posix.join('sdk', args.sdk, relPosix);
+    const noExt = relPosix.replace(/\.(mdx?|md)$/, '');
+    const isIndex = path.posix.basename(noExt) === 'index';
+    const outRelative = isIndex
+      ? (path.posix.dirname(noExt) === '.' ? 'README.md' : `${path.posix.dirname(noExt)}/README.md`)
+      : `${noExt}.md`;
+    const outAbs = path.join(outDir, ...outRelative.split('/'));
 
     const raw = fs.readFileSync(sourceAbs, 'utf8');
-    const body = cleanMdx(raw, { sourcePath: sourcePathRel, sdk: args.sdk });
+    const body = cleanMdx(raw, {
+      sourcePath: sourcePathRel,
+      sdk: args.sdk,
+      linkTargets,
+    });
 
     fs.mkdirSync(path.dirname(outAbs), { recursive: true });
     fs.writeFileSync(outAbs, body, 'utf8');
     manifest.push({ path: outRelative, bytes: Buffer.byteLength(body, 'utf8') });
-  }
-
-  // Promote the SDK's index.md to a top-level README.md (and leave index.md in place
-  // so any code linking to it still resolves)
-  const indexPath = path.join(outDir, 'index.md');
-  if (fs.existsSync(indexPath)) {
-    fs.copyFileSync(indexPath, path.join(outDir, 'README.md'));
-    manifest.push({
-      path: 'README.md',
-      bytes: fs.statSync(path.join(outDir, 'README.md')).size,
-      note: '(copy of index.md)',
-    });
   }
 
   // Write a manifest of every file we generated, so the sync workflow can
