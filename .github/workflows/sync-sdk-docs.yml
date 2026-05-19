@@ -1,0 +1,158 @@
+# Syncs SDK docs from /sdk/<lang>/ in this repo into MarketDataApp/sdk-<lang>/docs/
+# by converting MDX → clean Markdown and opening a PR against the target repo.
+#
+# Pilot scope: sdk-js only. Adding more SDKs is a one-line matrix change.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# One-time setup (GitHub App auth — survives the eventual repo migration to
+# the MarketData-App org without code changes):
+#
+# 1. Create a GitHub App owned by `MarketData-App` (org settings → Developer
+#    settings → GitHub Apps → New GitHub App). Suggested name:
+#    `marketdata-docs-sync`. Set "Where can this be installed?" to "Any
+#    account" so it can run against repos that still live under the
+#    MarketDataApp user (current home) and later the MarketData-App org.
+# 2. Permissions: Contents = Read & write, Pull requests = Read & write,
+#    Metadata = Read. No webhook (uncheck "Active").
+# 3. Generate a private key (.pem) and download it.
+# 4. Install the App on `MarketDataApp` (user), granting access to
+#    `documentation` and `sdk-js`. (Add more SDK repos as the matrix grows.)
+# 5. In this repo:
+#    - Repo variable `SDK_DOCS_APP_ID` = the App ID (a number)
+#    - Repo secret   `SDK_DOCS_APP_PRIVATE_KEY` = the .pem contents
+# 6. After repo migration to the org, change `TARGET_OWNER` below from
+#    `MarketDataApp` to `MarketData-App`.
+# ────────────────────────────────────────────────────────────────────────────
+
+name: "SDK Docs: Sync to SDK Repos"
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - 'sdk/js/**'
+      - 'lib/mdx-to-md.js'
+      - 'scripts/export-sdk-docs.js'
+      - '.github/workflows/sync-sdk-docs.yml'
+  workflow_dispatch:
+    inputs:
+      sdk:
+        description: 'Which SDK to sync (pilot: js only)'
+        required: true
+        default: 'js'
+        type: choice
+        options: [js]
+
+env:
+  SOURCE_OWNER: MarketDataApp
+  TARGET_OWNER: MarketDataApp # change to MarketData-App after repo migration
+  BANNER_TAG: 'Generated from MarketDataApp/documentation/'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        sdk: [js]
+    steps:
+      - name: Checkout documentation source
+        uses: actions/checkout@v4
+        with:
+          path: docs-source
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run unit tests for the conversion lib
+        working-directory: docs-source
+        run: node --test lib/__tests__/*.test.js
+
+      - name: Convert sdk/<lang>/ → clean .md
+        working-directory: docs-source
+        env:
+          SDK: ${{ matrix.sdk }}
+          OUT_DIR: ${{ runner.temp }}/out
+        run: node scripts/export-sdk-docs.js --sdk "$SDK" --out "$OUT_DIR"
+
+      - name: Mint cross-repo token (GitHub App)
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.SDK_DOCS_APP_ID }}
+          private-key: ${{ secrets.SDK_DOCS_APP_PRIVATE_KEY }}
+          owner: ${{ env.TARGET_OWNER }}
+          repositories: sdk-${{ matrix.sdk }}
+
+      - name: Checkout target SDK repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TARGET_OWNER }}/sdk-${{ matrix.sdk }}
+          token: ${{ steps.app-token.outputs.token }}
+          path: target
+
+      - name: Replace previously-generated docs with fresh export
+        # We DO NOT wipe target/docs/ wholesale — it may contain SDK-repo-owned
+        # content (ADRs, internal READMEs). Instead, delete only files that
+        # carry our banner, then copy the new export over.
+        env:
+          OUT_DIR: ${{ runner.temp }}/out
+        run: |
+          set -euo pipefail
+          mkdir -p target/docs
+          # Remove only files in target/docs/ that we previously generated.
+          while IFS= read -r -d '' f; do
+            if head -n 5 "$f" | grep -q "$BANNER_TAG"; then
+              rm -f "$f"
+            fi
+          done < <(find target/docs -type f -name '*.md' -print0)
+          # Remove any now-empty directories left behind.
+          find target/docs -type d -empty -delete || true
+          mkdir -p target/docs
+          cp -R "$OUT_DIR/." target/docs/
+
+      - name: Compute diff summary for PR body
+        id: diff
+        working-directory: target
+        run: |
+          set -euo pipefail
+          git add -A docs/
+          {
+            echo "summary<<DIFFEOF"
+            if git diff --cached --quiet; then
+              echo "_No changes — docs are already in sync._"
+            else
+              git diff --cached --name-status -- docs/
+            fi
+            echo "DIFFEOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Open / update PR in target SDK repo
+        uses: peter-evans/create-pull-request@v6
+        with:
+          path: target
+          token: ${{ steps.app-token.outputs.token }}
+          branch: sync/docs-from-documentation
+          delete-branch: true
+          commit-message: 'docs: sync from documentation@${{ github.sha }}'
+          title: 'docs: sync from documentation@${{ github.sha }}'
+          body: |
+            Automated sync from [`${{ env.SOURCE_OWNER }}/documentation@${{ github.sha }}`](https://github.com/${{ env.SOURCE_OWNER }}/documentation/commit/${{ github.sha }}).
+
+            **SDK:** `${{ matrix.sdk }}`
+            **Source path:** `sdk/${{ matrix.sdk }}/`
+            **Workflow run:** [#${{ github.run_id }}](https://github.com/${{ env.SOURCE_OWNER }}/documentation/actions/runs/${{ github.run_id }})
+
+            ### Changed files
+
+            ```
+            ${{ steps.diff.outputs.summary }}
+            ```
+
+            > Files carrying the banner
+            > `<!-- Generated from MarketDataApp/documentation/... -->`
+            > are managed by this workflow — edit the source `.mdx` in the
+            > documentation repo, not the rendered `.md` here.

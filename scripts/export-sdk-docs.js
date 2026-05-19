@@ -1,0 +1,114 @@
+#!/usr/bin/env node
+'use strict';
+
+/**
+ * Export SDK docs from /sdk/{lang}/ as clean .md, ready to land in MarketDataApp/sdk-{lang}/docs.
+ *
+ *   node scripts/export-sdk-docs.js --sdk js [--out ./build/sdk-docs/js]
+ *
+ * The CLI is intentionally thin — all conversion lives in lib/mdx-to-md.js.
+ * Output dir is wiped before write so deleted source files don't linger in the target.
+ */
+
+const fs = require('fs');
+const path = require('path');
+const { cleanMdx } = require('../lib/mdx-to-md');
+
+const REPO_ROOT = path.resolve(__dirname, '..');
+const SUPPORTED_SDKS = ['js', 'py', 'go', 'php'];
+
+function parseArgs(argv) {
+  const args = { sdk: null, out: null };
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === '--sdk') args.sdk = argv[++i];
+    else if (a === '--out') args.out = argv[++i];
+    else if (a === '-h' || a === '--help') args.help = true;
+    else {
+      console.error(`Unknown argument: ${a}`);
+      process.exit(2);
+    }
+  }
+  return args;
+}
+
+function printUsage() {
+  console.log(`Usage: node scripts/export-sdk-docs.js --sdk <${SUPPORTED_SDKS.join('|')}> [--out <dir>]`);
+  console.log('');
+  console.log('Converts /sdk/<sdk>/*.mdx → clean .md files under <out> (default: build/sdk-docs/<sdk>/).');
+}
+
+function walkMdx(dir, acc = []) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) walkMdx(full, acc);
+    else if (entry.isFile() && /\.(mdx?|md)$/.test(entry.name)) acc.push(full);
+  }
+  return acc;
+}
+
+function emptyDir(dir) {
+  if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true });
+  fs.mkdirSync(dir, { recursive: true });
+}
+
+function main() {
+  const args = parseArgs(process.argv.slice(2));
+  if (args.help || !args.sdk) {
+    printUsage();
+    process.exit(args.help ? 0 : 2);
+  }
+  if (!SUPPORTED_SDKS.includes(args.sdk)) {
+    console.error(`--sdk must be one of: ${SUPPORTED_SDKS.join(', ')}`);
+    process.exit(2);
+  }
+
+  const sourceDir = path.join(REPO_ROOT, 'sdk', args.sdk);
+  if (!fs.existsSync(sourceDir)) {
+    console.error(`Source directory not found: ${sourceDir}`);
+    process.exit(1);
+  }
+
+  const outDir = path.resolve(args.out || path.join(REPO_ROOT, 'build', 'sdk-docs', args.sdk));
+  emptyDir(outDir);
+
+  const files = walkMdx(sourceDir);
+  const manifest = [];
+
+  for (const sourceAbs of files) {
+    const relFromSdk = path.relative(sourceDir, sourceAbs); // e.g. "stocks/quotes.mdx"
+    const sourcePathRel = path.posix.join('sdk', args.sdk, relFromSdk.split(path.sep).join('/'));
+    const outRelative = relFromSdk.replace(/\.mdx$/, '.md');
+    const outAbs = path.join(outDir, outRelative);
+
+    const raw = fs.readFileSync(sourceAbs, 'utf8');
+    const converted = cleanMdx(raw, { sourcePath: sourcePathRel, sdk: args.sdk });
+
+    const banner = `<!-- Generated from MarketDataApp/documentation/${sourcePathRel}. Do not edit directly. -->\n\n`;
+    const body = banner + converted;
+
+    fs.mkdirSync(path.dirname(outAbs), { recursive: true });
+    fs.writeFileSync(outAbs, body, 'utf8');
+    manifest.push({ path: outRelative, bytes: Buffer.byteLength(body, 'utf8') });
+  }
+
+  // Promote the SDK's index.md to a top-level README.md (and leave index.md in place
+  // so any code linking to it still resolves)
+  const indexPath = path.join(outDir, 'index.md');
+  if (fs.existsSync(indexPath)) {
+    fs.copyFileSync(indexPath, path.join(outDir, 'README.md'));
+    manifest.push({
+      path: 'README.md',
+      bytes: fs.statSync(path.join(outDir, 'README.md')).size,
+      note: '(copy of index.md)',
+    });
+  }
+
+  manifest.sort((a, b) => a.path.localeCompare(b.path));
+  console.log(`Exported ${manifest.length} file(s) to ${outDir}\n`);
+  for (const { path: p, bytes, note } of manifest) {
+    console.log(`  ${String(bytes).padStart(7)}  ${p}${note ? '  ' + note : ''}`);
+  }
+}
+
+main();

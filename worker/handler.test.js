@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
 
-const { handleRequest, cleanMarkdown } = require('./handler');
+const { handleRequest } = require('./handler');
 
 function makeRequest(url, options = {}) {
   return new Request(url, options);
@@ -14,40 +14,11 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-// --- cleanMarkdown ---
-
-describe('cleanMarkdown', () => {
-  it('extracts title from frontmatter as H1', () => {
-    const input = '---\ntitle: Test\nsidebar_position: 1\n---\n\n# Hello\n';
-    expect(cleanMarkdown(input)).toBe('# Test\n\n# Hello\n');
-  });
-
-  it('strips frontmatter without title', () => {
-    const input = '---\nsidebar_position: 1\n---\n\n# Hello\n';
-    expect(cleanMarkdown(input)).toBe('# Hello\n');
-  });
-
-  it('strips import statements', () => {
-    const input = 'import Tabs from "@theme/Tabs";\nimport TabItem from "@theme/TabItem";\n\n# Hello\n';
-    expect(cleanMarkdown(input)).toBe('# Hello\n');
-  });
-
-  it('converts TabItem to headings and strips Tabs wrappers', () => {
-    const input = '<Tabs>\n<TabItem value="js" label="JavaScript">\n\ncode here\n\n</TabItem>\n</Tabs>\n';
-    const result = cleanMarkdown(input);
-    expect(result).toContain('### JavaScript');
-    expect(result).not.toContain('<Tabs>');
-    expect(result).not.toContain('<TabItem');
-    expect(result).not.toContain('</TabItem>');
-  });
-
-  it('collapses excess blank lines', () => {
-    const input = '# A\n\n\n\n\n# B\n';
-    expect(cleanMarkdown(input)).toBe('# A\n\n# B\n');
-  });
-});
-
 // --- handleRequest ---
+
+// Note: cleanMarkdown/cleanMdx unit tests live in /lib/__tests__/mdx-to-md.test.js
+// (run with `node --test`). The tests below cover the worker's request-handling
+// behavior — they exercise the conversion in passing via the markdown-serving block.
 
 describe('handleRequest', () => {
 
