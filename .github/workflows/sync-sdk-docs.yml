@@ -46,7 +46,7 @@ on:
 env:
   SOURCE_OWNER: MarketDataApp
   TARGET_OWNER: MarketDataApp # change to MarketData-App after repo migration
-  BANNER_TAG: 'Generated from MarketDataApp/documentation/'
+  MANIFEST_FILE: docs/.sync-manifest.txt
 
 jobs:
   sync:
@@ -96,19 +96,24 @@ jobs:
 
       - name: Replace previously-generated docs with fresh export
         # We DO NOT wipe target/docs/ wholesale — it may contain SDK-repo-owned
-        # content (ADRs, internal READMEs). Instead, delete only files that
-        # carry our banner, then copy the new export over.
+        # content (ADRs, internal READMEs). The previous sync wrote a manifest
+        # at $MANIFEST_FILE listing every file it generated. Delete exactly
+        # those paths, then drop the fresh export in (which writes a new
+        # manifest).
         env:
           OUT_DIR: ${{ runner.temp }}/out
         run: |
           set -euo pipefail
           mkdir -p target/docs
-          # Remove only files in target/docs/ that we previously generated.
-          while IFS= read -r -d '' f; do
-            if head -n 5 "$f" | grep -q "$BANNER_TAG"; then
-              rm -f "$f"
-            fi
-          done < <(find target/docs -type f -name '*.md' -print0)
+          if [ -f "target/$MANIFEST_FILE" ]; then
+            while IFS= read -r rel; do
+              # Skip blank lines and comments (lines beginning with '#')
+              case "$rel" in
+                ''|'#'*) continue ;;
+              esac
+              rm -f "target/docs/$rel"
+            done < "target/$MANIFEST_FILE"
+          fi
           # Remove any now-empty directories left behind.
           find target/docs -type d -empty -delete || true
           mkdir -p target/docs
@@ -152,7 +157,8 @@ jobs:
             ${{ steps.diff.outputs.summary }}
             ```
 
-            > Files carrying the banner
-            > `<!-- Generated from MarketDataApp/documentation/... -->`
-            > are managed by this workflow — edit the source `.mdx` in the
-            > documentation repo, not the rendered `.md` here.
+            > **These files are auto-synced from
+            > [MarketDataApp/documentation](https://github.com/MarketDataApp/documentation/tree/staging/sdk/${{ matrix.sdk }})** —
+            > edit the source `.mdx` there, not the rendered `.md` here.
+            > Hand-edits to files listed in `docs/.sync-manifest.txt` will
+            > be overwritten on the next sync.
