@@ -1,0 +1,183 @@
+---
+title: Strikes
+sidebar_position: 5
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Enumerate the strike prices trading for each expiration of a given underlying symbol.
+
+## Making Requests
+
+Use the `strikes()` method on the `options` resource to fetch the strike enumeration.
+
+| Output Format          | Result Payload                                                          | Description                                |
+|------------------------|-------------------------------------------------------------------------|--------------------------------------------|
+| **internal** (default) | `OptionsStrikesResponse` or `OptionsStrikesHumanResponse`               | Object with one `number[]` per expiration. |
+| **json**               | Raw JSON object                                                         | The raw response as returned by the API.   |
+
+<a name="strikes"></a>
+## strikes
+
+```typescript
+// Positional form
+strikes<P>(
+  symbol: string,
+  params?: P,
+): MarketDataPromise<OptionsStrikesResponse | OptionsStrikesHumanResponse>
+
+// Object form
+strikes<P>(
+  params: P & { symbol: string },
+): MarketDataPromise<OptionsStrikesResponse | OptionsStrikesHumanResponse>
+```
+
+Fetches available strikes for a single underlying symbol.
+
+#### Parameters
+
+- `symbol` (string)
+
+  The underlying stock symbol (e.g. `"AAPL"`).
+
+- `expiration` (string | Date, optional)
+
+  Filter to strikes that trade on a specific expiration date. Without this parameter, every expiration is returned.
+
+- `date` (string | Date, optional)
+
+  Fetch strikes as-of a specific historical date.
+
+- [`outputFormat`](/sdk/js/settings#output-format) (optional): The format of the returned data. Alias: `format`.
+- [`dateFormat`](/sdk/js/settings#date-format) (optional): Date format. Alias: `dateformat`.
+- [`columns`](/sdk/js/settings#columns) (optional): Columns to include.
+- [`useHumanReadable`](/sdk/js/settings#human-readable) (optional): Use human-readable field names. Alias: `human`.
+
+#### Returns
+
+- [`MarketDataPromise<OptionsStrikesResponse | OptionsStrikesHumanResponse>`](/sdk/js/client#MarketDataPromise)
+
+<Tabs>
+<TabItem value="Default" label="Default">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const res = await client.options.strikes("AAPL");
+  // Every key besides `s` and `updated` is an expiration date.
+  for (const [expiration, strikes] of Object.entries(res)) {
+    if (expiration === "s" || expiration === "updated") continue;
+    console.log(`${expiration}: ${(strikes as number[]).length} strikes`);
+  }
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+
+<TabItem value="Filter" label="Filter By Expiration">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const res = await client.options.strikes("AAPL", {
+    expiration: "2026-06-19",
+  });
+  console.log(res["2026-06-19"]); // number[]
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+
+<TabItem value="Historical" label="Historical Snapshot">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  // Strikes as-of an end-of-day snapshot
+  const res = await client.options.strikes("AAPL", {
+    date: "2024-01-12",
+  });
+  console.log(res);
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+
+<TabItem value="Human" label="Human Readable">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const res = await client.options.strikes("AAPL", {
+    expiration: "2026-06-19",
+    human: true,
+  });
+  console.log(res.Date);                // Unix timestamp
+  console.log(res["2026-06-19"]);       // number[]
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+</Tabs>
+
+<a name="OptionsStrikesResponse"></a>
+## OptionsStrikesResponse
+
+```typescript
+interface OptionsStrikesResponse {
+  s: string;
+  updated: number;
+  [expiration: string]: number[] | string | number;
+}
+```
+
+#### Properties
+
+- `s` (string): Status indicator (e.g. `"ok"`, `"no_data"`).
+- `updated` (number): Unix timestamp when the data was last updated.
+- `[expiration]` (number[]): One entry per available expiration date in `YYYY-MM-DD` format, whose value is the array of strike prices trading on that expiration.
+
+<a name="OptionsStrikesHumanResponse"></a>
+## OptionsStrikesHumanResponse
+
+```typescript
+interface OptionsStrikesHumanResponse {
+  Date: number;
+  [expiration: string]: number[] | number;
+}
+```
+
+`OptionsStrikesHumanResponse` is returned when `human: true` is set. The status field is omitted and `updated` is renamed to `Date`.
+
+## No-data responses
+
+Calling `strikes()` against a symbol or expiration with no listings resolves with an empty result rather than rejecting. Inspect `no_data` or `hasData()` on the returned promise:
+
+```typescript
+const pending = client.options.strikes("UNKNOWN_TICKER");
+const res = await pending;
+if (pending.no_data) {
+  console.log("No strikes available for that symbol");
+}
+```

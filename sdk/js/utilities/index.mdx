@@ -1,0 +1,16 @@
+---
+title: Utilities
+slug: /js/utilities
+sidebar_position: 50
+---
+
+The JavaScript SDK from Market Data provides methods designed to streamline your use of the following Utilities endpoints. These intuitive methods provide a seamless interface for accessing diagnostic and account-level data, including service status, request-header inspection, and the rate-limit snapshot tied to your API token.
+
+All three utilities skip the per-token rate-limit gate and bypass the `/v1/` URL prefix, so they remain reachable even when your account is throttled.
+
+## Utilities Endpoints
+
+import DocCardList from "@theme/DocCardList";
+import { useCurrentSidebarCategory } from "@docusaurus/theme-common";
+
+<DocCardList items={useCurrentSidebarCategory().items} />
