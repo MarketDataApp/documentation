@@ -31,3 +31,6 @@ static/robots.txt
 static/css/
 worker/node_modules
 
+# Internal SOPs (not for public docs site)
+sop/
+
