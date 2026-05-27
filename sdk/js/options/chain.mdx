@@ -50,7 +50,7 @@ Fetches the option chain for a single underlying symbol.
 
   Filter by specific expiration date.
 
-- `days_to_expiration` (number, optional)
+- `dte` (number, optional)
 
   Filter by number of days to expiration.
 
@@ -74,7 +74,7 @@ Fetches the option chain for a single underlying symbol.
 
   Filter by target delta value.
 
-- `strike_limit` (number, optional)
+- `strikeLimit` (number, optional)
 
   Limit the response to the N strikes nearest the underlying price.
 
@@ -82,15 +82,15 @@ Fetches the option chain for a single underlying symbol.
 
   Filter by in-the-money / out-of-the-money range (e.g. `"itm"`, `"otm"`).
 
-- `min_bid` / `max_bid` / `min_ask` / `max_ask` (number, optional)
+- `minBid` / `maxBid` / `minAsk` / `maxAsk` (number, optional)
 
   Filter by quote price thresholds.
 
-- `max_bid_ask_spread` (number, optional), `max_bid_ask_spread_pct` (number, optional)
+- `maxBidAskSpread` (number, optional), `maxBidAskSpreadPct` (number, optional)
 
   Filter by spread thresholds.
 
-- `min_open_interest` (number, optional), `min_volume` (number, optional)
+- `minOpenInterest` (number, optional), `minVolume` (number, optional)
 
   Filter by liquidity thresholds.
 
@@ -146,8 +146,8 @@ try {
   // Calls only, narrow strike window, high open interest
   const contracts = await client.options.chain("AAPL", {
     side: "call",
-    strike_limit: 10,
-    min_open_interest: 100,
+    strikeLimit: 10,
+    minOpenInterest: 100,
   });
   for (const c of contracts) {
     console.log(
