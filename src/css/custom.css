@@ -152,6 +152,10 @@
   align-self: center; /* Center the image in the flex container */
 }
 
+.sdk-item p img + img {
+  margin-left: 12px;
+}
+
 [data-theme="dark"] .sdk-item {
   background-color: #1e1e1e; /* Dark background for the items */
   color: #ffffff; /* Light text color for readability */
