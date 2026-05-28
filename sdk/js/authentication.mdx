@@ -76,18 +76,18 @@ Add `.env` to your `.gitignore` so the token is not committed to source control.
 Use the following code to verify that your authentication is working by making a test request to `SPY` or any other symbol that requires authentication. Do not use `AAPL` to test your authentication because `AAPL` is a free test symbol and will return data even if you are not authenticated properly.
 
 ```typescript
-import { MarketDataClient } from "marketdata-sdk-js";
+import { MarketDataClient } from "marketdata-sdk";
 
 // No need to pass a token here — the SDK reads it from
 // the MARKETDATA_TOKEN environment variable automatically.
 const client = new MarketDataClient();
 
-const result = await client.stocks.quotes("SPY");
-
-result.match(
-  (quotes) => console.log(quotes),
-  (error) => console.error(`Error: ${error.message}`),
-);
+try {
+  const quotes = await client.stocks.quotes("SPY");
+  console.log(quotes);
+} catch (error) {
+  console.error(`Error: ${error.message}`);
+}
 ```
 
 If your token is set correctly, you should see the output of the test request. If you see an error, double-check that you have set the token correctly.
@@ -99,18 +99,18 @@ If you decide to pass the token directly when creating the client, you can do so
 ### Example Code
 
 ```typescript
-import { MarketDataClient } from "marketdata-sdk-js";
+import { MarketDataClient } from "marketdata-sdk";
 
 const token = "your_token_here";
 
 const client = new MarketDataClient({ token });
 
-const result = await client.stocks.quotes("SPY");
-
-result.match(
-  (quotes) => console.log(quotes),
-  (error) => console.error(`Error: ${error.message}`),
-);
+try {
+  const quotes = await client.stocks.quotes("SPY");
+  console.log(quotes);
+} catch (error) {
+  console.error(`Error: ${error.message}`);
+}
 ```
 
 ## Next Steps

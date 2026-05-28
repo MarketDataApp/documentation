@@ -1,0 +1,102 @@
+---
+title: Status
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve service-level health information for every Market Data endpoint. No authentication token is required — `status()` is reachable in demo mode and is the SDK's own probe before retrying a 5xx response.
+
+## Making Requests
+
+Use the `status()` method on the `utilities` resource to fetch the per-service availability snapshot.
+
+| Output Format          | Result Payload       | Description                                          |
+|------------------------|----------------------|------------------------------------------------------|
+| **internal** (default) | `ApiStatusResponse`  | Decoded status snapshot with parallel arrays.        |
+| **json**               | Raw JSON object      | The raw response as returned by the API.             |
+
+<a name="status"></a>
+## status
+
+```typescript
+status(): MarketDataPromise<ApiStatusResponse>
+```
+
+Fetches the current service-status payload. Takes no parameters.
+
+#### Returns
+
+- [`MarketDataPromise<ApiStatusResponse>`](/sdk/js/client#MarketDataPromise)
+
+<Tabs>
+<TabItem value="Default" label="Default">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const s = await client.utilities.status();
+  for (let i = 0; i < s.service.length; i++) {
+    console.log(`${s.service[i]}: ${s.status[i]} (online=${s.online[i]})`);
+  }
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+
+<TabItem value="Uptime" label="With Uptime">
+
+```typescript
+import { MarketDataClient } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const s = await client.utilities.status();
+  for (let i = 0; i < s.service.length; i++) {
+    const u30 = s.uptimePct30d?.[i] ?? null;
+    const u90 = s.uptimePct90d?.[i] ?? null;
+    console.log(`${s.service[i]} — 30d=${u30}% 90d=${u90}%`);
+  }
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+</Tabs>
+
+<a name="ApiStatusResponse"></a>
+## ApiStatusResponse
+
+```typescript
+interface ApiStatusResponse {
+  service: string[];
+  status: string[];
+  online: boolean[];
+  uptimePct30d?: number[];
+  uptimePct90d?: number[];
+  updated: number[];
+}
+```
+
+#### Properties
+
+- `service` (string[]): Service names (e.g. `"stocks/candles"`, `"options/chain"`).
+- `status` (string[]): Human-readable status for each service (e.g. `"OPERATIONAL"`, `"OFFLINE"`).
+- `online` (boolean[]): Boolean availability flag for each service.
+- `uptimePct30d` (number[], optional): Trailing 30-day uptime percentage per service.
+- `uptimePct90d` (number[], optional): Trailing 90-day uptime percentage per service.
+- `updated` (number[]): Unix timestamps of the last status check per service.
+
+All arrays are parallel — index `i` across `service`, `status`, `online`, and `updated` refers to the same service.
+
+:::info
+The SDK's internal retry loop calls `utilities.status()` before retrying a 5xx response. If the service that originally failed is marked `online: false`, the retry short-circuits so calls fail fast instead of grinding through the full backoff.
+:::
