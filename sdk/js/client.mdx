@@ -94,7 +94,7 @@ Creates and configures a new `MarketDataClient` instance. This initializes the c
 
 #### Notes
 
-- The client sets a `User-Agent` header of the form `marketdata-sdk-javascript/{version}` (e.g. `marketdata-sdk-javascript/1.0.0`).
+- The client sets a `User-Agent` header of the form `marketdata-sdk-js/{version}` (e.g. `marketdata-sdk-js/1.0.0`).
 - All authenticated requests include an `Authorization: Bearer {token}` header.
 - The client reuses a single underlying `fetch` client, which benefits from Node's global connection pooling, and enforces a global 50-request concurrency pool across every endpoint.
 - Every request has a 99-second timeout; a timed-out fetch rejects with `NetworkError`.

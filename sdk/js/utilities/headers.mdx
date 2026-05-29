@@ -42,7 +42,7 @@ const client = new MarketDataClient();
 
 try {
   const h = await client.utilities.headers();
-  console.log(h["user-agent"]);   // "marketdata-sdk-javascript/1.0.0"
+  console.log(h["user-agent"]);   // "marketdata-sdk-js/1.0.0"
   console.log(h["accept-encoding"]);
 } catch (error) {
   console.error(error);
