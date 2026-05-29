@@ -19,40 +19,32 @@ This guide will help you install the Market Data JavaScript SDK and configure it
 <TabItem value="pnpm" label="pnpm">
 
 ```bash
-pnpm add marketdata-sdk
+pnpm add @marketdata/sdk
 ```
 
 </TabItem>
 <TabItem value="npm" label="npm">
 
 ```bash
-npm install marketdata-sdk
+npm install @marketdata/sdk
 ```
 
 </TabItem>
 <TabItem value="yarn" label="yarn">
 
 ```bash
-yarn add marketdata-sdk
+yarn add @marketdata/sdk
 ```
 
 </TabItem>
 </Tabs>
 
-:::info
-The SDK is in early development (version `0.0.1`) and has not yet been published to npm. Until it is, install directly from GitHub:
-
-```bash
-pnpm add github:MarketDataApp/sdk-js
-```
-:::
-
 ## TypeScript Support
 
 The SDK is written in TypeScript and ships first-class type definitions. No `@types/*` package is needed. The SDK builds to both ESM and CommonJS, so it works with either module system.
 
-- **ESM**: `import { MarketDataClient } from "marketdata-sdk";`
-- **CommonJS**: `const { MarketDataClient } = require("marketdata-sdk");`
+- **ESM**: `import { MarketDataClient } from "@marketdata/sdk";`
+- **CommonJS**: `const { MarketDataClient } = require("@marketdata/sdk");`
 
 ## Local Development Installation
 

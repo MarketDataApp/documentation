@@ -36,13 +36,13 @@ Fetches the request-header echo. Takes no parameters.
 <TabItem value="Default" label="Default">
 
 ```typescript
-import { MarketDataClient } from "marketdata-sdk";
+import { MarketDataClient } from "@marketdata/sdk";
 
 const client = new MarketDataClient();
 
 try {
   const h = await client.utilities.headers();
-  console.log(h["user-agent"]);   // "marketdata-sdk-javascript/0.0.1"
+  console.log(h["user-agent"]);   // "marketdata-sdk-javascript/1.0.0"
   console.log(h["accept-encoding"]);
 } catch (error) {
   console.error(error);
