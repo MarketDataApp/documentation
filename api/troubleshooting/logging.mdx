@@ -22,7 +22,7 @@ When logging errors, the log should include the exact request made, Market Data'
 <TabItem value="JavaScript" label="JavaScript">
 
 ```js title="logger.js"
-import { MarketDataClient, DefaultLogger, LogLevel } from "marketdata-sdk";
+import { MarketDataClient, DefaultLogger, LogLevel } from "@marketdata/sdk";
 
 // Enable DEBUG-level logging to capture full request/response diagnostics
 // (including the CF-Ray header) for every API call.
@@ -44,8 +44,8 @@ try {
 <TabItem value="TypeScript" label="TypeScript">
 
 ```typescript title="logger.ts"
-import { MarketDataClient, DefaultLogger, LogLevel } from "marketdata-sdk";
-import type { StockQuote } from "marketdata-sdk";
+import { MarketDataClient, DefaultLogger, LogLevel } from "@marketdata/sdk";
+import type { StockQuote } from "@marketdata/sdk";
 
 // Enable DEBUG-level logging to capture full request/response diagnostics
 // (including the CF-Ray header) for every API call.

@@ -76,7 +76,7 @@ elif isinstance(quotes, dict) and quotes.get("s") == "ok" and "updated" in quote
 <TabItem value="JavaScript" label="JavaScript">
 
 ```js title="checkDataAge.js"
-import { MarketDataClient, Mode } from "marketdata-sdk";
+import { MarketDataClient, Mode } from "@marketdata/sdk";
 
 const client = new MarketDataClient();
 
@@ -115,8 +115,8 @@ try {
 <TabItem value="TypeScript" label="TypeScript">
 
 ```typescript title="checkDataAge.ts"
-import { MarketDataClient, Mode } from "marketdata-sdk";
-import type { StockQuote } from "marketdata-sdk";
+import { MarketDataClient, Mode } from "@marketdata/sdk";
+import type { StockQuote } from "@marketdata/sdk";
 
 const client = new MarketDataClient();
 
@@ -384,7 +384,7 @@ test_realtime_data("AAPL")
 <TabItem value="JavaScript" label="JavaScript">
 
 ```js title="testRealtimeData.js"
-import { MarketDataClient, Mode } from "marketdata-sdk";
+import { MarketDataClient, Mode } from "@marketdata/sdk";
 
 const client = new MarketDataClient();
 
@@ -437,8 +437,8 @@ testRealtimeData("AAPL");
 <TabItem value="TypeScript" label="TypeScript">
 
 ```typescript title="testRealtimeData.ts"
-import { MarketDataClient, Mode } from "marketdata-sdk";
-import type { StockQuote } from "marketdata-sdk";
+import { MarketDataClient, Mode } from "@marketdata/sdk";
+import type { StockQuote } from "@marketdata/sdk";
 
 const client = new MarketDataClient();
 
