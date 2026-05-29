@@ -22,16 +22,36 @@ GET https://api.marketdata.app/v1/options/chain/{underlyingSymbol}/
 **GET** [https://api.marketdata.app/v1/options/chain/AAPL/?expiration=2025-01-17&side=call](https://api.marketdata.app/v1/options/chain/AAPL/?expiration=2025-01-17&side=call)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="app.js"
-fetch("https://api.marketdata.app/v1/options/chain/AAPL/")
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+import { MarketDataClient } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const contracts = await client.options.chain("AAPL");
+  console.log(`Got ${contracts.length} contracts`);
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="app.ts"
+import { MarketDataClient } from "marketdata-sdk";
+import type { OptionsChain } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const contracts: OptionsChain[] = await client.options.chain("AAPL");
+  console.log(`Got ${contracts.length} contracts`);
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>

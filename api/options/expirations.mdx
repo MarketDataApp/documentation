@@ -24,16 +24,42 @@ GET
 **GET** [https://api.marketdata.app/v1/options/expirations/AAPL/](https://api.marketdata.app/v1/options/expirations/AAPL/)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="app.js"
-fetch("https://api.marketdata.app/v1/options/expirations/AAPL/")
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+import { MarketDataClient } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const data = await client.options.expirations("AAPL");
+  console.log(`Updated: ${data.updated}`);
+  for (const exp of data.expirations) {
+    console.log(exp);
+  }
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="app.ts"
+import { MarketDataClient } from "marketdata-sdk";
+import type { OptionsExpirationsResponse } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const data: OptionsExpirationsResponse = await client.options.expirations("AAPL");
+  console.log(`Updated: ${data.updated}`);
+  for (const exp of data.expirations) {
+    console.log(exp);
+  }
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>

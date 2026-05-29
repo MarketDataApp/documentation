@@ -48,43 +48,46 @@ The curly braces around token are a placeholder for this example. Do not actuall
 :::
 
 </TabItem>
-<TabItem value="Node.js" label="Node.js">
+<TabItem value="JavaScript" label="JavaScript">
 
-```javascript
-const https = require('https');
+```js title="app.js"
+import { MarketDataClient } from "marketdata-sdk";
 
-// Your token
-const token = 'your_token_here';
+// The SDK reads your token from the MARKETDATA_TOKEN environment variable.
+// Alternatively, pass it directly: new MarketDataClient({ token: "your_token_here" })
+const client = new MarketDataClient();
 
-// The API endpoint for retrieving stock quotes for SPY
-const url = 'https://api.marketdata.app/v1/stocks/quotes/SPY/';
-
-// Making the GET request to the API
-https.get(url, {
-    headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${token}`
-    }
-}, (response) => {
-    let data = '';
-
-    // A chunk of data has been received.
-    response.on('data', (chunk) => {
-        data += chunk;
-    });
-
-    // The whole response has been received. Print out the result.
-    response.on('end', () => {
-        if (response.statusCode === 200 || response.statusCode === 203) {
-            console.log(JSON.parse(data));
-        } else {
-            console.log(`Failed to retrieve data: ${response.statusCode}`);
-        }
-    });
-}).on("error", (err) => {
-    console.log("Error: " + err.message);
-});
+try {
+  const quotes = await client.stocks.quotes("SPY");
+  console.log(quotes);
+} catch (error) {
+  console.error(error);
+}
 ```
+
+For more information about using the JavaScript SDK, see our [JavaScript SDK documentation](/sdk/js) and [authentication guide](/sdk/js/authentication).
+
+</TabItem>
+
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="app.ts"
+import { MarketDataClient } from "marketdata-sdk";
+import type { StockQuote } from "marketdata-sdk";
+
+// The SDK reads your token from the MARKETDATA_TOKEN environment variable.
+// Alternatively, pass it directly: new MarketDataClient({ token: "your_token_here" })
+const client = new MarketDataClient();
+
+try {
+  const quotes: StockQuote[] = await client.stocks.quotes("SPY");
+  console.log(quotes);
+} catch (error) {
+  console.error(error);
+}
+```
+
+For more information about using the JavaScript SDK, see our [JavaScript SDK documentation](/sdk/js) and [authentication guide](/sdk/js/authentication).
 
 </TabItem>
 

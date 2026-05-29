@@ -36,16 +36,36 @@ GET
 **GET** [https://api.marketdata.app/v1/stocks/prices/AAPL/](https://api.marketdata.app/v1/stocks/prices/AAPL/)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="app.js"
-fetch("https://api.marketdata.app/v1/stocks/prices/AAPL/")
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+import { MarketDataClient } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const prices = await client.stocks.prices("AAPL");
+  console.log(prices[0].mid);
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="app.ts"
+import { MarketDataClient } from "marketdata-sdk";
+import type { StockPrice } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const prices: StockPrice[] = await client.stocks.prices("AAPL");
+  console.log(prices[0].mid);
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>
@@ -83,16 +103,40 @@ echo $prices;
 **GET** [https://api.marketdata.app/v1/stocks/prices/?symbols=AAPL,META,MSFT](https://api.marketdata.app/v1/stocks/prices/?symbols=AAPL,META,MSFT)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="app.js"
-fetch("https://api.marketdata.app/v1/stocks/prices/?symbols=AAPL,META,MSFT")
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+import { MarketDataClient } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const prices = await client.stocks.prices(["AAPL", "META", "MSFT"]);
+  for (const p of prices) {
+    console.log(`${p.symbol}: mid=${p.mid}`);
+  }
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="app.ts"
+import { MarketDataClient } from "marketdata-sdk";
+import type { StockPrice } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const prices: StockPrice[] = await client.stocks.prices(["AAPL", "META", "MSFT"]);
+  for (const p of prices) {
+    console.log(`${p.symbol}: mid=${p.mid}`);
+  }
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>

@@ -26,26 +26,46 @@ GET
 **GET** [https://api.marketdata.app/v1/markets/status/?date=yesterday](https://api.marketdata.app/v1/markets/status/?date=yesterday)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="app.js"
-fetch(
-  "https://api.marketdata.app/v1/markets/status/?from=2020-01-01&to=2020-12-31"
-)
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+import { MarketDataClient } from "marketdata-sdk";
 
-fetch("https://api.marketdata.app/v1/markets/status/?date=yesterday")
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+const client = new MarketDataClient();
+
+try {
+  const days = await client.markets.status({ from: "2020-01-01", to: "2020-12-31" });
+  for (const d of days) {
+    console.log(`date=${d.date} status=${d.status}`);
+  }
+
+  const yesterday = await client.markets.status({ date: "yesterday" });
+  console.log(yesterday[0]);
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="app.ts"
+import { MarketDataClient } from "marketdata-sdk";
+import type { MarketStatusResponse } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const days: MarketStatusResponse = await client.markets.status({ from: "2020-01-01", to: "2020-12-31" });
+  for (const d of days) {
+    console.log(`date=${d.date} status=${d.status}`);
+  }
+
+  const yesterday: MarketStatusResponse = await client.markets.status({ date: "yesterday" });
+  console.log(yesterday[0]);
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>
