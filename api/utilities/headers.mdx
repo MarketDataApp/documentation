@@ -29,13 +29,38 @@ GET
 **GET** [https://api.marketdata.app/headers/](https://api.marketdata.app/headers/)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="headersCheck.js"
-fetch("https://api.marketdata.app/headers/")
-  .then((res) => res.json())
-  .then((json) => console.log(json))
-  .catch((err) => console.log(err));
+import { MarketDataClient } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const h = await client.utilities.headers();
+  console.log(h["user-agent"]);
+  console.log(h["accept-encoding"]);
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="headersCheck.ts"
+import { MarketDataClient } from "marketdata-sdk";
+import type { HeadersResponse } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const h: HeadersResponse = await client.utilities.headers();
+  console.log(h["user-agent"]);
+  console.log(h["accept-encoding"]);
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>

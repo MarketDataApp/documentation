@@ -33,16 +33,40 @@ GET
 **GET** [https://api.marketdata.app/v1/stocks/news/AAPL/](https://api.marketdata.app/v1/stocks/news/AAPL/)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="app.js"
-fetch("https://api.marketdata.app/v1/stocks/news/AAPL/")
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+import { MarketDataClient } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const articles = await client.stocks.news("AAPL");
+  for (const a of articles) {
+    console.log(`${a.source}: ${a.headline}`);
+  }
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="app.ts"
+import { MarketDataClient } from "marketdata-sdk";
+import type { StockNews } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const articles: StockNews[] = await client.stocks.news("AAPL");
+  for (const a of articles) {
+    console.log(`${a.source}: ${a.headline}`);
+  }
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>

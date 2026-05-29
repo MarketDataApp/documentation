@@ -73,42 +73,81 @@ elif isinstance(quotes, dict) and quotes.get("s") == "ok" and "updated" in quote
 ```
 
 </TabItem>
-<TabItem value="NodeJS" label="Node.js">
+<TabItem value="JavaScript" label="JavaScript">
 
-```javascript
-const response = await fetch(
-  "https://api.marketdata.app/v1/stocks/quotes/AAPL/",
-  {
-    headers: {
-      "Authorization": "Bearer YOUR_TOKEN"
+```js title="checkDataAge.js"
+import { MarketDataClient, Mode } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  // Request live data, then inspect the `updated` timestamp.
+  const quotes = await client.stocks.quotes("AAPL", { mode: Mode.LIVE });
+  const quote = quotes[0];
+
+  if (quote?.updated) {
+    // `updated` is a Unix timestamp in seconds.
+    const updatedTime = new Date(quote.updated * 1000);
+    const currentTime = new Date();
+
+    // Calculate the age of the data
+    const ageMinutes = (currentTime - updatedTime) / 1000 / 60;
+
+    console.log(`Data timestamp: ${updatedTime}`);
+    console.log(`Current time: ${currentTime}`);
+    console.log(`Data age: ${ageMinutes.toFixed(1)} minutes`);
+
+    // Determine data type
+    if (ageMinutes < 1) {
+      console.log("✅ Real-time data (less than 1 minute old)");
+    } else if (ageMinutes < 20) {
+      console.log("⚠️ 15-minute delayed data");
+    } else {
+      console.log("❌ Historical data (1 day old or more)");
     }
   }
-);
+} catch (error) {
+  console.error(error);
+}
+```
 
-const data = await response.json();
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
 
-if (data.s === "ok" && data.updated) {
-  // Get the timestamp (Unix epoch seconds)
-  const updatedTimestamp = data.updated[0] * 1000; // Convert to milliseconds
-  const updatedTime = new Date(updatedTimestamp);
-  const currentTime = new Date();
-  
-  // Calculate the age of the data
-  const ageSeconds = (currentTime - updatedTime) / 1000;
-  const ageMinutes = ageSeconds / 60;
-  
-  console.log(`Data timestamp: ${updatedTime}`);
-  console.log(`Current time: ${currentTime}`);
-  console.log(`Data age: ${ageMinutes.toFixed(1)} minutes`);
-  
-  // Determine data type
-  if (ageMinutes < 1) {
-    console.log("✅ Real-time data (less than 1 minute old)");
-  } else if (ageMinutes < 20) {
-    console.log("⚠️ 15-minute delayed data");
-  } else {
-    console.log("❌ Historical data (1 day old or more)");
+```typescript title="checkDataAge.ts"
+import { MarketDataClient, Mode } from "marketdata-sdk";
+import type { StockQuote } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  // Request live data, then inspect the `updated` timestamp.
+  const quotes: StockQuote[] = await client.stocks.quotes("AAPL", { mode: Mode.LIVE });
+  const quote = quotes[0];
+
+  if (quote?.updated) {
+    // `updated` is a Unix timestamp in seconds.
+    const updatedTime = new Date(quote.updated * 1000);
+    const currentTime = new Date();
+
+    // Calculate the age of the data
+    const ageMinutes = (currentTime.getTime() - updatedTime.getTime()) / 1000 / 60;
+
+    console.log(`Data timestamp: ${updatedTime}`);
+    console.log(`Current time: ${currentTime}`);
+    console.log(`Data age: ${ageMinutes.toFixed(1)} minutes`);
+
+    // Determine data type
+    if (ageMinutes < 1) {
+      console.log("✅ Real-time data (less than 1 minute old)");
+    } else if (ageMinutes < 20) {
+      console.log("⚠️ 15-minute delayed data");
+    } else {
+      console.log("❌ Historical data (1 day old or more)");
+    }
   }
+} catch (error) {
+  console.error(error);
 }
 ```
 
@@ -342,56 +381,104 @@ test_realtime_data("AAPL")
 ```
 
 </TabItem>
-<TabItem value="NodeJS" label="Node.js">
+<TabItem value="JavaScript" label="JavaScript">
 
-```javascript
+```js title="testRealtimeData.js"
+import { MarketDataClient, Mode } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
 async function testRealtimeData(symbol = "AAPL") {
-  const response = await fetch(
-    `https://api.marketdata.app/v1/stocks/quotes/${symbol}/`,
-    {
-      headers: {
-        "Authorization": "Bearer YOUR_TOKEN"
-      }
+  try {
+    const quotes = await client.stocks.quotes(symbol, { mode: Mode.LIVE });
+    const quote = quotes[0];
+
+    if (!quote?.updated) {
+      console.log("Warning: No timestamp in response");
+      return false;
     }
-  );
-  
-  const data = await response.json();
-  
-  if (data.s !== "ok") {
-    console.log(`Error: ${data.errmsg || "Unknown error"}`);
+
+    // `updated` is a Unix timestamp in seconds.
+    const updatedTime = new Date(quote.updated * 1000);
+    const currentTime = new Date();
+
+    // Calculate age
+    const ageMinutes = (currentTime - updatedTime) / 1000 / 60;
+
+    console.log(`Symbol: ${symbol}`);
+    console.log(`Data timestamp: ${updatedTime.toISOString()}`);
+    console.log(`Current time: ${currentTime.toISOString()}`);
+    console.log(`Data age: ${ageMinutes.toFixed(2)} minutes`);
+
+    // Check if real-time (less than 1 minute old during market hours)
+    if (ageMinutes < 1) {
+      console.log("✅ Real-time data is working!");
+      return true;
+    } else if (ageMinutes < 20) {
+      console.log("⚠️ Receiving 15-minute delayed data");
+      console.log("   → Check if IEX agreement is signed and approved");
+      return false;
+    } else {
+      console.log("❌ Receiving historical data (1 day old)");
+      console.log("   → Check if profile is complete and agreements are signed");
+      return false;
+    }
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
     return false;
   }
-  
-  if (!data.updated) {
-    console.log("Warning: No timestamp in response");
-    return false;
-  }
-  
-  // Get timestamp
-  const updatedTimestamp = data.updated[0] * 1000; // Convert to milliseconds
-  const updatedTime = new Date(updatedTimestamp);
-  const currentTime = new Date();
-  
-  // Calculate age
-  const ageSeconds = (currentTime - updatedTime) / 1000;
-  const ageMinutes = ageSeconds / 60;
-  
-  console.log(`Symbol: ${symbol}`);
-  console.log(`Data timestamp: ${updatedTime.toISOString()}`);
-  console.log(`Current time: ${currentTime.toISOString()}`);
-  console.log(`Data age: ${ageMinutes.toFixed(2)} minutes`);
-  
-  // Check if real-time (less than 1 minute old during market hours)
-  if (ageMinutes < 1) {
-    console.log("✅ Real-time data is working!");
-    return true;
-  } else if (ageMinutes < 20) {
-    console.log("⚠️ Receiving 15-minute delayed data");
-    console.log("   → Check if IEX agreement is signed and approved");
-    return false;
-  } else {
-    console.log("❌ Receiving historical data (1 day old)");
-    console.log("   → Check if profile is complete and agreements are signed");
+}
+
+// Test during market hours for best results
+testRealtimeData("AAPL");
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="testRealtimeData.ts"
+import { MarketDataClient, Mode } from "marketdata-sdk";
+import type { StockQuote } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+async function testRealtimeData(symbol: string = "AAPL"): Promise<boolean> {
+  try {
+    const quotes: StockQuote[] = await client.stocks.quotes(symbol, { mode: Mode.LIVE });
+    const quote = quotes[0];
+
+    if (!quote?.updated) {
+      console.log("Warning: No timestamp in response");
+      return false;
+    }
+
+    // `updated` is a Unix timestamp in seconds.
+    const updatedTime = new Date(quote.updated * 1000);
+    const currentTime = new Date();
+
+    // Calculate age
+    const ageMinutes = (currentTime.getTime() - updatedTime.getTime()) / 1000 / 60;
+
+    console.log(`Symbol: ${symbol}`);
+    console.log(`Data timestamp: ${updatedTime.toISOString()}`);
+    console.log(`Current time: ${currentTime.toISOString()}`);
+    console.log(`Data age: ${ageMinutes.toFixed(2)} minutes`);
+
+    // Check if real-time (less than 1 minute old during market hours)
+    if (ageMinutes < 1) {
+      console.log("✅ Real-time data is working!");
+      return true;
+    } else if (ageMinutes < 20) {
+      console.log("⚠️ Receiving 15-minute delayed data");
+      console.log("   → Check if IEX agreement is signed and approved");
+      return false;
+    } else {
+      console.log("❌ Receiving historical data (1 day old)");
+      console.log("   → Check if profile is complete and agreements are signed");
+      return false;
+    }
+  } catch (error) {
+    console.error(`Error: ${(error as Error).message}`);
     return false;
   }
 }

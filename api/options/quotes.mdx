@@ -28,16 +28,42 @@ GET
 **GET** [https://api.marketdata.app/v1/options/quotes/AAPL271217C00250000/](https://api.marketdata.app/v1/options/quotes/AAPL271217C00250000/)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="app.js"
-fetch("https://api.marketdata.app/v1/options/quotes/AAPL271217C00250000/")
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+import { MarketDataClient } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const quotes = await client.options.quotes("AAPL271217C00250000");
+  const q = quotes[0];
+  console.log(
+    `${q.optionSymbol}: bid=${q.bid} ask=${q.ask} delta=${q.delta}`
+  );
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="app.ts"
+import { MarketDataClient } from "marketdata-sdk";
+import type { OptionsQuotes } from "marketdata-sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const quotes: OptionsQuotes[] = await client.options.quotes("AAPL271217C00250000");
+  const q = quotes[0];
+  console.log(
+    `${q.optionSymbol}: bid=${q.bid} ask=${q.ask} delta=${q.delta}`
+  );
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>
