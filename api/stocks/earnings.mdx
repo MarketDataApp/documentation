@@ -29,16 +29,46 @@ GET
 **GET** [https://api.marketdata.app/v1/stocks/earnings/AAPL/](https://api.marketdata.app/v1/stocks/earnings/AAPL/)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="app.js"
-fetch("https://api.marketdata.app/v1/stocks/earnings/AAPL/")
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+import { MarketDataClient } from "@marketdata/sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const earnings = await client.stocks.earnings("AAPL");
+  for (const e of earnings) {
+    console.log(
+      `FY${e.fiscalYear} Q${e.fiscalQuarter}: ` +
+      `reported=${e.reportedEPS} estimated=${e.estimatedEPS}`
+    );
+  }
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="app.ts"
+import { MarketDataClient } from "@marketdata/sdk";
+import type { StockEarningsResponse } from "@marketdata/sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const earnings: StockEarningsResponse = await client.stocks.earnings("AAPL");
+  for (const e of earnings) {
+    console.log(
+      `FY${e.fiscalYear} Q${e.fiscalQuarter}: ` +
+      `reported=${e.reportedEPS} estimated=${e.estimatedEPS}`
+    );
+  }
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>

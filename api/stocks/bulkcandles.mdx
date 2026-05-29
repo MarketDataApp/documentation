@@ -24,18 +24,49 @@ GET
 **GET** [https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT](https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
+
+:::note
+The JavaScript/TypeScript SDK does not yet provide a method for the bulk candles endpoint, so these examples use the raw `fetch()` API. They will be replaced with `@marketdata/sdk` examples once bulk support is added.
+:::
 
 ```js title="app.js"
 fetch(
   "https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT"
 )
-  .then((res) => {
-    console.log(res);
+  .then((res) => res.json())
+  .then((data) => {
+    console.log(data);
   })
   .catch((err) => {
     console.log(err);
   });
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+:::note
+The JavaScript/TypeScript SDK does not yet provide a method for the bulk candles endpoint, so these examples use the raw `fetch()` API. They will be replaced with `@marketdata/sdk` examples once bulk support is added.
+:::
+
+```typescript title="app.ts"
+interface BulkCandlesResponse {
+  s: string;
+  symbol: string[];
+  o: number[];
+  h: number[];
+  l: number[];
+  c: number[];
+  v: number[];
+  t: number[];
+}
+
+const response: Response = await fetch(
+  "https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT"
+);
+const data: BulkCandlesResponse = await response.json();
+console.log(data);
 ```
 
 </TabItem>

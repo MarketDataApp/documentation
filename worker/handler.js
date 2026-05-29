@@ -14,6 +14,8 @@
  * are passed through unchanged.
  */
 
+const { cleanMdx } = require('../lib/mdx-to-md');
+
 /**
  * Hostname-based routing: maps each hostname to its Cloudflare Pages target.
  */
@@ -21,36 +23,6 @@ const TARGETS = {
   'www.marketdata.app': 'www-marketdata-app.pages.dev',
   'www-staging.marketdata.app': 'www-staging-marketdata-app.pages.dev',
 };
-
-/**
- * Converts raw MDX/markdown source into clean markdown by stripping
- * frontmatter, imports, and converting Docusaurus components to headings.
- *
- * @param {string} text - Raw file contents
- * @returns {string}
- */
-function cleanMarkdown(text) {
-  // Extract title from frontmatter, then strip it
-  const fmMatch = text.match(/^---\n([\s\S]*?)\n---/);
-  let title = '';
-  if (fmMatch) {
-    const titleMatch = fmMatch[1].match(/^title:\s*(.+)$/m);
-    if (titleMatch) title = titleMatch[1].trim().replace(/^["']|["']$/g, '');
-  }
-  text = text.replace(/^---\n[\s\S]*?\n---\n*/, '');
-  // Add title as H1 if present
-  if (title) text = `# ${title}\n\n${text}`;
-  // Strip import statements
-  text = text.replace(/^import\s+.*;\s*\n/gm, '');
-  // Convert <TabItem> to ### headings, strip <Tabs> wrappers
-  text = text.replace(/<Tabs>\n?/g, '');
-  text = text.replace(/<\/Tabs>\n?/g, '');
-  text = text.replace(/<TabItem\s+(?:[^>"]*(?:"[^"]*")?)*?label="([^"]*)"(?:[^>"]*(?:"[^"]*")?)*?>\n?/g, '### $1\n\n');
-  text = text.replace(/<\/TabItem>\n?/g, '');
-  // Clean up excess blank lines
-  text = text.replace(/\n{3,}/g, '\n\n').trim() + '\n';
-  return text;
-}
 
 /**
  * Routes incoming requests to the appropriate Cloudflare Pages deployment
@@ -121,7 +93,9 @@ async function handleRequest(request) {
     for (const candidate of candidates) {
       const res = await fetch(candidate);
       if (res.ok) {
-        const text = cleanMarkdown(await res.text());
+        const text = cleanMdx(await res.text(), {
+          baseUrl: 'https://www.marketdata.app/docs',
+        });
         const canonicalUrl = `https://www.marketdata.app/docs/${stem}/`;
         return new Response(text, {
           headers: {
@@ -166,4 +140,4 @@ async function handleRequest(request) {
   return response;
 }
 
-module.exports = { handleRequest, cleanMarkdown, TARGETS };
+module.exports = { handleRequest, TARGETS };

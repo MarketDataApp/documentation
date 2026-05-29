@@ -24,19 +24,42 @@ GET
 **GET** [https://api.marketdata.app/v1/stocks/candles/D/AAPL/?from=2020-01-01&to=2020-12-31](https://api.marketdata.app/v1/stocks/candles/D/AAPL/?from=2020-01-01&to=2020-12-31)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="app.js"
-fetch(
-  "https://api.marketdata.app/v1/stocks/candles/D/AAPL/?from=2020-01-01&to=2020-12-31"
-)
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+import { MarketDataClient } from "@marketdata/sdk";
 
+const client = new MarketDataClient();
+
+try {
+  // Default resolution is "D" (daily)
+  const candles = await client.stocks.candles("AAPL", { countback: 30 });
+  for (const c of candles) {
+    console.log(`t=${c.t} o=${c.o} h=${c.h} l=${c.l} c=${c.c} v=${c.v}`);
+  }
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="app.ts"
+import { MarketDataClient } from "@marketdata/sdk";
+import type { StockCandle } from "@marketdata/sdk";
+
+const client = new MarketDataClient();
+
+try {
+  // Default resolution is "D" (daily)
+  const candles: StockCandle[] = await client.stocks.candles("AAPL", { countback: 30 });
+  for (const c of candles) {
+    console.log(`t=${c.t} o=${c.o} h=${c.h} l=${c.l} c=${c.c} v=${c.v}`);
+  }
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>

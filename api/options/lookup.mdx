@@ -24,18 +24,36 @@ GET
 **GET** [https://api.marketdata.app/v1/options/lookup/AAPL%207/28/2023%20200%20Call/](https://api.marketdata.app/v1/options/lookup/AAPL%207/28/2023%20200%20Call/)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="app.js"
-fetch(
-  "https://api.marketdata.app/v1/options/lookup/AAPL%207/28/2023%20200%20Call/"
-)
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+import { MarketDataClient } from "@marketdata/sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const data = await client.options.lookup("AAPL 7/28/2023 200 Call");
+  console.log(data.optionSymbol);  // "AAPL230728C00200000"
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="app.ts"
+import { MarketDataClient } from "@marketdata/sdk";
+import type { OptionsLookupResponse } from "@marketdata/sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const data: OptionsLookupResponse = await client.options.lookup("AAPL 7/28/2023 200 Call");
+  console.log(data.optionSymbol);  // "AAPL230728C00200000"
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>

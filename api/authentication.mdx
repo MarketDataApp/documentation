@@ -8,6 +8,10 @@ import TabItem from "@theme/TabItem";
 
 The Market Data API uses a **Bearer Token** for authentication. The token is a programmatic representation of your username and password credentials, so you must keep it secret just as you would your username and password. The token is required for each request you make to the API.
 
+:::caution Accept HTTP 203 as success
+Any endpoint may return HTTP `203 Non-Authoritative Information` instead of `200 OK` when the response is served from our caching tier. The body is identical in shape — treat 203 exactly the same as 200. Code samples below that use raw HTTP libraries (rather than our SDKs) must accept both status codes; checking only `status == 200` will silently drop valid responses. See [Troubleshooting](/troubleshooting) for the full list of status codes.
+:::
+
 ## Obtaining a Token
 
 To obtain it, sign-in to your customer dashboard using your username and password and request a token. It will be delivered by email to the address you used to sign-in.  
@@ -44,43 +48,46 @@ The curly braces around token are a placeholder for this example. Do not actuall
 :::
 
 </TabItem>
-<TabItem value="Node.js" label="Node.js">
+<TabItem value="JavaScript" label="JavaScript">
 
-```javascript
-const https = require('https');
+```js title="app.js"
+import { MarketDataClient } from "@marketdata/sdk";
 
-// Your token
-const token = 'your_token_here';
+// The SDK reads your token from the MARKETDATA_TOKEN environment variable.
+// Alternatively, pass it directly: new MarketDataClient({ token: "your_token_here" })
+const client = new MarketDataClient();
 
-// The API endpoint for retrieving stock quotes for SPY
-const url = 'https://api.marketdata.app/v1/stocks/quotes/SPY/';
-
-// Making the GET request to the API
-https.get(url, {
-    headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${token}`
-    }
-}, (response) => {
-    let data = '';
-
-    // A chunk of data has been received.
-    response.on('data', (chunk) => {
-        data += chunk;
-    });
-
-    // The whole response has been received. Print out the result.
-    response.on('end', () => {
-        if (response.statusCode === 200 || response.statusCode === 203) {
-            console.log(JSON.parse(data));
-        } else {
-            console.log(`Failed to retrieve data: ${response.statusCode}`);
-        }
-    });
-}).on("error", (err) => {
-    console.log("Error: " + err.message);
-});
+try {
+  const quotes = await client.stocks.quotes("SPY");
+  console.log(quotes);
+} catch (error) {
+  console.error(error);
+}
 ```
+
+For more information about using the JavaScript SDK, see our [JavaScript SDK documentation](/sdk/js) and [authentication guide](/sdk/js/authentication).
+
+</TabItem>
+
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="app.ts"
+import { MarketDataClient } from "@marketdata/sdk";
+import type { StockQuote } from "@marketdata/sdk";
+
+// The SDK reads your token from the MARKETDATA_TOKEN environment variable.
+// Alternatively, pass it directly: new MarketDataClient({ token: "your_token_here" })
+const client = new MarketDataClient();
+
+try {
+  const quotes: StockQuote[] = await client.stocks.quotes("SPY");
+  console.log(quotes);
+} catch (error) {
+  console.error(error);
+}
+```
+
+For more information about using the JavaScript SDK, see our [JavaScript SDK documentation](/sdk/js) and [authentication guide](/sdk/js/authentication).
 
 </TabItem>
 

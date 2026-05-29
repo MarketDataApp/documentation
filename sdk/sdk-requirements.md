@@ -431,10 +431,15 @@ Retry requests only when:
 
 ### 9.3 Backoff Strategy
 
-- Use exponential backoff: `min(initial * 2^attempt, max_backoff)`
-- Default initial: 1 second
-- Default max backoff: 30 seconds
-- Default max attempts: 3
+- Use exponential backoff: `initial * 2^retry`, where `retry` is the **0-indexed retry number** (0 = first retry, 1 = second retry, 2 = third retry)
+- Initial delay: 1 second (fixed)
+- Default max retries: **3** (in addition to the initial attempt, for up to 4 total attempts)
+- Backoff schedule at the default of 3 retries:
+  - Before retry 0 (1st retry): **1s** (`1 * 2^0`)
+  - Before retry 1 (2nd retry): **2s** (`1 * 2^1`)
+  - Before retry 2 (3rd retry): **4s** (`1 * 2^2`)
+
+Max retries is **user-configurable** via a client constructor parameter (e.g., `max_retries`). The default applies when not specified. The initial delay and exponential base are fixed and not configurable.
 
 ### 9.4 Retry-After Header
 

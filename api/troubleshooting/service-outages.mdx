@@ -33,50 +33,74 @@ This endpoint is ideal to allow for automatic switching between Market Data and 
 :::
 
 <Tabs>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="status.js"
-// Importing the required library
-const axios = require('axios');
+import { MarketDataClient } from "@marketdata/sdk";
 
-// URL to the status endpoint
-const url = "https://api.marketdata.app/status/";
+const client = new MarketDataClient();
 
-// Function to check the status of a specific endpoint
-async function checkEndpointStatus(endpointPath) {
-    try {
-        const response = await axios.get(url);
-        const jsonData = response.data;
-        const index = jsonData.service.indexOf(endpointPath);
-
-        if (index !== -1) {
-            return {
-                online: jsonData.online[index],
-                status: jsonData.status[index],
-                uptime30d: jsonData.uptimePct30d[index],
-                uptime90d: jsonData.uptimePct90d[index]
-            };
-        } else {
-            return null;
-        }
-    } catch (error) {
-        console.error("Error fetching API status:", error);
-        return null;
-    }
+// Look up the status of a specific endpoint in the API status response.
+function findEndpointStatus(status, endpointPath) {
+  const index = status.service.indexOf(endpointPath);
+  if (index === -1) return null;
+  return {
+    online: status.online[index],
+    status: status.status[index],
+    uptime30d: status.uptimePct30d?.[index],
+    uptime90d: status.uptimePct90d?.[index],
+  };
 }
 
-// Checking the status of specific endpoints
-async function checkStatuses() {
-    const stocksQuotes = await checkEndpointStatus("/v1/stocks/quotes/");
-    const optionsChain = await checkEndpointStatus("/v1/options/chain/");
-    const stocksCandles = await checkEndpointStatus("/v1/stocks/candles/");
+try {
+  const status = await client.utilities.status();
 
-    console.log(`Stocks Quotes: ${stocksQuotes ? (stocksQuotes.online ? "Online" : "Offline") : "Not found"}`);
-    console.log(`Options Chain: ${optionsChain ? (optionsChain.online ? "Online" : "Offline") : "Not found"}`);
-    console.log(`Stocks Candles: ${stocksCandles ? (stocksCandles.online ? "Online" : "Offline") : "Not found"}`);
+  const stocksQuotes = findEndpointStatus(status, "/v1/stocks/quotes/");
+  const optionsChain = findEndpointStatus(status, "/v1/options/chain/");
+  const stocksCandles = findEndpointStatus(status, "/v1/stocks/candles/");
+
+  console.log(`Stocks Quotes: ${stocksQuotes ? (stocksQuotes.online ? "Online" : "Offline") : "Not found"}`);
+  console.log(`Options Chain: ${optionsChain ? (optionsChain.online ? "Online" : "Offline") : "Not found"}`);
+  console.log(`Stocks Candles: ${stocksCandles ? (stocksCandles.online ? "Online" : "Offline") : "Not found"}`);
+} catch (error) {
+  console.error("Error fetching API status:", error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="status.ts"
+import { MarketDataClient } from "@marketdata/sdk";
+import type { ApiStatusResponse } from "@marketdata/sdk";
+
+const client = new MarketDataClient();
+
+// Look up the status of a specific endpoint in the API status response.
+function findEndpointStatus(status: ApiStatusResponse, endpointPath: string) {
+  const index = status.service.indexOf(endpointPath);
+  if (index === -1) return null;
+  return {
+    online: status.online[index],
+    status: status.status[index],
+    uptime30d: status.uptimePct30d?.[index],
+    uptime90d: status.uptimePct90d?.[index],
+  };
 }
 
-checkStatuses();
+try {
+  const status: ApiStatusResponse = await client.utilities.status();
+
+  const stocksQuotes = findEndpointStatus(status, "/v1/stocks/quotes/");
+  const optionsChain = findEndpointStatus(status, "/v1/options/chain/");
+  const stocksCandles = findEndpointStatus(status, "/v1/stocks/candles/");
+
+  console.log(`Stocks Quotes: ${stocksQuotes ? (stocksQuotes.online ? "Online" : "Offline") : "Not found"}`);
+  console.log(`Options Chain: ${optionsChain ? (optionsChain.online ? "Online" : "Offline") : "Not found"}`);
+  console.log(`Stocks Candles: ${stocksCandles ? (stocksCandles.online ? "Online" : "Offline") : "Not found"}`);
+} catch (error) {
+  console.error("Error fetching API status:", error);
+}
 ```
 
 </TabItem>

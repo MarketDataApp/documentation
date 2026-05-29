@@ -47,6 +47,8 @@ Here's a quick comparison to help you understand the Starter Trial in relation t
 | Standard Endpoints | ✅           | ✅             | ✅             |
 | Premium Endpoints  | ❌           | AAPL Only      | ✅             |
 
+For endpoint-level freshness rules and the Delayed → Historical rollover timing (especially for options, where data only rolls at 9:30 AM ET the next trading day), see [Data Freshness](../data-freshness.md).
+
 ## Why Take A Trail of the Starter Plan?
 
 The Starter Trial is an excellent opportunity to test the waters and see how the enhanced features can benefit your project. Whether you're scaling up or need more detailed financial data for analysis, this trial provides a risk-free way to explore our services.

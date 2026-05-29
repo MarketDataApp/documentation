@@ -32,16 +32,36 @@ GET
 **GET** [https://api.marketdata.app/v1/stocks/quotes/AAPL/](https://api.marketdata.app/v1/stocks/quotes/AAPL/)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="app.js"
-fetch("https://api.marketdata.app/v1/stocks/quotes/AAPL/")
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+import { MarketDataClient } from "@marketdata/sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const quotes = await client.stocks.quotes("AAPL");
+  console.log(quotes);
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="app.ts"
+import { MarketDataClient } from "@marketdata/sdk";
+import type { StockQuote } from "@marketdata/sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const quotes: StockQuote[] = await client.stocks.quotes("AAPL");
+  console.log(quotes);
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>
@@ -102,16 +122,40 @@ echo $quote;
 **GET** [https://api.marketdata.app/v1/stocks/quotes/?symbols=AAPL,META,MSFT](https://api.marketdata.app/v1/stocks/quotes/?symbols=AAPL,META,MSFT)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="app.js"
-fetch("https://api.marketdata.app/v1/stocks/quotes/?symbols=AAPL,META,MSFT")
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+import { MarketDataClient } from "@marketdata/sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const quotes = await client.stocks.quotes(["AAPL", "META", "MSFT"]);
+  for (const q of quotes) {
+    console.log(`${q.symbol}: bid=${q.bid}, ask=${q.ask}, last=${q.last}`);
+  }
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="app.ts"
+import { MarketDataClient } from "@marketdata/sdk";
+import type { StockQuote } from "@marketdata/sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const quotes: StockQuote[] = await client.stocks.quotes(["AAPL", "META", "MSFT"]);
+  for (const q of quotes) {
+    console.log(`${q.symbol}: bid=${q.bid}, ask=${q.ask}, last=${q.last}`);
+  }
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>

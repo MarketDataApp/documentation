@@ -31,13 +31,40 @@ GET
 **GET** [https://api.marketdata.app/status/](https://api.marketdata.app/status/)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="statusCheck.js"
-fetch("https://api.marketdata.app/status/")
-  .then((res) => res.json())
-  .then((json) => console.log(json))
-  .catch((err) => console.log(err));
+import { MarketDataClient } from "@marketdata/sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const s = await client.utilities.status();
+  for (let i = 0; i < s.service.length; i++) {
+    console.log(`${s.service[i]}: ${s.status[i]} (online=${s.online[i]})`);
+  }
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="statusCheck.ts"
+import { MarketDataClient } from "@marketdata/sdk";
+import type { ApiStatusResponse } from "@marketdata/sdk";
+
+const client = new MarketDataClient();
+
+try {
+  const s: ApiStatusResponse = await client.utilities.status();
+  for (let i = 0; i < s.service.length; i++) {
+    console.log(`${s.service[i]}: ${s.status[i]} (online=${s.online[i]})`);
+  }
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>

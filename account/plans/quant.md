@@ -37,6 +37,8 @@ Here's how the Quant Plan compares to our other offerings:
 | Premium Endpoints     | ❌           | ✅         | ✅          | ✅          | ✅          |
 | Historical Data       | 1 Year       | 5 Years    | Full Access | Full Access | Full Access |
 
+For endpoint-level freshness rules, see [Data Freshness](../data-freshness.md).
+
 ## Why Choose the Quant Plan?
 
 The Quant Plan is the ultimate choice for high-powered traders and investors looking for the most comprehensive financial data solution. With its no-limit approach to data access, real-time information, and the ability to customize features, it provides the tools necessary for sophisticated analysis, trading, and decision-making at scale.

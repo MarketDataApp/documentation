@@ -30,19 +30,42 @@ GET
 **GET** [https://api.marketdata.app/v1/funds/candles/D/VFINX/?from=2020-01-01&to=2020-01-10](https://api.marketdata.app/v1/funds/candles/D/VFINX/?from=2020-01-01&to=2020-01-10)
 
 </TabItem>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="fundCandles.js"
-fetch(
-  "https://api.marketdata.app/v1/funds/candles/D/VFINX/?from=2020-01-01&to=2020-01-10"
-)
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+import { MarketDataClient } from "@marketdata/sdk";
 
+const client = new MarketDataClient();
+
+try {
+  // VFINX is available without authentication (free test symbol).
+  const candles = await client.funds.candles("VFINX", { countback: 30 });
+  for (const c of candles) {
+    console.log(`t=${c.t} o=${c.o} h=${c.h} l=${c.l} c=${c.c}`);
+  }
+} catch (error) {
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="fundCandles.ts"
+import { MarketDataClient } from "@marketdata/sdk";
+import type { FundsCandle } from "@marketdata/sdk";
+
+const client = new MarketDataClient();
+
+try {
+  // VFINX is available without authentication (free test symbol).
+  const candles: FundsCandle[] = await client.funds.candles("VFINX", { countback: 30 });
+  for (const c of candles) {
+    console.log(`t=${c.t} o=${c.o} h=${c.h} l=${c.l} c=${c.c}`);
+  }
+} catch (error) {
+  console.error(error);
+}
 ```
 
 </TabItem>

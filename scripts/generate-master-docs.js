@@ -48,6 +48,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { cleanMdx } = require('../lib/mdx-to-md');
 
 // Configuration
 // Output directory for generated master documentation files
@@ -98,7 +99,7 @@ function collectFiles(dir, fileList = []) {
 }
 
 /**
- * Strip "tg [letter]" tags from title
+ * Strip "tg [letter]" tags from title (LLM-bundle-specific, not a general MDX concern)
  */
 function stripTitleTags(title) {
   if (!title) return title;
@@ -106,95 +107,34 @@ function stripTitleTags(title) {
 }
 
 /**
- * Extract title from frontmatter
- */
-function extractTitle(content) {
-  const frontmatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---\s*\n/);
-  if (frontmatterMatch) {
-    const frontmatter = frontmatterMatch[1];
-    const titleMatch = frontmatter.match(/^title:\s*(.+)$/m);
-    if (titleMatch) {
-      let title = titleMatch[1].trim().replace(/^["']|["']$/g, '');
-      title = stripTitleTags(title);
-      return title;
-    }
-  }
-  return null;
-}
-
-/**
- * Strip frontmatter from content
- */
-function stripFrontmatter(content) {
-  return content.replace(/^---\s*\n[\s\S]*?\n---\s*\n/, '');
-}
-
-/**
- * Remove all import statements
- */
-function removeImports(content) {
-  return content.replace(/^import\s+.*?from\s+["'].*?["'];?\s*$/gm, '');
-}
-
-/**
- * Convert Tabs/TabItem components to markdown headers
- */
-function convertTabsToHeaders(content) {
-  let result = content;
-  
-  // Remove opening <Tabs> tag
-  result = result.replace(/<Tabs[^>]*>\s*/g, '');
-  
-  // Convert <TabItem> to header and remove closing tag
-  result = result.replace(/<TabItem\s+value="[^"]*"\s+label="([^"]*)"[^>]*>\s*/g, '### $1\n\n');
-  result = result.replace(/<\/TabItem>\s*/g, '\n\n');
-  
-  // Remove closing </Tabs> tag
-  result = result.replace(/<\/Tabs>\s*/g, '');
-  
-  return result;
-}
-
-/**
- * Remove empty components like DocCardList
- */
-function removeEmptyComponents(content) {
-  // Remove DocCardList and similar self-closing or empty components
-  result = content.replace(/<DocCardList[^>]*\/>\s*/g, '');
-  result = result.replace(/<DocCardList[^>]*>[\s\S]*?<\/DocCardList>\s*/g, '');
-  result = result.replace(/<useCurrentSidebarCategory[^>]*\/>\s*/g, '');
-  
-  // Remove import statements that reference these components (already handled, but double-check)
-  result = result.replace(/import\s+.*?from\s+["']@theme\/DocCardList["'];?\s*$/gm, '');
-  result = result.replace(/import\s+.*?from\s+["']@docusaurus\/theme-common["'];?\s*$/gm, '');
-  
-  return result;
-}
-
-/**
- * Process a single file
+ * Process a single file. Conversion is delegated to the shared lib;
+ * this function only does file IO + extracting the title for the TOC + stripping the
+ * H1 the lib prepends (combineFiles re-adds it with the right wrapping).
  */
 function processFile(filePath) {
   try {
-    let content = fs.readFileSync(filePath, 'utf8');
-    let title = extractTitle(content);
-    if (!title) {
+    const raw = fs.readFileSync(filePath, 'utf8');
+
+    // Run the canonical MDX→MD transform with absolute link rewriting
+    let content = cleanMdx(raw, { baseUrl: 'https://www.marketdata.app/docs' });
+
+    // Pull the H1 (from frontmatter title) back out so combineFiles can re-emit it
+    // with its preferred formatting, and strip our own "tg X" suffix from it.
+    let title;
+    const h1Match = content.match(/^#\s+(.+?)\n+/);
+    if (h1Match) {
+      title = stripTitleTags(h1Match[1].trim());
+      content = content.slice(h1Match[0].length);
+    } else {
       title = stripTitleTags(path.basename(filePath, path.extname(filePath)));
     }
-    
-    // Process content
-    content = stripFrontmatter(content);
-    content = removeImports(content);
-    content = removeEmptyComponents(content);
-    content = convertTabsToHeaders(content);
-    
-    // Clean up extra blank lines
-    content = content.replace(/\n{3,}/g, '\n\n').trim();
-    
+
+    content = content.trim();
+
     return {
       title,
       content,
-      path: filePath
+      path: filePath,
     };
   } catch (error) {
     console.error(`Error processing ${filePath}:`, error.message);

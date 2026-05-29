@@ -19,29 +19,48 @@ When logging errors, the log should include the exact request made, Market Data'
 ## Logging Examples
 
 <Tabs>
-<TabItem value="NodeJS" label="NodeJS">
+<TabItem value="JavaScript" label="JavaScript">
 
 ```js title="logger.js"
-const axios = require("axios");
-const fs = require("fs");
+import { MarketDataClient, DefaultLogger, LogLevel } from "@marketdata/sdk";
 
-// Make the API request
-axios
-  .get("https://api.marketdata.app/v1/your_endpoint_here/")
-  .then((response) => {
-    // Do nothing for successful responses
-  })
-  .catch((error) => {
-    if (error.response.status !== 200 && error.response.status !== 203) {
-      const logData = {
-        request: error.config.method.toUpperCase() + " " + error.config.url,
-        response: error.response.data,
-        cfRayHeader: error.response.headers["cf-ray"] || "Not available",
-      };
-      // Save to a logfile
-      fs.appendFileSync("api_error_log.json", JSON.stringify(logData) + "\n");
-    }
-  });
+// Enable DEBUG-level logging to capture full request/response diagnostics
+// (including the CF-Ray header) for every API call.
+const client = new MarketDataClient({
+  logger: new DefaultLogger(LogLevel.DEBUG),
+});
+
+try {
+  const quotes = await client.stocks.quotes("AAPL");
+  console.log(quotes);
+} catch (error) {
+  // The SDK logs the failing request and response automatically;
+  // handle the error here as needed.
+  console.error(error);
+}
+```
+
+</TabItem>
+<TabItem value="TypeScript" label="TypeScript">
+
+```typescript title="logger.ts"
+import { MarketDataClient, DefaultLogger, LogLevel } from "@marketdata/sdk";
+import type { StockQuote } from "@marketdata/sdk";
+
+// Enable DEBUG-level logging to capture full request/response diagnostics
+// (including the CF-Ray header) for every API call.
+const client = new MarketDataClient({
+  logger: new DefaultLogger(LogLevel.DEBUG),
+});
+
+try {
+  const quotes: StockQuote[] = await client.stocks.quotes("AAPL");
+  console.log(quotes);
+} catch (error) {
+  // The SDK logs the failing request and response automatically;
+  // handle the error here as needed.
+  console.error(error);
+}
 ```
 
 </TabItem>
