@@ -30,141 +30,141 @@ The tables below show the freshness category for every API endpoint, by plan. Re
 
 All pricing data is Historical (24-hour delayed). Metadata and computed-index endpoints remain Real-time.
 
-| Endpoint | Freshness | Notes |
-|----------|-----------|-------|
-| `/v1/stocks/quotes/`       | Historical | |
-| `/v1/stocks/candles/`      | Historical | |
-| `/v1/stocks/bulkcandles/`  | Historical | |
-| `/v1/stocks/prices/`       | Historical | |
-| `/v1/options/quotes/`      | Historical | |
-| `/v1/options/chain/`       | Historical | |
-| `/v1/options/strikes/`     | Real-time  | Contract metadata, no pricing |
-| `/v1/options/expirations/` | Real-time  | Contract metadata |
-| `/v1/options/lookup/`      | Real-time  | Contract metadata |
+| Endpoint                   | Freshness  | Notes                             |
+|----------------------------|------------|-----------------------------------|
+| `/v1/stocks/quotes/`       | Historical |                                   |
+| `/v1/stocks/candles/`      | Historical |                                   |
+| `/v1/stocks/bulkcandles/`  | Historical |                                   |
+| `/v1/stocks/prices/`       | Historical |                                   |
+| `/v1/options/quotes/`      | Historical |                                   |
+| `/v1/options/chain/`       | Historical |                                   |
+| `/v1/options/strikes/`     | Real-time  | Contract metadata, no pricing     |
+| `/v1/options/expirations/` | Real-time  | Contract metadata                 |
+| `/v1/options/lookup/`      | Real-time  | Contract metadata                 |
 | `/v1/indices/quotes/`      | Real-time  | Indices are computed continuously |
 | `/v1/indices/candles/`     | Real-time  | Indices are computed continuously |
-| `/v1/markets/status/`      | Real-time  | Calendar metadata |
-| `/v1/funds/*`              | See note   | Pending product confirmation |
+| `/v1/markets/status/`      | Real-time  | Calendar metadata                 |
+| `/v1/funds/*`              | See note   | Pending product confirmation      |
 
 ### Starter Trial
 
 Same as Free Forever — all pricing data is Historical (24-hour delayed).
 
-| Endpoint | Freshness | Notes |
-|----------|-----------|-------|
-| `/v1/stocks/quotes/`       | Historical | |
-| `/v1/stocks/candles/`      | Historical | |
-| `/v1/stocks/bulkcandles/`  | Historical | |
-| `/v1/stocks/prices/`       | Historical | |
-| `/v1/options/quotes/`      | Historical | |
-| `/v1/options/chain/`       | Historical | |
-| `/v1/options/strikes/`     | Real-time  | Contract metadata, no pricing |
-| `/v1/options/expirations/` | Real-time  | Contract metadata |
-| `/v1/options/lookup/`      | Real-time  | Contract metadata |
+| Endpoint                   | Freshness  | Notes                             |
+|----------------------------|------------|-----------------------------------|
+| `/v1/stocks/quotes/`       | Historical |                                   |
+| `/v1/stocks/candles/`      | Historical |                                   |
+| `/v1/stocks/bulkcandles/`  | Historical |                                   |
+| `/v1/stocks/prices/`       | Historical |                                   |
+| `/v1/options/quotes/`      | Historical |                                   |
+| `/v1/options/chain/`       | Historical |                                   |
+| `/v1/options/strikes/`     | Real-time  | Contract metadata, no pricing     |
+| `/v1/options/expirations/` | Real-time  | Contract metadata                 |
+| `/v1/options/lookup/`      | Real-time  | Contract metadata                 |
 | `/v1/indices/quotes/`      | Real-time  | Indices are computed continuously |
 | `/v1/indices/candles/`     | Real-time  | Indices are computed continuously |
-| `/v1/markets/status/`      | Real-time  | Calendar metadata |
-| `/v1/funds/*`              | See note   | Pending product confirmation |
+| `/v1/markets/status/`      | Real-time  | Calendar metadata                 |
+| `/v1/funds/*`              | See note   | Pending product confirmation      |
 
 ### Trader Trial
 
 Same as Starter Trial — all pricing data is Historical (24-hour delayed).
 
-| Endpoint | Freshness | Notes |
-|----------|-----------|-------|
-| `/v1/stocks/quotes/`       | Historical | |
-| `/v1/stocks/candles/`      | Historical | |
-| `/v1/stocks/bulkcandles/`  | Historical | |
-| `/v1/stocks/prices/`       | Historical | |
-| `/v1/options/quotes/`      | Historical | |
-| `/v1/options/chain/`       | Historical | |
-| `/v1/options/strikes/`     | Real-time  | Contract metadata, no pricing |
-| `/v1/options/expirations/` | Real-time  | Contract metadata |
-| `/v1/options/lookup/`      | Real-time  | Contract metadata |
+| Endpoint                   | Freshness  | Notes                             |
+|----------------------------|------------|-----------------------------------|
+| `/v1/stocks/quotes/`       | Historical |                                   |
+| `/v1/stocks/candles/`      | Historical |                                   |
+| `/v1/stocks/bulkcandles/`  | Historical |                                   |
+| `/v1/stocks/prices/`       | Historical |                                   |
+| `/v1/options/quotes/`      | Historical |                                   |
+| `/v1/options/chain/`       | Historical |                                   |
+| `/v1/options/strikes/`     | Real-time  | Contract metadata, no pricing     |
+| `/v1/options/expirations/` | Real-time  | Contract metadata                 |
+| `/v1/options/lookup/`      | Real-time  | Contract metadata                 |
 | `/v1/indices/quotes/`      | Real-time  | Indices are computed continuously |
 | `/v1/indices/candles/`     | Real-time  | Indices are computed continuously |
-| `/v1/markets/status/`      | Real-time  | Calendar metadata |
-| `/v1/funds/*`              | See note   | Pending product confirmation |
+| `/v1/markets/status/`      | Real-time  | Calendar metadata                 |
+| `/v1/funds/*`              | See note   | Pending product confirmation      |
 
 ### Starter
 
 Real-time stock data, 15-minute Delayed options data.
 
-| Endpoint | Freshness | Notes |
-|----------|-----------|-------|
-| `/v1/stocks/quotes/`       | Real-time  | IEX entitlement |
-| `/v1/stocks/candles/`      | Real-time  | UTP entitlement may impose 15-min delay on intraday candles — see footnote |
-| `/v1/stocks/bulkcandles/`  | Real-time  | Same as `/candles/` |
-| `/v1/stocks/prices/`       | Real-time  | |
-| `/v1/options/quotes/`      | Delayed    | 15 minutes |
-| `/v1/options/chain/`       | Delayed    | 15 minutes |
-| `/v1/options/strikes/`     | Real-time  | Contract metadata |
-| `/v1/options/expirations/` | Real-time  | Contract metadata |
-| `/v1/options/lookup/`      | Real-time  | Contract metadata |
-| `/v1/indices/quotes/`      | Real-time  | |
-| `/v1/indices/candles/`     | Real-time  | |
-| `/v1/markets/status/`      | Real-time  | Calendar metadata |
-| `/v1/funds/*`              | See note   | Pending product confirmation |
+| Endpoint                   | Freshness | Notes                                                                      |
+|----------------------------|-----------|----------------------------------------------------------------------------|
+| `/v1/stocks/quotes/`       | Real-time | IEX entitlement                                                            |
+| `/v1/stocks/candles/`      | Real-time | UTP entitlement may impose 15-min delay on intraday candles — see footnote |
+| `/v1/stocks/bulkcandles/`  | Real-time | Same as `/candles/`                                                        |
+| `/v1/stocks/prices/`       | Real-time |                                                                            |
+| `/v1/options/quotes/`      | Delayed   | 15 minutes                                                                 |
+| `/v1/options/chain/`       | Delayed   | 15 minutes                                                                 |
+| `/v1/options/strikes/`     | Real-time | Contract metadata                                                          |
+| `/v1/options/expirations/` | Real-time | Contract metadata                                                          |
+| `/v1/options/lookup/`      | Real-time | Contract metadata                                                          |
+| `/v1/indices/quotes/`      | Real-time |                                                                            |
+| `/v1/indices/candles/`     | Real-time |                                                                            |
+| `/v1/markets/status/`      | Real-time | Calendar metadata                                                          |
+| `/v1/funds/*`              | See note  | Pending product confirmation                                               |
 
 ### Trader
 
 Real-time data for both stocks and options.
 
-| Endpoint | Freshness | Notes |
-|----------|-----------|-------|
-| `/v1/stocks/quotes/`       | Real-time  | |
-| `/v1/stocks/candles/`      | Real-time  | |
-| `/v1/stocks/bulkcandles/`  | Real-time  | |
-| `/v1/stocks/prices/`       | Real-time  | |
-| `/v1/options/quotes/`      | Real-time  | OPRA entitlement |
-| `/v1/options/chain/`       | Real-time  | OPRA entitlement |
-| `/v1/options/strikes/`     | Real-time  | Contract metadata |
-| `/v1/options/expirations/` | Real-time  | Contract metadata |
-| `/v1/options/lookup/`      | Real-time  | Contract metadata |
-| `/v1/indices/quotes/`      | Real-time  | |
-| `/v1/indices/candles/`     | Real-time  | |
-| `/v1/markets/status/`      | Real-time  | Calendar metadata |
-| `/v1/funds/*`              | See note   | Pending product confirmation |
+| Endpoint                   | Freshness | Notes                        |
+|----------------------------|-----------|------------------------------|
+| `/v1/stocks/quotes/`       | Real-time |                              |
+| `/v1/stocks/candles/`      | Real-time |                              |
+| `/v1/stocks/bulkcandles/`  | Real-time |                              |
+| `/v1/stocks/prices/`       | Real-time |                              |
+| `/v1/options/quotes/`      | Real-time | OPRA entitlement             |
+| `/v1/options/chain/`       | Real-time | OPRA entitlement             |
+| `/v1/options/strikes/`     | Real-time | Contract metadata            |
+| `/v1/options/expirations/` | Real-time | Contract metadata            |
+| `/v1/options/lookup/`      | Real-time | Contract metadata            |
+| `/v1/indices/quotes/`      | Real-time |                              |
+| `/v1/indices/candles/`     | Real-time |                              |
+| `/v1/markets/status/`      | Real-time | Calendar metadata            |
+| `/v1/funds/*`              | See note  | Pending product confirmation |
 
 ### Quant
 
 Real-time data for both stocks and options. Same freshness profile as Trader.
 
-| Endpoint | Freshness | Notes |
-|----------|-----------|-------|
-| `/v1/stocks/quotes/`       | Real-time  | |
-| `/v1/stocks/candles/`      | Real-time  | |
-| `/v1/stocks/bulkcandles/`  | Real-time  | |
-| `/v1/stocks/prices/`       | Real-time  | |
-| `/v1/options/quotes/`      | Real-time  | OPRA entitlement |
-| `/v1/options/chain/`       | Real-time  | OPRA entitlement |
-| `/v1/options/strikes/`     | Real-time  | Contract metadata |
-| `/v1/options/expirations/` | Real-time  | Contract metadata |
-| `/v1/options/lookup/`      | Real-time  | Contract metadata |
-| `/v1/indices/quotes/`      | Real-time  | |
-| `/v1/indices/candles/`     | Real-time  | |
-| `/v1/markets/status/`      | Real-time  | Calendar metadata |
-| `/v1/funds/*`              | See note   | Pending product confirmation |
+| Endpoint                   | Freshness | Notes                        |
+|----------------------------|-----------|------------------------------|
+| `/v1/stocks/quotes/`       | Real-time |                              |
+| `/v1/stocks/candles/`      | Real-time |                              |
+| `/v1/stocks/bulkcandles/`  | Real-time |                              |
+| `/v1/stocks/prices/`       | Real-time |                              |
+| `/v1/options/quotes/`      | Real-time | OPRA entitlement             |
+| `/v1/options/chain/`       | Real-time | OPRA entitlement             |
+| `/v1/options/strikes/`     | Real-time | Contract metadata            |
+| `/v1/options/expirations/` | Real-time | Contract metadata            |
+| `/v1/options/lookup/`      | Real-time | Contract metadata            |
+| `/v1/indices/quotes/`      | Real-time |                              |
+| `/v1/indices/candles/`     | Real-time |                              |
+| `/v1/markets/status/`      | Real-time | Calendar metadata            |
+| `/v1/funds/*`              | See note  | Pending product confirmation |
 
 ### Prime
 
 Real-time data for both stocks and options. Same freshness profile as Trader and Quant.
 
-| Endpoint | Freshness | Notes |
-|----------|-----------|-------|
-| `/v1/stocks/quotes/`       | Real-time  | |
-| `/v1/stocks/candles/`      | Real-time  | |
-| `/v1/stocks/bulkcandles/`  | Real-time  | |
-| `/v1/stocks/prices/`       | Real-time  | |
-| `/v1/options/quotes/`      | Real-time  | OPRA entitlement |
-| `/v1/options/chain/`       | Real-time  | OPRA entitlement |
-| `/v1/options/strikes/`     | Real-time  | Contract metadata |
-| `/v1/options/expirations/` | Real-time  | Contract metadata |
-| `/v1/options/lookup/`      | Real-time  | Contract metadata |
-| `/v1/indices/quotes/`      | Real-time  | |
-| `/v1/indices/candles/`     | Real-time  | |
-| `/v1/markets/status/`      | Real-time  | Calendar metadata |
-| `/v1/funds/*`              | See note   | Pending product confirmation |
+| Endpoint                   | Freshness | Notes                        |
+|----------------------------|-----------|------------------------------|
+| `/v1/stocks/quotes/`       | Real-time |                              |
+| `/v1/stocks/candles/`      | Real-time |                              |
+| `/v1/stocks/bulkcandles/`  | Real-time |                              |
+| `/v1/stocks/prices/`       | Real-time |                              |
+| `/v1/options/quotes/`      | Real-time | OPRA entitlement             |
+| `/v1/options/chain/`       | Real-time | OPRA entitlement             |
+| `/v1/options/strikes/`     | Real-time | Contract metadata            |
+| `/v1/options/expirations/` | Real-time | Contract metadata            |
+| `/v1/options/lookup/`      | Real-time | Contract metadata            |
+| `/v1/indices/quotes/`      | Real-time |                              |
+| `/v1/indices/candles/`     | Real-time |                              |
+| `/v1/markets/status/`      | Real-time | Calendar metadata            |
+| `/v1/funds/*`              | See note  | Pending product confirmation |
 
 ## Notes
 

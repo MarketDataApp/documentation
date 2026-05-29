@@ -209,18 +209,18 @@ try {
 
 ### Error classes
 
-| Class | When |
-|---|---|
-| `AuthenticationError` | 401 — token missing, invalid, or expired |
-| `BadRequestError` | 400 — malformed request or invalid parameters |
-| `NotFoundError` | 404 — exported but not thrown by default. The SDK translates 404 into an empty response with `no_data: true`; see [no-data handling](#NoData). The one exception is `/user/`, which opts into the throw path. |
-| `PaymentRequiredError` | 402 — request denied by your plan (data older than your plan allows, premium endpoint on Free/Trial, or `mode=cached` on Free/Trial) |
-| `ForbiddenError` | 403 — access denied. Typically the multi-IP block: the account is temporarily locked when used from more than one IP. Wait ~5 minutes and retry. |
-| `RateLimitError` | 429 — per-minute/day rate limit exceeded |
-| `ServerError` | 5xx — retriable, server-side failure |
-| `NetworkError` | Transport failure: DNS, connection, TLS, or 99s timeout |
-| `ParseError` | Response body failed schema or JSON parsing |
-| `ValidationError` | Client-side input validation failure (before the network call) |
+| Class                  | When                                                                                                                                                                                                          |
+|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `AuthenticationError`  | 401 — token missing, invalid, or expired                                                                                                                                                                      |
+| `BadRequestError`      | 400 — malformed request or invalid parameters                                                                                                                                                                 |
+| `NotFoundError`        | 404 — exported but not thrown by default. The SDK translates 404 into an empty response with `no_data: true`; see [no-data handling](#NoData). The one exception is `/user/`, which opts into the throw path. |
+| `PaymentRequiredError` | 402 — request denied by your plan (data older than your plan allows, premium endpoint on Free/Trial, or `mode=cached` on Free/Trial)                                                                          |
+| `ForbiddenError`       | 403 — access denied. Typically the multi-IP block: the account is temporarily locked when used from more than one IP. Wait ~5 minutes and retry.                                                              |
+| `RateLimitError`       | 429 — per-minute/day rate limit exceeded                                                                                                                                                                      |
+| `ServerError`          | 5xx — retriable, server-side failure                                                                                                                                                                          |
+| `NetworkError`         | Transport failure: DNS, connection, TLS, or 99s timeout                                                                                                                                                       |
+| `ParseError`           | Response body failed schema or JSON parsing                                                                                                                                                                   |
+| `ValidationError`      | Client-side input validation failure (before the network call)                                                                                                                                                |
 
 <a name="NoData"></a>
 ### No-data responses
