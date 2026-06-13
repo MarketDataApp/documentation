@@ -16,6 +16,7 @@ A `400` means the request could not be parsed or validated as valid input.
 4. Parameter value is unsupported or out of range
 5. Option symbol is not valid OCC format
 6. `date` parameter is used in a current-data request (historical-only usage)
+7. URL is too long — most often caused by packing too many tickers into a single multi-symbol request
 
 ## Case 1: URL Construction Problems (Path vs Query)
 
@@ -95,6 +96,43 @@ GET https://api.marketdata.app/v1/options/quotes/OPTION_SYMBOL/
 # Historical request (correct): includes date
 GET https://api.marketdata.app/v1/options/quotes/OPTION_SYMBOL/?date=2025-01-15
 ```
+
+## Case 5: URL Too Long (Multi-Symbol Requests)
+
+You may receive an HTML-formatted `400 BAD REQUEST` response that does **not** follow the usual JSON error shape:
+
+```html
+<html>
+  <head><title>Bad Request</title></head>
+  <body>
+    <h1><p>Bad Request</p></h1>
+    Request Line is too large (XXXX > 4094)
+  </body>
+</html>
+```
+
+This is returned by the web server **before** the request reaches the API, so it does not appear in your account's request log and does not consume credits.
+
+The cause is exceeding the **4094-byte HTTP request-line limit**. The most common trigger is packing too many tickers into a single multi-symbol call, for example:
+
+- `/v1/stocks/prices/?symbols=...`
+- `/v1/stocks/bulkcandles/D/?symbols=...`
+
+### How many symbols per request
+
+There is no application-level cap on symbol count — the ceiling is set entirely by URL length. As a rule of thumb:
+
+- An average 4-character ticker plus a separator comma takes 5 bytes.
+- Path, `token`, `format`, `columns`, and other query parameters typically consume 150–250 bytes of overhead.
+- That leaves roughly 3,800 bytes for the symbols list — about **700–800 typical-length tickers** before requests begin to fail.
+
+To stay clear of the limit, **chunk multi-symbol requests into batches of 500 symbols or fewer.** That leaves headroom for longer tickers (BRK.B, 5-letter Nasdaq tickers) and any additional query parameters you may add later.
+
+### How to fix
+
+1. Reduce the number of symbols in the request.
+2. Split your symbol list into multiple smaller calls.
+3. If you must send a long list, drop any non-essential query parameters to free up URL space.
 
 ## 400 vs Other Status Codes
 
