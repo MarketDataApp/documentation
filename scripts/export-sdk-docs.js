@@ -15,7 +15,7 @@ const path = require('path');
 const { cleanMdx } = require('../lib/mdx-to-md');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
-const SUPPORTED_SDKS = ['js', 'py', 'go', 'php'];
+const SUPPORTED_SDKS = ['js', 'py', 'go', 'php', 'java'];
 
 function parseArgs(argv) {
   const args = { sdk: null, out: null };

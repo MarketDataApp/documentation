@@ -31,17 +31,18 @@ on:
     branches: [staging]
     paths:
       - 'sdk/js/**'
+      - 'sdk/java/**'
       - 'lib/mdx-to-md.js'
       - 'scripts/export-sdk-docs.js'
       - '.github/workflows/sync-sdk-docs.yml'
   workflow_dispatch:
     inputs:
       sdk:
-        description: 'Which SDK to sync (pilot: js only)'
+        description: 'Which SDK to sync'
         required: true
         default: 'js'
         type: choice
-        options: [js]
+        options: [js, java]
 
 env:
   SOURCE_OWNER: MarketDataApp
@@ -56,7 +57,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: [js]
+        sdk: [js, java]
     steps:
       - name: Checkout documentation source
         uses: actions/checkout@v4
