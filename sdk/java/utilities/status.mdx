@@ -1,0 +1,61 @@
+---
+title: Status
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve the health of the Market Data API's services — a handy liveness check.
+
+:::note
+This reports the **API's** own service health. For the exchange open/closed calendar, see [`markets().status()`](/sdk/java/markets/status).
+:::
+
+## Making Requests
+
+Use the `status()` method on the `utilities` resource. It takes no parameters and is **public** — it works without a token.
+
+```java
+UtilitiesStatusResponse status()
+CompletableFuture<UtilitiesStatusResponse> statusAsync()
+```
+
+#### Returns
+
+`UtilitiesStatusResponse` wrapping `List<ServiceStatus>`. Each `ServiceStatus` exposes the service name, a status string, an `online()` flag, uptime percentiles, and an updated timestamp.
+
+The server refreshes this data every few minutes, so polling more often than that is wasted work.
+
+## Examples
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.utilities.ServiceStatus;
+
+try (MarketDataClient client = new MarketDataClient()) {
+  var status = client.utilities().status();
+  long online = status.values().stream().filter(ServiceStatus::online).count();
+  System.out.println(online + " of " + status.values().size() + " services online");
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.utilities.ServiceStatus
+
+MarketDataClient().use { client ->
+    val status = client.utilities().status()
+    val online = status.values().count { it.online() }
+    println("$online of ${status.values().size} services online")
+}
+```
+
+</TabItem>
+</Tabs>

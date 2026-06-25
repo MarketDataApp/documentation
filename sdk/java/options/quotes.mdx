@@ -1,0 +1,95 @@
+---
+title: Quotes
+sidebar_position: 4
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve quotes (bid, ask, last, greeks, etc.) for one or more option contracts by OCC symbol.
+
+## Making Requests
+
+The `options` resource offers two quote methods:
+
+- `quote(...)` — a single contract, built with `OptionsQuoteRequest`.
+- `quotes(...)` — several contracts. Unlike stocks, options quotes **fan out one request per symbol concurrently**, so the result is a `Map<String, OptionsQuotesResponse>` keyed by OCC symbol (insertion order preserved).
+
+```java
+OptionsQuotesResponse quote(OptionsQuoteRequest request)
+CompletableFuture<OptionsQuotesResponse> quoteAsync(OptionsQuoteRequest request)
+
+Map<String, OptionsQuotesResponse> quotes(OptionsQuotesRequest request)
+CompletableFuture<Map<String, OptionsQuotesResponse>> quotesAsync(OptionsQuotesRequest request)
+```
+
+### Request types
+
+```java
+// Single contract
+OptionsQuoteRequest.of(String optionSymbol)
+OptionsQuoteRequest.builder(String optionSymbol)
+    .date(LocalDate date)        // historical quote
+    .from(LocalDate from)        // date range
+    .to(LocalDate to)
+    .countback(int n)
+    .build()
+
+// Multiple contracts (fan-out)
+OptionsQuotesRequest.builder(String first, String... rest)
+    .addSymbol(String optionSymbol)
+    .date(LocalDate date)
+    .from(LocalDate from)
+    .to(LocalDate to)
+    .countback(int n)
+    .build()
+```
+
+#### Returns
+
+`OptionsQuotesResponse` wraps `List<OptionQuote>`. See [Chain](/sdk/java/options/chain#optionquote) for the full `OptionQuote` record (price fields plus greeks).
+
+## Examples
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.options.OptionQuote;
+import com.marketdata.sdk.options.OptionsQuoteRequest;
+import com.marketdata.sdk.options.OptionsQuotesRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+
+  // Single contract.
+  OptionQuote q = client.options()
+      .quote(OptionsQuoteRequest.of("AAPL260116C00200000"))
+      .values().get(0);
+  System.out.println("last=" + q.last() + " iv=" + q.iv() + " delta=" + q.delta());
+
+  // Multiple contracts — one request each, keyed by symbol.
+  var quotes = client.options().quotes(
+      OptionsQuotesRequest.builder("AAPL260116C00200000", "AAPL260116C00210000").build());
+  quotes.forEach((sym, resp) ->
+      System.out.println(sym + " → " + resp.values().size() + " row(s)"));
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.options.OptionsQuoteRequest
+
+MarketDataClient().use { client ->
+    val q = client.options()
+        .quote(OptionsQuoteRequest.of("AAPL260116C00200000"))
+        .values()[0]
+    println("last=${q.last()} iv=${q.iv()} delta=${q.delta()}")
+}
+```
+
+</TabItem>
+</Tabs>

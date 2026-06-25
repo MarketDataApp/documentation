@@ -1,0 +1,63 @@
+---
+title: Lookup
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Turn a human-readable option description into a well-formed OCC option symbol.
+
+## Making Requests
+
+Use the `lookup()` method on the `options` resource, built with `OptionsLookupRequest`.
+
+```java
+OptionsLookupResponse lookup(OptionsLookupRequest request)
+CompletableFuture<OptionsLookupResponse> lookupAsync(OptionsLookupRequest request)
+```
+
+### OptionsLookupRequest
+
+```java
+OptionsLookupRequest.of(String userInput)
+```
+
+#### Returns
+
+`OptionsLookupResponse` wrapping a `String` — the OCC option symbol. Read it with `.values()`.
+
+## Examples
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.options.OptionsLookupRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+  String occSymbol = client.options()
+      .lookup(OptionsLookupRequest.of("AAPL 1/16/2026 $200 Call"))
+      .values();
+  System.out.println("Resolved to: " + occSymbol); // AAPL260116C00200000
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.options.OptionsLookupRequest
+
+MarketDataClient().use { client ->
+    val occSymbol = client.options()
+        .lookup(OptionsLookupRequest.of("AAPL 1/16/2026 \$200 Call"))
+        .values()
+    println("Resolved to: $occSymbol")
+}
+```
+
+</TabItem>
+</Tabs>

@@ -1,0 +1,111 @@
+---
+title: Quotes
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve real-time quotes (bid, ask, mid, last, volume, etc.) for one or more stock symbols.
+
+## Making Requests
+
+The `stocks` resource offers two quote methods:
+
+- `quote(...)` — a single symbol, built with `StockQuoteRequest`.
+- `quotes(...)` — several symbols in **one** request (the stocks backend batches a comma list), built with `StockQuotesRequest`. The result is a single response with one row per symbol.
+
+```java
+StockQuotesResponse quote(StockQuoteRequest request)
+CompletableFuture<StockQuotesResponse> quoteAsync(StockQuoteRequest request)
+
+StockQuotesResponse quotes(StockQuotesRequest request)
+CompletableFuture<StockQuotesResponse> quotesAsync(StockQuotesRequest request)
+```
+
+### Request types
+
+```java
+// Single symbol
+StockQuoteRequest.of(String symbol)
+StockQuoteRequest.builder(String symbol)
+    .extended(boolean extended)   // include extended-session prices
+    .candle(boolean candle)       // add OHLC columns
+    .week52(boolean week52)       // add 52-week high/low
+    .build()
+
+// Multiple symbols, one request
+StockQuotesRequest.builder(String first, String... rest)
+    .addSymbol(String symbol)
+    .extended(boolean extended)
+    .candle(boolean candle)
+    .week52(boolean week52)
+    .build()
+```
+
+#### Returns
+
+`StockQuotesResponse` wrapping `List<StockQuote>` (one element for `quote`, one per symbol for `quotes`):
+
+```java
+public record StockQuote(
+    @Nullable String symbol,
+    @Nullable Double ask, @Nullable Long askSize,
+    @Nullable Double bid, @Nullable Long bidSize,
+    @Nullable Double mid, @Nullable Double last,
+    @Nullable Double change, @Nullable Double changepct,
+    @Nullable Long volume, @Nullable ZonedDateTime updated,
+    // opt-in via .candle(true):
+    @Nullable Double open, @Nullable Double high, @Nullable Double low, @Nullable Double close,
+    // opt-in via .week52(true):
+    @Nullable Double week52High, @Nullable Double week52Low)
+```
+
+## Examples
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockQuote;
+import com.marketdata.sdk.stocks.StockQuoteRequest;
+import com.marketdata.sdk.stocks.StockQuotesRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+
+  // A single symbol — row 0 of the list.
+  StockQuote q = client.stocks().quote(StockQuoteRequest.of("AAPL")).values().get(0);
+  System.out.printf("%s last=%.2f bid/ask=%.2f/%.2f%n", q.symbol(), q.last(), q.bid(), q.ask());
+
+  // Several symbols in one request.
+  var quotes = client.stocks().quotes(
+      StockQuotesRequest.builder("AAPL", "MSFT", "GOOGL").build());
+  for (StockQuote row : quotes.values()) {
+    System.out.printf("%-6s last=%.2f%n", row.symbol(), row.last());
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockQuoteRequest
+import com.marketdata.sdk.stocks.StockQuotesRequest
+
+MarketDataClient().use { client ->
+    val q = client.stocks().quote(StockQuoteRequest.of("AAPL")).values()[0]
+    println("${q.symbol()} last=${q.last()}")
+
+    val quotes = client.stocks().quotes(
+        StockQuotesRequest.builder("AAPL", "MSFT", "GOOGL").build())
+    for (row in quotes.values()) {
+        println("${row.symbol()} last=${row.last()}")
+    }
+}
+```
+
+</TabItem>
+</Tabs>

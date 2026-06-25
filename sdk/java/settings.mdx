@@ -1,0 +1,178 @@
+---
+title: Settings
+sidebar_position: 4
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Java SDK lets you customize API requests through **universal parameters** — settings such as date format, data mode, column projection, and CSV shaping that apply across endpoints. These are configured per resource, and some can also be set globally through environment variables.
+
+<a name="configuration-cascade"></a>
+## Configuration Cascade
+
+Client-level configuration (token, base URL, API version) is resolved in priority order, first match wins:
+
+1. **Explicit constructor argument** (highest priority)
+2. **`MARKETDATA_*` environment variable**
+3. **`.env` file** in the working directory
+4. **Built-in default** (lowest priority)
+
+```java
+// Explicit wins over the environment; null falls through to the cascade.
+new MarketDataClient("explicit-token", null, null, true);
+```
+
+## Universal Parameters
+
+Universal parameters are set on the **resource**, before you call the endpoint. Each setter returns a configured copy of the resource, so they chain. They apply to every call you make through that configured resource.
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.DateFormat;
+import com.marketdata.sdk.Mode;
+import com.marketdata.sdk.stocks.StockCandlesRequest;
+import com.marketdata.sdk.stocks.StockResolution;
+
+var candles = client.stocks()
+    .dateFormat(DateFormat.TIMESTAMP)   // how dates are sent on the wire
+    .mode(Mode.DELAYED)                 // live vs delayed vs cached data
+    .columns("symbol", "close")         // project only the columns you need
+    .candles(StockCandlesRequest.builder(StockResolution.DAILY, "AAPL")
+        .from(LocalDate.now().minusMonths(1))
+        .to(LocalDate.now())
+        .build());
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.DateFormat
+import com.marketdata.sdk.Mode
+import com.marketdata.sdk.stocks.StockCandlesRequest
+import com.marketdata.sdk.stocks.StockResolution
+
+val candles = client.stocks()
+    .dateFormat(DateFormat.TIMESTAMP)
+    .mode(Mode.DELAYED)
+    .columns("symbol", "close")
+    .candles(
+        StockCandlesRequest.builder(StockResolution.DAILY, "AAPL")
+            .from(LocalDate.now().minusMonths(1))
+            .to(LocalDate.now())
+            .build())
+```
+
+</TabItem>
+</Tabs>
+
+### Date Format
+
+Controls how dates and times are represented on the wire.
+
+```java
+import com.marketdata.sdk.DateFormat;
+// DateFormat.UNIX, DateFormat.TIMESTAMP, DateFormat.SPREADSHEET
+
+client.stocks().dateFormat(DateFormat.TIMESTAMP);
+```
+
+| Value | Description |
+|---|---|
+| `UNIX` | Unix timestamp in seconds (e.g. `1609362000`) |
+| `TIMESTAMP` | ISO-8601 timestamp (e.g. `2020-12-30 16:00:00 -05:00`) |
+| `SPREADSHEET` | Excel/Sheets serial date number (e.g. `44195.66667`) |
+
+For more details, see the [API Date Format documentation](/api/universal-parameters/date-format).
+
+### Data Mode
+
+Controls whether the API returns live, delayed, or cached data.
+
+```java
+import com.marketdata.sdk.Mode;
+// Mode.LIVE, Mode.DELAYED, Mode.CACHED
+
+client.stocks().mode(Mode.CACHED);
+```
+
+| Value | Description |
+|---|---|
+| `LIVE` | Real-time data (paid plans) |
+| `DELAYED` | 15+ minute delayed data |
+| `CACHED` | Cached data — lower cost per request |
+
+For more details, see the [API Data Mode documentation](/api/universal-parameters/mode).
+
+### Columns
+
+Limits the response to only the columns you need, reducing payload size. Columns you didn't request come back `null` on the typed model — there's no error.
+
+```java
+client.stocks().columns("symbol", "last");
+```
+
+For more details, see the [API Columns documentation](/api/universal-parameters/columns).
+
+### Limit and Offset
+
+Cap the number of rows returned (`limit`) and skip rows from the start (`offset`).
+
+```java
+client.stocks().limit(100).offset(0);
+```
+
+## CSV Output
+
+Every resource exposes an `asCsv()` facet that switches the whole resource to CSV. The response's `csv()` accessor returns the raw CSV text. CSV-only shaping parameters live on this facet:
+
+- `human(boolean)` — render human-friendly field names and values.
+- `headers(boolean)` — include the CSV header row (default `true`).
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.stocks.StockQuotesRequest;
+
+var csv = client.stocks().asCsv()
+    .columns("symbol", "last")
+    .human(true)
+    .headers(true)
+    .quotes(StockQuotesRequest.builder("AAPL", "MSFT").build());
+
+System.out.println(csv.csv());      // raw CSV text
+csv.saveToFile(Path.of("quotes.csv"));
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.stocks.StockQuotesRequest
+
+val csv = client.stocks().asCsv()
+    .columns("symbol", "last")
+    .human(true)
+    .headers(true)
+    .quotes(StockQuotesRequest.builder("AAPL", "MSFT").build())
+
+println(csv.csv())
+csv.saveToFile(Path.of("quotes.csv"))
+```
+
+</TabItem>
+</Tabs>
+
+## Environment Variables Reference
+
+| Variable                 | Purpose                       | Default                      |
+|--------------------------|-------------------------------|------------------------------|
+| `MARKETDATA_TOKEN`       | API authentication token      | _(none)_                     |
+| `MARKETDATA_BASE_URL`    | API base URL                  | `https://api.marketdata.app` |
+| `MARKETDATA_API_VERSION` | API version                   | `v1`                         |
+| `MARKETDATA_DATE_FORMAT` | Default date format           | _(API default)_              |
+| `MARKETDATA_LOGGING_LEVEL` | SDK logging level (`java.util.logging`) | _(consumer default)_ |

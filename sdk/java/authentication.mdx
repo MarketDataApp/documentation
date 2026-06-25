@@ -1,0 +1,142 @@
+---
+title: Authentication
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Market Data API uses a **Bearer Token** for authentication. The token is required for almost every request. Your token should have been e-mailed to you when you first signed up for an account. If you do not have a token or have lost your sign-up email, request a new token from the [Market Data Dashboard](https://www.marketdata.app/dashboard/).
+
+There are three ways to set your token when using the Java SDK:
+
+1. Set it from an environment variable _(recommended for production)_
+2. Load it from a `.env` file _(recommended for local development)_
+3. Pass it directly when creating the [client](/sdk/java/client)
+
+On startup, the SDK looks for the `MARKETDATA_TOKEN` environment variable. If found, it uses that token for all requests. The SDK also loads a `.env` file automatically from the working directory if one is present.
+
+:::tip
+When your code is running in a production environment, we recommend using an environment variable to ensure your token is not stored with your code. This is the most secure way to set your token.
+:::
+
+## How To Set Up The Environment Variable
+
+### Set The Environment Variable In The Console
+
+<Tabs>
+<TabItem value="MacLinux" label="Mac / Linux">
+
+This command sets the environment variable for the current session only. If you open a new terminal or restart your computer, it will not persist.
+
+```bash
+export MARKETDATA_TOKEN="your_api_token"
+```
+
+#### Make The Variable Persistent
+
+Add the `export` line to your shell's profile script (`~/.zshrc`, `~/.bashrc`, `~/.bash_profile`, etc.), then restart your terminal or run `source ~/.zshrc` (adjusting for your shell).
+
+</TabItem>
+<TabItem value="Windows" label="Windows">
+
+`setx` sets the variable permanently, but it is not available in the current Command Prompt session — open a new one after running it.
+
+```bash
+setx MARKETDATA_TOKEN "your_api_token"
+```
+
+</TabItem>
+</Tabs>
+
+### Using a .env File
+
+The SDK automatically loads a `.env` file from your working directory at startup. Create a file named `.env` in your project root:
+
+```env title=".env"
+MARKETDATA_TOKEN=your_api_token
+```
+
+:::warning
+Add `.env` to your `.gitignore` so the token is not committed to source control.
+:::
+
+### Make A Test Request
+
+Verify your authentication is working by making a test request against `SPY` (or any symbol that requires authentication). Do **not** use `AAPL` to test authentication — `AAPL` is a free test symbol and returns data even when you are not authenticated.
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockQuoteRequest;
+import com.marketdata.sdk.exception.AuthenticationError;
+
+// No need to pass a token here — the SDK reads MARKETDATA_TOKEN automatically.
+try (MarketDataClient client = new MarketDataClient()) {
+  var quote = client.stocks().quote(StockQuoteRequest.of("SPY")).values().get(0);
+  System.out.println(quote.symbol() + " last=" + quote.last());
+} catch (AuthenticationError e) {
+  System.out.println("Authentication failed: " + e.getMessage());
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockQuoteRequest
+import com.marketdata.sdk.exception.AuthenticationError
+
+MarketDataClient().use { client ->
+    try {
+        val quote = client.stocks().quote(StockQuoteRequest.of("SPY")).values()[0]
+        println("${quote.symbol()} last=${quote.last()}")
+    } catch (e: AuthenticationError) {
+        println("Authentication failed: ${e.message}")
+    }
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Passing the Token Directly
+
+If you prefer to pass the token explicitly (not recommended for production code), use the four-argument constructor `(apiKey, baseUrl, apiVersion, validateOnStartup)`. Pass `null` for any slot you want resolved from the cascade or left at its default.
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.MarketDataClient;
+
+try (MarketDataClient client =
+         new MarketDataClient("your_token_here", null, null, true)) {
+  // ... make requests
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.MarketDataClient
+
+MarketDataClient("your_token_here", null, null, true).use { client ->
+    // ... make requests
+}
+```
+
+</TabItem>
+</Tabs>
+
+:::info Demo mode
+If no token is found anywhere in the cascade, the SDK runs in **demo mode** — startup validation is skipped and you can call the free, public endpoints (such as `AAPL` quotes and `utilities().status()`).
+:::
+
+## Next Steps
+
+After successful authentication, read the overview of how the [client](/sdk/java/client) works, then configure [Settings](/sdk/java/settings) to customize output format, date format, and other universal parameters.

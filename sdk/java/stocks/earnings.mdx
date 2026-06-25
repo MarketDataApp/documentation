@@ -1,0 +1,88 @@
+---
+title: Earnings
+sidebar_position: 5
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve historical and upcoming earnings data (EPS actuals, estimates, surprises) for a stock symbol.
+
+## Making Requests
+
+Use the `earnings()` method on the `stocks` resource, built with `StockEarningsRequest`.
+
+```java
+StockEarningsResponse earnings(StockEarningsRequest request)
+CompletableFuture<StockEarningsResponse> earningsAsync(StockEarningsRequest request)
+```
+
+### StockEarningsRequest
+
+```java
+StockEarningsRequest.of(String symbol)
+StockEarningsRequest.builder(String symbol)
+    .date(LocalDate date)        // a single report date
+    .from(LocalDate from)        // window start
+    .to(LocalDate to)            // window end
+    .countback(int n)            // N reports before `to`
+    .report(String report)       // "actual" or "estimated"
+    .build()
+```
+
+#### Returns
+
+`StockEarningsResponse` wrapping `List<StockEarning>`:
+
+```java
+public record StockEarning(
+    @Nullable String symbol,
+    @Nullable Integer fiscalYear,
+    @Nullable Integer fiscalQuarter,
+    @Nullable ZonedDateTime date,
+    @Nullable ZonedDateTime reportDate,
+    @Nullable String reportTime,        // "pre" / "post"
+    @Nullable String currency,
+    @Nullable Double reportedEPS,
+    @Nullable Double estimatedEPS,
+    @Nullable Double surpriseEPS,
+    @Nullable Double surpriseEPSpct,
+    @Nullable ZonedDateTime updated)
+```
+
+## Examples
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockEarning;
+import com.marketdata.sdk.stocks.StockEarningsRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+  var earnings = client.stocks().earnings(StockEarningsRequest.of("AAPL"));
+  for (StockEarning e : earnings.values()) {
+    System.out.printf("%d Q%d  reported=%s estimated=%s%n",
+        e.fiscalYear(), e.fiscalQuarter(), e.reportedEPS(), e.estimatedEPS());
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockEarningsRequest
+
+MarketDataClient().use { client ->
+    val earnings = client.stocks().earnings(StockEarningsRequest.of("AAPL"))
+    for (e in earnings.values()) {
+        println("${e.fiscalYear()} Q${e.fiscalQuarter()} reported=${e.reportedEPS()}")
+    }
+}
+```
+
+</TabItem>
+</Tabs>

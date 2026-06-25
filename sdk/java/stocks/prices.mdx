@@ -1,0 +1,76 @@
+---
+title: Prices
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve the latest price (mid, change) for one or more stock symbols — a lighter payload than a full quote.
+
+## Making Requests
+
+Use the `prices()` method on the `stocks` resource, built with `StockPricesRequest`.
+
+```java
+StockPricesResponse prices(StockPricesRequest request)
+CompletableFuture<StockPricesResponse> pricesAsync(StockPricesRequest request)
+```
+
+### StockPricesRequest
+
+```java
+StockPricesRequest.of(String first, String... rest)
+StockPricesRequest.builder(String first, String... rest)
+    .addSymbol(String symbol)
+    .build()
+```
+
+#### Returns
+
+`StockPricesResponse` wrapping `List<StockPrice>`:
+
+```java
+public record StockPrice(
+    @Nullable String symbol,
+    @Nullable Double mid,
+    @Nullable Double change,
+    @Nullable Double changepct,
+    @Nullable ZonedDateTime updated)
+```
+
+## Examples
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockPrice;
+import com.marketdata.sdk.stocks.StockPricesRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+  var prices = client.stocks().prices(StockPricesRequest.of("AAPL", "MSFT"));
+  for (StockPrice p : prices.values()) {
+    System.out.printf("%-6s mid=%.2f change=%.2f%n", p.symbol(), p.mid(), p.change());
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockPricesRequest
+
+MarketDataClient().use { client ->
+    val prices = client.stocks().prices(StockPricesRequest.of("AAPL", "MSFT"))
+    for (p in prices.values()) {
+        println("${p.symbol()} mid=${p.mid()} change=${p.change()}")
+    }
+}
+```
+
+</TabItem>
+</Tabs>
