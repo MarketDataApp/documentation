@@ -52,6 +52,55 @@ function emptyDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
+// Pull the bits of frontmatter we need to render <DocCardList> as a link list:
+// the card label (title), its blurb (description), and the sort key (sidebar_position).
+function readFrontmatterMeta(sourceAbs) {
+  const raw = fs.readFileSync(sourceAbs, 'utf8');
+  const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!m) return {};
+  const fm = m[1];
+  const field = (name) => {
+    const hit = fm.match(new RegExp(`^${name}:\\s*(.+)$`, 'm'));
+    return hit ? hit[1].trim().replace(/^["']|["']$/g, '') : undefined;
+  };
+  const position = field('sidebar_position');
+  return {
+    title: field('title'),
+    description: field('description'),
+    position: position != null ? Number(position) : undefined,
+  };
+}
+
+// The Docusaurus subpath of a source file's *parent category*, normalized so the
+// repo root is ''. Used to find which index page a given page is a card under.
+function parentKey(key) {
+  const dir = path.posix.dirname(key);
+  return dir === '.' ? '' : dir;
+}
+
+// Build the ordered card list for an index page: every page whose parent category
+// is this index's directory, sorted by sidebar_position then title (matching how
+// Docusaurus orders the sidebar), linked relative to the index's output file.
+function cardItemsForIndex(dirKey, indexOut, linkTargets, meta) {
+  const indexDir = path.posix.dirname(indexOut);
+  return Object.keys(linkTargets)
+    .filter((k) => k !== dirKey && parentKey(k) === dirKey)
+    .map((k) => {
+      const m = meta[k] || {};
+      const label = m.title || k.split('/').pop();
+      let href = path.posix.relative(indexDir, linkTargets[k]);
+      if (!href.startsWith('.')) href = `./${href}`;
+      return { key: k, label, href, description: m.description, position: m.position };
+    })
+    .sort((a, b) => {
+      const pa = a.position == null ? Infinity : a.position;
+      const pb = b.position == null ? Infinity : b.position;
+      if (pa !== pb) return pa - pb;
+      return a.label.localeCompare(b.label);
+    })
+    .map(({ label, href, description }) => ({ label, href, description }));
+}
+
 function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help || !args.sdk) {
@@ -80,19 +129,25 @@ function main() {
   // README.md so GitHub auto-renders them at the directory URL.
   // Map keys are Docusaurus subpaths (no leading slash, no extension); values
   // are repo-relative POSIX output paths.
+  // `meta` is keyed identically to `linkTargets` so card lists can look up each
+  // child page's title/description/position without re-reading files later.
   const linkTargets = {};
+  const meta = {};
   for (const sourceAbs of files) {
     const relFromSdk = path.relative(sourceDir, sourceAbs).split(path.sep).join('/');
     const noExt = relFromSdk.replace(/\.(mdx?|md)$/, '');
     const isIndex = path.posix.basename(noExt) === 'index';
+    let key;
     if (isIndex) {
       const dirSub = path.posix.dirname(noExt);
-      const key = dirSub === '.' ? '' : dirSub;
+      key = dirSub === '.' ? '' : dirSub;
       const out = key === '' ? 'README.md' : `${key}/README.md`;
       linkTargets[key] = out;
     } else {
+      key = noExt;
       linkTargets[noExt] = `${noExt}.md`;
     }
+    meta[key] = readFrontmatterMeta(sourceAbs);
   }
 
   const manifest = [];
@@ -107,11 +162,17 @@ function main() {
       : `${noExt}.md`;
     const outAbs = path.join(outDir, ...outRelative.split('/'));
 
+    const dirKey = path.posix.dirname(noExt) === '.' ? '' : path.posix.dirname(noExt);
+    const cardItems = isIndex
+      ? cardItemsForIndex(dirKey, outRelative, linkTargets, meta)
+      : null;
+
     const raw = fs.readFileSync(sourceAbs, 'utf8');
     const body = cleanMdx(raw, {
       sourcePath: sourcePathRel,
       sdk: args.sdk,
       linkTargets,
+      cardItems,
     });
 
     fs.mkdirSync(path.dirname(outAbs), { recursive: true });
