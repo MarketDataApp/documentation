@@ -109,6 +109,38 @@ $puts = $chain->getPuts();
 $strikes = $chain->getStrikes();
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="OptionChain.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.options.OptionQuote;
+import com.marketdata.sdk.options.OptionsChainRequest;
+import java.util.List;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    List<OptionQuote> contracts =
+        client.options().chain(OptionsChainRequest.builder("AAPL").build()).values();
+    System.out.println("Got " + contracts.size() + " contracts");
+} catch (Exception error) {
+    error.printStackTrace();
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="OptionChain.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.options.OptionsChainRequest
+
+MarketDataClient().use { client ->
+    val contracts =
+        client.options().chain(OptionsChainRequest.builder("AAPL").build()).values()
+    println("Got ${contracts.size} contracts")
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

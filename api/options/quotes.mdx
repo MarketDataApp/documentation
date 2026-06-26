@@ -113,6 +113,38 @@ $quotes = $client->options->quotes("AAPL271217C00250000");
 echo $quotes;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="OptionQuotes.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.options.OptionQuote;
+import com.marketdata.sdk.options.OptionsQuoteRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    OptionQuote q =
+        client.options().quote(OptionsQuoteRequest.of("AAPL271217C00250000")).values().get(0);
+    System.out.println(
+        q.optionSymbol() + ": bid=" + q.bid() + " ask=" + q.ask() + " delta=" + q.delta());
+} catch (Exception error) {
+    error.printStackTrace();
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="OptionQuotes.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.options.OptionsQuoteRequest
+
+MarketDataClient().use { client ->
+    val q =
+        client.options().quote(OptionsQuoteRequest.of("AAPL271217C00250000")).values()[0]
+    println("${q.optionSymbol()}: bid=${q.bid()} ask=${q.ask()} delta=${q.delta()}")
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

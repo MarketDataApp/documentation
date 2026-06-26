@@ -122,6 +122,38 @@ $earnings = $client->stocks->earnings(
 echo $earnings;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="StockEarnings.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockEarning;
+import com.marketdata.sdk.stocks.StockEarningsRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    var earnings = client.stocks().earnings(StockEarningsRequest.of("AAPL"));
+    for (StockEarning e : earnings.values()) {
+        System.out.printf("FY%s Q%s: reported=%s estimated=%s%n",
+            e.fiscalYear(), e.fiscalQuarter(), e.reportedEPS(), e.estimatedEPS());
+    }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="StockEarnings.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockEarningsRequest
+
+MarketDataClient().use { client ->
+    val earnings = client.stocks().earnings(StockEarningsRequest.of("AAPL"))
+    for (e in earnings.values()) {
+        println("FY${e.fiscalYear()} Q${e.fiscalQuarter()}: reported=${e.reportedEPS()} estimated=${e.estimatedEPS()}")
+    }
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

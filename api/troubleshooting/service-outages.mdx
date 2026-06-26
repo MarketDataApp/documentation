@@ -138,6 +138,45 @@ print(f"Stocks Candles: {'Online' if stocks_candles and stocks_candles['online']
 ```
 
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="Status.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.utilities.ServiceStatus;
+import java.util.List;
+
+try (MarketDataClient client = new MarketDataClient()) {
+  List<ServiceStatus> services = client.utilities().status().values();
+
+  for (String path : List.of("/v1/stocks/quotes/", "/v1/options/chain/", "/v1/stocks/candles/")) {
+    String state = services.stream()
+        .filter(s -> s.service().equals(path))
+        .findFirst()
+        .map(s -> s.online() ? "Online" : "Offline")
+        .orElse("Not found");
+    System.out.println(path + ": " + state);
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="Status.kt"
+import com.marketdata.sdk.MarketDataClient
+
+MarketDataClient().use { client ->
+    val services = client.utilities().status().values()
+
+    for (path in listOf("/v1/stocks/quotes/", "/v1/options/chain/", "/v1/stocks/candles/")) {
+        val svc = services.firstOrNull { it.service() == path }
+        val state = svc?.let { if (it.online()) "Online" else "Offline" } ?: "Not found"
+        println("$path: $state")
+    }
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## What To Do During Downtime

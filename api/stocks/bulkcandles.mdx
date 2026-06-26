@@ -122,6 +122,52 @@ $candles = $client->stocks->bulkCandles(
 echo $candles;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+:::note
+The Java SDK does not yet provide a method for the bulk candles endpoint, so this example uses the JDK's `java.net.http.HttpClient` directly. It will be replaced with a `marketdata-sdk-java` example once bulk support is added.
+:::
+
+```java title="BulkStockCandles.java"
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+HttpClient http = HttpClient.newHttpClient();
+HttpRequest request = HttpRequest.newBuilder()
+    .uri(URI.create("https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT"))
+    .header("Authorization", "Bearer " + System.getenv("MARKETDATA_TOKEN"))
+    .GET()
+    .build();
+HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.body());
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+:::note
+The Java SDK does not yet provide a method for the bulk candles endpoint, so this example uses the JDK's `java.net.http.HttpClient` directly. It will be replaced with a `marketdata-sdk-java` example once bulk support is added.
+:::
+
+```kotlin title="BulkStockCandles.kt"
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+
+val http = HttpClient.newHttpClient()
+val request = HttpRequest.newBuilder()
+    .uri(URI.create("https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT"))
+    .header("Authorization", "Bearer ${System.getenv("MARKETDATA_TOKEN")}")
+    .GET()
+    .build()
+val response = http.send(request, HttpResponse.BodyHandlers.ofString())
+println(response.body())
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

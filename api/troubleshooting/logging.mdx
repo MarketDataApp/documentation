@@ -87,6 +87,47 @@ if isinstance(result, MarketDataClientErrorResult):
 ```
 
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="Logger.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.exception.MarketDataException;
+import com.marketdata.sdk.stocks.StockQuotesRequest;
+
+// Enable DEBUG logging by setting MARKETDATA_LOGGING_LEVEL=DEBUG in your
+// environment. The SDK then logs full request/response diagnostics (including
+// the CF-Ray request id) on the "com.marketdata.sdk" java.util.logging logger.
+try (MarketDataClient client = new MarketDataClient()) {
+  var quotes = client.stocks().quotes(StockQuotesRequest.builder("AAPL").build());
+  System.out.println(quotes.values());
+} catch (MarketDataException e) {
+  // The SDK already logged the failing request/response. getSupportInfo()
+  // bundles the status code, request URL and request id for a bug report.
+  System.err.println(e.getSupportInfo());
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="Logger.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.exception.MarketDataException
+import com.marketdata.sdk.stocks.StockQuotesRequest
+
+// Enable DEBUG logging via the MARKETDATA_LOGGING_LEVEL=DEBUG environment
+// variable; the SDK logs request/response diagnostics on "com.marketdata.sdk".
+MarketDataClient().use { client ->
+    try {
+        val quotes = client.stocks().quotes(StockQuotesRequest.builder("AAPL").build())
+        println(quotes.values())
+    } catch (e: MarketDataException) {
+        System.err.println(e.supportInfo)
+    }
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## The CF-Ray Header

@@ -111,6 +111,33 @@ $quote = $client->stocks->quote("AAPL");
 echo $quote;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="StockQuote.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockQuote;
+import com.marketdata.sdk.stocks.StockQuoteRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    StockQuote q = client.stocks().quote(StockQuoteRequest.of("AAPL")).values().get(0);
+    System.out.println(q);
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="StockQuote.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockQuoteRequest
+
+MarketDataClient().use { client ->
+    val q = client.stocks().quote(StockQuoteRequest.of("AAPL")).values()[0]
+    println(q)
+}
+```
+
+</TabItem>
 </Tabs>
 
 </TabItem>
@@ -181,6 +208,40 @@ $quotes = $client->stocks->quotes(["AAPL", "META", "MSFT"]);
 // Display formatted quotes summary
 echo $quotes;
 ```
+</TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="StockQuotes.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockQuote;
+import com.marketdata.sdk.stocks.StockQuotesRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    var quotes = client.stocks().quotes(
+        StockQuotesRequest.builder("AAPL", "META", "MSFT").build());
+    for (StockQuote q : quotes.values()) {
+        System.out.printf("%s: bid=%s, ask=%s, last=%s%n",
+            q.symbol(), q.bid(), q.ask(), q.last());
+    }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="StockQuotes.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockQuotesRequest
+
+MarketDataClient().use { client ->
+    val quotes = client.stocks().quotes(
+        StockQuotesRequest.builder("AAPL", "META", "MSFT").build())
+    for (q in quotes.values()) {
+        println("${q.symbol()}: bid=${q.bid()}, ask=${q.ask()}, last=${q.last()}")
+    }
+}
+```
+
 </TabItem>
 </Tabs>
 

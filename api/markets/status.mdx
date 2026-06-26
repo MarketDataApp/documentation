@@ -144,6 +144,68 @@ $yesterday = $client->markets->status(
 echo $yesterday;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="MarketStatusApp.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.markets.MarketStatus;
+import com.marketdata.sdk.markets.MarketStatusRequest;
+import java.time.LocalDate;
+import java.util.List;
+
+public class MarketStatusApp {
+  public static void main(String[] args) {
+    try (MarketDataClient client = new MarketDataClient()) {
+      List<MarketStatus> days = client.markets()
+          .status(MarketStatusRequest.builder()
+              .from(LocalDate.of(2020, 1, 1))
+              .to(LocalDate.of(2020, 12, 31))
+              .build())
+          .values();
+      for (MarketStatus d : days) {
+        System.out.printf("date=%s status=%s%n", d.date(), d.status());
+      }
+
+      List<MarketStatus> today = client.markets()
+          .status(MarketStatusRequest.of())
+          .values();
+      System.out.println(today.get(0));
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="MarketStatusApp.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.markets.MarketStatusRequest
+import java.time.LocalDate
+
+fun main() {
+    MarketDataClient().use { client ->
+        val days = client.markets()
+            .status(
+                MarketStatusRequest.builder()
+                    .from(LocalDate.of(2020, 1, 1))
+                    .to(LocalDate.of(2020, 12, 31))
+                    .build()
+            )
+            .values()
+        for (d in days) {
+            println("date=${d.date()} status=${d.status()}")
+        }
+
+        val today = client.markets()
+            .status(MarketStatusRequest.of())
+            .values()
+        println(today[0])
+    }
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

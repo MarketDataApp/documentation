@@ -88,6 +88,39 @@ $headers = $client->utilities->headers();
 echo $headers;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="HeadersCheck.java"
+import com.marketdata.sdk.MarketDataClient;
+import java.util.Map;
+
+public class HeadersCheck {
+  public static void main(String[] args) {
+    try (MarketDataClient client = new MarketDataClient()) {
+      Map<String, String> h = client.utilities().headers().values();
+      System.out.println(h.get("user-agent"));
+      System.out.println(h.get("accept-encoding"));
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="HeadersCheck.kt"
+import com.marketdata.sdk.MarketDataClient
+
+fun main() {
+    MarketDataClient().use { client ->
+        val h = client.utilities().headers().values()
+        println(h["user-agent"])
+        println(h["accept-encoding"])
+    }
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

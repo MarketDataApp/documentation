@@ -92,6 +92,32 @@ $prices = $client->stocks->prices("AAPL");
 echo $prices;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="StockPrices.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockPricesRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+  var prices = client.stocks().prices(StockPricesRequest.of("AAPL"));
+  System.out.println(prices.values().get(0).mid());
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="StockPrices.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockPricesRequest
+
+MarketDataClient().use { client ->
+    val prices = client.stocks().prices(StockPricesRequest.of("AAPL"))
+    println(prices.values()[0].mid())
+}
+```
+
+</TabItem>
 </Tabs>
 
 </TabItem>
@@ -162,6 +188,37 @@ $prices = $client->stocks->prices(["AAPL", "META", "MSFT"]);
 // Display formatted prices summary
 echo $prices;
 ```
+</TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="StockPrices.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockPrice;
+import com.marketdata.sdk.stocks.StockPricesRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+  var prices = client.stocks().prices(StockPricesRequest.of("AAPL", "META", "MSFT"));
+  for (StockPrice p : prices.values()) {
+    System.out.println(p.symbol() + ": mid=" + p.mid());
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="StockPrices.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockPricesRequest
+
+MarketDataClient().use { client ->
+    val prices = client.stocks().prices(StockPricesRequest.of("AAPL", "META", "MSFT"))
+    for (p in prices.values()) {
+        println("${p.symbol()}: mid=${p.mid()}")
+    }
+}
+```
+
 </TabItem>
 </Tabs>
 

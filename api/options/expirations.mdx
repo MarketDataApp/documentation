@@ -109,6 +109,42 @@ $expirations = $client->options->expirations("AAPL");
 echo $expirations;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="OptionExpirations.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.options.OptionsExpirationsRequest;
+import java.time.ZonedDateTime;
+import java.util.List;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    List<ZonedDateTime> expirations =
+        client.options().expirations(OptionsExpirationsRequest.of("AAPL")).values();
+    for (ZonedDateTime exp : expirations) {
+        System.out.println(exp);
+    }
+} catch (Exception error) {
+    error.printStackTrace();
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="OptionExpirations.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.options.OptionsExpirationsRequest
+
+MarketDataClient().use { client ->
+    val expirations =
+        client.options().expirations(OptionsExpirationsRequest.of("AAPL")).values()
+    for (exp in expirations) {
+        println(exp)
+    }
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

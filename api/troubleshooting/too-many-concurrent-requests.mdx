@@ -176,6 +176,55 @@ function requestWithBackoff(string $url, array $headers, int $maxRetries = 5): a
 ```
 
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="RequestWithBackoff.java"
+import com.marketdata.sdk.exception.RateLimitError;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Supplier;
+
+// The SDK already retries with exponential backoff internally. For a 429 caused
+// by too many *concurrent* requests, wrap your call in an outer backoff and
+// reduce fan-out. RateLimitError is the SDK's 429; honour getRetryAfter() if set.
+static <T> T requestWithBackoff(Supplier<T> call, int maxRetries) throws InterruptedException {
+  for (int attempt = 0; ; attempt++) {
+    try {
+      return call.get();
+    } catch (RateLimitError e) {
+      if (attempt >= maxRetries) throw e;
+      long backoffMs = (long) (200 * Math.pow(2, attempt))
+          + ThreadLocalRandom.current().nextInt(100);
+      Thread.sleep(e.getRetryAfter().map(d -> d.toMillis()).orElse(backoffMs));
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="RequestWithBackoff.kt"
+import com.marketdata.sdk.exception.RateLimitError
+import kotlin.random.Random
+
+// The SDK already retries internally. For a 429 from too many *concurrent*
+// requests, add outer backoff and reduce fan-out.
+fun <T> requestWithBackoff(maxRetries: Int = 5, call: () -> T): T {
+    var attempt = 0
+    while (true) {
+        try {
+            return call()
+        } catch (e: RateLimitError) {
+            if (attempt >= maxRetries) throw e
+            val backoffMs = (200.0 * Math.pow(2.0, attempt.toDouble())).toLong() + Random.nextInt(100)
+            Thread.sleep(e.retryAfter.map { it.toMillis() }.orElse(backoffMs))
+            attempt++
+        }
+    }
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Common Concurrency Traps

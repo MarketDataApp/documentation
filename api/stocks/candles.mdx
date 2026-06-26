@@ -114,6 +114,48 @@ $candles = $client->stocks->candles(
 echo $candles;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="StockCandles.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockCandle;
+import com.marketdata.sdk.stocks.StockCandlesRequest;
+import com.marketdata.sdk.stocks.StockResolution;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    // Default resolution is DAILY
+    var candles = client.stocks().candles(
+        StockCandlesRequest.builder(StockResolution.DAILY, "AAPL")
+            .countback(30)
+            .build());
+    for (StockCandle c : candles.values()) {
+        System.out.printf("t=%s o=%s h=%s l=%s c=%s v=%s%n",
+            c.time(), c.open(), c.high(), c.low(), c.close(), c.volume());
+    }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="StockCandles.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockCandlesRequest
+import com.marketdata.sdk.stocks.StockResolution
+
+MarketDataClient().use { client ->
+    // Default resolution is DAILY
+    val candles = client.stocks().candles(
+        StockCandlesRequest.builder(StockResolution.DAILY, "AAPL")
+            .countback(30)
+            .build())
+    for (c in candles.values()) {
+        println("t=${c.time()} o=${c.open()} h=${c.high()} l=${c.low()} c=${c.close()} v=${c.volume()}")
+    }
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

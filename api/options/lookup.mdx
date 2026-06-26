@@ -101,6 +101,36 @@ $lookup = $client->options->lookup("AAPL 7/28/2023 200 Call");
 echo $lookup;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="OptionLookup.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.options.OptionsLookupRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    String optionSymbol =
+        client.options().lookup(OptionsLookupRequest.of("AAPL 7/28/2023 200 Call")).values();
+    System.out.println(optionSymbol);  // "AAPL230728C00200000"
+} catch (Exception error) {
+    error.printStackTrace();
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="OptionLookup.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.options.OptionsLookupRequest
+
+MarketDataClient().use { client ->
+    val optionSymbol =
+        client.options().lookup(OptionsLookupRequest.of("AAPL 7/28/2023 200 Call")).values()
+    println(optionSymbol)  // "AAPL230728C00200000"
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example
