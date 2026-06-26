@@ -150,6 +150,119 @@ MarketDataClient().use { client ->
 </TabItem>
 </Tabs>
 
+### Composing async calls
+
+The point of the async variants is to **stay non-blocking** — chain off the future instead of calling `join()` in the middle. Use `thenApply` to transform a result, `thenCompose` to chain a dependent call, and fire independent calls together when they don't depend on each other.
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.options.OptionsLookupRequest;
+import com.marketdata.sdk.options.OptionsQuoteRequest;
+import com.marketdata.sdk.stocks.StockQuoteRequest;
+import java.util.concurrent.CompletableFuture;
+
+// thenApply — transform the result without blocking.
+CompletableFuture<Double> lastPrice = client.stocks()
+    .quoteAsync(StockQuoteRequest.of("AAPL"))
+    .thenApply(resp -> resp.values().get(0).last());
+
+// thenCompose — chain a dependent async call (resolve a symbol, then quote it).
+var optionQuote = client.options()
+    .lookupAsync(OptionsLookupRequest.of("AAPL 1/16/2026 $200 Call"))
+    .thenCompose(sym -> client.options().quoteAsync(OptionsQuoteRequest.of(sym.values())));
+
+// Independent calls in parallel, then use every result.
+var aapl = client.stocks().quoteAsync(StockQuoteRequest.of("AAPL"));
+var msft = client.stocks().quoteAsync(StockQuoteRequest.of("MSFT"));
+CompletableFuture.allOf(aapl, msft).join();   // wait for both
+double spread = aapl.join().values().get(0).last() - msft.join().values().get(0).last();
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.options.OptionsLookupRequest
+import com.marketdata.sdk.options.OptionsQuoteRequest
+import com.marketdata.sdk.stocks.StockQuoteRequest
+import java.util.concurrent.CompletableFuture
+
+// thenApply — transform the result without blocking.
+val lastPrice = client.stocks()
+    .quoteAsync(StockQuoteRequest.of("AAPL"))
+    .thenApply { resp -> resp.values()[0].last() }
+
+// thenCompose — chain a dependent async call.
+val optionQuote = client.options()
+    .lookupAsync(OptionsLookupRequest.of("AAPL 1/16/2026 \$200 Call"))
+    .thenCompose { sym -> client.options().quoteAsync(OptionsQuoteRequest.of(sym.values())) }
+
+// Independent calls in parallel, then use every result.
+val aapl = client.stocks().quoteAsync(StockQuoteRequest.of("AAPL"))
+val msft = client.stocks().quoteAsync(StockQuoteRequest.of("MSFT"))
+CompletableFuture.allOf(aapl, msft).join()
+val spread = aapl.join().values()[0].last()!! - msft.join().values()[0].last()!!
+```
+
+</TabItem>
+</Tabs>
+
+### Handling errors in async
+
+When a request fails, the future completes **exceptionally**. Inside `exceptionally()`, `handle()`, or `whenComplete()`, the throwable you receive is a `java.util.concurrent.CompletionException` — call `getCause()` to reach the underlying `MarketDataException`. (The blocking variants do this unwrapping for you, which is why `try/catch` around a sync call catches the `MarketDataException` directly.)
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.exception.RateLimitError;
+import com.marketdata.sdk.stocks.StockQuoteRequest;
+import java.util.concurrent.CompletionException;
+
+client.stocks().quoteAsync(StockQuoteRequest.of("AAPL"))
+    .thenApply(resp -> resp.values().get(0).last())
+    .exceptionally(ex -> {
+      // `ex` is a CompletionException; the real cause is the MarketDataException.
+      Throwable cause = (ex instanceof CompletionException && ex.getCause() != null)
+          ? ex.getCause() : ex;
+      if (cause instanceof RateLimitError) {
+        System.out.println("Rate limited — backing off");
+      }
+      return null; // fallback value the rest of the chain will see
+    })
+    .join();
+
+// handle((value, throwable) -> ...) sees both outcomes in one place; use it when
+// you want to map success and failure to the same result type.
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.exception.RateLimitError
+import com.marketdata.sdk.stocks.StockQuoteRequest
+import java.util.concurrent.CompletionException
+
+client.stocks().quoteAsync(StockQuoteRequest.of("AAPL"))
+    .thenApply { resp -> resp.values()[0].last() }
+    .exceptionally { ex ->
+        val cause = if (ex is CompletionException && ex.cause != null) ex.cause else ex
+        if (cause is RateLimitError) println("Rate limited — backing off")
+        null
+    }
+    .join()
+```
+
+</TabItem>
+</Tabs>
+
+:::note `join()` vs `get()`
+To block on a future, prefer **`join()`** — it throws an unchecked `CompletionException`. `get()` does the same thing but throws the checked `ExecutionException` (plus `InterruptedException`), forcing a `try/catch`. Both wrap the underlying cause identically, so `join()` is usually the friendlier choice.
+:::
+
 ## The Response Object
 
 Every endpoint returns a typed response that wraps the decoded data plus request metadata, with a uniform surface regardless of endpoint or format.
