@@ -120,6 +120,30 @@ $news = $client->stocks->news(
 echo $news;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="StockNews.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockNewsRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    client.stocks().news(StockNewsRequest.of("AAPL")).values().forEach(System.out::println);
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="StockNews.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockNewsRequest
+
+MarketDataClient().use { client ->
+    client.stocks().news(StockNewsRequest.of("AAPL")).values().forEach(::println)
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

@@ -122,6 +122,30 @@ $earnings = $client->stocks->earnings(
 echo $earnings;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="StockEarnings.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockEarningsRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    client.stocks().earnings(StockEarningsRequest.of("AAPL")).values().forEach(System.out::println);
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="StockEarnings.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockEarningsRequest
+
+MarketDataClient().use { client ->
+    client.stocks().earnings(StockEarningsRequest.of("AAPL")).values().forEach(::println)
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

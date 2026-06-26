@@ -88,6 +88,34 @@ $headers = $client->utilities->headers();
 echo $headers;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="HeadersCheck.java"
+import com.marketdata.sdk.MarketDataClient;
+
+public class HeadersCheck {
+  public static void main(String[] args) {
+    try (MarketDataClient client = new MarketDataClient()) {
+      System.out.println(client.utilities().headers().values());
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="HeadersCheck.kt"
+import com.marketdata.sdk.MarketDataClient
+
+fun main() {
+    MarketDataClient().use { client ->
+        println(client.utilities().headers().values())
+    }
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

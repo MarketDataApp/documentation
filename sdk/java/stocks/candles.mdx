@@ -1,0 +1,126 @@
+---
+title: Candles
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve historical OHLCV (open/high/low/close/volume) candles for a stock symbol.
+
+## Making Requests
+
+Use the `candles()` method on the `stocks` resource. Build the request with `StockCandlesRequest`, passing a `StockResolution` and a symbol. For large intraday ranges the SDK automatically splits the request into year-sized chunks, fetches them concurrently, and merges the results.
+
+```java
+StockCandlesResponse candles(StockCandlesRequest request)
+CompletableFuture<StockCandlesResponse> candlesAsync(StockCandlesRequest request)
+```
+
+### StockCandlesRequest
+
+```java
+// Factory — all-defaults form:
+StockCandlesRequest.of(StockResolution resolution, String symbol)
+
+// Builder — for date windows and adjustments:
+StockCandlesRequest.builder(StockResolution resolution, String symbol)
+    .date(LocalDate date)                 // a single trading day
+    .from(LocalDate from)                 // window start (inclusive)
+    .to(LocalDate to)                     // window end (exclusive)
+    .countback(int n)                     // N candles before `to` (instead of `from`)
+    .exchange(String exchange)            // disambiguate exchange
+    .extended(boolean extended)           // include extended-hours bars (intraday)
+    .country(String country)              // exchange country (ISO 3166, 2-letter)
+    .adjustSplits(boolean adjust)         // default: true for daily
+    .adjustDividends(boolean adjust)      // default: true for daily
+    .build()
+```
+
+### StockResolution
+
+A value type for the candle interval:
+
+```java
+StockResolution.DAILY        // also WEEKLY, MONTHLY, YEARLY
+StockResolution.minutes(5)   // 5-minute bars
+StockResolution.hours(1)     // hourly bars
+StockResolution.days(1)
+StockResolution.of("1H")     // any raw wire token
+```
+
+#### Returns
+
+`StockCandlesResponse` wrapping `List<StockCandle>`:
+
+```java
+public record StockCandle(
+    @Nullable ZonedDateTime time,   // bar opening moment (America/New_York)
+    @Nullable Double open,
+    @Nullable Double high,
+    @Nullable Double low,
+    @Nullable Double close,
+    @Nullable Long volume)
+```
+
+## Examples
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockCandle;
+import com.marketdata.sdk.stocks.StockCandlesRequest;
+import com.marketdata.sdk.stocks.StockResolution;
+import java.time.LocalDate;
+
+try (MarketDataClient client = new MarketDataClient()) {
+
+  // Daily candles over a date range.
+  var candles = client.stocks().candles(
+      StockCandlesRequest.builder(StockResolution.DAILY, "AAPL")
+          .from(LocalDate.now().minusWeeks(1))
+          .to(LocalDate.now())
+          .build());
+
+  for (StockCandle bar : candles.values()) {
+    System.out.printf("%s  O=%.2f H=%.2f L=%.2f C=%.2f V=%d%n",
+        bar.time(), bar.open(), bar.high(), bar.low(), bar.close(), bar.volume());
+  }
+
+  // The last 10 sessions, using countback instead of a left edge.
+  var lastTen = client.stocks().candles(
+      StockCandlesRequest.builder(StockResolution.DAILY, "AAPL")
+          .to(LocalDate.now())
+          .countback(10)
+          .build());
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockCandlesRequest
+import com.marketdata.sdk.stocks.StockResolution
+import java.time.LocalDate
+
+MarketDataClient().use { client ->
+    val candles = client.stocks().candles(
+        StockCandlesRequest.builder(StockResolution.DAILY, "AAPL")
+            .from(LocalDate.now().minusWeeks(1))
+            .to(LocalDate.now())
+            .build())
+
+    for (bar in candles.values()) {
+        println("${bar.time()} O=${bar.open()} C=${bar.close()} V=${bar.volume()}")
+    }
+}
+```
+
+</TabItem>
+</Tabs>
+
+For CSV output, call `client.stocks().asCsv().candles(...)` and read `.csv()`. See [Settings](/sdk/java/settings#csv-output).

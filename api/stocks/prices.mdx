@@ -92,6 +92,30 @@ $prices = $client->stocks->prices("AAPL");
 echo $prices;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="StockPrices.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockPricesRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+  client.stocks().prices(StockPricesRequest.of("AAPL")).values().forEach(System.out::println);
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="StockPrices.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockPricesRequest
+
+MarketDataClient().use { client ->
+    client.stocks().prices(StockPricesRequest.of("AAPL")).values().forEach(::println)
+}
+```
+
+</TabItem>
 </Tabs>
 
 </TabItem>
@@ -162,6 +186,30 @@ $prices = $client->stocks->prices(["AAPL", "META", "MSFT"]);
 // Display formatted prices summary
 echo $prices;
 ```
+</TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="StockPrices.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockPricesRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+  client.stocks().prices(StockPricesRequest.of("AAPL", "META", "MSFT")).values().forEach(System.out::println);
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="StockPrices.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockPricesRequest
+
+MarketDataClient().use { client ->
+    client.stocks().prices(StockPricesRequest.of("AAPL", "META", "MSFT")).values().forEach(::println)
+}
+```
+
 </TabItem>
 </Tabs>
 

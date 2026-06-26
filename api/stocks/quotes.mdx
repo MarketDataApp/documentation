@@ -111,6 +111,30 @@ $quote = $client->stocks->quote("AAPL");
 echo $quote;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="StockQuote.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockQuoteRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    client.stocks().quote(StockQuoteRequest.of("AAPL")).values().forEach(System.out::println);
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="StockQuote.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockQuoteRequest
+
+MarketDataClient().use { client ->
+    client.stocks().quote(StockQuoteRequest.of("AAPL")).values().forEach(::println)
+}
+```
+
+</TabItem>
 </Tabs>
 
 </TabItem>
@@ -181,6 +205,30 @@ $quotes = $client->stocks->quotes(["AAPL", "META", "MSFT"]);
 // Display formatted quotes summary
 echo $quotes;
 ```
+</TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="StockQuotes.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockQuotesRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    client.stocks().quotes(StockQuotesRequest.of("AAPL", "META", "MSFT")).values().forEach(System.out::println);
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="StockQuotes.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockQuotesRequest
+
+MarketDataClient().use { client ->
+    client.stocks().quotes(StockQuotesRequest.of("AAPL", "META", "MSFT")).values().forEach(::println)
+}
+```
+
 </TabItem>
 </Tabs>
 

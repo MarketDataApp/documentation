@@ -114,6 +114,42 @@ $candles = $client->stocks->candles(
 echo $candles;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="StockCandles.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockCandlesRequest;
+import com.marketdata.sdk.stocks.StockResolution;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    // Default resolution is DAILY
+    var candles = client.stocks().candles(
+        StockCandlesRequest.builder(StockResolution.DAILY, "AAPL")
+            .countback(30)
+            .build());
+    candles.values().forEach(System.out::println);
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="StockCandles.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockCandlesRequest
+import com.marketdata.sdk.stocks.StockResolution
+
+MarketDataClient().use { client ->
+    // Default resolution is DAILY
+    val candles = client.stocks().candles(
+        StockCandlesRequest.builder(StockResolution.DAILY, "AAPL")
+            .countback(30)
+            .build())
+    candles.values().forEach(::println)
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

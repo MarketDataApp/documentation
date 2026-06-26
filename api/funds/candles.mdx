@@ -120,6 +120,52 @@ $candles = $client->mutual_funds->candles(
 echo $candles;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="FundCandles.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.funds.FundCandlesRequest;
+import com.marketdata.sdk.funds.FundResolution;
+
+public class FundCandles {
+  public static void main(String[] args) {
+    try (MarketDataClient client = new MarketDataClient()) {
+      // VFINX is available without authentication (free test symbol).
+      client.funds()
+          .candles(FundCandlesRequest.builder(FundResolution.DAILY, "VFINX")
+              .countback(30)
+              .build())
+          .values()
+          .forEach(System.out::println);
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="FundCandles.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.funds.FundCandlesRequest
+import com.marketdata.sdk.funds.FundResolution
+
+fun main() {
+    MarketDataClient().use { client ->
+        // VFINX is available without authentication (free test symbol).
+        client.funds()
+            .candles(
+                FundCandlesRequest.builder(FundResolution.DAILY, "VFINX")
+                    .countback(30)
+                    .build()
+            )
+            .values()
+            .forEach(::println)
+    }
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

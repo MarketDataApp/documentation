@@ -1,0 +1,399 @@
+---
+title: Client
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The `MarketDataClient` is the entry point to the SDK. It handles API requests, response parsing, rate-limit tracking, retries with exponential backoff, and logging. A single client gives you access to all five resources: stocks, options, funds, markets, and utilities.
+
+The client is immutable, thread-safe, and `AutoCloseable`. Create one per application (it holds a shared HTTP client and a 50-request concurrency pool) and close it when you're done.
+
+### Get Started Quickly
+
+1. Review the [authentication documentation](/sdk/java/authentication) to learn how to set your API token.
+2. Create a [`MarketDataClient`](#MarketDataClient) and use it to make requests.
+3. Reach a resource through `client.stocks()`, `client.options()`, etc.
+4. Track your [rate limit](#rate-limits) to see how many API credits remain.
+5. Configure [Settings](/sdk/java/settings) to customize output format, date format, and other universal parameters.
+
+<a name="MarketDataClient"></a>
+## MarketDataClient
+
+```java
+public final class MarketDataClient implements AutoCloseable {
+
+  // Production: resolves everything from the configuration cascade and
+  // validates the token on startup.
+  public MarketDataClient();
+
+  // Full control: any null falls back to the cascade / default for that slot.
+  public MarketDataClient(
+      @Nullable String apiKey,
+      @Nullable String baseUrl,       // default: https://api.marketdata.app
+      @Nullable String apiVersion,    // default: v1
+      boolean validateOnStartup);
+
+  // Resources
+  public StocksResource stocks();
+  public OptionsResource options();
+  public FundsResource funds();
+  public MarketsResource markets();
+  public UtilitiesResource utilities();
+
+  // Latest client-wide rate-limit snapshot (or null before the first request)
+  public @Nullable RateLimitSnapshot getRateLimits();
+
+  // Releases the shared HTTP client
+  @Override public void close();
+}
+```
+
+### Constructors
+
+The **no-arg constructor** is what you'll use in production. It resolves the token and settings from the [configuration cascade](/sdk/java/settings#configuration-cascade) and fires a single `GET /user/` request to validate the token before returning.
+
+The **four-arg constructor** `(apiKey, baseUrl, apiVersion, validateOnStartup)` lets you set everything explicitly — handy for tests, short-lived runtimes, and serverless platforms where you want to skip the startup round-trip (`validateOnStartup = false`).
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.MarketDataClient;
+
+// Production: token from the cascade, validated on startup.
+try (MarketDataClient client = new MarketDataClient()) {
+  // ...
+}
+
+// Explicit, no startup validation (e.g. on a Lambda cold start):
+try (MarketDataClient client =
+         new MarketDataClient("your_token", null, null, false)) {
+  // ...
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.MarketDataClient
+
+MarketDataClient().use { client ->
+    // ...
+}
+
+MarketDataClient("your_token", null, null, false).use { client ->
+    // ...
+}
+```
+
+</TabItem>
+</Tabs>
+
+:::info Fail-fast configuration
+A misconfigured base URL or API version is rejected with an `IllegalArgumentException` **at construction**, not later on the first request. Tokens are never printed in full — the client's `toString()` redacts them (long tokens show only the last four characters; short ones are hidden entirely).
+:::
+
+## Sync and Async
+
+Every endpoint comes in two variants: a blocking call (e.g. `status()`) and an async one (e.g. `statusAsync()`) returning a `CompletableFuture`. They share the same validation, retry, and rate-limit logic — pick whichever fits your code. Internally the SDK is async-first; the sync method is a thin wrapper that joins the future and unwraps the underlying exception.
+
+Async pays off when you fan out several requests: total time is about the slowest single call, not the sum.
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.UtilitiesStatusResponse;
+import java.util.concurrent.CompletableFuture;
+
+try (MarketDataClient client = new MarketDataClient()) {
+
+  // Sync — blocks and returns the typed response.
+  var sync = client.utilities().status();
+  System.out.println(sync.values().size() + " services");
+
+  // Async — returns immediately with a future. Attach a callback, or join().
+  CompletableFuture<UtilitiesStatusResponse> future = client.utilities().statusAsync();
+  future.thenAccept(resp -> System.out.println(resp.values().size() + " services"));
+
+  // Fan out several calls in parallel and wait for all of them.
+  var a = client.utilities().statusAsync();
+  var b = client.utilities().statusAsync();
+  CompletableFuture.allOf(a, b).join();
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.MarketDataClient
+import java.util.concurrent.CompletableFuture
+
+MarketDataClient().use { client ->
+    // Sync
+    val sync = client.utilities().status()
+    println("${sync.values().size} services")
+
+    // Async — returns a CompletableFuture (coroutine users can await() it
+    // via kotlinx-coroutines-jdk8).
+    client.utilities().statusAsync()
+        .thenAccept { resp -> println("${resp.values().size} services") }
+        .join()
+}
+```
+
+</TabItem>
+</Tabs>
+
+### Composing async calls
+
+The point of the async variants is to **stay non-blocking** — chain off the future instead of calling `join()` in the middle. Use `thenApply` to transform a result, `thenCompose` to chain a dependent call, and fire independent calls together when they don't depend on each other.
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.options.OptionsLookupRequest;
+import com.marketdata.sdk.options.OptionsQuoteRequest;
+import com.marketdata.sdk.stocks.StockQuoteRequest;
+import java.util.concurrent.CompletableFuture;
+
+// thenApply — transform the result without blocking.
+CompletableFuture<Double> lastPrice = client.stocks()
+    .quoteAsync(StockQuoteRequest.of("AAPL"))
+    .thenApply(resp -> resp.values().get(0).last());
+
+// thenCompose — chain a dependent async call (resolve a symbol, then quote it).
+var optionQuote = client.options()
+    .lookupAsync(OptionsLookupRequest.of("AAPL 1/16/2026 $200 Call"))
+    .thenCompose(sym -> client.options().quoteAsync(OptionsQuoteRequest.of(sym.values())));
+
+// Independent calls in parallel, then use every result.
+var aapl = client.stocks().quoteAsync(StockQuoteRequest.of("AAPL"));
+var msft = client.stocks().quoteAsync(StockQuoteRequest.of("MSFT"));
+CompletableFuture.allOf(aapl, msft).join();   // wait for both
+double spread = aapl.join().values().get(0).last() - msft.join().values().get(0).last();
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.options.OptionsLookupRequest
+import com.marketdata.sdk.options.OptionsQuoteRequest
+import com.marketdata.sdk.stocks.StockQuoteRequest
+import java.util.concurrent.CompletableFuture
+
+// thenApply — transform the result without blocking.
+val lastPrice = client.stocks()
+    .quoteAsync(StockQuoteRequest.of("AAPL"))
+    .thenApply { resp -> resp.values()[0].last() }
+
+// thenCompose — chain a dependent async call.
+val optionQuote = client.options()
+    .lookupAsync(OptionsLookupRequest.of("AAPL 1/16/2026 \$200 Call"))
+    .thenCompose { sym -> client.options().quoteAsync(OptionsQuoteRequest.of(sym.values())) }
+
+// Independent calls in parallel, then use every result.
+val aapl = client.stocks().quoteAsync(StockQuoteRequest.of("AAPL"))
+val msft = client.stocks().quoteAsync(StockQuoteRequest.of("MSFT"))
+CompletableFuture.allOf(aapl, msft).join()
+val spread = aapl.join().values()[0].last()!! - msft.join().values()[0].last()!!
+```
+
+</TabItem>
+</Tabs>
+
+### Handling errors in async
+
+When a request fails, the future completes **exceptionally**. Inside `exceptionally()`, `handle()`, or `whenComplete()`, the throwable you receive is a `java.util.concurrent.CompletionException` — call `getCause()` to reach the underlying `MarketDataException`. (The blocking variants do this unwrapping for you, which is why `try/catch` around a sync call catches the `MarketDataException` directly.)
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.exception.RateLimitError;
+import com.marketdata.sdk.stocks.StockQuoteRequest;
+import java.util.concurrent.CompletionException;
+
+client.stocks().quoteAsync(StockQuoteRequest.of("AAPL"))
+    .thenApply(resp -> resp.values().get(0).last())
+    .exceptionally(ex -> {
+      // `ex` is a CompletionException; the real cause is the MarketDataException.
+      Throwable cause = (ex instanceof CompletionException && ex.getCause() != null)
+          ? ex.getCause() : ex;
+      if (cause instanceof RateLimitError) {
+        System.out.println("Rate limited — backing off");
+      }
+      return null; // fallback value the rest of the chain will see
+    })
+    .join();
+
+// handle((value, throwable) -> ...) sees both outcomes in one place; use it when
+// you want to map success and failure to the same result type.
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.exception.RateLimitError
+import com.marketdata.sdk.stocks.StockQuoteRequest
+import java.util.concurrent.CompletionException
+
+client.stocks().quoteAsync(StockQuoteRequest.of("AAPL"))
+    .thenApply { resp -> resp.values()[0].last() }
+    .exceptionally { ex ->
+        val cause = if (ex is CompletionException && ex.cause != null) ex.cause else ex
+        if (cause is RateLimitError) println("Rate limited — backing off")
+        null
+    }
+    .join()
+```
+
+</TabItem>
+</Tabs>
+
+:::note `join()` vs `get()`
+To block on a future, prefer **`join()`** — it throws an unchecked `CompletionException`. `get()` does the same thing but throws the checked `ExecutionException` (plus `InterruptedException`), forcing a `try/catch`. Both wrap the underlying cause identically, so `join()` is usually the friendlier choice.
+:::
+
+## The Response Object
+
+Every endpoint returns a typed response that wraps the decoded data plus request metadata, with a uniform surface regardless of endpoint or format.
+
+```java
+public interface MarketDataResponse<T> {
+  T values();                       // the typed payload (e.g. List<StockQuote>)
+  int statusCode();                 // 200, 203, or 404
+  boolean isNoData();               // true on a 404 "no_data" response
+  @Nullable String requestId();     // server request id, for support tickets
+  java.net.URI requestUrl();        // the absolute request URL
+  @Nullable RateLimitSnapshot rateLimit();  // this request's rate limit
+  String json();                    // the raw response body, as sent
+  boolean isJson();
+  boolean isCsv();
+  boolean isHtml();
+  void saveToFile(java.nio.file.Path path); // write the raw body verbatim
+}
+```
+
+```java
+var response = client.stocks().quote(StockQuoteRequest.of("AAPL"));
+
+response.values();        // List<StockQuote> — the part you usually want
+response.statusCode();    // 200
+response.requestId();     // e.g. for a support ticket
+response.rateLimit();     // this request's rate-limit snapshot (may be null)
+response.saveToFile(Path.of("aapl.json"));  // cache the raw body
+```
+
+## Error Handling
+
+Everything the SDK throws is a `MarketDataException`. It is a **sealed** hierarchy — the seven subtypes below are the complete set, so you can branch on them exhaustively and the compiler will tell you if a future major version adds one. Each exception carries support context: `getStatusCode()`, `getRequestId()`, `getRequestUrl()`, and `getSupportInfo()`.
+
+| Subtype | When it's thrown |
+|---|---|
+| `AuthenticationError` | Missing or invalid token (HTTP 401) |
+| `BadRequestError` | Invalid parameters (HTTP 4xx) |
+| `NotFoundError` | The resource doesn't exist (HTTP 404) |
+| `RateLimitError` | Quota exceeded (HTTP 429); see `getRetryAfter()` |
+| `ServerError` | API-side failure (HTTP 5xx) |
+| `NetworkError` | Connection failure or timeout |
+| `ParseError` | The response could not be decoded |
+
+Async calls surface the same exceptions through the `CompletableFuture` (wrapped in a `CompletionException`); the sync wrappers unwrap them so you catch the cause directly.
+
+<Tabs>
+<TabItem value="Java" label="Java (JDK 17)">
+
+```java
+import com.marketdata.sdk.exception.*;
+
+try {
+  var quote = client.stocks().quote(StockQuoteRequest.of("AAPL"));
+} catch (AuthenticationError e) {
+  System.out.println("Check your token");
+} catch (RateLimitError e) {
+  System.out.println("Rate limited — retry after "
+      + e.getRetryAfter().map(d -> d.toSeconds() + "s").orElse("a moment"));
+} catch (MarketDataException e) {
+  // Any other case. Attach getSupportInfo() to a bug report.
+  System.out.println(e.getSupportInfo());
+}
+```
+
+</TabItem>
+<TabItem value="Java21" label="Java (JDK 21+)">
+
+```java
+import com.marketdata.sdk.exception.*;
+
+// On JDK 21+ the sealed hierarchy enables an exhaustive switch — the compiler
+// rejects the code if any subtype is left unhandled.
+try {
+  var quote = client.stocks().quote(StockQuoteRequest.of("AAPL"));
+} catch (MarketDataException e) {
+  String message = switch (e) {
+    case AuthenticationError a -> "Authentication failed — check your token";
+    case BadRequestError b     -> "Bad request — check your parameters";
+    case NotFoundError n       -> "Not found";
+    case RateLimitError r      -> "Rate limited";
+    case ServerError s         -> "Server error (HTTP " + s.getStatusCode() + ")";
+    case NetworkError n        -> "Network problem — is the API reachable?";
+    case ParseError p          -> "Could not parse the response";
+  };
+  System.out.println(message);
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.exception.*
+
+try {
+    val quote = client.stocks().quote(StockQuoteRequest.of("AAPL"))
+} catch (e: AuthenticationError) {
+    println("Check your token")
+} catch (e: RateLimitError) {
+    println("Rate limited")
+} catch (e: MarketDataException) {
+    println(e.supportInfo)
+}
+```
+
+</TabItem>
+</Tabs>
+
+<a name="rate-limits"></a>
+## Rate Limits
+
+The SDK tracks your rate limit from the `x-api-ratelimit-*` headers on every response.
+
+- **Per-request:** `response.rateLimit()` reflects the headers of that specific response.
+- **Client-wide:** `client.getRateLimits()` returns the latest snapshot seen across all requests.
+
+```java
+public record RateLimitSnapshot(int limit, int remaining, Instant reset, int consumed) {}
+```
+
+```java
+var response = client.stocks().quote(StockQuoteRequest.of("AAPL"));
+var rl = response.rateLimit();
+if (rl != null) {
+  System.out.println(rl.remaining() + " / " + rl.limit() + " requests left");
+}
+```
+
+The SDK also fails fast: if a prior response reported `remaining = 0` and the reset window has not yet elapsed, the next request raises a `RateLimitError` before hitting the network.
+
+## Closing the Client
+
+`MarketDataClient` is `AutoCloseable`. Prefer try-with-resources (Java) or `use {}` (Kotlin) so the underlying HTTP client is released. For a long-lived, application-scoped client, call `close()` on shutdown.

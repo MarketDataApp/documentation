@@ -109,6 +109,30 @@ $expirations = $client->options->expirations("AAPL");
 echo $expirations;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="OptionExpirations.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.options.OptionsExpirationsRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    client.options().expirations(OptionsExpirationsRequest.of("AAPL")).values().forEach(System.out::println);
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="OptionExpirations.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.options.OptionsExpirationsRequest
+
+MarketDataClient().use { client ->
+    client.options().expirations(OptionsExpirationsRequest.of("AAPL")).values().forEach(::println)
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example
