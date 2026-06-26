@@ -4,6 +4,14 @@ on:
   push:
     branches: [staging, main]
 
+# Serialize deploys per branch. Two pushes in quick succession would otherwise
+# run concurrent `aws s3 sync --delete` jobs into the same R2 prefix, where each
+# build's --delete removes the other's freshly-uploaded chunks, producing a
+# deploy with one build's HTML and another's assets (404'd JS).
+concurrency:
+  group: deploy-docs-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
