@@ -124,24 +124,19 @@ echo $candles;
 
 ```java title="FundCandles.java"
 import com.marketdata.sdk.MarketDataClient;
-import com.marketdata.sdk.funds.FundCandle;
 import com.marketdata.sdk.funds.FundCandlesRequest;
 import com.marketdata.sdk.funds.FundResolution;
-import java.util.List;
 
 public class FundCandles {
   public static void main(String[] args) {
     try (MarketDataClient client = new MarketDataClient()) {
       // VFINX is available without authentication (free test symbol).
-      List<FundCandle> candles = client.funds()
+      client.funds()
           .candles(FundCandlesRequest.builder(FundResolution.DAILY, "VFINX")
               .countback(30)
               .build())
-          .values();
-      for (FundCandle c : candles) {
-        System.out.printf("t=%s o=%s h=%s l=%s c=%s%n",
-            c.time(), c.open(), c.high(), c.low(), c.close());
-      }
+          .values()
+          .forEach(System.out::println);
     }
   }
 }
@@ -158,16 +153,14 @@ import com.marketdata.sdk.funds.FundResolution
 fun main() {
     MarketDataClient().use { client ->
         // VFINX is available without authentication (free test symbol).
-        val candles = client.funds()
+        client.funds()
             .candles(
                 FundCandlesRequest.builder(FundResolution.DAILY, "VFINX")
                     .countback(30)
                     .build()
             )
             .values()
-        for (c in candles) {
-            println("t=${c.time()} o=${c.open()} h=${c.high()} l=${c.low()} c=${c.close()}")
-        }
+            .forEach(::println)
     }
 }
 ```

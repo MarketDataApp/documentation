@@ -126,15 +126,10 @@ echo $earnings;
 
 ```java title="StockEarnings.java"
 import com.marketdata.sdk.MarketDataClient;
-import com.marketdata.sdk.stocks.StockEarning;
 import com.marketdata.sdk.stocks.StockEarningsRequest;
 
 try (MarketDataClient client = new MarketDataClient()) {
-    var earnings = client.stocks().earnings(StockEarningsRequest.of("AAPL"));
-    for (StockEarning e : earnings.values()) {
-        System.out.printf("FY%s Q%s: reported=%s estimated=%s%n",
-            e.fiscalYear(), e.fiscalQuarter(), e.reportedEPS(), e.estimatedEPS());
-    }
+    client.stocks().earnings(StockEarningsRequest.of("AAPL")).values().forEach(System.out::println);
 }
 ```
 
@@ -146,10 +141,7 @@ import com.marketdata.sdk.MarketDataClient
 import com.marketdata.sdk.stocks.StockEarningsRequest
 
 MarketDataClient().use { client ->
-    val earnings = client.stocks().earnings(StockEarningsRequest.of("AAPL"))
-    for (e in earnings.values()) {
-        println("FY${e.fiscalYear()} Q${e.fiscalQuarter()}: reported=${e.reportedEPS()} estimated=${e.estimatedEPS()}")
-    }
+    client.stocks().earnings(StockEarningsRequest.of("AAPL")).values().forEach(::println)
 }
 ```
 

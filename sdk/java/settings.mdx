@@ -142,7 +142,7 @@ var csv = client.stocks().asCsv()
     .columns("symbol", "last")
     .human(true)
     .headers(true)
-    .quotes(StockQuotesRequest.builder("AAPL", "MSFT").build());
+    .quotes(StockQuotesRequest.of("AAPL", "MSFT"));
 
 System.out.println(csv.csv());      // raw CSV text
 csv.saveToFile(Path.of("quotes.csv"));
@@ -158,7 +158,7 @@ val csv = client.stocks().asCsv()
     .columns("symbol", "last")
     .human(true)
     .headers(true)
-    .quotes(StockQuotesRequest.builder("AAPL", "MSFT").build())
+    .quotes(StockQuotesRequest.of("AAPL", "MSFT"))
 
 println(csv.csv())
 csv.saveToFile(Path.of("quotes.csv"))

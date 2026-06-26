@@ -124,14 +124,10 @@ echo $news;
 
 ```java title="StockNews.java"
 import com.marketdata.sdk.MarketDataClient;
-import com.marketdata.sdk.stocks.StockNewsArticle;
 import com.marketdata.sdk.stocks.StockNewsRequest;
 
 try (MarketDataClient client = new MarketDataClient()) {
-    var news = client.stocks().news(StockNewsRequest.of("AAPL"));
-    for (StockNewsArticle a : news.values()) {
-        System.out.printf("%s: %s%n", a.source(), a.headline());
-    }
+    client.stocks().news(StockNewsRequest.of("AAPL")).values().forEach(System.out::println);
 }
 ```
 
@@ -143,10 +139,7 @@ import com.marketdata.sdk.MarketDataClient
 import com.marketdata.sdk.stocks.StockNewsRequest
 
 MarketDataClient().use { client ->
-    val news = client.stocks().news(StockNewsRequest.of("AAPL"))
-    for (a in news.values()) {
-        println("${a.source()}: ${a.headline()}")
-    }
+    client.stocks().news(StockNewsRequest.of("AAPL")).values().forEach(::println)
 }
 ```
 

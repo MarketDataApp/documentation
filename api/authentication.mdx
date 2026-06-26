@@ -154,8 +154,7 @@ public class App {
     // Alternatively, pass it directly:
     //   new MarketDataClient("your_token_here", null, null, true)
     try (MarketDataClient client = new MarketDataClient()) {
-      var quotes = client.stocks().quote(StockQuoteRequest.of("SPY"));
-      System.out.println(quotes);
+      client.stocks().quote(StockQuoteRequest.of("SPY")).values().forEach(System.out::println);
     }
   }
 }
@@ -174,8 +173,7 @@ fun main() {
     // Alternatively, pass it directly:
     //   MarketDataClient("your_token_here", null, null, true)
     MarketDataClient().use { client ->
-        val quotes = client.stocks().quote(StockQuoteRequest.of("SPY"))
-        println(quotes)
+        client.stocks().quote(StockQuoteRequest.of("SPY")).values().forEach(::println)
     }
 }
 ```

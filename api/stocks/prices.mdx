@@ -99,8 +99,7 @@ import com.marketdata.sdk.MarketDataClient;
 import com.marketdata.sdk.stocks.StockPricesRequest;
 
 try (MarketDataClient client = new MarketDataClient()) {
-  var prices = client.stocks().prices(StockPricesRequest.of("AAPL"));
-  System.out.println(prices.values().get(0).mid());
+  client.stocks().prices(StockPricesRequest.of("AAPL")).values().forEach(System.out::println);
 }
 ```
 
@@ -112,8 +111,7 @@ import com.marketdata.sdk.MarketDataClient
 import com.marketdata.sdk.stocks.StockPricesRequest
 
 MarketDataClient().use { client ->
-    val prices = client.stocks().prices(StockPricesRequest.of("AAPL"))
-    println(prices.values()[0].mid())
+    client.stocks().prices(StockPricesRequest.of("AAPL")).values().forEach(::println)
 }
 ```
 
@@ -193,14 +191,10 @@ echo $prices;
 
 ```java title="StockPrices.java"
 import com.marketdata.sdk.MarketDataClient;
-import com.marketdata.sdk.stocks.StockPrice;
 import com.marketdata.sdk.stocks.StockPricesRequest;
 
 try (MarketDataClient client = new MarketDataClient()) {
-  var prices = client.stocks().prices(StockPricesRequest.of("AAPL", "META", "MSFT"));
-  for (StockPrice p : prices.values()) {
-    System.out.println(p.symbol() + ": mid=" + p.mid());
-  }
+  client.stocks().prices(StockPricesRequest.of("AAPL", "META", "MSFT")).values().forEach(System.out::println);
 }
 ```
 
@@ -212,10 +206,7 @@ import com.marketdata.sdk.MarketDataClient
 import com.marketdata.sdk.stocks.StockPricesRequest
 
 MarketDataClient().use { client ->
-    val prices = client.stocks().prices(StockPricesRequest.of("AAPL", "META", "MSFT"))
-    for (p in prices.values()) {
-        println("${p.symbol()}: mid=${p.mid()}")
-    }
+    client.stocks().prices(StockPricesRequest.of("AAPL", "META", "MSFT")).values().forEach(::println)
 }
 ```
 

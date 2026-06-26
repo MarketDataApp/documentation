@@ -36,6 +36,7 @@ OptionsQuoteRequest.builder(String optionSymbol)
     .build()
 
 // Multiple contracts (fan-out)
+OptionsQuotesRequest.of(String first, String... rest)   // shortcut: symbols only
 OptionsQuotesRequest.builder(String first, String... rest)
     .addSymbol(String optionSymbol)
     .date(LocalDate date)
@@ -70,7 +71,7 @@ try (MarketDataClient client = new MarketDataClient()) {
 
   // Multiple contracts — one request each, keyed by symbol.
   var quotes = client.options().quotes(
-      OptionsQuotesRequest.builder("AAPL260116C00200000", "AAPL260116C00210000").build());
+      OptionsQuotesRequest.of("AAPL260116C00200000", "AAPL260116C00210000"));
   quotes.forEach((sym, resp) ->
       System.out.println(sym + " → " + resp.values().size() + " row(s)"));
 }

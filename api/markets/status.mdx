@@ -148,28 +148,24 @@ echo $yesterday;
 
 ```java title="MarketStatusApp.java"
 import com.marketdata.sdk.MarketDataClient;
-import com.marketdata.sdk.markets.MarketStatus;
 import com.marketdata.sdk.markets.MarketStatusRequest;
 import java.time.LocalDate;
-import java.util.List;
 
 public class MarketStatusApp {
   public static void main(String[] args) {
     try (MarketDataClient client = new MarketDataClient()) {
-      List<MarketStatus> days = client.markets()
+      client.markets()
           .status(MarketStatusRequest.builder()
               .from(LocalDate.of(2020, 1, 1))
               .to(LocalDate.of(2020, 12, 31))
               .build())
-          .values();
-      for (MarketStatus d : days) {
-        System.out.printf("date=%s status=%s%n", d.date(), d.status());
-      }
+          .values()
+          .forEach(System.out::println);
 
-      List<MarketStatus> today = client.markets()
+      client.markets()
           .status(MarketStatusRequest.of())
-          .values();
-      System.out.println(today.get(0));
+          .values()
+          .forEach(System.out::println);
     }
   }
 }
@@ -185,7 +181,7 @@ import java.time.LocalDate
 
 fun main() {
     MarketDataClient().use { client ->
-        val days = client.markets()
+        client.markets()
             .status(
                 MarketStatusRequest.builder()
                     .from(LocalDate.of(2020, 1, 1))
@@ -193,14 +189,12 @@ fun main() {
                     .build()
             )
             .values()
-        for (d in days) {
-            println("date=${d.date()} status=${d.status()}")
-        }
+            .forEach(::println)
 
-        val today = client.markets()
+        client.markets()
             .status(MarketStatusRequest.of())
             .values()
-        println(today[0])
+            .forEach(::println)
     }
 }
 ```

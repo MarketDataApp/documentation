@@ -115,12 +115,10 @@ echo $quote;
 
 ```java title="StockQuote.java"
 import com.marketdata.sdk.MarketDataClient;
-import com.marketdata.sdk.stocks.StockQuote;
 import com.marketdata.sdk.stocks.StockQuoteRequest;
 
 try (MarketDataClient client = new MarketDataClient()) {
-    StockQuote q = client.stocks().quote(StockQuoteRequest.of("AAPL")).values().get(0);
-    System.out.println(q);
+    client.stocks().quote(StockQuoteRequest.of("AAPL")).values().forEach(System.out::println);
 }
 ```
 
@@ -132,8 +130,7 @@ import com.marketdata.sdk.MarketDataClient
 import com.marketdata.sdk.stocks.StockQuoteRequest
 
 MarketDataClient().use { client ->
-    val q = client.stocks().quote(StockQuoteRequest.of("AAPL")).values()[0]
-    println(q)
+    client.stocks().quote(StockQuoteRequest.of("AAPL")).values().forEach(::println)
 }
 ```
 
@@ -213,16 +210,10 @@ echo $quotes;
 
 ```java title="StockQuotes.java"
 import com.marketdata.sdk.MarketDataClient;
-import com.marketdata.sdk.stocks.StockQuote;
 import com.marketdata.sdk.stocks.StockQuotesRequest;
 
 try (MarketDataClient client = new MarketDataClient()) {
-    var quotes = client.stocks().quotes(
-        StockQuotesRequest.builder("AAPL", "META", "MSFT").build());
-    for (StockQuote q : quotes.values()) {
-        System.out.printf("%s: bid=%s, ask=%s, last=%s%n",
-            q.symbol(), q.bid(), q.ask(), q.last());
-    }
+    client.stocks().quotes(StockQuotesRequest.of("AAPL", "META", "MSFT")).values().forEach(System.out::println);
 }
 ```
 
@@ -234,11 +225,7 @@ import com.marketdata.sdk.MarketDataClient
 import com.marketdata.sdk.stocks.StockQuotesRequest
 
 MarketDataClient().use { client ->
-    val quotes = client.stocks().quotes(
-        StockQuotesRequest.builder("AAPL", "META", "MSFT").build())
-    for (q in quotes.values()) {
-        println("${q.symbol()}: bid=${q.bid()}, ask=${q.ask()}, last=${q.last()}")
-    }
+    client.stocks().quotes(StockQuotesRequest.of("AAPL", "META", "MSFT")).values().forEach(::println)
 }
 ```
 

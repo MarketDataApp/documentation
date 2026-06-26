@@ -98,7 +98,7 @@ import com.marketdata.sdk.stocks.StockQuotesRequest;
 // environment. The SDK then logs full request/response diagnostics (including
 // the CF-Ray request id) on the "com.marketdata.sdk" java.util.logging logger.
 try (MarketDataClient client = new MarketDataClient()) {
-  var quotes = client.stocks().quotes(StockQuotesRequest.builder("AAPL").build());
+  var quotes = client.stocks().quotes(StockQuotesRequest.of("AAPL"));
   System.out.println(quotes.values());
 } catch (MarketDataException e) {
   // The SDK already logged the failing request/response. getSupportInfo()
@@ -119,7 +119,7 @@ import com.marketdata.sdk.stocks.StockQuotesRequest
 // variable; the SDK logs request/response diagnostics on "com.marketdata.sdk".
 MarketDataClient().use { client ->
     try {
-        val quotes = client.stocks().quotes(StockQuotesRequest.builder("AAPL").build())
+        val quotes = client.stocks().quotes(StockQuotesRequest.of("AAPL"))
         println(quotes.values())
     } catch (e: MarketDataException) {
         System.err.println(e.supportInfo)

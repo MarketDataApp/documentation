@@ -118,7 +118,6 @@ echo $candles;
 
 ```java title="StockCandles.java"
 import com.marketdata.sdk.MarketDataClient;
-import com.marketdata.sdk.stocks.StockCandle;
 import com.marketdata.sdk.stocks.StockCandlesRequest;
 import com.marketdata.sdk.stocks.StockResolution;
 
@@ -128,10 +127,7 @@ try (MarketDataClient client = new MarketDataClient()) {
         StockCandlesRequest.builder(StockResolution.DAILY, "AAPL")
             .countback(30)
             .build());
-    for (StockCandle c : candles.values()) {
-        System.out.printf("t=%s o=%s h=%s l=%s c=%s v=%s%n",
-            c.time(), c.open(), c.high(), c.low(), c.close(), c.volume());
-    }
+    candles.values().forEach(System.out::println);
 }
 ```
 
@@ -149,9 +145,7 @@ MarketDataClient().use { client ->
         StockCandlesRequest.builder(StockResolution.DAILY, "AAPL")
             .countback(30)
             .build())
-    for (c in candles.values()) {
-        println("t=${c.time()} o=${c.open()} h=${c.high()} l=${c.low()} c=${c.close()} v=${c.volume()}")
-    }
+    candles.values().forEach(::println)
 }
 ```
 

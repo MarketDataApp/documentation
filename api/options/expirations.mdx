@@ -114,17 +114,9 @@ echo $expirations;
 ```java title="OptionExpirations.java"
 import com.marketdata.sdk.MarketDataClient;
 import com.marketdata.sdk.options.OptionsExpirationsRequest;
-import java.time.ZonedDateTime;
-import java.util.List;
 
 try (MarketDataClient client = new MarketDataClient()) {
-    List<ZonedDateTime> expirations =
-        client.options().expirations(OptionsExpirationsRequest.of("AAPL")).values();
-    for (ZonedDateTime exp : expirations) {
-        System.out.println(exp);
-    }
-} catch (Exception error) {
-    error.printStackTrace();
+    client.options().expirations(OptionsExpirationsRequest.of("AAPL")).values().forEach(System.out::println);
 }
 ```
 
@@ -136,11 +128,7 @@ import com.marketdata.sdk.MarketDataClient
 import com.marketdata.sdk.options.OptionsExpirationsRequest
 
 MarketDataClient().use { client ->
-    val expirations =
-        client.options().expirations(OptionsExpirationsRequest.of("AAPL")).values()
-    for (exp in expirations) {
-        println(exp)
-    }
+    client.options().expirations(OptionsExpirationsRequest.of("AAPL")).values().forEach(::println)
 }
 ```
 

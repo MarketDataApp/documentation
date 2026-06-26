@@ -96,17 +96,11 @@ echo $status;
 
 ```java title="StatusCheck.java"
 import com.marketdata.sdk.MarketDataClient;
-import com.marketdata.sdk.utilities.ServiceStatus;
-import java.util.List;
 
 public class StatusCheck {
   public static void main(String[] args) {
     try (MarketDataClient client = new MarketDataClient()) {
-      List<ServiceStatus> services = client.utilities().status().values();
-      for (ServiceStatus s : services) {
-        System.out.printf("%s: %s (online=%s)%n",
-            s.service(), s.status(), s.online());
-      }
+      client.utilities().status().values().forEach(System.out::println);
     }
   }
 }
@@ -120,10 +114,7 @@ import com.marketdata.sdk.MarketDataClient
 
 fun main() {
     MarketDataClient().use { client ->
-        val services = client.utilities().status().values()
-        for (s in services) {
-            println("${s.service()}: ${s.status()} (online=${s.online()})")
-        }
+        client.utilities().status().values().forEach(::println)
     }
 }
 ```

@@ -35,6 +35,7 @@ StockQuoteRequest.builder(String symbol)
     .build()
 
 // Multiple symbols, one request
+StockQuotesRequest.of(String first, String... rest)   // shortcut: symbols only
 StockQuotesRequest.builder(String first, String... rest)
     .addSymbol(String symbol)
     .extended(boolean extended)
@@ -80,7 +81,7 @@ try (MarketDataClient client = new MarketDataClient()) {
 
   // Several symbols in one request.
   var quotes = client.stocks().quotes(
-      StockQuotesRequest.builder("AAPL", "MSFT", "GOOGL").build());
+      StockQuotesRequest.of("AAPL", "MSFT", "GOOGL"));
   for (StockQuote row : quotes.values()) {
     System.out.printf("%-6s last=%.2f%n", row.symbol(), row.last());
   }
@@ -100,7 +101,7 @@ MarketDataClient().use { client ->
     println("${q.symbol()} last=${q.last()}")
 
     val quotes = client.stocks().quotes(
-        StockQuotesRequest.builder("AAPL", "MSFT", "GOOGL").build())
+        StockQuotesRequest.of("AAPL", "MSFT", "GOOGL"))
     for (row in quotes.values()) {
         println("${row.symbol()} last=${row.last()}")
     }
