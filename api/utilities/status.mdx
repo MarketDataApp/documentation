@@ -92,6 +92,34 @@ $status = $client->utilities->api_status();
 echo $status;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="StatusCheck.java"
+import com.marketdata.sdk.MarketDataClient;
+
+public class StatusCheck {
+  public static void main(String[] args) {
+    try (MarketDataClient client = new MarketDataClient()) {
+      client.utilities().status().values().forEach(System.out::println);
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="StatusCheck.kt"
+import com.marketdata.sdk.MarketDataClient
+
+fun main() {
+    MarketDataClient().use { client ->
+        client.utilities().status().values().forEach(::println)
+    }
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example
@@ -101,8 +129,6 @@ echo $status;
   "s": "ok",
   "service": [
     "/v1/funds/candles/",
-    "/v1/indices/candles/",
-    "/v1/indices/quotes/",
     "/v1/markets/status/",
     "/v1/options/chain/",
     "/v1/options/expirations/",

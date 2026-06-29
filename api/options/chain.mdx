@@ -109,6 +109,30 @@ $puts = $chain->getPuts();
 $strikes = $chain->getStrikes();
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="OptionChain.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.options.OptionsChainRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    client.options().chain(OptionsChainRequest.of("AAPL")).values().forEach(System.out::println);
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="OptionChain.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.options.OptionsChainRequest
+
+MarketDataClient().use { client ->
+    client.options().chain(OptionsChainRequest.of("AAPL")).values().forEach(::println)
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

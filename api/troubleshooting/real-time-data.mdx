@@ -162,6 +162,69 @@ curl -X GET "https://api.marketdata.app/v1/stocks/quotes/AAPL/" \
 The `updated` field contains a Unix timestamp. Compare this to the current time to determine if the data is real-time, delayed, or historical.
 
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="CheckDataAge.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.Mode;
+import com.marketdata.sdk.stocks.StockQuote;
+import com.marketdata.sdk.stocks.StockQuoteRequest;
+import java.time.Duration;
+import java.time.ZonedDateTime;
+
+try (MarketDataClient client = new MarketDataClient()) {
+  StockQuote quote = client.stocks()
+      .mode(Mode.LIVE)
+      .quote(StockQuoteRequest.of("AAPL"))
+      .values().get(0);
+
+  ZonedDateTime updated = quote.updated();
+  double ageMinutes = Duration.between(updated, ZonedDateTime.now(updated.getZone())).toSeconds() / 60.0;
+
+  System.out.printf("Data timestamp: %s%n", updated);
+  System.out.printf("Data age: %.1f minutes%n", ageMinutes);
+
+  if (ageMinutes < 1) {
+    System.out.println("✅ Real-time data (less than 1 minute old)");
+  } else if (ageMinutes < 20) {
+    System.out.println("⚠️ 15-minute delayed data");
+  } else {
+    System.out.println("❌ Historical data (1 day old or more)");
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="CheckDataAge.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.Mode
+import com.marketdata.sdk.stocks.StockQuoteRequest
+import java.time.Duration
+import java.time.ZonedDateTime
+
+MarketDataClient().use { client ->
+    val quote = client.stocks()
+        .mode(Mode.LIVE)
+        .quote(StockQuoteRequest.of("AAPL"))
+        .values()[0]
+
+    val updated = quote.updated() ?: error("No timestamp in response")
+    val ageMinutes = Duration.between(updated, ZonedDateTime.now(updated.zone)).toSeconds() / 60.0
+
+    println("Data timestamp: $updated")
+    println("Data age: %.1f minutes".format(ageMinutes))
+
+    when {
+        ageMinutes < 1 -> println("✅ Real-time data (less than 1 minute old)")
+        ageMinutes < 20 -> println("⚠️ 15-minute delayed data")
+        else -> println("❌ Historical data (1 day old or more)")
+    }
+}
+```
+
+</TabItem>
 </Tabs>
 
 ### Step 2: Check Your Account Status
@@ -485,6 +548,77 @@ async function testRealtimeData(symbol: string = "AAPL"): Promise<boolean> {
 
 // Test during market hours for best results
 testRealtimeData("AAPL");
+```
+
+</TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="TestRealtimeData.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.Mode;
+import com.marketdata.sdk.stocks.StockQuote;
+import com.marketdata.sdk.stocks.StockQuoteRequest;
+import java.time.Duration;
+import java.time.ZonedDateTime;
+
+static boolean testRealtimeData(MarketDataClient client, String symbol) {
+  StockQuote quote = client.stocks()
+      .mode(Mode.LIVE)
+      .quote(StockQuoteRequest.of(symbol))
+      .values().get(0);
+
+  ZonedDateTime updated = quote.updated();
+  if (updated == null) {
+    System.out.println("Warning: no timestamp in response");
+    return false;
+  }
+
+  double ageMinutes = Duration.between(updated, ZonedDateTime.now(updated.getZone())).toSeconds() / 60.0;
+  System.out.printf("%s data age: %.2f minutes%n", symbol, ageMinutes);
+
+  if (ageMinutes < 1) {
+    System.out.println("✅ Real-time data is working!");
+    return true;
+  } else if (ageMinutes < 20) {
+    System.out.println("⚠️ Receiving 15-minute delayed data — check the IEX agreement");
+    return false;
+  } else {
+    System.out.println("❌ Receiving historical data — complete your profile and agreements");
+    return false;
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="TestRealtimeData.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.Mode
+import com.marketdata.sdk.stocks.StockQuoteRequest
+import java.time.Duration
+import java.time.ZonedDateTime
+
+fun testRealtimeData(client: MarketDataClient, symbol: String = "AAPL"): Boolean {
+    val quote = client.stocks()
+        .mode(Mode.LIVE)
+        .quote(StockQuoteRequest.of(symbol))
+        .values()[0]
+
+    val updated = quote.updated() ?: run {
+        println("Warning: no timestamp in response")
+        return false
+    }
+
+    val ageMinutes = Duration.between(updated, ZonedDateTime.now(updated.zone)).toSeconds() / 60.0
+    println("$symbol data age: %.2f minutes".format(ageMinutes))
+
+    return when {
+        ageMinutes < 1 -> { println("✅ Real-time data is working!"); true }
+        ageMinutes < 20 -> { println("⚠️ Receiving 15-minute delayed data — check the IEX agreement"); false }
+        else -> { println("❌ Receiving historical data — complete your profile and agreements"); false }
+    }
+}
 ```
 
 </TabItem>

@@ -1,0 +1,95 @@
+---
+title: News
+sidebar_position: 4
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve news articles for a stock symbol.
+
+## Making Requests
+
+Use the `news()` method on the `stocks` resource, built with `StockNewsRequest`.
+
+```java
+StockNewsResponse news(StockNewsRequest request)
+CompletableFuture<StockNewsResponse> newsAsync(StockNewsRequest request)
+```
+
+### StockNewsRequest
+
+```java
+StockNewsRequest.of(String symbol)
+StockNewsRequest.builder(String symbol)
+    .date(LocalDate date)        // a single day
+    .from(LocalDate from)        // window start
+    .to(LocalDate to)            // window end
+    .countback(int n)            // N articles before `to`
+    .build()
+```
+
+#### Returns
+
+`StockNewsResponse` wrapping `List<StockNewsArticle>`:
+
+```java
+public record StockNewsArticle(
+    String symbol,
+    String headline,
+    String content,
+    String source,
+    ZonedDateTime publicationDate)
+```
+
+## Examples
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockNewsArticle;
+import com.marketdata.sdk.stocks.StockNewsRequest;
+import java.time.LocalDate;
+
+try (MarketDataClient client = new MarketDataClient()) {
+  var news = client.stocks().news(
+      StockNewsRequest.builder("AAPL")
+          .from(LocalDate.now().minusDays(7))
+          .to(LocalDate.now())
+          .build());
+
+  for (StockNewsArticle a : news.values()) {
+    System.out.println(a.publicationDate() + "  " + a.headline() + "  (" + a.source() + ")");
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockNewsRequest
+import java.time.LocalDate
+
+MarketDataClient().use { client ->
+    val news = client.stocks().news(
+        StockNewsRequest.builder("AAPL")
+            .from(LocalDate.now().minusDays(7))
+            .to(LocalDate.now())
+            .build())
+
+    for (a in news.values()) {
+        println("${a.publicationDate()}  ${a.headline()}  (${a.source()})")
+    }
+}
+```
+
+</TabItem>
+</Tabs>
+
+:::note
+On the typed path, all article fields are populated. For column projection use the CSV facet: `client.stocks().asCsv().news(...)`.
+:::

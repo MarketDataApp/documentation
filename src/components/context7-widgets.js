@@ -9,6 +9,18 @@
  */
 const CONTEXT7_WIDGETS = [
   {
+    pathPattern: /\/sdk\/js(\/|$)/,
+    library: '/marketdataapp/sdk-js',
+    displayName: 'the Market Data JavaScript SDK',
+    placeholder: 'Ask about the JavaScript SDK...',
+  },
+  {
+    pathPattern: /\/sdk\/java(\/|$)/,
+    library: '/marketdataapp/sdk-java',
+    displayName: 'the Market Data Java SDK',
+    placeholder: 'Ask about the Java SDK...',
+  },
+  {
     pathPattern: /\/sdk\/py(\/|$)/,
     library: '/websites/marketdata_app_sdk_py',
     displayName: 'the Market Data Python SDK',

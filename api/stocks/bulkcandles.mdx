@@ -122,6 +122,52 @@ $candles = $client->stocks->bulkCandles(
 echo $candles;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+:::note
+The Java SDK does not yet provide a method for the bulk candles endpoint, so this example uses the JDK's `java.net.http.HttpClient` directly. It will be replaced with a `marketdata-sdk-java` example once bulk support is added.
+:::
+
+```java title="BulkStockCandles.java"
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+HttpClient http = HttpClient.newHttpClient();
+HttpRequest request = HttpRequest.newBuilder()
+    .uri(URI.create("https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT"))
+    .header("Authorization", "Bearer " + System.getenv("MARKETDATA_TOKEN"))
+    .GET()
+    .build();
+HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.body());
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+:::note
+The Java SDK does not yet provide a method for the bulk candles endpoint, so this example uses the JDK's `java.net.http.HttpClient` directly. It will be replaced with a `marketdata-sdk-java` example once bulk support is added.
+:::
+
+```kotlin title="BulkStockCandles.kt"
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+
+val http = HttpClient.newHttpClient()
+val request = HttpRequest.newBuilder()
+    .uri(URI.create("https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT"))
+    .header("Authorization", "Bearer ${System.getenv("MARKETDATA_TOKEN")}")
+    .GET()
+    .build()
+val response = http.send(request, HttpResponse.BodyHandlers.ofString())
+println(response.body())
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example
@@ -151,6 +197,10 @@ echo $candles;
 
 - **symbols** `string`
   The ticker symbols to return in the response, separated by commas. The symbols parameter may be omitted if the `snapshot` parameter is set to `true`.
+
+:::tip Batching multi-symbol requests
+There is no application-level cap on the number of symbols, but the HTTP request line is limited to 4094 bytes. For typical 4-character tickers that's roughly 700–800 symbols per request. To stay clear of the limit, chunk into batches of **500 symbols or fewer**. See [400: Bad Request — URL Too Long](/api/troubleshooting/bad-request#case-5-url-too-long-multi-symbol-requests) for details.
+:::
 
 </TabItem>
 <TabItem value="Optional" label="Optional">

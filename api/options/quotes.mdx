@@ -113,6 +113,30 @@ $quotes = $client->options->quotes("AAPL271217C00250000");
 echo $quotes;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="OptionQuotes.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.options.OptionsQuoteRequest;
+
+try (MarketDataClient client = new MarketDataClient()) {
+    client.options().quote(OptionsQuoteRequest.of("AAPL271217C00250000")).values().forEach(System.out::println);
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="OptionQuotes.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.options.OptionsQuoteRequest
+
+MarketDataClient().use { client ->
+    client.options().quote(OptionsQuoteRequest.of("AAPL271217C00250000")).values().forEach(::println)
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

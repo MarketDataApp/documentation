@@ -1,0 +1,67 @@
+---
+title: Expirations
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+List the available expiration dates for an underlying.
+
+## Making Requests
+
+Use the `expirations()` method on the `options` resource, built with `OptionsExpirationsRequest`.
+
+```java
+OptionsExpirationsResponse expirations(OptionsExpirationsRequest request)
+CompletableFuture<OptionsExpirationsResponse> expirationsAsync(OptionsExpirationsRequest request)
+```
+
+### OptionsExpirationsRequest
+
+```java
+OptionsExpirationsRequest.of(String symbol)
+OptionsExpirationsRequest.builder(String symbol)
+    .strike(double strike)   // only expirations that list this strike
+    .date(LocalDate date)    // historical: the calendar as it stood on this date
+    .build()
+```
+
+#### Returns
+
+`OptionsExpirationsResponse` wrapping `List<ZonedDateTime>` — the expiration dates.
+
+## Examples
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.options.OptionsExpirationsRequest;
+import java.time.ZonedDateTime;
+
+try (MarketDataClient client = new MarketDataClient()) {
+  var expirations = client.options().expirations(OptionsExpirationsRequest.of("AAPL"));
+  System.out.println("AAPL has " + expirations.values().size() + " expirations");
+  for (ZonedDateTime exp : expirations.values()) {
+    System.out.println("  " + exp.toLocalDate());
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.options.OptionsExpirationsRequest
+
+MarketDataClient().use { client ->
+    val expirations = client.options().expirations(OptionsExpirationsRequest.of("AAPL"))
+    println("AAPL has ${expirations.values().size} expirations")
+}
+```
+
+</TabItem>
+</Tabs>

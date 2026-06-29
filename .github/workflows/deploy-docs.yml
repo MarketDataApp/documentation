@@ -4,6 +4,14 @@ on:
   push:
     branches: [staging, main]
 
+# Serialize deploys per branch. Two pushes in quick succession would otherwise
+# run concurrent `aws s3 sync --delete` jobs into the same R2 prefix, where each
+# build's --delete removes the other's freshly-uploaded chunks, producing a
+# deploy with one build's HTML and another's assets (404'd JS).
+concurrency:
+  group: deploy-docs-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -124,4 +132,9 @@ jobs:
           SLACK_NOTIFY_TOKEN: ${{ secrets.SLACK_NOTIFY_TOKEN }}
         run: |
           curl -s -d "" \
-            "${SLACK_NOTIFY_URL}?token=${SLACK_NOTIFY_TOKEN}&type=ci_failure&channel=alerts&workflow=${GITHUB_WORKFLOW}&repo=${GITHUB_REPOSITORY}&branch=${GITHUB_REF_NAME}&sha=${GITHUB_SHA:0:7}&run_id=${GITHUB_RUN_ID}"
+            -H "X-workflow: ${GITHUB_WORKFLOW}" \
+            -H "X-repo: ${GITHUB_REPOSITORY}" \
+            -H "X-branch: ${GITHUB_REF_NAME}" \
+            -H "X-sha: ${GITHUB_SHA:0:7}" \
+            -H "X-run_id: ${GITHUB_RUN_ID}" \
+            "${SLACK_NOTIFY_URL}?token=${SLACK_NOTIFY_TOKEN}&type=ci_failure&channel=alerts"

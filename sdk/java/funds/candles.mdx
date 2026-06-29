@@ -1,0 +1,105 @@
+---
+title: Candles
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve a mutual fund's NAV (net asset value) OHLC series.
+
+## Making Requests
+
+Use the `candles()` method on the `funds` resource, built with `FundCandlesRequest`. Funds report NAV, not traded volume, so there is **no volume column**, and only daily-and-coarser resolutions are available (no intraday).
+
+```java
+FundCandlesResponse candles(FundCandlesRequest request)
+CompletableFuture<FundCandlesResponse> candlesAsync(FundCandlesRequest request)
+```
+
+### FundCandlesRequest
+
+```java
+FundCandlesRequest.of(FundResolution resolution, String symbol)
+FundCandlesRequest.builder(FundResolution resolution, String symbol)
+    .date(LocalDate date)        // a single day
+    .from(LocalDate from)        // window start (inclusive)
+    .to(LocalDate to)            // window end (exclusive)
+    .countback(int n)            // N candles before `to`
+    .build()
+```
+
+### FundResolution
+
+A value type for the candle interval — daily and coarser only:
+
+```java
+FundResolution.DAILY     // also WEEKLY, MONTHLY, YEARLY
+FundResolution.days(1)
+FundResolution.weeks(1)
+FundResolution.of("D")   // any raw wire token
+```
+
+#### Returns
+
+`FundCandlesResponse` wrapping `List<FundCandle>`:
+
+```java
+public record FundCandle(
+    @Nullable ZonedDateTime time,   // bar opening moment (America/New_York)
+    @Nullable Double open,          // NAV at open
+    @Nullable Double high,
+    @Nullable Double low,
+    @Nullable Double close)         // NAV at close — note: no volume
+```
+
+## Examples
+
+<Tabs>
+<TabItem value="Java" label="Java">
+
+```java
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.funds.FundCandle;
+import com.marketdata.sdk.funds.FundCandlesRequest;
+import com.marketdata.sdk.funds.FundResolution;
+import java.time.LocalDate;
+
+try (MarketDataClient client = new MarketDataClient()) {
+  var candles = client.funds().candles(
+      FundCandlesRequest.builder(FundResolution.DAILY, "VFINX")
+          .from(LocalDate.now().minusWeeks(2))
+          .to(LocalDate.now())
+          .build());
+
+  for (FundCandle bar : candles.values()) {
+    System.out.printf("%s  O=%.2f H=%.2f L=%.2f C=%.2f%n",
+        bar.time(), bar.open(), bar.high(), bar.low(), bar.close());
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.funds.FundCandlesRequest
+import com.marketdata.sdk.funds.FundResolution
+import java.time.LocalDate
+
+MarketDataClient().use { client ->
+    val candles = client.funds().candles(
+        FundCandlesRequest.builder(FundResolution.DAILY, "VFINX")
+            .from(LocalDate.now().minusWeeks(2))
+            .to(LocalDate.now())
+            .build())
+
+    for (bar in candles.values()) {
+        println("${bar.time()} close=${bar.close()}")
+    }
+}
+```
+
+</TabItem>
+</Tabs>

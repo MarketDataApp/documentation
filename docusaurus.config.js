@@ -274,7 +274,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ['json', 'http', 'php', 'bash', 'excel-formula'],
+        additionalLanguages: ['json', 'http', 'php', 'bash', 'excel-formula', 'java', 'kotlin', 'groovy'],
       },
     }),
 };

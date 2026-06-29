@@ -144,6 +144,62 @@ $yesterday = $client->markets->status(
 echo $yesterday;
 ```
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="MarketStatusApp.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.markets.MarketStatusRequest;
+import java.time.LocalDate;
+
+public class MarketStatusApp {
+  public static void main(String[] args) {
+    try (MarketDataClient client = new MarketDataClient()) {
+      client.markets()
+          .status(MarketStatusRequest.builder()
+              .from(LocalDate.of(2020, 1, 1))
+              .to(LocalDate.of(2020, 12, 31))
+              .build())
+          .values()
+          .forEach(System.out::println);
+
+      client.markets()
+          .status(MarketStatusRequest.of())
+          .values()
+          .forEach(System.out::println);
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="MarketStatusApp.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.markets.MarketStatusRequest
+import java.time.LocalDate
+
+fun main() {
+    MarketDataClient().use { client ->
+        client.markets()
+            .status(
+                MarketStatusRequest.builder()
+                    .from(LocalDate.of(2020, 1, 1))
+                    .to(LocalDate.of(2020, 12, 31))
+                    .build()
+            )
+            .values()
+            .forEach(::println)
+
+        client.markets()
+            .status(MarketStatusRequest.of())
+            .values()
+            .forEach(::println)
+    }
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

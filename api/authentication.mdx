@@ -141,6 +141,44 @@ func main() {
 ```
 
 </TabItem>
+<TabItem value="Java" label="Java">
+
+```java title="App.java"
+import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.stocks.StockQuoteRequest;
+
+public class App {
+  public static void main(String[] args) {
+    // The no-arg constructor reads your token from the MARKETDATA_TOKEN
+    // environment variable (or a .env file in the working directory).
+    // Alternatively, pass it directly:
+    //   new MarketDataClient("your_token_here", null, null, true)
+    try (MarketDataClient client = new MarketDataClient()) {
+      client.stocks().quote(StockQuoteRequest.of("SPY")).values().forEach(System.out::println);
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Kotlin" label="Kotlin">
+
+```kotlin title="App.kt"
+import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.stocks.StockQuoteRequest
+
+fun main() {
+    // The no-arg constructor reads your token from the MARKETDATA_TOKEN
+    // environment variable (or a .env file in the working directory).
+    // Alternatively, pass it directly:
+    //   MarketDataClient("your_token_here", null, null, true)
+    MarketDataClient().use { client ->
+        client.stocks().quote(StockQuoteRequest.of("SPY")).values().forEach(::println)
+    }
+}
+```
+
+</TabItem>
 </Tabs>
 
 

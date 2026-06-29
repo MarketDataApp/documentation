@@ -17,6 +17,7 @@ const BASE_URL = process.env.TEST_ENV === 'staging'
 const WIDGET_PAGES = [
   { path: '/api', name: 'API' },
   { path: '/sheets', name: 'Sheets' },
+  { path: '/sdk/java', name: 'Java SDK' },
   { path: '/sdk/py', name: 'Python SDK' },
   { path: '/sdk/go', name: 'Go SDK' },
   { path: '/sdk/php', name: 'PHP SDK' },

@@ -74,19 +74,17 @@ When you access the API:
    - Ensure old instances are fully terminated before starting new ones.
    - Purchase a dedicated IP address for your cloud instance if it will be starting and stopping more than once every 5 minutes.
 
-4. **For Serverless Functions (Lambda, Google Apps Script, etc.)**: Serverless functions may present challenges because they don't have persistent IP addresses and may route requests through different IPs. 
+4. **Serverless Functions Are Not Supported (Lambda, Google Cloud Functions, Google Apps Script, etc.)**: Your subscription is licensed to run on a **single device**. Serverless platforms execute your code across a pool of ephemeral instances with rotating outbound IP addresses, which inherently bypasses the single-device licensing terms. For this reason, serverless functions are not compatible with the API and are not a supported deployment model. Run your workload on a single, persistent device or instance with a stable IP address instead.
 
-   :::warning Compliance Requirement
-   Any solution you implement must ensure that all API requests originate from a single, consistent IP address at any given time. The single-device policy is strictly enforced for exchange compliance and cannot be bypassed.
-   :::
+5. **Multiple Environments (Development, Staging, Production)**: If you're running more than one environment that calls the API at the same time using the same token, you will hit this block. Sharing the token across environments is also a token-sharing violation under the [Single IP Address Policy](/docs/account/data-policies/single-ip/).
 
-   If you're experiencing issues with serverless functions, we recommend:
-   - Reviewing your infrastructure to ensure all requests are routed through a single, consistent IP address
-   - Ensuring your serverless architecture doesn't create multiple simultaneous connections from different IPs
-   - Contacting our support team for guidance on compliant implementation patterns for your specific use case
+   Compliant options:
+   - **Serialize**: run only one environment at a time. For most testing and A/B workflows, running scenarios sequentially is sufficient.
+   - **Use the no-auth demo symbols in development**: stock and option endpoints accept **AAPL** (and any AAPL option contract, e.g. `AAPL271217C00250000`) with no token at all. Development and integration tests that exercise the API surface — request shape, response parsing, error handling — can use these symbols without ever touching your account. See [Authentication › Demo The API With No Authentication](/docs/api/authentication/#demo-the-api-with-no-authentication). Note that no-auth requests return historical data only.
+   - **Commercial license**: if your use case genuinely requires simultaneous parallel data across multiple environments (not testing), contact sales — that case requires a commercial license and our sales team will assist.
 
 ## Important Note
 
-The system is designed to detect patterns of simultaneous access, not just IP changes. While you are permitted to change devices, attempting to maintain multiple active connections from different computers will result in account blocks.
+The system is designed to detect patterns of simultaneous access, not just IP changes. While you are permitted to change devices, attempting to maintain multiple active connections from different computers — even when egressed through a single shared IP — will result in account blocks and may result in suspension.
 
 For further assistance, please contact our support team.
