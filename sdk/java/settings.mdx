@@ -80,11 +80,11 @@ import com.marketdata.sdk.DateFormat;
 client.stocks().dateFormat(DateFormat.TIMESTAMP);
 ```
 
-| Value | Description |
-|---|---|
-| `UNIX` | Unix timestamp in seconds (e.g. `1609362000`) |
-| `TIMESTAMP` | ISO-8601 timestamp (e.g. `2020-12-30 16:00:00 -05:00`) |
-| `SPREADSHEET` | Excel/Sheets serial date number (e.g. `44195.66667`) |
+| Value         | Description                                            |
+|---------------|--------------------------------------------------------|
+| `UNIX`        | Unix timestamp in seconds (e.g. `1609362000`)          |
+| `TIMESTAMP`   | ISO-8601 timestamp (e.g. `2020-12-30 16:00:00 -05:00`) |
+| `SPREADSHEET` | Excel/Sheets serial date number (e.g. `44195.66667`)   |
 
 For more details, see the [API Date Format documentation](/api/universal-parameters/date-format).
 
@@ -99,11 +99,11 @@ import com.marketdata.sdk.Mode;
 client.stocks().mode(Mode.CACHED);
 ```
 
-| Value | Description |
-|---|---|
-| `LIVE` | Real-time data (paid plans) |
-| `DELAYED` | 15+ minute delayed data |
-| `CACHED` | Cached data — lower cost per request |
+| Value     | Description                          |
+|-----------|--------------------------------------|
+| `LIVE`    | Real-time data (paid plans)          |
+| `DELAYED` | 15+ minute delayed data              |
+| `CACHED`  | Cached data — lower cost per request |
 
 For more details, see the [API Data Mode documentation](/api/universal-parameters/mode).
 
@@ -169,10 +169,10 @@ csv.saveToFile(Path.of("quotes.csv"))
 
 ## Environment Variables Reference
 
-| Variable                 | Purpose                       | Default                      |
-|--------------------------|-------------------------------|------------------------------|
-| `MARKETDATA_TOKEN`       | API authentication token      | _(none)_                     |
-| `MARKETDATA_BASE_URL`    | API base URL                  | `https://api.marketdata.app` |
-| `MARKETDATA_API_VERSION` | API version                   | `v1`                         |
-| `MARKETDATA_DATE_FORMAT` | Default date format           | _(API default)_              |
-| `MARKETDATA_LOGGING_LEVEL` | SDK logging level (`java.util.logging`) | _(consumer default)_ |
+| Variable                   | Purpose                                 | Default                      |
+|----------------------------|-----------------------------------------|------------------------------|
+| `MARKETDATA_TOKEN`         | API authentication token                | _(none)_                     |
+| `MARKETDATA_BASE_URL`      | API base URL                            | `https://api.marketdata.app` |
+| `MARKETDATA_API_VERSION`   | API version                             | `v1`                         |
+| `MARKETDATA_DATE_FORMAT`   | Default date format                     | _(API default)_              |
+| `MARKETDATA_LOGGING_LEVEL` | SDK logging level (`java.util.logging`) | _(consumer default)_         |

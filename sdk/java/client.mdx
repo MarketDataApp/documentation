@@ -297,15 +297,15 @@ response.saveToFile(Path.of("aapl.json"));  // cache the raw body
 
 Everything the SDK throws is a `MarketDataException`. It is a **sealed** hierarchy — the seven subtypes below are the complete set, so you can branch on them exhaustively and the compiler will tell you if a future major version adds one. Each exception carries support context: `getStatusCode()`, `getRequestId()`, `getRequestUrl()`, and `getSupportInfo()`.
 
-| Subtype | When it's thrown |
-|---|---|
-| `AuthenticationError` | Missing or invalid token (HTTP 401) |
-| `BadRequestError` | Invalid parameters (HTTP 4xx) |
-| `NotFoundError` | The resource doesn't exist (HTTP 404) |
-| `RateLimitError` | Quota exceeded (HTTP 429); see `getRetryAfter()` |
-| `ServerError` | API-side failure (HTTP 5xx) |
-| `NetworkError` | Connection failure or timeout |
-| `ParseError` | The response could not be decoded |
+| Subtype               | When it's thrown                                 |
+|-----------------------|--------------------------------------------------|
+| `AuthenticationError` | Missing or invalid token (HTTP 401)              |
+| `BadRequestError`     | Invalid parameters (HTTP 4xx)                    |
+| `NotFoundError`       | The resource doesn't exist (HTTP 404)            |
+| `RateLimitError`      | Quota exceeded (HTTP 429); see `getRetryAfter()` |
+| `ServerError`         | API-side failure (HTTP 5xx)                      |
+| `NetworkError`        | Connection failure or timeout                    |
+| `ParseError`          | The response could not be decoded                |
 
 Async calls surface the same exceptions through the `CompletableFuture` (wrapped in a `CompletionException`); the sync wrappers unwrap them so you catch the cause directly.
 
