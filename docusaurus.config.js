@@ -151,6 +151,10 @@ const config = {
             from: "/sdk/go/stocks/bulkquotes",
             to: "/sdk/go/stocks/quotes",
           },
+          {
+            from: "/sdk/php/stocks/bulk-candles",
+            to: "/sdk/php/stocks/bulkcandles",
+          },
         ],
       },
     ],
