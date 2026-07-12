@@ -1,0 +1,149 @@
+---
+title: Status History
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve the market status for each day in a date range, returning one entry per day.
+
+## Making Requests
+
+Fetch a range of days with the `StatusHistory` method on the `client.Markets` service.
+
+| Method | Return | Description |
+|--------|--------|-------------|
+| **`StatusHistory(ctx, ...opts)`** | `([]markets.MarketStatus, *response.Response, error)` | Context-aware; returns one entry per day plus the raw response and rate-limit metadata. |
+
+:::note Context method only
+Unlike most SDK endpoints, `StatusHistory` has no `Get*` convenience wrapper — it is only available as a context-aware method. For a single day, use [Status](/sdk/go/markets/status), which offers both call styles.
+:::
+
+## StatusHistory
+
+```go
+func (s *Service) StatusHistory(ctx context.Context, opts ...markets.HistoryOption) ([]markets.MarketStatus, *response.Response, error)
+```
+
+Get the market status for a range of days from the `/v1/markets/status/` endpoint, returning one [`MarketStatus`](/sdk/go/markets/status#marketstatus) per day. Dates are sent to the API in `YYYY-MM-DD` form, so any time-of-day component is ignored.
+
+#### Parameters
+
+- `ctx` (`context.Context`) — request context for cancellation and deadlines.
+- Options:
+  - `markets.WithHistoryWindow(w markets.HistoryWindow)` — the date range, expressed as a single [`HistoryWindow`](#historywindow) value. Omitting it lets the API return its default recent range. This is a `StatusHistory`-only option; it cannot be passed to `Status`.
+  - `markets.WithCountry(country string)` — the market to query, as a two-letter ISO 3166-1 alpha-2 code such as `"US"`. An empty string defaults to the United States. `WithCountry` applies to both `Status` and `StatusHistory`.
+
+#### Returns
+
+- `[]markets.MarketStatus` — one [`MarketStatus`](/sdk/go/markets/status#marketstatus) per day in the range, oldest first.
+- `*response.Response` — raw response plus rate-limit metadata.
+- `error` — non-nil on request or decoding failure.
+
+#### Notes
+
+- When the API responds `404` because no data exists for the requested range, `StatusHistory` returns a `nil` slice and a `nil` error; the returned `*response.Response` has its `NoData` field set to `true`.
+- The range parameters (`from`, `to`, `countback`) are mutually exclusive by construction: a `HistoryWindow` is a single sealed value, so an illegal pairing such as "from plus countback" cannot be expressed. There is deliberately no single-date mode — a single calendar day is a [Status](/sdk/go/markets/status) concept, selected with `WithDate`.
+
+<Tabs>
+<TabItem value="Context" label="Context + Response">
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"time"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+	"github.com/MarketDataApp/sdk-go/v2/marketdata/markets"
+)
+
+func main() {
+	client, err := marketdata.NewClient() // reads MARKETDATA_TOKEN from env / .env
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	from := time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC)
+	to := time.Date(2024, time.January, 10, 0, 0, 0, 0, time.UTC)
+
+	statuses, resp, err := client.Markets.StatusHistory(context.Background(),
+		markets.WithHistoryWindow(markets.Between(from, to)),
+		markets.WithCountry("US"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if resp.NoData {
+		fmt.Println("No status history for the requested range.")
+		return
+	}
+	for _, status := range statuses {
+		mark := "closed"
+		if status.Open {
+			mark = "open"
+		}
+		fmt.Printf("%s: %s\n", status.Date.Format("2006-01-02"), mark)
+	}
+}
+```
+
+#### Output
+
+```
+2024-01-01: closed
+2024-01-02: open
+2024-01-03: open
+2024-01-04: open
+2024-01-05: open
+2024-01-06: closed
+2024-01-07: closed
+2024-01-08: open
+2024-01-09: open
+2024-01-10: open
+```
+
+</TabItem>
+<TabItem value="Windows" label="History windows">
+
+```go
+// Every HistoryWindow constructor is a sealed value; pass exactly one to WithHistoryWindow.
+// Note: there is no OnDate mode here — a single day is a Status concept (use markets.WithDate).
+
+markets.Between(from, to)   // an explicit closed range     -> from=from&to=to
+markets.Since(from)         // everything since a day        -> from=from
+markets.Until(to)           // up to and including a day     -> to=to
+markets.LastN(n)            // the n most recent days         -> countback=n
+markets.LastNUntil(n, to)   // the n days ending at a day     -> countback=n&to=to
+
+// Example: the last 5 trading-calendar days.
+statuses, _, err := client.Markets.StatusHistory(context.Background(),
+	markets.WithHistoryWindow(markets.LastN(5)),
+)
+```
+
+</TabItem>
+</Tabs>
+
+## HistoryWindow
+
+```go
+type HistoryWindow interface {
+	// contains filtered or unexported methods
+}
+```
+
+`HistoryWindow` selects the date range for `StatusHistory`. It is a sealed union: build it with exactly one of the constructors below. Because a `HistoryWindow` is a single value, the API's mutually-exclusive range parameters can never be combined by mistake. Only the calendar date of each `time.Time` is used; the time-of-day and zone are ignored.
+
+- `markets.Between(from, to time.Time) HistoryWindow` — an explicit closed range from `from` to `to` (inclusive).
+- `markets.Since(from time.Time) HistoryWindow` — everything from the given day onward.
+- `markets.Until(to time.Time) HistoryWindow` — data up to and including the given day.
+- `markets.LastN(n int) HistoryWindow` — the `n` most recent days (the API's `countback`).
+- `markets.LastNUntil(n int, to time.Time) HistoryWindow` — the `n` days ending at the given day.
+
+The returned entries use the same [`MarketStatus`](/sdk/go/markets/status#marketstatus) type documented on the Status page.

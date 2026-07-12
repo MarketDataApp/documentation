@@ -1,0 +1,99 @@
+---
+title: Installation
+sidebar_position: 2
+---
+
+The Market Data Go SDK is installed with the standard `go get` command. It is a normal Go module with a `/v2` major-version suffix on its import path.
+
+## Requirements
+
+- **Go 1.22 or later** (the module declares `go 1.22.5`)
+- No third-party runtime dependencies — the SDK is built entirely on the Go standard library
+
+## Installing with `go get`
+
+From inside your Go module, run:
+
+```bash
+go get github.com/MarketDataApp/sdk-go/v2
+```
+
+This adds the SDK to your `go.mod` and downloads it into the module cache.
+
+:::note Version suffix matters
+Because this is a `/v2` module, the import path **must** include `/v2`. Dropping it would resolve to the older v1 SDK, which has a different (fluent-builder) API.
+:::
+
+## Import Paths
+
+The public API lives in the `marketdata` package, and each resource has its own sub-package for its functional options and helper constructors:
+
+```go
+import (
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+
+	// Import a resource package only when you use its options or helpers:
+	"github.com/MarketDataApp/sdk-go/v2/marketdata/stocks"
+	"github.com/MarketDataApp/sdk-go/v2/marketdata/options"
+	"github.com/MarketDataApp/sdk-go/v2/marketdata/funds"
+	"github.com/MarketDataApp/sdk-go/v2/marketdata/markets"
+	"github.com/MarketDataApp/sdk-go/v2/marketdata/utilities"
+)
+```
+
+You always import `marketdata` (for `NewClient` and the client-level options). You only need a resource package such as `stocks` when you pass one of its functional options, for example `stocks.WithResolution(...)`.
+
+## Verifying the Installation
+
+Create a small program to confirm everything compiles and the SDK can reach the API. The `/status/` endpoint is public, so this works even before you configure a token:
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	client, err := marketdata.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	status, err := client.Utilities.GetStatus()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(status)
+}
+```
+
+Run it:
+
+```bash
+go run .
+```
+
+```
+API online (30d: 99.99% 90d: 99.98%) Updated: 2026-07-12 09:30:00
+```
+
+If you see the status line, the SDK is installed correctly.
+
+## Updating the SDK
+
+To move to the latest release:
+
+```bash
+go get -u github.com/MarketDataApp/sdk-go/v2
+go mod tidy
+```
+
+## Next Steps
+
+After installing, [set up your authentication token](/sdk/go/authentication) so you can call the endpoints that require a paid or trial plan.

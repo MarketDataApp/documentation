@@ -1,0 +1,151 @@
+---
+title: API Status
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Check the current status of the Market Data API and its historical uptime.
+
+## Making Requests
+
+Fetch API status with the `Status` method on the `client.Utilities` service. It takes no parameters and no options, and comes in two call styles:
+
+| Method | Return | Description |
+|--------|--------|-------------|
+| **`GetStatus()`** | `(*utilities.APIStatus, error)` | Convenience; uses a background context and discards response metadata. |
+| **`Status(ctx)`** | `(*utilities.APIStatus, *response.Response, error)` | Context-aware; also returns the raw response plus rate-limit metadata. |
+
+## Status
+
+```go
+func (s *Service) Status(ctx context.Context) (*utilities.APIStatus, *response.Response, error)
+func (s *Service) GetStatus() (*utilities.APIStatus, error)
+```
+
+Get the current status of the Market Data API from the unversioned `/status/` endpoint. The API reports per-service status; the returned [`APIStatus`](#apistatus) aggregates it, with `Status` set to `"online"` only when every service is online. The status is updated every 5 minutes and remains accessible even when the API is experiencing issues.
+
+#### Parameters
+
+- `ctx` (`context.Context`) — request context for cancellation and deadlines (context method only).
+
+This endpoint takes no functional options.
+
+#### Returns
+
+- `*utilities.APIStatus` — the aggregated [`APIStatus`](#apistatus).
+- `*response.Response` — raw response plus rate-limit metadata (context method only).
+- `error` — non-nil on request or decoding failure.
+
+#### Notes
+
+- This endpoint is public and continues to respond even when the API is offline.
+- In the unlikely event the endpoint responds `404`, both call styles return a `nil` `APIStatus` and a `nil` error; with the context method the returned `*response.Response` has its `NoData` field set to `true`.
+
+<Tabs>
+<TabItem value="Get" label="Get (simple)">
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	client, err := marketdata.NewClient() // reads MARKETDATA_TOKEN from env / .env
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	status, err := client.Utilities.GetStatus()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(status)
+}
+```
+
+#### Output
+
+```
+API online (30d: 99.98% 90d: 99.95%) Updated: 2026-07-12 09:30:00
+```
+
+</TabItem>
+<TabItem value="Context" label="Context + Response">
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	client, err := marketdata.NewClient(marketdata.WithToken("YOUR_TOKEN"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	status, resp, err := client.Utilities.Status(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	if resp.NoData || status == nil {
+		fmt.Println("Status unavailable.")
+		return
+	}
+	if status.IsOnline() {
+		fmt.Println("API is online!")
+	}
+	fmt.Printf("30-day uptime: %.2f%%\n", status.Uptime30d)
+	fmt.Printf("90-day uptime: %.2f%%\n", status.Uptime90d)
+}
+```
+
+#### Output
+
+```
+API is online!
+30-day uptime: 99.98%
+90-day uptime: 99.95%
+```
+
+</TabItem>
+</Tabs>
+
+## APIStatus
+
+```go
+type APIStatus struct {
+	Status    string    `json:"s"`        // Status indicates if the API is online.
+	Uptime30d float64   `json:"uptime30d"` // Uptime30d is the 30-day uptime percentage.
+	Uptime90d float64   `json:"uptime90d"` // Uptime90d is the 90-day uptime percentage.
+	Updated   time.Time `json:"updated"`   // Updated is when the status was last checked.
+}
+```
+
+`APIStatus` represents the aggregated status of the Market Data API. `Status` is `"online"` only when every underlying service is online, otherwise `"offline"`. `Uptime30d` and `Uptime90d` are the average 30-day and 90-day uptime percentages across services.
+
+#### Fields
+
+- `Status` (`string`) — `"online"` or `"offline"`.
+- `Uptime30d` (`float64`) — the 30-day uptime percentage.
+- `Uptime90d` (`float64`) — the 90-day uptime percentage.
+- `Updated` (`time.Time`) — when the status was last checked, normalized to US Eastern.
+
+#### Methods
+
+- `String() string` — a one-line summary, e.g. `API online (30d: 99.98% 90d: 99.95%) Updated: 2026-07-12 09:30:00`.
+- `IsOnline() bool` — reports whether the API is currently online (`Status == "online"`).

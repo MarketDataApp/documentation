@@ -1,49 +1,49 @@
 ---
-title: Quotes
-sidebar_position: 3
+title: Quote
+sidebar_position: 2
 ---
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-Get real-time price quotes for multiple stock symbols in a single API request.
+Get a real-time price quote for a single stock symbol, including bid/ask, last trade, change, and volume.
 
 ## Making Requests
 
-Both call styles live on the `Stocks` service (`client.Stocks`). Use `GetQuotes` for the simplest call, or `Quotes` when you need functional options or the raw response and rate-limit metadata.
+Both call styles live on the `Stocks` service (`client.Stocks`). Use `GetQuote` for the simplest call, or `Quote` when you also need the raw response and rate-limit metadata.
 
 | Method | Return | Description |
 |--------|--------|-------------|
-| **`GetQuotes(symbols...)`** | `([]Quote, error)` | Convenience wrapper; takes symbols variadically, uses `context.Background()`, and does not accept options. |
-| **`Quotes(ctx, symbols, opts...)`** | `([]Quote, *response.Response, error)` | Context-aware; accepts options and also returns the raw response + rate-limit metadata. |
+| **`GetQuote(symbol, opts...)`** | `(*Quote, error)` | Convenience wrapper; uses `context.Background()` and discards the response metadata. |
+| **`Quote(ctx, symbol, opts...)`** | `(*Quote, *response.Response, error)` | Context-aware; also returns the raw response + rate-limit metadata. |
 
-## Quotes
+## Quote
 
 ```go
-func (s *Service) Quotes(ctx context.Context, symbols []string, opts ...QuoteOption) ([]Quote, *response.Response, error)
-func (s *Service) GetQuotes(symbols ...string) ([]Quote, error)
+func (s *Service) Quote(ctx context.Context, symbol string, opts ...QuoteOption) (*Quote, *response.Response, error)
+func (s *Service) GetQuote(symbol string, opts ...QuoteOption) (*Quote, error)
 ```
 
-Fetch real-time quotes for many symbols at once.
+Fetch a real-time quote for one stock symbol.
 
 #### Parameters
 
 - `ctx` (`context.Context`) — controls cancellation and deadlines (context method only).
-- `symbols` (`[]string` for `Quotes`, variadic `...string` for `GetQuotes`) — the stock ticker symbols, e.g. `[]string{"AAPL", "MSFT", "GOOG"}`. At least one symbol is required; an empty set returns a validation error without making a request.
-- Options (`stocks.QuoteOption`, `Quotes` only — `GetQuotes` accepts no options):
-  - `stocks.WithFiftyTwoWeek(enabled bool)` — request 52-week high/low data for each quote. Defaults to off.
-  - `stocks.WithExtended(extended bool)` — control whether quotes include extended-hours data. When omitted, the parameter is not sent and the API default applies.
+- `symbol` (`string`) — the stock ticker symbol, e.g. `"AAPL"`. Required; an empty string returns a validation error without making a request.
+- Options (`stocks.QuoteOption`):
+  - `stocks.WithFiftyTwoWeek(enabled bool)` — request 52-week high/low data, populating the `FiftyTwoWeekHigh` and `FiftyTwoWeekLow` fields. Defaults to off; passing `false` is equivalent to omitting the option.
+  - `stocks.WithExtended(extended bool)` — control whether the quote includes extended-hours (pre-market/after-hours) data. When omitted, the parameter is not sent and the API default applies. Pass `true` to return the most recent quote regardless of session, or `false` to restrict to the primary session.
 
 #### Returns
 
-- `[]Quote` — one `Quote` per symbol returned by the API.
+- `*Quote` — the quote for the requested symbol.
 - `*response.Response` — raw response + rate-limit metadata (context method only).
 - `error` — non-nil on request/validation failure.
 
 #### Notes
 
-- If the API responds with 404 because no data is available, `Quotes` returns a `nil` slice, a `nil` error, and a non-nil `*response.Response` whose `NoData` field is `true`. `GetQuotes` discards that metadata, so a no-data result is simply a `nil` slice with a `nil` error.
-- To pass options and still request multiple symbols, use `Quotes` — `GetQuotes` is options-free by design.
+- If the API responds with 404 because no data is available, `Quote` returns a `nil` quote, a `nil` error, and a non-nil `*response.Response` whose `NoData` field is `true`. `GetQuote` discards that metadata, so a no-data result is simply a `nil` quote with a `nil` error.
+- If the API reports success but returns no quote for the symbol, `Quote` returns a `*stocks.QuoteNotFoundError` (detect it with `errors.As`).
 
 <Tabs>
 <TabItem value="Get" label="Get (simple)">
@@ -65,23 +65,29 @@ func main() {
 	}
 	defer client.Close()
 
-	quotes, err := client.Stocks.GetQuotes("AAPL", "MSFT", "GOOG")
+	quote, err := client.Stocks.GetQuote("AAPL")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for _, q := range quotes {
-		fmt.Printf("%s: $%.2f (%.2f%%)\n", q.Symbol, q.Last, q.ChangePercent)
-	}
+	fmt.Printf("Symbol: %s\n", quote.Symbol)
+	fmt.Printf("Last:   $%.2f\n", quote.Last)
+	fmt.Printf("Bid:    $%.2f x %d\n", quote.Bid, quote.BidSize)
+	fmt.Printf("Ask:    $%.2f x %d\n", quote.Ask, quote.AskSize)
+	fmt.Printf("Change: $%.2f (%.2f%%)\n", quote.Change, quote.ChangePercent)
+	fmt.Printf("Volume: %d\n", quote.Volume)
 }
 ```
 
 #### Output
 
 ```
-AAPL: $186.19 (0.57%)
-MSFT: $380.55 (0.61%)
-GOOG: $143.12 (-0.31%)
+Symbol: AAPL
+Last:   $186.19
+Bid:    $186.18 x 200
+Ask:    $186.20 x 300
+Change: $1.05 (0.57%)
+Volume: 48234500
 ```
 
 </TabItem>
@@ -108,20 +114,27 @@ func main() {
 
 	ctx := context.Background()
 
-	quotes, resp, err := client.Stocks.Quotes(ctx, []string{"AAPL", "MSFT", "GOOG"})
+	quote, resp, err := client.Stocks.Quote(ctx, "AAPL")
 	if err != nil {
 		log.Fatal(err)
 	}
 	if resp.NoData {
-		fmt.Println("no quotes available")
+		fmt.Println("no quote available")
 		return
 	}
 
-	for _, q := range quotes {
-		fmt.Println(q) // Quote implements Stringer
-	}
+	fmt.Println(quote) // Quote implements Stringer
+
+	// Inspect rate-limit metadata carried on the response.
 	fmt.Printf("Requests remaining: %d\n", resp.RateLimit.Remaining)
 }
+```
+
+#### Output
+
+```
+AAPL Last: $186.19 Bid: 186.18 (200) Ask: 186.20 (300) Mid: 186.19 Chg: 1.05 (0.57%) Vol: 48234500 Updated: 2024-01-15 16:00:00
+Requests remaining: 99998
 ```
 
 </TabItem>
@@ -149,28 +162,33 @@ func main() {
 
 	ctx := context.Background()
 
-	watchlist := []string{"AAPL", "MSFT", "GOOG"}
-	quotes, _, err := client.Stocks.Quotes(ctx, watchlist,
+	// 52-week data, regular session only.
+	quote, _, err := client.Stocks.Quote(ctx, "AAPL",
 		stocks.WithFiftyTwoWeek(true),
+		stocks.WithExtended(false),
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for _, q := range quotes {
-		pctFromHigh := (q.Last - q.FiftyTwoWeekHigh) / q.FiftyTwoWeekHigh * 100
-		fmt.Printf("%-5s $%8.2f  52wk %.2f-%.2f  (%+.1f%% from high)\n",
-			q.Symbol, q.Last, q.FiftyTwoWeekLow, q.FiftyTwoWeekHigh, pctFromHigh)
-	}
+	fmt.Printf("%s: $%.2f\n", quote.Symbol, quote.Last)
+	fmt.Printf("52-week high: $%.2f\n", quote.FiftyTwoWeekHigh)
+	fmt.Printf("52-week low:  $%.2f\n", quote.FiftyTwoWeekLow)
 }
+```
+
+#### Output
+
+```
+AAPL: $186.19
+52-week high: $199.62
+52-week low:  $164.08
 ```
 
 </TabItem>
 </Tabs>
 
 ## Quote
-
-`Quotes` returns a slice of the same `Quote` value used by the single-symbol [Quote](/sdk/go/stocks/quote) endpoint.
 
 ```go
 type Quote struct {
@@ -189,6 +207,8 @@ type Quote struct {
 	FiftyTwoWeekLow  float64   `json:"52weekLow,omitempty"`  // 52-week low (WithFiftyTwoWeek)
 }
 ```
+
+Represents a real-time stock quote. Timestamps are normalized to US Eastern time. `FiftyTwoWeekHigh` and `FiftyTwoWeekLow` are populated only when the quote was requested with `stocks.WithFiftyTwoWeek(true)`.
 
 #### Fields
 

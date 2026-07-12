@@ -1,0 +1,154 @@
+---
+title: Parameters
+sidebar_position: 5
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Market Data API supports a set of **universal parameters** that work on every endpoint. In the Go SDK these are configured as **client-level functional options** passed to `NewClient`; once set, they are attached to every request that client makes.
+
+```go
+client, err := marketdata.NewClient(
+	marketdata.WithMode(marketdata.ModeCached),
+	marketdata.WithMaxAge("5min"),
+	marketdata.WithLimit(50),
+	marketdata.WithColumns("open", "high", "low", "close", "volume"),
+)
+if err != nil {
+	log.Fatal(err)
+}
+defer client.Close()
+```
+
+## How Parameters Are Resolved
+
+Universal parameters are merged from three sources, lowest priority first:
+
+1. **Environment variables** (lowest) — read once at `NewClient` time. Only four universal parameters have environment-variable support (see the table below).
+2. **Client options** (`With*`) — override any value that came from the environment.
+3. **Endpoint method-level parameters** (highest) — some endpoints set a specific value themselves (for example, candle endpoints pin the `dateformat` they need for correct decoding). A method-level value always wins over the client default.
+
+:::note Client-level, not per-call
+Unlike the PHP SDK, the Go SDK does not accept a universal-parameter object on each method call. Universal parameters are set on the client. If you need different values for different calls — for example a cached client for bulk quotes and a live client for time-sensitive calls — create separate clients.
+:::
+
+## Environment Variables
+
+Only these four universal parameters can be set through the environment. They are read when the client is created and can be overridden by the corresponding `With*` option.
+
+| Variable | Values | Maps to | Option |
+|----------|--------|---------|--------|
+| `MARKETDATA_DATE_FORMAT` | `timestamp`, `unix`, `spreadsheet` | `dateformat` | `WithDateFormat` |
+| `MARKETDATA_COLUMNS` | comma-separated list | `columns` | `WithColumns` |
+| `MARKETDATA_ADD_HEADERS` | `true`, `false` | `headers` | `WithAddHeaders` |
+| `MARKETDATA_USE_HUMAN_READABLE` | `true`, `false` | `human` | `WithHumanReadable` |
+
+:::info
+`mode`, `maxage`, `limit`, and `offset` have **no** environment-variable support in the Go SDK; set them with their `With*` options.
+:::
+
+## Available Parameters
+
+### Mode
+
+Controls how each request is fulfilled, trading data freshness against credit cost.
+
+- **Option:** `WithMode(mode Mode)`
+- **Values:** `marketdata.ModeLive` (real-time; default on paid plans), `marketdata.ModeCached` (recently cached data at reduced credit cost), `marketdata.ModeDelayed` (delayed at least 15 minutes; default on free/trial plans)
+
+```go
+client, err := marketdata.NewClient(marketdata.WithMode(marketdata.ModeLive))
+```
+
+:::info Premium parameter
+`mode` is available only on paid plans. Free and trial plans always receive delayed data regardless of this setting.
+:::
+
+When `ModeCached` misses the cache, the API returns HTTP `204`, which the SDK surfaces as a no-data response (nil result, `Response.NoData == true`, nil error) rather than an error.
+
+### Max Age
+
+The maximum age of cached data accepted when `ModeCached` is in effect. It has no effect in other modes.
+
+- **Option:** `WithMaxAge(maxAge string)`
+- **Values:** a relative duration such as `"5min"` or `"1h"`, or an absolute datetime. If no cached data falls within the window, the API returns a no-data response at no credit cost.
+
+```go
+client, err := marketdata.NewClient(
+	marketdata.WithMode(marketdata.ModeCached),
+	marketdata.WithMaxAge("5min"),
+)
+```
+
+### Columns
+
+Restricts responses to the named columns, which can reduce payload size. Missing columns simply decode as zero values, so filtering never causes a decode error. Passing no columns is a no-op.
+
+- **Option:** `WithColumns(columns ...string)`
+
+```go
+client, err := marketdata.NewClient(
+	marketdata.WithColumns("open", "close", "volume"),
+)
+```
+
+### Limit and Offset
+
+Cap and paginate results.
+
+- **Options:** `WithLimit(n int)`, `WithOffset(n int)`
+- Values ≤ 0 are ignored (offset 0 is the default first page).
+
+```go
+client, err := marketdata.NewClient(
+	marketdata.WithLimit(100),
+	marketdata.WithOffset(100), // second page of 100
+)
+```
+
+### Date Format
+
+Sets the wire representation of date/time fields.
+
+- **Option:** `WithDateFormat(format string)`
+- **Values:** `"timestamp"`, `"unix"`, `"spreadsheet"`
+
+:::warning Advanced use only
+The SDK decodes dates from the API's default numeric (unix) representation. Overriding `dateformat` globally can change the wire format of date fields and cause typed responses (candles, quotes, earnings) to fail decoding. Endpoints that require a specific format set it themselves at the method level. Only set this when you consume the raw response yourself.
+:::
+
+### Human Readable
+
+Requests human-readable field names and value formatting via the `human` parameter.
+
+- **Option:** `WithHumanReadable(enabled bool)`
+
+:::warning Advanced use only
+Human-readable output changes field names and value formatting and is incompatible with the SDK's typed decoding. Enable it only when you read the raw `*marketdata.Response` body yourself instead of using the typed result.
+:::
+
+### Add Headers
+
+Controls whether a header row is included in CSV output via the `headers` parameter.
+
+- **Option:** `WithAddHeaders(enabled bool)`
+
+This affects CSV output only and has no effect on the JSON responses the SDK decodes; it is provided for completeness.
+
+## Reading the Raw Response
+
+The advanced parameters above are most useful when you access the raw response body rather than the typed result. Use the context-form call and the `*marketdata.Response` it returns (see [Client](/sdk/go/client)):
+
+```go
+_, resp, err := client.Stocks.Candles(ctx, "AAPL")
+if err != nil {
+	log.Fatal(err)
+}
+fmt.Println("content-type:", resp.Header.Get("Content-Type"))
+```
+
+## Next Steps
+
+- Review the [Client](/sdk/go/client) options that set these parameters.
+- Learn how the SDK reports failures on the [Errors](/sdk/go/errors) page.

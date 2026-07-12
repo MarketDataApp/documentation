@@ -1,0 +1,187 @@
+---
+title: Error Handling
+sidebar_position: 7
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The Go SDK returns typed errors that you inspect with the standard library's `errors.Is` and `errors.As`. Each API failure maps to a specific error type carrying request details for troubleshooting, and each type matches a sentinel value for quick classification.
+
+## The `Error` Interface
+
+Every SDK error (except a couple of primitive ones noted below) implements `marketdata.Error`:
+
+```go
+type Error interface {
+	error
+	Unwrap() error
+
+	// Retryable reports whether the operation is safe to retry.
+	Retryable() bool
+
+	// SupportInfo formats the request details for a support ticket.
+	SupportInfo() string
+}
+```
+
+Most typed errors embed a `SupportContext` with the fields that identify the failed request:
+
+```go
+type SupportContext struct {
+	RequestID     string    // the cf-ray response header
+	RequestURL    string    // the full request URL
+	StatusCode    int       // the HTTP status code
+	Timestamp     time.Time // when the error occurred (US/Eastern)
+	Message       string    // the error description
+	ExceptionType string    // the error type name
+}
+```
+
+`SupportContext.SupportInfo()` returns a ready-to-paste block for [Market Data support tickets](https://www.marketdata.app/dashboard/).
+
+## Error Types
+
+| HTTP status | Error type | Sentinel | Retried by SDK |
+|-------------|-----------|----------|----------------|
+| 400 | `BadRequestError` | `ErrBadRequest` | no |
+| 401 | `AuthenticationError` | `ErrAuthentication` | no |
+| 402 | `PaymentRequiredError` | `ErrPaymentRequired` | no |
+| 403 | `ForbiddenError` | `ErrForbidden` | no |
+| 404 | `NotFoundError` | `ErrNotFound` | no |
+| 413 | `PayloadTooLargeError` | `ErrPayloadTooLarge` | no |
+| 429 | `RateLimitError` | `ErrRateLimited` | no |
+| 500 | `InternalError` | `ErrInternal` | no |
+| 501–599 | `ServerError` | `ErrServer` | **yes** (exponential backoff) |
+| — (connection/timeout) | `NetworkError` | — | **yes** |
+| — (client-side validation) | `ValidationError` | `ErrInvalidRequest` | no |
+| — (body cannot be decoded) | `ParseError` | — | no |
+
+All of these types are exported from the `marketdata` package (they are aliases for the SDK's internal error types), so you refer to them as `marketdata.RateLimitError`, `marketdata.AuthenticationError`, and so on.
+
+:::note 404 is not always an error
+A `404` that means "no data for this valid request" is **not** returned as an error. It is surfaced through the `NoData` field of the [`*marketdata.Response`](/sdk/go/client#no-data-responses). A `NotFoundError` is only returned for a genuinely missing resource.
+:::
+
+### Types with extra fields
+
+Some error types carry additional context beyond `SupportContext`:
+
+- **`RateLimitError`** — `Limit`, `Remaining`, `ResetAt`, and a `WaitDuration()` method returning how long to wait before retrying.
+- **`ForbiddenError`** — `AuthorizedIP`, `BlockedIP`, and `TroubleshootingGuide` (a 403 usually means your IP changed and access was temporarily blocked).
+- **`ValidationError`** — `Field` and `Message` identify the offending input. Because no request was made, its `SupportInfo()` returns an empty string.
+
+### Primitive errors
+
+- **`APIError`** — returned when the HTTP status was successful but the response body reported an error (for example a status field other than `"ok"`). It carries only a `Message`.
+
+## Classifying Errors
+
+Use `errors.As` when you need a typed error's fields, and `errors.Is` when you only need to know the category.
+
+```go
+package main
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	client, err := marketdata.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	quote, _, err := client.Stocks.Quote(context.Background(), "AAPL")
+	if err != nil {
+		handleError(err)
+		return
+	}
+
+	fmt.Printf("AAPL last: $%.2f\n", quote.Last)
+}
+
+func handleError(err error) {
+	var rateErr *marketdata.RateLimitError
+	var authErr *marketdata.AuthenticationError
+	var forbiddenErr *marketdata.ForbiddenError
+
+	switch {
+	case errors.As(err, &rateErr):
+		fmt.Printf("rate limited; wait %s before retrying\n", rateErr.WaitDuration())
+
+	case errors.As(err, &authErr):
+		fmt.Println("authentication failed. Support info:")
+		fmt.Println(authErr.SupportInfo())
+
+	case errors.As(err, &forbiddenErr):
+		fmt.Printf("IP %s is blocked; the authorized IP is %s\n",
+			forbiddenErr.BlockedIP, forbiddenErr.AuthorizedIP)
+
+	case errors.Is(err, marketdata.ErrBadRequest):
+		fmt.Println("bad request:", err)
+
+	default:
+		fmt.Println("request failed:", err)
+	}
+}
+```
+
+## Sentinels with `errors.Is`
+
+When you only need to know the category, match the sentinel directly:
+
+```go
+if errors.Is(err, marketdata.ErrNotFound) {
+	// the requested resource does not exist
+}
+if errors.Is(err, marketdata.ErrPaymentRequired) {
+	// your plan does not include this data — upgrade required
+}
+```
+
+The full set of sentinels: `ErrBadRequest`, `ErrAuthentication`, `ErrPaymentRequired`, `ErrForbidden`, `ErrNotFound`, `ErrPayloadTooLarge`, `ErrRateLimited`, `ErrInternal`, `ErrServer`, and `ErrInvalidRequest`.
+
+## Deciding Whether to Retry
+
+The SDK already retries transient failures (`ServerError` and `NetworkError`) automatically before returning, so a returned error usually means retrying will not help. If you implement your own retry policy, ask the error whether it is safe to retry:
+
+```go
+var sdkErr marketdata.Error
+if errors.As(err, &sdkErr) && sdkErr.Retryable() {
+	// transient — safe to retry after a backoff
+}
+```
+
+## Support Tickets
+
+Any error that embeds `SupportContext` can produce a support block. Include it when you open a ticket so the team can trace the exact request:
+
+```go
+var apiErr *marketdata.InternalError
+if errors.As(err, &apiErr) {
+	fmt.Println(apiErr.SupportInfo())
+}
+```
+
+```
+--- MARKET DATA SUPPORT INFO ---
+request_id:     8a1b2c3d4e5f6a7b
+request_url:    https://api.marketdata.app/v1/stocks/quotes/?symbols=AAPL
+status_code:    500
+timestamp:      2026-07-12 09:30:00
+message:        internal server error
+exception_type: InternalError
+--------------------------------
+```
+
+## Next Steps
+
+- Review how [Logging](/sdk/go/logging) records errors and redacts your token.
+- See the [Client](/sdk/go/client) page for how no-data responses differ from errors.

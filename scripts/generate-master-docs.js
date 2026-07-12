@@ -64,6 +64,7 @@ const TARGETS = [
   { source: 'sheets', output: 'sheets.md' },
   { source: 'sdk/py', output: 'sdk-py.md' },
   { source: 'sdk/php', output: 'sdk-php.md' },
+  { source: 'sdk/go', output: 'sdk-go.md' },
   { source: 'sdk/postman.mdx', output: 'sdk-postman.md', isSingleFile: true },
   { source: 'account', output: 'account.md' }
 ];

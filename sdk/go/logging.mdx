@@ -1,209 +1,129 @@
 ---
 title: Logging
-sidebar_position: 3
+sidebar_position: 6
 ---
 
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
+The Go SDK logs through the standard library's [`log/slog`](https://pkg.go.dev/log/slog) package. By default it uses `slog.Default()`, so SDK log records flow into whatever logger your application already configures. You can supply your own `*slog.Logger`, raise the verbosity for debugging, and rely on the SDK never printing your full API token.
 
+## Default Behavior
 
+Out of the box the SDK logs at `slog.Default()`'s level. Setting the `MARKETDATA_LOGGING_LEVEL` environment variable makes the SDK install its own text handler (writing to stderr) at the level you choose:
 
-The Market Data Go SDK provides a [comprehensive logging framework](<https://www.marketdata.app/docs/sdk/go/logging>) tailored for HTTP request and response tracking. It facilitates detailed logging of HTTP interactions, including request details, response data, error handling, and rate limit monitoring. The logging functionality is designed to support a wide range of market data types such as stocks, options, indices, and market status information, making it an essential tool for developers integrating market data into their applications.
+```bash
+export MARKETDATA_LOGGING_LEVEL=DEBUG
+```
 
-### Key Features
+Recognized values (case-insensitive): `DEBUG`, `INFO`, `WARNING` (or `WARN`), and `ERROR`. Setting it to `DEBUG` also turns on the SDK's verbose request/response debug logging automatically.
 
-- Detailed Logging: Captures and logs comprehensive details of HTTP requests and responses, including headers, status codes, and body content.
-- Error Handling: Distinguishes between client\-side and server\-side errors, logging them appropriately to aid in debugging and monitoring.
-- Rate Limit Management: Tracks and logs rate limit consumption for each request, helping to avoid rate limit breaches.
-- Debug Mode: Offers a debug mode that logs additional details for in\-depth analysis during development and troubleshooting.
-- In\-Memory Log Storage: Maintains the last log entries in memory with configurable limits on entries and memory usage, ensuring efficient log management.
-- Structured Logging: Utilizes the zap logging library for structured, high\-performance logging.
+## Enabling Debug Logging
 
-### Getting Started With Logging
-
-1. Initialize the MarketDataClient with your API token.
-2. Enable Debug mode for verbose logging during development.
-3. Perform HTTP requests and utilize the logging features to monitor request details, responses, and rate limit usage.
-4. Review the in\-memory logs or structured log files to analyze HTTP interactions and troubleshoot issues.
-
-
-<a name="MarketDataLogs"></a>
-## MarketDataLogs
+In code, enable verbose logging with the `WithDebug` option, or toggle it at runtime with `client.Debug(...)`:
 
 ```go
-type MarketDataLogs struct {
-    // MaxLogEntries defines the maximum number of log entries that will be stored in memory.
-    // Beyond this limit, older entries may be evicted or ignored.
-    MaxEntries int
+package main
 
-    // MemoryLimit specifies the maximum amount of memory (in bytes) that can be used for
-    // storing log entries.  This helps in preventing excessive memory usage by in-memory
-    // log storage.
-    MemoryLimit int64
+import (
+	"log/slog"
+	"os"
 
-    // SuccessLogger is a zap logger used for logging successful operations.
-    SuccessLogger *zap.Logger
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
 
-    // ClientErrorLogger is a zap logger used for logging client-side errors.
-    ClientErrorLogger *zap.Logger
+func main() {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelDebug,
+	}))
 
-    // ServerErrorLogger is a zap logger used for logging server-side errors.
-    ServerErrorLogger *zap.Logger
+	client, err := marketdata.NewClient(
+		marketdata.WithToken("your-token"),
+		marketdata.WithLogger(logger),
+		marketdata.WithDebug(true),
+	)
+	if err != nil {
+		logger.Error("client init failed", "err", err)
+		os.Exit(1)
+	}
+	defer client.Close()
 
-    // Logs is the slice of LogEntry that contain all the request logs.
-    Logs []LogEntry
+	// Turn debug logging off once you are past the section you are diagnosing.
+	client.Debug(false)
 }
 ```
 
-MarketDataLogs represents a collection of HTTP request logs. It provides methods to manipulate and retrieve log entries.
+- **`WithLogger(l *slog.Logger)`** replaces `slog.Default()` for this client.
+- **`WithDebug(true)`** enables verbose request/response logging.
+- **`client.Debug(enabled bool)`** toggles debug logging at runtime.
 
-#### Methods
+## Log Levels
 
-- <a href="#LogEntry.String">`String() string`</a>
+The SDK emits records at standard `slog` levels:
 
-  Returns a string representation of all HTTP request logs.
+| Level | What the SDK logs |
+|-------|-------------------|
+| `slog.LevelDebug` | Request URLs and parameters, response status, retry attempts, the redacted token in use. |
+| `slog.LevelInfo` | Normal operational messages. |
+| `slog.LevelWarn` | Demo-mode startup warning; transient-failure retries. |
+| `slog.LevelError` | Errors surfaced by the SDK. |
 
-- <a href="#MarketDataLogs.PrintLatest">`PrintLatest()`</a>
+## Choosing a Handler
 
-  Prints the latest HTTP request log entry.
+Because the SDK uses `slog`, you have full control over formatting and destination through the handler you build.
 
-- <a href="#MarketDataLogs.LatestString">`LatestString() string `</a>
-
-  Gets the HTTP body response of the last log entry in string format.
-
-
-
-
-<a name="GetLogs"></a>
-### GetLogs
-
-```go
-func GetLogs() *MarketDataLogs
-```
-
-GetLogs retrieves a pointer to the MarketDataLogs instance, allowing access to the logs collected during HTTP requests. This method is primarily used for debugging and monitoring purposes, providing insights into the HTTP request lifecycle and any issues that may have occurred.
-
-#### Returns
-
-- `*MarketDataLogs`
-
-  A pointer to the MarketDataLogs instance containing logs of HTTP requests.
-
-
-<a name="MarketDataLogs.LatestString"></a>
-### LatestString
+<Tabs>
+<TabItem value="text" label="Text (stderr)">
 
 ```go
-func (l *MarketDataLogs) LatestString() string
+logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+	Level: slog.LevelInfo,
+}))
+
+client, err := marketdata.NewClient(marketdata.WithLogger(logger))
 ```
 
-LatestString returns the response of the last log entry in the MarketDataLogs.
-
-This method checks if there are any logs present. If there are no logs, it returns a message indicating that no logs are available. If logs are present, it calculates the index of the last log entry, accesses it, and returns its response.
-
-#### Returns
-
-- `string`
-
-  A string representing the response of the last log entry. If no logs are available, returns "No logs available".
-
-
-<a name="MarketDataLogs.PrintLatest"></a>
-### PrintLatest
+</TabItem>
+<TabItem value="json" label="JSON (structured)">
 
 ```go
-func (l *MarketDataLogs) PrintLatest()
+logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+	Level: slog.LevelDebug,
+}))
+
+client, err := marketdata.NewClient(marketdata.WithLogger(logger))
 ```
 
-PrintLatest prints the latest HTTP request log entry.
+</TabItem>
+</Tabs>
 
-<a name="MarketDataLogs.String"></a>
-### String
+## Token Redaction
+
+The SDK **never logs your full API token**. When debug logging is enabled and a token is present, the SDK logs the token redacted to its last four characters, with everything before them replaced by asterisks:
+
+```
+level=DEBUG msg="using API token" token=****************************abcd
+```
+
+This redaction applies everywhere the token would otherwise appear in output, so debug logs are safe to share in a support ticket. (The SDK additionally refuses to send the token at all over a non-HTTPS connection to a non-loopback host.)
+
+## Disabling Logging
+
+To silence the SDK, pass a logger whose handler discards records or sits at a high level:
 
 ```go
-func (l *MarketDataLogs) String() string
+// Discard everything.
+logger := slog.New(slog.NewTextHandler(io.Discard, nil))
+client, err := marketdata.NewClient(marketdata.WithLogger(logger))
 ```
 
-String returns a string representation of all HTTP request logs.
+## Production Recommendations
 
-#### Returns
+- Use `slog.LevelWarn` or `slog.LevelError` in production to keep log volume down.
+- Reserve `slog.LevelDebug` for local development or active troubleshooting.
+- Prefer the JSON handler when shipping logs to an aggregation system.
 
-- `string`
+## Next Steps
 
-  A string representing all log entries, with log entry numbers starting at 0.
-
-
-#### Example
-
-```
-MarketDataLogs{
-  LogEntry[0]: {Timestamp: 2024-02-19 15:16:30 -05:00, Status: 200, Request: https://api.marketdata.app/v1/stocks/candles/4H/AAPL/?from=2023-01-01&to=2023-01-04, RequestHeaders: map[Authorization:[Bearer **********************************************************8IH6] User-Agent:[sdk-go/1.1.0]], RayID: 8581301bc9e974ca-MIA, RateLimitConsumed: 0, Delay: 1002ms, Response Headers: map[Allow:[GET, HEAD, OPTIONS] Alt-Svc:[h3=":443"; ma=86400] Cf-Cache-Status:[DYNAMIC] Cf-Ray:[8581301bc9e974ca-MIA] Content-Type:[application/json] Cross-Origin-Opener-Policy:[same-origin] Date:[Mon, 19 Feb 2024 20:16:30 GMT] Nel:[{"success_fraction":0,"report_to":"cf-nel","max_age":604800}] Referrer-Policy:[same-origin] Report-To:[{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=ar7qRMEAxiHJcyRqlRlZvfzqv80inCp91LwdsxTfo51%2FSmdqz6NoadysPyFlMZKtDMG1IsDllX0GXXPjNsvjg4gQBr%2FLJ8G5Ad1z5lDXfhqrSee7umXzVf7dYmAFwq4x4sPMANE%3D"}],"group":"cf-nel","max_age":604800}] Server:[cloudflare] Vary:[Accept, Origin] X-Api-Ratelimit-Consumed:[0] X-Api-Ratelimit-Limit:[100000] X-Api-Ratelimit-Remaining:[99973] X-Api-Ratelimit-Reset:[1708439400] X-Api-Response-Log-Id:[88078705] X-Content-Type-Options:[nosniff] X-Frame-Options:[DENY]], Response: {"s":"ok","t":[1672756200,1672770600,1672842600,1672857000],"o":[130.28,124.6699,126.89,127.265],"h":[130.9,125.42,128.6557,127.87],"l":[124.19,124.17,125.08,125.28],"c":[124.6499,125.05,127.2601,126.38],"v":[64411753,30727802,49976607,28870878]}}
-}
-```
-
-
-
-<a name="LogEntry"></a>
-## LogEntry
-
-```go
-type LogEntry struct {
-    Timestamp         time.Time
-    RequestHeaders    http.Header // The Request Headers
-    ResponseHeaders   http.Header // The Response Headers
-    RayID             string      // The Ray ID from the HTTP response
-    Request           string      // The URL of the HTTP Request
-    Status            int         // The status code of the response
-    RateLimitConsumed int         // The number of requests consumed from the rate limit
-    Delay             int64       // The time (in milliseconds) between the request and the server's response
-    Response          string      // The server response
-    // contains filtered or unexported fields
-}
-```
-
-LogEntry represents a single HTTP request log entry. It includes detailed information about the request and response, such as headers, status code, and response body.
-
-#### Methods
-
-- <a href="#LogEntry.String">`String() string`</a>
-
-  Returns a string representation of the HTTP request log entry.
-
-- <a href="#LogEntry.PrettyPrint">`PrettyPrint()`</a>
-
-  Prints a formatted representation of the HTTP request log entry.
-
-
-
-
-<a name="LogEntry.PrettyPrint"></a>
-### PrettyPrint
-
-```go
-func (l LogEntry) PrettyPrint()
-```
-
-PrettyPrint prints a formatted representation of the HTTP request log entry.
-
-<a name="LogEntry.String"></a>
-### String
-
-```go
-func (l LogEntry) String() string
-```
-
-String returns a string representation of the HTTP request log entry.
-
-#### Returns
-
-- `string`
-
-  A string representing the log entry.
-
-
-#### Example
-
-```
-LogEntry{Timestamp: 2024-02-19 14:53:34 -05:00, Status: 200, Request: https://api.marketdata.app/v1/stocks/candles/4H/AAPL/?from=2023-01-01&to=2023-01-04, RequestHeaders: map[Authorization:[Bearer **********************************************************L06F] User-Agent:[sdk-go/1.1.0]], RayID: 85810e82de8e7438-MIA, RateLimitConsumed: 0, Delay: 893ms, Response Headers: map[Allow:[GET, HEAD, OPTIONS] Alt-Svc:[h3=":443"; ma=86400] Cf-Cache-Status:[DYNAMIC] Cf-Ray:[85810e82de8e7438-MIA] Content-Type:[application/json] Cross-Origin-Opener-Policy:[same-origin] Date:[Mon, 19 Feb 2024 19:53:34 GMT] Nel:[{"success_fraction":0,"report_to":"cf-nel","max_age":604800}] Referrer-Policy:[same-origin] Report-To:[{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=r18O66yjJ%2FxXqOnCb3a76wBgpZaCbhJcot%2Bfgl1oHna2LigHHAYRaXg8dNLiJYHes0ezAaIdXLhVNGQBo%2FBAte6%2ByNcaZku5cV19FPyiD2%2BKXJeEtnFN6pJUsUA77sxk%2FfWxOFU%3D"}],"group":"cf-nel","max_age":604800}] Server:[cloudflare] Vary:[Accept, Origin] X-Api-Ratelimit-Consumed:[0] X-Api-Ratelimit-Limit:[100000] X-Api-Ratelimit-Remaining:[99973] X-Api-Ratelimit-Reset:[1708439400] X-Api-Response-Log-Id:[88061028] X-Content-Type-Options:[nosniff] X-Frame-Options:[DENY]], Response: {"s":"ok","t":[1672756200,1672770600,1672842600,1672857000],"o":[130.28,124.6699,126.89,127.265],"h":[130.9,125.42,128.6557,127.87],"l":[124.19,124.17,125.08,125.28],"c":[124.6499,125.05,127.2601,126.38],"v":[64411753,30727802,49976607,28870878]}}
-```
-
-
+- See [Error Handling](/sdk/go/errors) for the structured error context that appears in error logs.
+- Review the [Client](/sdk/go/client) options, including `WithLogger` and `WithDebug`.

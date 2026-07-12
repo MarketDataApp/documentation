@@ -1,0 +1,167 @@
+---
+title: Bulk Candles
+sidebar_position: 7
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve a single daily candle for many stock symbols in one API request — ideal for market snapshots.
+
+## Making Requests
+
+`BulkCandles` lives on the `Stocks` service (`client.Stocks`). Unlike the other stocks endpoints it has no `Get*` convenience wrapper; call the context method directly.
+
+| Method | Return | Description |
+|--------|--------|-------------|
+| **`BulkCandles(ctx, symbols, opts...)`** | `([]BulkCandle, *response.Response, error)` | Context-aware; also returns the raw response + rate-limit metadata. |
+
+## BulkCandles
+
+```go
+func (s *Service) BulkCandles(ctx context.Context, symbols []string, opts ...BulkCandleOption) ([]BulkCandle, *response.Response, error)
+```
+
+Fetch one daily candle per symbol. Unlike [Candles](/sdk/go/stocks/candles), this endpoint returns a single candle for each symbol, not a time series.
+
+#### Parameters
+
+- `ctx` (`context.Context`) — controls cancellation and deadlines.
+- `symbols` (`[]string`) — the stock ticker symbols, e.g. `[]string{"AAPL", "MSFT", "GOOG"}`. At least one symbol is required; an empty slice returns a validation error without making a request.
+- Options (`stocks.BulkCandleOption`):
+  - `stocks.WithBulkResolution(r Resolution)` — set the resolution. The endpoint only supports `stocks.ResolutionDaily`, which is also the default.
+  - `stocks.WithBulkDate(t time.Time)` — request candles for a specific historical date instead of the most recent trading day. Only the calendar date is used.
+  - `stocks.WithSnapshot(snapshot bool)` — control whether the API returns a snapshot of the latest candle. When omitted, the parameter is not sent and the API default applies.
+  - `stocks.WithAdjustSplits(adjust bool)` — adjust for stock splits. When omitted, the parameter is not sent and the API default applies.
+  - `stocks.WithAdjustDividends(adjust bool)` — adjust for dividends. The API adjusts for dividends by default; pass `false` for raw, unadjusted prices. When omitted, the parameter is not sent.
+
+#### Returns
+
+- `[]BulkCandle` — one candle per symbol.
+- `*response.Response` — raw response + rate-limit metadata.
+- `error` — non-nil on request/validation failure.
+
+#### Notes
+
+- Only `ResolutionDaily` is supported; `WithBulkResolution` exists for symmetry with the other candle endpoints.
+- The bulk candles endpoint accepts a single date only (no range or countback mode), so `WithBulkDate` is a plain option rather than a `DateWindow`.
+- If the API responds with 404 because no data is available, `BulkCandles` returns a `nil` slice, a `nil` error, and a non-nil `*response.Response` whose `NoData` field is `true`.
+
+<Tabs>
+<TabItem value="Context" label="Multiple symbols">
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	client, err := marketdata.NewClient(marketdata.WithToken("YOUR_TOKEN"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	ctx := context.Background()
+
+	candles, resp, err := client.Stocks.BulkCandles(ctx, []string{"AAPL", "MSFT", "GOOG"})
+	if err != nil {
+		log.Fatal(err)
+	}
+	if resp.NoData {
+		fmt.Println("no candles available")
+		return
+	}
+
+	for _, c := range candles {
+		fmt.Printf("%s: O:%.2f C:%.2f V:%d\n", c.Symbol, c.Open, c.Close, c.Volume)
+	}
+}
+```
+
+#### Output
+
+```
+AAPL: O:185.64 C:186.19 V:48234500
+MSFT: O:378.25 C:380.55 V:22156800
+GOOG: O:142.35 C:143.12 V:18456200
+```
+
+</TabItem>
+
+<TabItem value="Options" label="With options">
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"time"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+	"github.com/MarketDataApp/sdk-go/v2/marketdata/stocks"
+)
+
+func main() {
+	client, err := marketdata.NewClient(marketdata.WithToken("YOUR_TOKEN"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	ctx := context.Background()
+
+	date := time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)
+
+	candles, _, err := client.Stocks.BulkCandles(ctx, []string{"AAPL", "MSFT", "GOOG"},
+		stocks.WithBulkResolution(stocks.ResolutionDaily),
+		stocks.WithBulkDate(date),
+		stocks.WithAdjustSplits(true),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, c := range candles {
+		fmt.Println(c) // BulkCandle implements Stringer
+	}
+}
+```
+
+</TabItem>
+</Tabs>
+
+## BulkCandle
+
+```go
+type BulkCandle struct {
+	Symbol string    `json:"symbol"` // Stock ticker symbol
+	Time   time.Time `json:"t"`      // Candle timestamp (US Eastern)
+	Open   float64   `json:"o"`      // Opening price
+	High   float64   `json:"h"`      // Highest price
+	Low    float64   `json:"l"`      // Lowest price
+	Close  float64   `json:"c"`      // Closing price
+	Volume int64     `json:"v"`      // Trading volume
+}
+```
+
+Represents a single daily candle for one symbol. It carries the same OHLCV fields as [`Candle`](/sdk/go/stocks/candles) plus the `Symbol` the candle belongs to, since bulk requests cover multiple symbols. Timestamps are normalized to US Eastern time.
+
+#### Fields
+
+- `Symbol` — the stock ticker symbol.
+- `Time` — the candle timestamp.
+- `Open` / `High` / `Low` / `Close` — the OHLC prices for the day.
+- `Volume` — trading volume for the day.
+
+#### Helper Methods
+
+- `String() string` — a concise one-line summary of the candle.

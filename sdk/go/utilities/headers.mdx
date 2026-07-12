@@ -1,0 +1,150 @@
+---
+title: Headers
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Echo back the request headers your application is sending — useful for debugging authentication and proxy issues.
+
+## Making Requests
+
+Fetch your request headers with the `Headers` method on the `client.Utilities` service. It takes no parameters and no options, and comes in two call styles:
+
+| Method | Return | Description |
+|--------|--------|-------------|
+| **`GetHeaders()`** | `(*utilities.Headers, error)` | Convenience; uses a background context and discards response metadata. |
+| **`Headers(ctx)`** | `(*utilities.Headers, *response.Response, error)` | Context-aware; also returns the raw response plus rate-limit metadata. |
+
+## Headers
+
+```go
+func (s *Service) Headers(ctx context.Context) (*utilities.Headers, *response.Response, error)
+func (s *Service) GetHeaders() (*utilities.Headers, error)
+```
+
+Get the request headers your application is sending, echoed back by the unversioned `/headers/` endpoint. The returned [`Headers`](#headers-type) maps header names to the values the server received, which is useful for debugging authentication and proxy problems.
+
+#### Parameters
+
+- `ctx` (`context.Context`) — request context for cancellation and deadlines (context method only).
+
+This endpoint takes no functional options.
+
+#### Returns
+
+- `*utilities.Headers` — the echoed [`Headers`](#headers-type).
+- `*response.Response` — raw response plus rate-limit metadata (context method only).
+- `error` — non-nil on request or decoding failure.
+
+#### Notes
+
+- Sensitive header values (such as `Authorization`) are partially redacted by the server for security.
+- In the unlikely event the endpoint responds `404`, both call styles return a `nil` result and a `nil` error; with the context method the returned `*response.Response` has its `NoData` field set to `true`.
+
+<Tabs>
+<TabItem value="Get" label="Get (simple)">
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	client, err := marketdata.NewClient() // reads MARKETDATA_TOKEN from env / .env
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	headers, err := client.Utilities.GetHeaders()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if _, ok := headers.Headers["Authorization"]; ok {
+		fmt.Println("Authorization header is being sent.")
+	} else {
+		fmt.Println("Authorization header is missing — check MARKETDATA_TOKEN.")
+	}
+}
+```
+
+#### Output
+
+```
+Authorization: Bearer 1AB...***REDACTED***
+Accept-Encoding: gzip
+User-Agent: sdk-go/2.0.0
+Host: api.marketdata.app
+```
+
+</TabItem>
+<TabItem value="Context" label="Context + Response">
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	client, err := marketdata.NewClient(marketdata.WithToken("YOUR_TOKEN"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	headers, resp, err := client.Utilities.Headers(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	if resp.NoData || headers == nil {
+		fmt.Println("No headers returned.")
+		return
+	}
+	for name, value := range headers.Headers {
+		fmt.Printf("%s: %s\n", name, value)
+	}
+}
+```
+
+#### Output
+
+```
+Authorization: Bearer 1AB...***REDACTED***
+Accept-Encoding: gzip
+User-Agent: sdk-go/2.0.0
+Host: api.marketdata.app
+```
+
+</TabItem>
+</Tabs>
+
+## Headers {#headers-type}
+
+```go
+type Headers struct {
+	Headers map[string]string `json:"headers"` // Headers maps header names to values.
+}
+```
+
+`Headers` represents the request headers echoed back by the API. It is useful for debugging authentication issues.
+
+#### Fields
+
+- `Headers` (`map[string]string`) — a map of header name to the value the server received.
+
+#### Methods
+
+- `String() string` — a concise summary of all header name/value pairs, e.g. `Headers{Authorization: Bearer 1AB...***REDACTED***, Host: api.marketdata.app}`.

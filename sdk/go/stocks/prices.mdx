@@ -1,0 +1,194 @@
+---
+title: Prices
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Get real-time SmartMid midpoint prices for one or more stocks — a lightweight alternative to a full quote when only a single price per symbol is needed.
+
+## Making Requests
+
+Both call styles live on the `Stocks` service (`client.Stocks`). Use `GetPrices` for the simplest call, or `Prices` when you need functional options or the raw response and rate-limit metadata.
+
+| Method | Return | Description |
+|--------|--------|-------------|
+| **`GetPrices(symbols...)`** | `([]Price, error)` | Convenience wrapper; takes symbols variadically, uses `context.Background()`, and does not accept options. |
+| **`Prices(ctx, symbols, opts...)`** | `([]Price, *response.Response, error)` | Context-aware; accepts options and also returns the raw response + rate-limit metadata. |
+
+## Prices
+
+```go
+func (s *Service) Prices(ctx context.Context, symbols []string, opts ...PriceOption) ([]Price, *response.Response, error)
+func (s *Service) GetPrices(symbols ...string) ([]Price, error)
+```
+
+Fetch SmartMid midpoint prices for one or many symbols.
+
+#### Parameters
+
+- `ctx` (`context.Context`) — controls cancellation and deadlines (context method only).
+- `symbols` (`[]string` for `Prices`, variadic `...string` for `GetPrices`) — the stock ticker symbols, e.g. `[]string{"AAPL", "MSFT", "GOOG"}`. At least one symbol is required; an empty set returns a validation error without making a request.
+- Options (`stocks.PriceOption`, `Prices` only — `GetPrices` accepts no options):
+  - `stocks.WithPriceExtended(extended bool)` — control whether prices include extended-hours data. When omitted, the parameter is not sent and the API default applies.
+
+#### Returns
+
+- `[]Price` — one `Price` per symbol.
+- `*response.Response` — raw response + rate-limit metadata (context method only).
+- `error` — non-nil on request/validation failure.
+
+#### Notes
+
+- The SmartMid model is Market Data's derived midpoint between bid and ask.
+- For a single symbol the SDK uses the path form `stocks/prices/{symbol}/`; for multiple symbols it uses the query form `stocks/prices/?symbols=...`.
+- To pass options and still request multiple symbols, use `Prices` — `GetPrices` is options-free by design.
+- If the API responds with 404 because no data is available, `Prices` returns a `nil` slice, a `nil` error, and a non-nil `*response.Response` whose `NoData` field is `true`.
+
+<Tabs>
+<TabItem value="Get" label="Get (simple)">
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	client, err := marketdata.NewClient(marketdata.WithToken("YOUR_TOKEN"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	prices, err := client.Stocks.GetPrices("AAPL", "MSFT", "GOOG")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, p := range prices {
+		fmt.Printf("%s: $%.2f (%.2f%%)\n", p.Symbol, p.Mid, p.ChangePercent)
+	}
+}
+```
+
+#### Output
+
+```
+AAPL: $186.19 (0.71%)
+MSFT: $380.55 (1.25%)
+GOOG: $143.12 (-0.50%)
+```
+
+</TabItem>
+
+<TabItem value="Context" label="Context + Response">
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	client, err := marketdata.NewClient(marketdata.WithToken("YOUR_TOKEN"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	ctx := context.Background()
+
+	prices, resp, err := client.Stocks.Prices(ctx, []string{"AAPL", "MSFT", "GOOG"})
+	if err != nil {
+		log.Fatal(err)
+	}
+	if resp.NoData {
+		fmt.Println("no prices available")
+		return
+	}
+
+	for _, p := range prices {
+		fmt.Println(p) // Price implements Stringer
+	}
+	fmt.Printf("Requests remaining: %d\n", resp.RateLimit.Remaining)
+}
+```
+
+</TabItem>
+
+<TabItem value="Options" label="With options">
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+	"github.com/MarketDataApp/sdk-go/v2/marketdata/stocks"
+)
+
+func main() {
+	client, err := marketdata.NewClient(marketdata.WithToken("YOUR_TOKEN"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	ctx := context.Background()
+
+	// Regular-session prices only.
+	prices, _, err := client.Stocks.Prices(ctx, []string{"AAPL", "MSFT"},
+		stocks.WithPriceExtended(false),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, p := range prices {
+		fmt.Printf("%s: $%.2f (regular session)\n", p.Symbol, p.Mid)
+	}
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Price
+
+```go
+type Price struct {
+	Symbol        string    `json:"symbol"`    // Stock ticker symbol
+	Mid           float64   `json:"mid"`       // SmartMid midpoint price
+	Change        float64   `json:"change"`    // Price change from previous close
+	ChangePercent float64   `json:"changepct"` // Percentage change from previous close
+	Updated       time.Time `json:"updated"`   // When this price was last updated (US Eastern)
+}
+```
+
+Represents a SmartMid midpoint price for a stock. It is a lightweight alternative to [`Quote`](/sdk/go/stocks/quote) when only a single price per symbol is needed. Timestamps are normalized to US Eastern time.
+
+#### Fields
+
+- `Symbol` — the stock ticker symbol.
+- `Mid` — the SmartMid midpoint price.
+- `Change` — price change in dollars from the previous close.
+- `ChangePercent` — the change from the previous close (JSON alias `changepct`).
+- `Updated` — timestamp of the price.
+
+#### Helper Methods
+
+- `String() string` — a one-line summary of the price.
