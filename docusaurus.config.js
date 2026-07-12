@@ -147,6 +147,10 @@ const config = {
             from: "/sdk/go/options/strikes",
             to: "/sdk/go/options/chain",
           },
+          {
+            from: "/sdk/php/stocks/bulk-candles",
+            to: "/sdk/php/stocks/bulkcandles",
+          },
         ],
       },
     ],
