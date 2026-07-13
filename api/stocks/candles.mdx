@@ -241,8 +241,6 @@ There is no maximum date range limit on daily candles. When requesting intraday 
 
 Only three price series are supported: **raw**, **split-only**, and **fully adjusted** (CRSP-style). There is no dividend-only series — no data source publishes one — so that combination is rejected with an HTTP 400.
 
-Validation runs on the *resolved* flag values (after the daily/intraday defaults are applied), so a request that omits a flag is validated against the default it resolved to.
-
 **Daily** — the `adjustsplits=false, adjustdividends=true` combination is rejected. Because `adjustdividends` defaults to `true` on daily candles, this is most commonly triggered by passing `adjustsplits=false` alone. To receive raw prices on daily candles, set **both** `adjustsplits=false` and `adjustdividends=false`.
 
 | `adjustsplits` | `adjustdividends` | Series | Result |
