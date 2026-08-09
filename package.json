@@ -19,6 +19,7 @@
     "generate-docs": "node scripts/generate-master-docs.js",
     "export-sdk-docs": "node scripts/export-sdk-docs.js",
     "test:lib": "node --test lib/__tests__/*.test.js",
+    "lint:links": "STRICT_LINKS=true yarn build",
     "lint:tables": "node scripts/fix-table-alignment.js",
     "fix:tables": "node scripts/fix-table-alignment.js --fix",
     "test:e2e": "playwright test"

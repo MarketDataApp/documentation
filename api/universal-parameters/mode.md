@@ -189,4 +189,4 @@ A few notes on the retry pattern:
 - Cap the retry at one attempt. A subsequent `204` should not occur on `mode=live`, but a circuit breaker is still wise.
 - If your plan does not include `mode=cached` access (Free/Trial), `mode=cached` requests return `402 Payment Required` rather than `204`. See [402: Payment Required](/api/troubleshooting/payment-required).
 
-For the full list of HTTP status codes returned by the API (including `4xx` and `5xx`), see [Troubleshooting](/troubleshooting).
+For the full list of HTTP status codes returned by the API (including `4xx` and `5xx`), see [Troubleshooting](/api/troubleshooting).

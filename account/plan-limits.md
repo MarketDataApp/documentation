@@ -16,7 +16,7 @@ Each Market Data plan comes with certain limitations to allow for shared use of 
 | Options Data Type  | Delayed      | 15-minute delayed | Real-time   | Real-time        | Real-time        |
 | API Endpoints      | Standard     | Premium           | Premium     | Premium + Custom | Premium + Custom |
 
-\* See [Data Freshness](./data-freshness) for endpoint-level freshness.
+\* See [Data Freshness](/account/data-freshness) for endpoint-level freshness.
 
 ## Credits
 Each time you call the API, the system increases your credits counter. Normally each successful response consumes 1 credit. However, **if you request multiple symbols in a single API call using `stocks/quotes`, `stocks/prices`, `stocks/bulkcandles`, or `options/chain`, each symbol included in the response consumes credits**.
@@ -53,7 +53,7 @@ Free Forever accounts can access up to 1 year of historical data and Starter acc
 Free trials of paid plans provide delayed data. Real-time data is only available with paid versions of the Trader plan and above.
 :::
 
-For endpoint-level freshness rules and the Delayed → Historical rollover timing — including why options data only rolls at 9:30 AM ET the next trading day rather than at the prior session's close — see [Data Freshness](./data-freshness).
+For endpoint-level freshness rules and the Delayed → Historical rollover timing — including why options data only rolls at 9:30 AM ET the next trading day rather than at the prior session's close — see [Data Freshness](/account/data-freshness).
 
 ## API Endpoints
 
