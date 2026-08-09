@@ -24,10 +24,10 @@ If you query an options endpoint at 6:33 AM ET Wednesday on a plan that provides
 
 ## By Plan
 
-The tables below show the freshness category for every API endpoint, by plan, and assume non-professional status. Real-time exchange data is never available to professional subscribers — see the [Notes](#notes) below. For the underlying entitlement model, see [Exchange Entitlements](./entitlements).
+The tables below show the freshness category for every API endpoint, by plan, and assume non-professional status. Real-time exchange data is never available to professional subscribers — see the [Notes](#notes) below. For the underlying entitlement model, see [Exchange Entitlements](/account/entitlements).
 
 :::info Real-time stock pricing comes from `/v1/stocks/prices/`
-[`/v1/stocks/prices/`](../api/stocks/prices) delivers Real-time stock prices with no delay on every paid plan. `/v1/stocks/quotes/`, `/v1/stocks/candles/`, and `/v1/stocks/bulkcandles/` carry the standard 15-minute exchange delay. Point your application at `/v1/stocks/prices/` when you need the current price.
+[`/v1/stocks/prices/`](/api/stocks/prices) delivers Real-time stock prices with no delay on every paid plan. `/v1/stocks/quotes/`, `/v1/stocks/candles/`, and `/v1/stocks/bulkcandles/` carry the standard 15-minute exchange delay. Point your application at `/v1/stocks/prices/` when you need the current price.
 :::
 
 ### Free Forever
@@ -158,6 +158,6 @@ Same freshness profile as Trader and Quant.
 
 ## Notes
 
-- **Real-time data and professional status:** Real-time exchange data is only available to non-professional subscribers. Professional subscribers **never** receive Real-time exchange data, no matter which exchange agreements they sign. Signing an agreement does not change this, and no self-service plan changes it. Delayed / historical data access remains available, depending on the data policies of each exchange. Real-time exchange data for professional use requires direct exchange licensing — [contact our sales team](https://www.marketdata.app/contact/) to discuss it. See [Professional Status Policy](/docs/account/data-policies/professional-status/), [Exchange Entitlements](./entitlements), and [Professional Status Explained](https://www.marketdata.app/education/stocks/professional-status-explained/).
-- **`/v1/funds/*` freshness** is documented per fund-data type and is pending publication here. Until then, refer to the individual endpoint pages under [Funds API](../api/funds/).
-- **Stock quotes and candles carry the 15-minute exchange delay.** `/v1/stocks/quotes/`, `/v1/stocks/candles/`, and `/v1/stocks/bulkcandles/` are delayed 15 minutes on every plan under the [UTP entitlement](./entitlements#utp-entitlement). The delay comes from the exchange, so `mode=live` does not shorten it — see [Data Mode](../api/universal-parameters/mode).
+- **Real-time data and professional status:** Real-time exchange data is only available to non-professional subscribers. Professional subscribers **never** receive Real-time exchange data, no matter which exchange agreements they sign. Signing an agreement does not change this, and no self-service plan changes it. Delayed / historical data access remains available, depending on the data policies of each exchange. Real-time exchange data for professional use requires direct exchange licensing — [contact our sales team](https://www.marketdata.app/contact/) to discuss it. See [Professional Status Policy](/docs/account/data-policies/professional-status/), [Exchange Entitlements](/account/entitlements), and [Professional Status Explained](https://www.marketdata.app/education/stocks/professional-status-explained/).
+- **`/v1/funds/*` freshness** is documented per fund-data type and is pending publication here. Until then, refer to the individual endpoint pages under [Funds API](/api/funds/).
+- **Stock quotes and candles carry the 15-minute exchange delay.** `/v1/stocks/quotes/`, `/v1/stocks/candles/`, and `/v1/stocks/bulkcandles/` are delayed 15 minutes on every plan under the [UTP entitlement](/account/entitlements#utp-entitlement). The delay comes from the exchange, so `mode=live` does not shorten it — see [Data Mode](/api/universal-parameters/mode).

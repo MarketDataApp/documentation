@@ -20,8 +20,12 @@ const config = {
   baseUrl: "/docs/",
   trailingSlash: true,
   noIndex: process.env.PROD !== "true",
-  onBrokenLinks: "ignore",
-  onBrokenMarkdownLinks: "warn",
+  // "warn" on deploys so a stray link never blocks a production release, but
+  // "throw" under STRICT_LINKS so the PR check (yarn lint:links) fails instead
+  // of letting broken links reach the site. This was "ignore" and silently
+  // accumulated 14 broken links.
+  onBrokenLinks: process.env.STRICT_LINKS === "true" ? "throw" : "warn",
+  onBrokenMarkdownLinks: process.env.STRICT_LINKS === "true" ? "throw" : "warn",
   favicon: "img/favicon.ico",
 
   organizationName: "marketdata",
