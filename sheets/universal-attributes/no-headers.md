@@ -8,7 +8,7 @@ Add the "noheaders" attribute to exclude the header row from the output of any M
 ## Sample Usage
 ```excel-formula
 =STOCKQUOTE("AAPL","all,noheaders")
-=INDEXQUOTE("SPX", "all,noheaders")
+=STOCKDATA("AAPL", "all,noheaders")
 =OPTIONDATA("AAPL240119C00150000", "bid,ask,noheaders", "9/23/2022", "10/23/2022")
 ```
 
