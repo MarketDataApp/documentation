@@ -73,7 +73,7 @@ We provide the following headers in our responses to help you manage the rate li
 - Error responses are not counted.
 - Requests consume more than 1 credit if the response includes prices for more than one symbol (for example, `options/chain` or `stocks/quotes` bulk requests).
 - Responses that include more than one symbol, but do not include the **bid**, **ask**, **mid**, or **last** columns _**do not**_ consume multiple credits and are counted as a single credit.
-- Certain free trial symbols like AAPL stock, AAPL options, the VIX index, and the VFINX mutual fund do not consume credits.
+- Certain free trial symbols like AAPL stock, AAPL options, and the VFINX mutual fund do not consume credits.
 
 ## Strategies To Avoid Rate Limiting
 - Exclude the bid, ask, mid, and last columns from your option chain requests if the current price is not needed.

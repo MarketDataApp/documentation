@@ -30,7 +30,7 @@ This means:
 
 This means:
 - Every endpoint method must work with just required parameters (e.g., a symbol) — no mandatory configuration or boilerplate
-- Response objects must support string conversion that produces a readable summary (see §11.5)
+- Response objects must support string conversion that produces a readable summary (see §11.6)
 - Environment-based token loading (`MARKETDATA_TOKEN`) must work automatically so users can skip explicit auth setup
 - The combination of env-based auth + simple method call + print/log must produce a meaningful result
 
@@ -97,6 +97,7 @@ SDKs must pass the standard linter for their language (e.g., `ruff` for Python, 
 | Fixed 99-second timeout           | Must     |
 | Typed input validation            | Must     |
 | Typed output models               | Must     |
+| Decimal type for monetary values  | Must     |
 | Structured error handling         | Must     |
 | API credit tracking               | Must     |
 | Retry with exponential backoff    | Must     |
@@ -524,7 +525,65 @@ Do not add ecosystem-misaligned formats just for parity across SDKs.
 - Normalize to US/Eastern timezone by default
 - Respect `dateformat` parameter for output
 
-### 11.5 Response Object Features
+### 11.5 Monetary Value Precision
+
+**Money must not be represented as a binary floating-point number in typed models when the language provides an exact decimal type.**
+
+Binary floats cannot represent decimal money exactly (`0.1 + 0.2 != 0.3`), so any comparison, rounding, or accumulation a customer performs on SDK output drifts. Prices are the primary product of this API; they must round-trip exactly.
+
+#### Language Applicability
+
+| Language              | Exact Decimal Type     | Monetary Fields      |
+|-----------------------|------------------------|----------------------|
+| Python                | `decimal.Decimal`      | **Must** use decimal |
+| Java                  | `java.math.BigDecimal` | **Must** use decimal |
+| C#                    | `decimal`              | **Must** use decimal |
+| Go                    | None native            | Exempt — `float64`   |
+| Rust                  | None native            | Exempt — `f64`       |
+| PHP                   | None native            | Exempt — `float`     |
+| JavaScript/TypeScript | None native            | Exempt — `number`    |
+| R                     | None native            | Exempt — `numeric`   |
+
+Exempt SDKs **must not** add a third-party decimal library to satisfy this requirement. An ecosystem-foreign money type in public model fields conflicts with the Language-Idiomatic Design principle and forces a dependency on every consumer. Float is the correct choice where the language offers no exact decimal type.
+
+#### Preserve Precision at the Parse Boundary
+
+**Converting an already-parsed float to a decimal does not satisfy this requirement.** The exact value is destroyed at the JSON decode step, and a later conversion only locks in the float error. SDKs subject to this requirement must decode the response so the API's decimal string reaches the decimal type directly.
+
+| Language | Decimal-Preserving Decode                                   |
+|----------|-------------------------------------------------------------|
+| Python   | `json.loads(response.text, parse_float=Decimal)`            |
+| Java     | Jackson `DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS` |
+| C#       | `System.Text.Json` reader → `GetDecimal()` on the raw token |
+
+#### What Counts as Money
+
+The rule: **if the value is denominated in currency, it is money.** Ratios, statistics, and counts are not.
+
+- **Monetary (decimal):** bid, ask, mid, last, change, open/high/low/close, strike, intrinsic value, extrinsic value, underlying price, and EPS figures (reported, estimated, surprise)
+- **Not monetary (float or int):** Greeks (delta, gamma, theta, vega), implied volatility, percentages (e.g. `changepct`, `surpriseEPSpct`), and sizes/counts (`bidSize`, `askSize`, `volume`, `openInterest`, `dte`)
+
+Canonical REST documentation remains the source of truth for which fields exist on each endpoint; apply the rule above to that schema.
+
+#### Format Exemptions
+
+This requirement governs **typed models only**. The following output formats are exempt:
+
+| Output Format                 | Money Type    | Why Exempt                                                                 |
+|-------------------------------|---------------|----------------------------------------------------------------------------|
+| DataFrame (pandas, polars, R) | `float64`     | Analytics surface for vectorized math; pandas has no decimal dtype         |
+| CSV                           | Raw text      | Already byte-faithful exact decimal strings straight from the API          |
+| JSON                          | Native decode | "JSON output" means the decoded object; exactness is the typed model's job |
+
+**On DataFrames:** a DataFrame is an analytics surface — users load data to run vectorized statistics (returns, rolling means, volatility). In pandas, decimals degrade to `object` dtype, which kills vectorized math on the default output. Where a backend *does* offer a decimal dtype (polars), still use `float64`: making only one backend exact would mean identical code returns different dtypes depending on which optional dependency is installed. Consistency across interchangeable backends wins.
+
+Customers who need exactness go through the typed model. SDK documentation must state plainly which formats are exact and which are not.
+
+#### Arithmetic
+
+SDKs must not perform their own price arithmetic. Computed values (`mid`, `change`, and similar) are supplied by the API and are passed through as received. This requirement is about representation, not calculation.
+
+### 11.6 Response Object Features
 
 All response objects must provide:
 
@@ -749,6 +808,10 @@ Before accepting an SDK, verify:
 - [ ] Format detection methods (isJson, isCsv, isHtml)
 - [ ] File saving capability (saveToFile)
 - [ ] No-data detection property
+- [ ] Monetary fields use the language's exact decimal type, or the language is exempt per §11.5
+- [ ] JSON decoding preserves decimal precision (no float round-trip before the model)
+- [ ] Non-monetary fields (Greeks, IV, percentages, sizes) remain float/int
+- [ ] DataFrame output remains float64 on every supported backend
 
 ### Documentation
 - [ ] README with quick start

@@ -33,11 +33,11 @@ To help you better understand the differences between our plans, here's a quick 
 |------------------------|--------------|-------------|
 | Historical Data        | 1 Year       | Full Access |
 | 15-Minute Delayed Data | ❌           | ✅          |
-| Real-Time Data         | ❌           | ✅          |
+| Real-Time Data\*       | ❌           | ✅          |
 | Standard Endpoints     | ✅           | ✅          |
 | Premium Endpoints      | ❌           | ✅          |
 
-For endpoint-level freshness rules and the Delayed → Historical rollover timing (especially for options, where data only rolls at 9:30 AM ET the next trading day), see [Data Freshness](../data-freshness.md).
+\* For endpoint-level freshness rules and the Delayed → Historical rollover timing (especially for options, where data only rolls at 9:30 AM ET the next trading day), see [Data Freshness](../data-freshness.md).
 
 ## Why Choose Free Forever?
 

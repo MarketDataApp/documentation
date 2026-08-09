@@ -7,14 +7,16 @@ Each Market Data plan comes with certain limitations to allow for shared use of 
 
 ## Standard Plans
 
-|                    | Free Forever | Starter           | Trader    | Quant            | Prime Plans      |
-|--------------------|--------------|-------------------|-----------|------------------|------------------|
-| Daily Credits      | 100          | 10,000            | 100,000   | No Limit         | No Limit         |
-| Per-Minute Credits | No Limit     | No Limit          | No Limit  | 10,000           | 100,000          |
-| Historical Data    | 1 Year       | 5 Years           | No Limit  | No Limit         | No Limit         |
-| Stocks Data Type   | Delayed      | Real-time         | Real-time | Real-time        | Real-time        |
-| Options Data Type  | Delayed      | 15-minute delayed | Real-time | Real-time        | Real-time        |
-| API Endpoints      | Standard     | Premium           | Premium   | Premium + Custom | Premium + Custom |
+|                    | Free Forever | Starter           | Trader      | Quant            | Prime Plans      |
+|--------------------|--------------|-------------------|-------------|------------------|------------------|
+| Daily Credits      | 100          | 10,000            | 100,000     | No Limit         | No Limit         |
+| Per-Minute Credits | No Limit     | No Limit          | No Limit    | 10,000           | 100,000          |
+| Historical Data    | 1 Year       | 5 Years           | No Limit    | No Limit         | No Limit         |
+| Stocks Data Type   | Delayed      | Real-time\*       | Real-time\* | Real-time\*      | Real-time\*      |
+| Options Data Type  | Delayed      | 15-minute delayed | Real-time   | Real-time        | Real-time        |
+| API Endpoints      | Standard     | Premium           | Premium     | Premium + Custom | Premium + Custom |
+
+\* See [Data Freshness](./data-freshness) for endpoint-level freshness.
 
 ## Credits
 Each time you call the API, the system increases your credits counter. Normally each successful response consumes 1 credit. However, **if you request multiple symbols in a single API call using `stocks/quotes`, `stocks/prices`, `stocks/bulkcandles`, or `options/chain`, each symbol included in the response consumes credits**.
@@ -44,8 +46,8 @@ Free Forever accounts can access up to 1 year of historical data and Starter acc
 ## Data Type
 
 - Free Forever provides delayed stocks/options data.
-- Starter provides real-time stocks and 15-minute delayed options data.
-- Trader, Quant, and Prime provide real-time stocks/options data.
+- Starter provides real-time stocks\* and 15-minute delayed options data.
+- Trader, Quant, and Prime provide real-time stocks\*/options data.
 
 :::info
 Free trials of paid plans provide delayed data. Real-time data is only available with paid versions of the Trader plan and above.

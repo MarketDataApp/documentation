@@ -19,6 +19,10 @@ This parameter is available only on paid plans. Free and trial plans cannot chan
 
 The `live` mode returns real-time data, providing the most current market information available. This mode is intended for time-sensitive use cases that require up-to-the-second pricing.
 
+:::note
+`mode=live` returns the freshest data your entitlements allow. It does not shorten an exchange-imposed delay. See [Data Freshness](/docs/account/data-freshness/) for the freshness of each endpoint.
+:::
+
 ### Pricing for Live Mode
 
 - Quotes: **1 credit per symbol** included in the response that has quote data (bid/ask/mid/last).

@@ -9,6 +9,10 @@
  * Usage:
  *   node scripts/fix-table-alignment.js           # check mode (exit 1 if misaligned)
  *   node scripts/fix-table-alignment.js --fix     # fix mode (rewrites files in place)
+ *   node scripts/fix-table-alignment.js --fix a.md b.mdx   # only these files
+ *
+ * With no path arguments it scans SCAN_DIRS. With paths it processes only
+ * those files, which is what the pre-commit hook in .githooks/ relies on.
  *
  * Add to CI:
  *   node scripts/fix-table-alignment.js
@@ -237,22 +241,34 @@ let issues = 0;
 let scanned = 0;
 let fixed = 0;
 
-for (const dir of SCAN_DIRS) {
-  for (const file of findFiles(path.join(ROOT, dir))) {
-    scanned++;
-    const { hasChanges, misalignedCount, newContent } = processFile(file);
-    if (!hasChanges) continue;
+// Explicit paths win over the default directory scan. The pre-commit hook uses
+// this to touch only the files being committed, so it never rewrites unrelated
+// files and drags them into someone's commit.
+const explicitPaths = process.argv.slice(2).filter((arg) => !arg.startsWith('--'));
 
-    issues++;
-    const rel = path.relative(ROOT, file);
+function targetFiles() {
+  if (explicitPaths.length > 0) {
+    return explicitPaths
+      .map((p) => path.resolve(ROOT, p))
+      .filter((p) => EXTENSIONS.has(path.extname(p)) && fs.existsSync(p));
+  }
+  return SCAN_DIRS.flatMap((dir) => findFiles(path.join(ROOT, dir)));
+}
 
-    if (FIX_MODE) {
-      fs.writeFileSync(file, newContent, 'utf8');
-      fixed++;
-      console.log(`  fixed  ${rel}  (${misalignedCount} table${misalignedCount > 1 ? 's' : ''})`);
-    } else {
-      console.log(`  MISALIGNED  ${rel}  (${misalignedCount} table${misalignedCount > 1 ? 's' : ''})`);
-    }
+for (const file of targetFiles()) {
+  scanned++;
+  const { hasChanges, misalignedCount, newContent } = processFile(file);
+  if (!hasChanges) continue;
+
+  issues++;
+  const rel = path.relative(ROOT, file);
+
+  if (FIX_MODE) {
+    fs.writeFileSync(file, newContent, 'utf8');
+    fixed++;
+    console.log(`  fixed  ${rel}  (${misalignedCount} table${misalignedCount > 1 ? 's' : ''})`);
+  } else {
+    console.log(`  MISALIGNED  ${rel}  (${misalignedCount} table${misalignedCount > 1 ? 's' : ''})`);
   }
 }
 

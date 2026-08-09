@@ -59,6 +59,10 @@ Your business activity — not your job title — determines your classification
 
 If your business is in a non-financial field (e.g., construction, healthcare, retail, technology), you will typically be classified as non-professional regardless of the fact that you are self-employed.
 
+## If You Are Classified as Professional
+
+Professional subscribers never receive real-time exchange data on a self-service plan, no matter which exchange agreements they sign. Real-time access for professional use requires direct exchange licensing, which Market Data arranges individually. [Contact our sales team](https://www.marketdata.app/contact/) to discuss it. Delayed / historical data access remains available on your current plan, depending on the data policies of each exchange.
+
 ## Still Need Help?
 
 If you are unsure how your business would be classified, please contact our [support helpdesk](https://www.marketdata.app/dashboard/) and describe what your business does. Our support team will let you know what classification applies and what documentation, if any, is needed.

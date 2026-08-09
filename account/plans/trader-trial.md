@@ -43,13 +43,13 @@ This comparison helps you understand the Trader Trial in relation to our other o
 | Feature            | Free Forever | Trader Trial    | Trader Plan     |
 |--------------------|--------------|-----------------|-----------------|
 | API Credits        | 100 per day  | 100,000 per day | 100,000 per day |
-| Stock Data Delay   | 24 hours     | 24 hours        | Real-time       |
+| Stock Data Delay   | 24 hours     | 24 hours        | Real-time\*     |
 | Options Data Delay | 24 hours     | 24 hours        | Real-time       |
 | Historical Data    | 1 Year       | 1 Year          | Full Access     |
 | Standard Endpoints | ✅           | ✅              | ✅              |
 | Premium Endpoints  | ❌           | AAPL Only       | ✅              |
 
-For endpoint-level freshness rules and the Delayed → Historical rollover timing (especially for options, where data only rolls at 9:30 AM ET the next trading day), see [Data Freshness](../data-freshness.md).
+\* For endpoint-level freshness rules and the Delayed → Historical rollover timing (especially for options, where data only rolls at 9:30 AM ET the next trading day), see [Data Freshness](../data-freshness.md).
 
 ## Why Try the Trader Trial?
 

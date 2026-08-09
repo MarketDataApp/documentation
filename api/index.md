@@ -28,7 +28,7 @@ Our endpoints have **lots of optional parameters** to allow users to sort and fi
 
 #### Get Started Quick — No Registration Required!
 
-You can try stock, option, index, and mutual fund endpoints with several different symbols that are unlocked and require no authorization token. That means these symbols can be used throughout our API with no registration required!
+You can try stock, option, and mutual fund endpoints with several different symbols that are unlocked and require no authorization token. That means these symbols can be used throughout our API with no registration required!
 
 - Stock endpoints: Use **AAPL**.
 - Options endpoints: Use any AAPL contract, for example: **AAPL271217C00250000**.

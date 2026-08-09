@@ -28,4 +28,5 @@ To access real-time or 15-minute delayed data, all of the following are required
 
 1. **A paid subscription** — real-time and intraday data are not available on free or trial plans.
 2. **Account verification** — your identity and professional status must be confirmed by Market Data before exchange data can be enabled. See [Account Compliance](/docs/account/data-policies/account-verification/).
-3. **Signed exchange agreements** — you must sign the subscriber agreement for each exchange whose data you wish to receive. See [Exchange Entitlements](/docs/account/entitlements/).
+3. **Non-professional classification** — professional subscribers never receive real-time exchange data on a self-service plan, no matter which exchange agreements they sign. Real-time access for professional use requires direct exchange licensing — [contact our sales team](https://www.marketdata.app/contact/) to discuss it. See [Professional Status Policy](/docs/account/data-policies/professional-status/).
+4. **Signed exchange agreements** — you must sign the subscriber agreement for each exchange whose data you wish to receive. See [Exchange Entitlements](/docs/account/entitlements/).

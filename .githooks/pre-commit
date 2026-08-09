@@ -1,0 +1,48 @@
+#!/bin/sh
+#
+# Auto-align markdown tables before they reach CI.
+#
+# The "Docs: PR Checks" workflow runs scripts/fix-table-alignment.js in check
+# mode and fails the PR on any misaligned table. This hook fixes them at commit
+# time instead, so the check never fires.
+#
+# Only staged .md/.mdx files are touched — never the whole repo — so the hook
+# cannot pull unrelated files into your commit.
+#
+# Installed by the "prepare" script in package.json (runs on yarn install).
+# To bypass once: git commit --no-verify
+
+set -eu
+
+# Added, Copied, Modified, Renamed — skip Deleted, which has no file to read.
+staged=$(git diff --cached --name-only --diff-filter=ACMR | grep -Ei '\.mdx?$' || true)
+[ -n "$staged" ] || exit 0
+
+# Only files that still exist in the worktree can be rewritten.
+existing=""
+for f in $staged; do
+  [ -f "$f" ] && existing="$existing $f"
+done
+[ -n "$existing" ] || exit 0
+
+# shellcheck disable=SC2086 # intentional word splitting into separate args
+node scripts/fix-table-alignment.js --fix $existing >/dev/null
+
+# Re-stage anything the aligner rewrote. Comparing worktree to index tells us
+# which files actually changed, so untouched files keep their staged state.
+realigned=""
+for f in $existing; do
+  if ! git diff --quiet -- "$f"; then
+    git add -- "$f"
+    realigned="$realigned $f"
+  fi
+done
+
+if [ -n "$realigned" ]; then
+  echo "pre-commit: aligned markdown tables in:"
+  for f in $realigned; do
+    echo "  $f"
+  done
+fi
+
+exit 0

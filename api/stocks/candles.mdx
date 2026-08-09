@@ -227,6 +227,19 @@ There is no maximum date range limit on daily candles. When requesting intraday 
   - Daily candles default: `true`.
   - Intraday candles default: `false`.
 
+- **adjustdividends** `boolean`
+
+  Adjust historical data for cash dividends. Market Data uses the CRSP methodology for adjustment.
+
+  - Daily candles default: `true`.
+  - Intraday candles default: `false`.
+
+By default, daily candles are fully CRSP-adjusted for both splits and dividends. To retrieve split-adjusted-only data (the most common request), set `adjustdividends=false` and leave `adjustsplits` at its default of `true`.
+
+:::note
+There is no dividend-only adjustment. Requesting `adjustsplits=false` while `adjustdividends` remains `true` (its default) is unsupported and returns an HTTP `400` error. Because `adjustdividends` defaults to `true` on daily candles, passing only `adjustsplits=false` resolves to this rejected combination — the response's `errmsg` states exactly this and tells you to also set `adjustdividends=false` explicitly. To retrieve fully raw, unadjusted daily data, you must set both `adjustsplits=false` and `adjustdividends=false` explicitly.
+:::
+
 </TabItem>
 </Tabs>
 

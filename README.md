@@ -9,7 +9,7 @@ The official documentation for [Market Data](https://www.marketdata.app/) — co
 
 | Section | Path | Description |
 |---------|------|-------------|
-| **API** | `/api` | REST API reference — stocks, options, indices, funds, markets, and utilities |
+| **API** | `/api` | REST API reference — stocks, options, funds, markets, and utilities |
 | **SDKs** | `/sdk` | Client libraries for Go, Python, and PHP |
 | **Sheets Add-On** | `/sheets` | Google Sheets Add-On documentation |
 | **Accounts & Billing** | `/account` | Account management, plans, billing, and entitlements |
