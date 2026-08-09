@@ -30,7 +30,7 @@ If you plan to use market data in connection with a business — including a sta
 
 Any use of data to support a business function — such as building a product, providing a service, generating reports for clients, or integrating data into an application — is classified as professional. This includes personal LLCs, even single-member pass-through entities.
 
-Non-professional plans are for **personal, non-commercial use only**. If you need data for a business, you will need a professional or enterprise license.
+Non-professional plans are for **personal, non-commercial use only**. If you need data for a business, you will need a commercial or exchange license. [Contact our sales team](https://www.marketdata.app/contact/) to discuss licensing.
 
 ### Job Function Suggests Professional Use
 
@@ -60,7 +60,7 @@ We will review the information and update your classification if the evidence su
 
 If your use case or job function does qualify as professional under exchange rules, your options are:
 
-- **Subscribe under a professional plan** with the appropriate exchange fees. Contact our [support helpdesk](https://www.marketdata.app/dashboard/) for pricing.
+- **License real-time exchange data directly.** Professional subscribers never receive real-time exchange data on a self-service plan, no matter which agreements they sign. Real-time access for professional use requires direct exchange licensing, which Market Data arranges individually. [Contact our sales team](https://www.marketdata.app/contact/) to discuss it.
 - **Continue with delayed or historical data.** If you are not eligible for non-professional real-time data, you can still use Market Data to access delayed or historical data based on each exchange's policies.
 - **Cancel your subscription** if the pricing does not work for you. See [Cancellations](/docs/account/cancellations/).
 

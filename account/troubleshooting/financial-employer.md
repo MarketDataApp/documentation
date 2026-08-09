@@ -54,6 +54,10 @@ For example, a software developer at a social media company is non-professional,
 
 See [Professional Status Policy](/docs/account/data-policies/professional-status/) for the full classification criteria, or read [Professional Status Explained](https://www.marketdata.app/education/stocks/professional-status-explained/) for a detailed guide with additional examples.
 
+## If You Are Classified as Professional
+
+Professional subscribers never receive real-time exchange data on a self-service plan, no matter which exchange agreements they sign. Real-time access for professional use requires direct exchange licensing, which Market Data arranges individually. [Contact our sales team](https://www.marketdata.app/contact/) to discuss it. Delayed / historical data access remains available on your current plan, depending on the data policies of each exchange.
+
 ## Still Need Help?
 
 If you are unsure how your role would be classified, contact our [support helpdesk](https://www.marketdata.app/dashboard/) and describe your day-to-day responsibilities. Our support team will let you know what classification applies.

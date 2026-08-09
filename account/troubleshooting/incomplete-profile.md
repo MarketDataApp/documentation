@@ -34,6 +34,8 @@ Market Data is required by the stock and options exchanges to verify the identit
 
 When fields are missing or contain placeholder values, we cannot complete this verification and your account remains in a pending state. See [Account Verification Policy](/docs/account/data-policies/account-verification/) for full details.
 
+Completing your profile activates real-time data only if the review classifies you as non-professional. Professional subscribers never receive real-time exchange data on a self-service plan, no matter which exchange agreements they sign. Real-time access for professional use requires direct exchange licensing — [contact our sales team](https://www.marketdata.app/contact/) to discuss it.
+
 ## How to Fix
 
 1. Log in to the [Customer Dashboard](https://www.marketdata.app/dashboard/).

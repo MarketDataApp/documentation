@@ -44,6 +44,10 @@ If you have retired from one career but are now working in a different field, pl
 
 If you are still employed and selected "retired" because you preferred not to share your employment details, you can simply provide your current job title and employer instead. As long as your work is not securities-related, we can typically process your account as non-professional. See [Account Verification Policy](/docs/account/data-policies/account-verification/) for details on what information we collect and how we use it.
 
+## If You Are Classified as Professional
+
+Professional subscribers never receive real-time exchange data on a self-service plan, no matter which exchange agreements they sign. Real-time access for professional use requires direct exchange licensing, which Market Data arranges individually. [Contact our sales team](https://www.marketdata.app/contact/) to discuss it. Delayed / historical data access remains available on your current plan, depending on the data policies of each exchange.
+
 ## Still Need Help?
 
 If you are unsure what documentation to provide, please contact our [support helpdesk](https://www.marketdata.app/dashboard/) and our support team will let you know exactly what is needed to complete your verification.

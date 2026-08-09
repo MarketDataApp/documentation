@@ -263,14 +263,14 @@ After verifying that you're receiving delayed data, check your account status in
 
 - **IEX Agreement**: Required for real-time stock quotes
   - Without IEX: Non-professional users get 15-minute delayed quotes
-  - Without IEX: Professional users get historical (1 day old) quotes
+  - Professional users do not receive real-time quotes with or without IEX. Delayed / historical access depends on the data policies of each exchange.
 
 - **UTP Agreement**: Required for 15-minute delayed stock candles
   - Without UTP: All users get historical (1 day old) candles
 
 - **OPRA Agreement**: Required for real-time options quotes
   - Without OPRA: Non-professional users get 15-minute delayed options quotes
-  - Without OPRA: Professional users get historical (1 day old) options quotes
+  - Professional users do not receive real-time options quotes with or without OPRA. Delayed / historical access depends on the data policies of each exchange.
 
 **Impact**: Even if your profile is complete and you're classified as non-professional, missing exchange agreements will prevent you from receiving real-time data.
 
@@ -648,9 +648,9 @@ fun testRealtimeData(client: MarketDataClient, symbol: String = "AAPL"): Boolean
 **Solution**:
 1. Check your profile in the dashboard—is it complete?
 2. Check your agreements—are they signed and approved?
-3. Check your professional status in the [customer dashboard](https://dashboard.marketdata.app/marketdata/profile)—if you're classified as professional, you'll receive delayed/historical data regardless of agreements
+3. Check your professional status in the [customer dashboard](https://dashboard.marketdata.app/marketdata/profile)—if you're classified as professional, you'll receive delayed/historical data regardless of agreements, and real-time access requires exchange licensing through our [sales team](https://www.marketdata.app/contact/)
 
-**Note**: Professional users (corporations, investment advisors, money managers, etc.) receive historical data (1 day old) for compliance reasons, even with signed agreements.
+**Note**: Professional users (corporations, investment advisors, money managers, etc.) do not receive real-time data for compliance reasons, even with signed agreements. No self-service plan and no combination of signed agreements grants a professional user real-time exchange data. Delayed / historical data access remains available, depending on the data policies of each exchange. Real-time access for professional use requires direct exchange licensing — [contact our sales team](https://www.marketdata.app/contact/) to discuss it.
 
 ### Scenario 3: "My data was real-time yesterday but delayed today"
 
@@ -680,7 +680,7 @@ fun testRealtimeData(client: MarketDataClient, symbol: String = "AAPL"): Boolean
 
 **How to check**: You can check your professional status in the [customer dashboard](https://dashboard.marketdata.app/marketdata/profile). Your classification is determined during the verification process when you complete your profile. If you're unsure about your status, contact support for clarification.
 
-**Impact**: Professional users receive historical data (1 day old) regardless of exchange agreements, while non-professional users can access real-time data with proper entitlements.
+**Impact**: Professional users do not receive real-time data regardless of exchange agreements, while non-professional users can access real-time data with proper entitlements. Delayed / historical data access remains available, depending on the data policies of each exchange. If you are classified as professional and need real-time data, it requires direct exchange licensing — [contact our sales team](https://www.marketdata.app/contact/) to discuss it.
 
 ### Scenario 5: "I completed my profile and signed agreements, but still getting delayed data"
 
@@ -746,5 +746,7 @@ Real-time data requires:
 2. ✅ **Signed exchange agreements** (IEX for stocks, OPRA for options, UTP for candles)
 3. ✅ **Non-professional classification** (professional users get delayed/historical data)
 4. ✅ **Verification approval** (typically 1 business day)
+
+Professional users cannot satisfy requirement 3 on a self-service plan. Real-time exchange data for professional use requires direct exchange licensing — [contact our sales team](https://www.marketdata.app/contact/) to discuss it.
 
 The API doesn't throw errors when these requirements aren't met—it silently provides the best data you're entitled to receive. Check the `updated` timestamp in your API responses to verify you're getting real-time data, and use this guide to diagnose and fix any issues.

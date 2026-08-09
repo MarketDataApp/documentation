@@ -41,13 +41,13 @@ Here's a quick comparison to help you understand the Starter Trial in relation t
 | Feature            | Free Forever | Starter Trial  | Starter Plan   |
 |--------------------|--------------|----------------|----------------|
 | API Credits        | 100 per day  | 10,000 per day | 10,000 per day |
-| Stock Data Delay   | 24 hours     | 24 hours       | Real-time      |
+| Stock Data Delay   | 24 hours     | 24 hours       | Real-time\*    |
 | Options Data Delay | 24 hours     | 24 hours       | 15 minutes     |
 | Historical Data    | 1 Year       | 1 Year         | 5 Years        |
 | Standard Endpoints | ✅           | ✅             | ✅             |
 | Premium Endpoints  | ❌           | AAPL Only      | ✅             |
 
-For endpoint-level freshness rules and the Delayed → Historical rollover timing (especially for options, where data only rolls at 9:30 AM ET the next trading day), see [Data Freshness](../data-freshness.md).
+\* For endpoint-level freshness rules and the Delayed → Historical rollover timing (especially for options, where data only rolls at 9:30 AM ET the next trading day), see [Data Freshness](../data-freshness.md).
 
 ## Why Take A Trail of the Starter Plan?
 
