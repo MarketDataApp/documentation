@@ -147,7 +147,7 @@ Do not duplicate REST paths, payload schemas, or parameter contracts in this doc
 
 ### 2.1 Canonical API Documentation
 
-- [API Overview](/api/intro)
+- [API Overview](/api)
 - [Stocks API](/api/stocks/index)
 - [Options API](/api/options/index)
 - [Funds API](/api/funds/index)

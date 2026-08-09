@@ -17,6 +17,24 @@ jobs:
       - name: Check markdown table alignment
         run: node scripts/fix-table-alignment.js
 
+  broken-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      # Builds with onBrokenLinks/onBrokenMarkdownLinks set to "throw". Deploys
+      # build with "warn" so a bad link cannot block a release, which means this
+      # PR check is the gate that keeps broken links off the site.
+      - name: Check for broken links
+        run: yarn lint:links
+
   worker-unit-tests:
     runs-on: ubuntu-latest
     steps:
