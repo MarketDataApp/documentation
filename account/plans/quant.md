@@ -13,7 +13,7 @@ The **Quant Plan** is Market Data's offering designed for high-powered traders a
 
 - **No Daily Limit on API Credits**: Enjoy unrestricted access to our API, designed to support the most demanding data needs without the worry of hitting daily limits.
 - **10,000 Credits Per Minute**: While there's no daily limit, the plan is subject to a generous per-minute rate limit to ensure optimal performance for all users.
-- **Real-Time Data**: Access up-to-the-second financial data, ensuring your trading decisions are based on the most current market information. Note that real-time data is only available to users who qualify as non-professionals. [Learn more about professional status requirements](https://www.marketdata.app/education/stocks/professional-status-explained/).
+- **Real-Time Data\***: Access up-to-the-second financial data, ensuring your trading decisions are based on the most current market information. Note that real-time data is only available to users who qualify as non-professionals. [Learn more about professional status requirements](https://www.marketdata.app/education/stocks/professional-status-explained/).
 - **Premium + Custom API Endpoints**: Not only do you get access to all premium endpoints, but we also offer the possibility of custom-built endpoints to satisfy your specific trading requirements.
 - **Unlimited Historical Data**: There are no restrictions on the age of historical data you can access, making it ideal for deep historical analysis and backtesting.
 
@@ -33,11 +33,11 @@ Here's how the Quant Plan compares to our other offerings:
 |-----------------------|--------------|------------|-------------|-------------|-------------|
 | Daily API Credits     | 100/day      | 10,000/day | 100,000/day | Unlimited   | Unlimited   |
 | Per Minute Rate Limit | No Limit     | No Limit   | No Limit    | 10,000      | 100,000     |
-| Real-Time Data        | ❌           | ✅         | ✅          | ✅          | ✅          |
+| Real-Time Data\*      | ❌           | ✅         | ✅          | ✅          | ✅          |
 | Premium Endpoints     | ❌           | ✅         | ✅          | ✅          | ✅          |
 | Historical Data       | 1 Year       | 5 Years    | Full Access | Full Access | Full Access |
 
-For endpoint-level freshness rules, see [Data Freshness](../data-freshness.md).
+\* For endpoint-level freshness rules, see [Data Freshness](../data-freshness.md).
 
 ## Why Choose the Quant Plan?
 

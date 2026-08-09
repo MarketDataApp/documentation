@@ -7,6 +7,12 @@ All Market Data self-service plans are available to **non-professional subscribe
 
 For a full explanation of how the exchanges define professional status and how to determine your own classification, see [Professional Status Explained](https://www.marketdata.app/education/stocks/professional-status-explained/).
 
+## Professional Subscribers and Real-Time Data
+
+Professional subscribers never receive real-time exchange data on a self-service plan, no matter which exchange agreements they sign. Signing an agreement does not change this, and neither does upgrading your plan. Delayed / historical data access remains available, depending on the data policies of each exchange.
+
+Real-time exchange data for professional use requires **direct exchange licensing**, which Market Data arranges individually. [Contact our sales team](https://www.marketdata.app/contact/) to discuss exchange licensing for your use case. All real-time data requests from professional subscribers go through the sales team.
+
 ## Self-Certification Requirement
 
 After purchasing a plan, all subscribers must complete a **Data Use Interview** — a self-certification process in which you confirm that your use of market data meets the non-professional criteria set by the exchanges. Your account cannot be fully activated for real-time data until this process is complete.

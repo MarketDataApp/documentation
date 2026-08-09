@@ -10,10 +10,12 @@ Market Data offers two ways for users to use our service for free. We offer the 
 |------------------------|--------------|-------------|-------------|
 | 24 Hour Delayed Data   | ✅           | ✅          | ❌          |
 | 15 Minute Delayed Data | ❌           | ❌          | ✅          |
-| Real-Time Data         | ❌           | ❌          | ✅          |
+| Real-Time Data\*       | ❌           | ❌          | ✅          |
 | Standard Endpoints     | ✅           | ✅          | ✅          |
 | Premium Endpoints      | ❌           | AAPL Only   | ✅          |
 | Historical Data        | 1 Year       | 1 Year      | Full Access |
+
+\* For endpoint-level freshness rules, see [Data Freshness](/docs/account/data-freshness/).
 
 ## 24 Hour Delayed Data
 

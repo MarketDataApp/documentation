@@ -13,7 +13,7 @@ The **Trader Plan** is specifically designed for high-volume users and traders w
 ## What You Get with the Trader Plan
 
 - **100,000 API Credits per Day**: Cater to high-demand projects with an extensive number of daily API requests.
-- **Real-Time Data for Stocks and Options**: Immediate access to financial data for both stocks and options, ensuring you're always working with the most current information. Note that real-time data is only available to users who qualify as non-professionals. [Learn more about professional status requirements](https://www.marketdata.app/education/stocks/professional-status-explained/).
+- **Real-Time Data for Stocks\* and Options**: Immediate access to financial data for both stocks and options, ensuring you're always working with the most current information. Note that real-time data is only available to users who qualify as non-professionals. [Learn more about professional status requirements](https://www.marketdata.app/education/stocks/professional-status-explained/).
 - **Full Historical Data Access**: Unrestricted access to our entire historical data archive, perfect for deep historical analysis and backtesting without limitations.
 - **Premium Endpoints**: Full access to all our premium endpoints, including detailed fundamental data, to provide a comprehensive view of market dynamics.
 
@@ -32,13 +32,13 @@ Here's how the Trader Plan compares to our other offerings:
 | Feature            | Free Forever | Starter Plan   | Trader Plan     |
 |--------------------|--------------|----------------|-----------------|
 | API Credits        | 100 per day  | 10,000 per day | 100,000 per day |
-| Stock Data Delay   | 24 hours     | Real-time      | Real-time       |
+| Stock Data Delay   | 24 hours     | Real-time\*    | Real-time\*     |
 | Options Data Delay | 24 hours     | 15 minutes     | Real-time       |
 | Standard Endpoints | ✅           | ✅             | ✅              |
 | Premium Endpoints  | ❌           | ✅             | ✅              |
 | Historical Data    | 1 Year       | 5 Years        | Full Access     |
 
-For endpoint-level freshness rules, see [Data Freshness](../data-freshness.md).
+\* For endpoint-level freshness rules, see [Data Freshness](../data-freshness.md).
 
 ## Why Choose the Trader Plan?
 
