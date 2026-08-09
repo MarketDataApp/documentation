@@ -550,11 +550,11 @@ Exempt SDKs **must not** add a third-party decimal library to satisfy this requi
 
 **Converting an already-parsed float to a decimal does not satisfy this requirement.** The exact value is destroyed at the JSON decode step, and a later conversion only locks in the float error. SDKs subject to this requirement must decode the response so the API's decimal string reaches the decimal type directly.
 
-| Language | Decimal-Preserving Decode                                    |
-|----------|--------------------------------------------------------------|
-| Python   | `json.loads(response.text, parse_float=Decimal)`             |
-| Java     | Jackson `DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS`  |
-| C#       | `System.Text.Json` reader → `GetDecimal()` on the raw token  |
+| Language | Decimal-Preserving Decode                                   |
+|----------|-------------------------------------------------------------|
+| Python   | `json.loads(response.text, parse_float=Decimal)`            |
+| Java     | Jackson `DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS` |
+| C#       | `System.Text.Json` reader → `GetDecimal()` on the raw token |
 
 #### What Counts as Money
 
