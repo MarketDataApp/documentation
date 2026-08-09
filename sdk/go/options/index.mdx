@@ -4,7 +4,11 @@ slug: /go/options
 sidebar_position: 11
 ---
 
-The Go SDK from Market Data simplifies how you work with Options endpoints by using custom structs. These structs make it easier to handle HTTP requests and responses.
+Access options market data with the Go SDK: full option chains, expiration
+dates, single and multi-contract quotes, and OCC option symbol lookup. Each
+endpoint exposes a context-aware method that returns typed data plus a
+`*response.Response` (raw body and rate-limit metadata) and a convenience
+`Get*` wrapper that uses a background context.
 
 ## Options Endpoints
 

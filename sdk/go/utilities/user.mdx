@@ -1,0 +1,152 @@
+---
+title: User
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Retrieve information about the authenticated account: its API credit state for the current window and its options data entitlement.
+
+## Making Requests
+
+Fetch account information with the `User` method on the `client.Utilities` service. It takes no parameters and no options, but requires a valid API token. It comes in two call styles:
+
+| Method          | Return                                             | Description                                                            |
+|-----------------|----------------------------------------------------|------------------------------------------------------------------------|
+| **`GetUser()`** | `(*utilities.UserInfo, error)`                     | Convenience; uses a background context and discards response metadata. |
+| **`User(ctx)`** | `(*utilities.UserInfo, *response.Response, error)` | Context-aware; also returns the raw response plus rate-limit metadata. |
+
+## User
+
+```go
+func (s *Service) User(ctx context.Context) (*utilities.UserInfo, *response.Response, error)
+func (s *Service) GetUser() (*utilities.UserInfo, error)
+```
+
+Get information about the authenticated user and their account from the unversioned `/user/` endpoint. The returned [`UserInfo`](#userinfo) carries the account's API credit state for the current window — taken from the `x-api-ratelimit-*` response headers — and the account's options data entitlement, taken from the response body.
+
+#### Parameters
+
+- `ctx` (`context.Context`) — request context for cancellation and deadlines (context method only).
+
+This endpoint takes no functional options, but it requires a valid API token.
+
+#### Returns
+
+- `*utilities.UserInfo` — the account's [`UserInfo`](#userinfo).
+- `*response.Response` — raw response plus rate-limit metadata (context method only).
+- `error` — non-nil on request or decoding failure.
+
+#### Notes
+
+- Rate limits track **credits**. Most requests consume 1 credit, but bulk or options requests may consume several.
+- In the unlikely event the endpoint responds `404`, both call styles return a `nil` result and a `nil` error; with the context method the returned `*response.Response` has its `NoData` field set to `true`.
+
+<Tabs>
+<TabItem value="Get" label="Get (simple)">
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	client, err := marketdata.NewClient() // reads MARKETDATA_TOKEN from env / .env
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	user, err := client.Utilities.GetUser()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(user)
+}
+```
+
+#### Output
+
+```
+User{Credits: 99847/100000, Resets: 2026-07-13 00:00:00, Options: OPRA data delayed 15 minutes}
+```
+
+</TabItem>
+<TabItem value="Context" label="Context + Response">
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	client, err := marketdata.NewClient(marketdata.WithToken("YOUR_TOKEN"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	user, resp, err := client.Utilities.User(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	if resp.NoData || user == nil {
+		fmt.Println("No account information returned.")
+		return
+	}
+	fmt.Printf("Credits: %d/%d\n", user.CreditsRemaining, user.CreditLimit)
+	fmt.Printf("Consumed by this request: %d\n", user.CreditsConsumed)
+	fmt.Printf("Window resets at: %s\n", user.ResetAt.Format("2006-01-02 15:04:05"))
+	fmt.Printf("Options data: %s\n", user.OptionsDataPermissions)
+}
+```
+
+#### Output
+
+```
+Credits: 99847/100000
+Consumed by this request: 1
+Window resets at: 2026-07-13 00:00:00
+Options data: OPRA data delayed 15 minutes
+```
+
+</TabItem>
+</Tabs>
+
+## UserInfo
+
+```go
+type UserInfo struct {
+	CreditLimit            int       // Total API credit allowance for the current window.
+	CreditsRemaining       int       // API credits left in the current window.
+	CreditsConsumed        int       // API credits consumed by the user info request itself.
+	ResetAt                time.Time // When the current credit window resets.
+	OptionsDataPermissions string    // The account's options data entitlement.
+}
+```
+
+`UserInfo` describes the authenticated account: the API credit state for the current window (taken from the `x-api-ratelimit-*` response headers) and the account's options data entitlement (taken from the response body).
+
+#### Fields
+
+- `CreditLimit` (`int`) — the account's total API credit allowance for the current window.
+- `CreditsRemaining` (`int`) — the number of API credits left in the current window.
+- `CreditsConsumed` (`int`) — the number of API credits consumed by the user info request itself (not cumulative).
+- `ResetAt` (`time.Time`) — when the current credit window resets.
+- `OptionsDataPermissions` (`string`) — the account's options data entitlement, e.g. `"OPRA data delayed 15 minutes"`.
+
+#### Methods
+
+- `String() string` — a one-line summary, e.g. `User{Credits: 99847/100000, Resets: 2026-07-13 00:00:00, Options: OPRA data delayed 15 minutes}`.

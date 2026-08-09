@@ -1,235 +1,236 @@
 ---
 title: Client
-sidebar_position: 2
+sidebar_position: 4
 ---
 
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
+The `marketdata.Client` is the entry point to the SDK. You create one with `NewClient`, configure it with functional options, and reach every endpoint through its five resource services. A `Client` is safe for concurrent use and caps itself at 50 in-flight requests; additional calls block until a slot frees.
 
-
-
-The [Market Data Go Client](<https://www.marketdata.app/docs/sdk/go/client>) includes functionality for making API requests, handling responses, managing rate limits, and logging. The SDK supports various data types including stocks, options, indices, and market status information.
-
-### Singleton Client
-
-The [MarketDataClient](<#MarketDataClient>) is a singleton client that is used to interact with the Market Data API. If you are using an environment variable to store your token, the client will be intialized automatically when the package is imported. If you are not using an environment variable, you can initialize the client manually using the [NewClient](<#NewClient>) method.
-
-After you initialize it for the first time, it is not neccessary to reinitialize it again. The client is thread\-safe and can be used across multiple goroutines. Do not attempt to create multiple instances of the client.
-
-### Get Started Quickly with the MarketDataClient
-
-1. Review the [documentation on authentication](<https://www.marketdata.app/docs/sdk/go/authentication>) to learn how to set your API token.
-2. Use [GetClient](<#GetClient>) to fetch the [MarketDataClient](<#MarketDataClient>) instance and use [MarketDataClient.Debug](<#MarketDataClient.Debug>) to log detailed request and response information to disk and the console as you learn how to use the SDK.
-3. Make a test request and review the console and the logs. The logs will contain the raw request and response details.
-4. Check the rate limit in the client to keep track of your requests and how many requests you have remaining.
-
-
-<a name="MarketDataClient"></a>
-## MarketDataClient
+## Creating a Client
 
 ```go
-type MarketDataClient struct {
-    *resty.Client                // Embedding resty.Client to utilize its HTTP client functionalities.
-    RateLimitLimit     int       // RateLimitLimit represents the maximum number of requests that can be made in a rate limit window.
-    RateLimitRemaining int       // RateLimitRemaining tracks the number of requests that can still be made before hitting the rate limit.
-    RateLimitReset     time.Time // RateLimitReset indicates the time when the rate limit will be reset.
-    // contains filtered or unexported fields
+func NewClient(opts ...Option) (*Client, error)
+```
+
+`NewClient` first loads a `.env` file from the working directory (without overriding real environment variables), resolves your token, and — when a token is present — validates it against the API. Always release the client with `Close` when you are done, typically via `defer`:
+
+```go
+package main
+
+import (
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	// Simplest form: reads MARKETDATA_TOKEN from the environment / .env.
+	client, err := marketdata.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
 }
 ```
 
-MarketDataClient struct defines the structure for the MarketData client instance. It embeds the resty.Client to inherit the HTTP client functionalities. Additionally, it includes fields for managing rate limits and synchronization, as well as an error field for capturing any errors that occur during API calls. The debug field is used to control logging verbosity.
+## Functional Options
 
-#### Setter Methods
+Pass any number of `Option` values to `NewClient`. Options are applied in order after defaults and environment variables, so a later option overrides an earlier one and any explicit option overrides the environment.
 
-- <a href="#MarketDataClient.Debug">`Debug(bool)`</a>
+| Option                                 | Description                                                                                                                                                      |
+|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **`WithToken(token string)`**          | Sets the API token. Highest-priority token source; overrides `MARKETDATA_TOKEN` and `.env`.                                                                      |
+| **`WithEnvironment(env Environment)`** | Selects the API environment: `marketdata.Production` (default), `marketdata.Test`, or `marketdata.Development`, each mapped to a base URL.                       |
+| **`WithBaseURL(url string)`**          | Points the client at an arbitrary base URL (a proxy or mock server). Must be a valid `http`/`https` URL with a host, or `NewClient` returns a `ValidationError`. |
+| **`WithHTTPClient(c *http.Client)`**   | Supplies a custom `*http.Client` (custom transport, proxy, instrumentation). The SDK's fixed timeouts still apply.                                               |
+| **`WithLogger(l *slog.Logger)`**       | Replaces `slog.Default()` as the logger. See [Logging](/sdk/go/logging).                                                                                         |
+| **`WithDebug(enabled bool)`**          | Enables verbose request/response debug logging.                                                                                                                  |
+| **`WithoutStartupValidation()`**       | Skips the synchronous token-validation request during `NewClient`.                                                                                               |
+| **`WithMaxRetries(n int)`**            | Sets the maximum retry attempts for failed requests (default 3; `0` disables retries).                                                                           |
+| **`WithMode(m Mode)`**                 | Sets the universal `mode` parameter (`ModeLive`, `ModeCached`, `ModeDelayed`) on every request.                                                                  |
+| **`WithMaxAge(maxAge string)`**        | Sets the universal `maxage` parameter for cached mode (e.g. `"5min"`, `"1h"`).                                                                                   |
+| **`WithColumns(cols ...string)`**      | Sets the universal `columns` parameter to trim the response.                                                                                                     |
+| **`WithLimit(n int)`**                 | Sets the universal `limit` parameter (values ≤ 0 ignored).                                                                                                       |
+| **`WithOffset(n int)`**                | Sets the universal `offset` parameter for pagination (values ≤ 0 ignored).                                                                                       |
+| **`WithDateFormat(format string)`**    | Sets the universal `dateformat` parameter. Advanced use — see [Parameters](/sdk/go/parameters).                                                                  |
+| **`WithHumanReadable(enabled bool)`**  | Sets the universal `human` parameter. Advanced use — see [Parameters](/sdk/go/parameters).                                                                       |
+| **`WithAddHeaders(enabled bool)`**     | Sets the universal `headers` parameter (affects CSV output only).                                                                                                |
 
-  Enables or disables debug mode for logging detailed request and response information.
+The universal-parameter options (`WithMode`, `WithMaxAge`, `WithColumns`, `WithLimit`, `WithOffset`, `WithDateFormat`, `WithHumanReadable`, `WithAddHeaders`) are documented in depth on the [Parameters](/sdk/go/parameters) page.
 
-- <a href="#MarketDataClient.Environment">`Environment(Environment)`</a>
+:::note Fixed timeouts and retry behavior
+Per-request timeout (99s) and connection dial timeout (2s) are **fixed and cannot be changed**. Only the retry *count* is configurable, via `WithMaxRetries`. Requests are retried only on 501–599 status codes and transient network errors, with exponential backoff starting at 1s and doubling each attempt.
+:::
 
-  Sets the environment for the MarketDataClient.
-
-- <a href="#MarketDataClient.Timeout">`Timeout(int)`</a>
-
-  Sets the request timeout for the MarketDataClient.
-
-- <a href="#MarketDataClient.Token">`Token(string) error`</a>
-
-  Sets the authentication token for the MarketDataClient.
-
-
-#### Methods
-
-- <a href="#MarketDataClient.RateLimitExceeded">`RateLimitExceeded() bool`</a>
-
-  Checks if the rate limit for API requests has been exceeded.
-
-- <a href="#MarketDataClient.String">`String() string`</a>
-
-  Generates a formatted string that represents the MarketDataClient instance.
-
-
-
-
-<a name="GetClient"></a>
-### GetClient
+### Example: a fully configured client
 
 ```go
-func GetClient() (*MarketDataClient, error)
+package main
+
+import (
+	"log"
+	"log/slog"
+	"os"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
+
+	client, err := marketdata.NewClient(
+		marketdata.WithToken("your-token"),
+		marketdata.WithEnvironment(marketdata.Production),
+		marketdata.WithLogger(logger),
+		marketdata.WithMaxRetries(5),
+		marketdata.WithMode(marketdata.ModeCached),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+}
 ```
 
-GetClient checks for an existing instance of MarketDataClient and returns it. It is the starting point to interact with [MarketDataClient](<#MarketDataClient>) when using environment variables. GetClient is only needed if you need to change some parameter of the client, like the timeout or you wish to access the Rate Limit information. If you just want to make requests, you can use the request initialization functions directly.
+## Resource Services
 
-#### Returns
+The client exposes five services, one per API resource:
 
-- `*MarketDataClient`
-
-  A pointer to the existing or newly initialized MarketDataClient instance.
-
-- `error`
-
-  An error object if the client cannot be initialized.
-
-
-<a name="NewClient"></a>
-### NewClient
+| Field              | Type                 | Description                                                      |
+|--------------------|----------------------|------------------------------------------------------------------|
+| `client.Stocks`    | `*stocks.Service`    | Stock quotes, candles, bulk candles, prices, earnings, and news. |
+| `client.Options`   | `*options.Service`   | Option chains, expirations, quotes, and symbol lookup.           |
+| `client.Funds`     | `*funds.Service`     | Mutual fund candles.                                             |
+| `client.Markets`   | `*markets.Service`   | Market status (open/closed) and status history.                  |
+| `client.Utilities` | `*utilities.Service` | API status, response-header echo, and account/user details.      |
 
 ```go
-func NewClient(token string) (*MarketDataClient, error)
+quote, err := client.Stocks.GetQuote("AAPL")
+chain, err := client.Options.GetChain("AAPL")
+status, err := client.Markets.GetStatus()
+user, err := client.Utilities.GetUser()
 ```
 
-NewClient creates and configures a new MarketDataClient instance with default settings. This method is primarily used to initialize a client when you are not using environment variables to store your token. NewClient sets the token and initializes the client with predefined configurations such as the default rate limit reset time, and common HTTP headers and hooks. It's the starting point for interacting with [MarketDataClient](<#MarketDataClient>) when you do not use environment variables.
+## Two Call Styles
 
-#### Returns
+Every endpoint method comes in two forms. Choose based on whether you need a `context.Context` and the raw response metadata.
 
-- `*MarketDataClient`
+| Method form            | Signature shape                    | When to use                                                                                                                         |
+|------------------------|------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| **`Get<Name>(...)`**   | `(T, error)`                       | Convenience form. Uses a background context. Best for scripts and simple calls.                                                     |
+| **`<Name>(ctx, ...)`** | `(T, *marketdata.Response, error)` | Context-aware form. Also returns the raw `*marketdata.Response` carrying HTTP status, headers, and per-request rate-limit metadata. |
 
-  A pointer to the MarketDataClient instance.
+The `*marketdata.Response` returned by the context form embeds `*http.Response` and adds a `NoData` flag and a `RateLimit` field. (`marketdata.Response` is an exported alias for the SDK's response type, so you can name it in your own code.)
 
-- `error`
-
-  An error if the token failed to authorize with the Market Data API or nil if authorization was successful.
-
-
-<a name="MarketDataClient.Debug"></a>
-### Debug
+<Tabs>
+<TabItem value="Get" label="Get (simple)">
 
 ```go
-func (c *MarketDataClient) Debug(enable bool)
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	client, err := marketdata.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	quote, err := client.Stocks.GetQuote("AAPL")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("AAPL last: $%.2f\n", quote.Last)
+}
 ```
 
-Debug enables or disables debug mode for the MarketDataClient. When debug mode is enabled, the client logs detailed request and response information, which can be useful for development and troubleshooting.
-
-#### Parameters
-
-- `bool`
-
-  A boolean value indicating whether to enable or disable debug mode.
-
-
-<a name="MarketDataClient.Environment"></a>
-### Environment
+</TabItem>
+<TabItem value="Context" label="Context + Response">
 
 ```go
-func (c *MarketDataClient) Environment(env Environment) error
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"time"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	client, err := marketdata.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	quote, resp, err := client.Stocks.Quote(ctx, "AAPL")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("AAPL last: $%.2f\n", quote.Last)
+	fmt.Printf("HTTP status:       %s\n", resp.Status)
+	fmt.Printf("Credits remaining: %d\n", resp.RateLimit.Remaining)
+	fmt.Printf("No data:           %t\n", resp.NoData)
+}
 ```
 
-Environment configures the base URL of the MarketDataClient based on the provided environment string. This method allows the client to switch between different environments such as production, testing, and development.
+</TabItem>
+</Tabs>
 
-#### Parameters
+## No-Data Responses
 
-- `string`
-
-  A string representing the environment to configure. Accepted values are "prod", "test", and "dev".
-
-
-#### Returns
-
-- `*MarketDataClient`
-
-  A pointer to the \*MarketDataClient instance with the configured environment. This allows for method chaining.
-
-
-If an invalid environment is provided, the client's Error field is set, and the same instance is returned.
-
-<a name="MarketDataClient.RateLimitExceeded"></a>
-### RateLimitExceeded
+A `404` (no data available for a valid request) or a `204` (a `mode=cached` cache miss) is **not** an error. The context form returns a nil result, a nil error, and a `*marketdata.Response` whose `NoData` field is `true`. Always check `NoData` (or a nil result) before dereferencing:
 
 ```go
-func (c *MarketDataClient) RateLimitExceeded() bool
+quote, resp, err := client.Stocks.Quote(ctx, "AAPL")
+if err != nil {
+	log.Fatal(err)
+}
+if resp.NoData {
+	fmt.Println("no quote data available")
+	return
+}
+fmt.Printf("AAPL last: $%.2f\n", quote.Last)
 ```
 
-RateLimitExceeded checks if the rate limit for API requests has been exceeded. It returns true if the number of remaining requests is less than or equal to zero and the current time is before the rate limit reset time, indicating that the client must wait before making further requests. Otherwise, it returns false, indicating that the client can continue making requests.
+## Client Methods
 
-#### Returns
+Besides the resource services, the client provides a few helper methods:
 
-- `bool`
-
-  A boolean value indicating whether the rate limit has been exceeded.
-
-
-<a name="MarketDataClient.String"></a>
-### String
+| Method                            | Description                                                                                                                                                    |
+|-----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **`Close() error`**               | Releases resources by closing idle HTTP connections. Safe to call multiple times; always returns `nil`. Do not reuse a client after `Close`.                   |
+| **`RateLimits() RateLimitState`** | Returns a client-level snapshot of rate-limit state from the most recently completed request. For exact, request-scoped values, read `resp.RateLimit` instead. |
+| **`DemoMode() bool`**             | Reports whether the client is running in demo mode because no token was provided.                                                                              |
+| **`Debug(enabled bool)`**         | Turns debug logging on or off at runtime (equivalent to `WithDebug`).                                                                                          |
 
 ```go
-func (c *MarketDataClient) String() string
+if client.DemoMode() {
+	fmt.Println("running with limited demo access")
+}
+
+rl := client.RateLimits()
+fmt.Printf("credits: %d/%d, resets %s\n", rl.Remaining, rl.Limit, rl.ResetAt)
 ```
 
-String generates a formatted string that represents the MarketDataClient instance, including its environment, rate limit information, and the rate limit reset time. This method is useful for quickly obtaining a textual summary of the client's current state, particularly for logging or debugging purposes.
+## Next Steps
 
-#### Returns
-
-- `string`
-
-  A formatted string containing the client's environment, rate limit information, and rate limit reset time.
-
-
-<a name="MarketDataClient.Timeout"></a>
-### Timeout
-
-```go
-func (c *MarketDataClient) Timeout(seconds int)
-```
-
-Timeout sets the request timeout for the MarketDataClient.
-
-This method allows users to specify a custom timeout duration for all HTTP requests made by the client. The timeout duration is specified in seconds. Setting a timeout helps in preventing indefinitely hanging requests in case of network issues or slow server responses.
-
-By default the client has a timeout of 95 seconds. The timeout may be lowered, but it cannot be increased. Valid timeouts are between 1 and 95 seconds. Setting the timeout to any invalid integer will cause the client to use the default timeout of 95 seconds.
-
-#### Parameters
-
-- `int`
-
-  The timeout duration in seconds. A duration of 0 means no timeout.
-
-
-<a name="MarketDataClient.Token"></a>
-### Token
-
-```go
-func (c *MarketDataClient) Token(bearerToken string) error
-```
-
-Token configures the authentication token for the MarketDataClient. This method sets the authentication scheme to "Bearer" and assigns the provided bearerToken for subsequent requests. It also makes an initial request to the MarketData API to authorize the token and fetch rate limit information.
-
-#### Parameters
-
-- `string`
-
-  A string representing the bearer token to be used for API requests.
-
-
-#### Returns
-
-- `error`
-
-  An error if the authorization was not successful or nil if it was.
-
-
-#### Notes
-
-If an error occurs during the initial authorization request or if the response indicates a failure, the client remains unmodified. The token will only be set if authorization is successful.
-
-
-
-
+- Configure [Parameters](/sdk/go/parameters) to control mode, columns, and pagination.
+- Learn the [Error](/sdk/go/errors) types and how to inspect them.
+- Set up [Logging](/sdk/go/logging) for debugging.
