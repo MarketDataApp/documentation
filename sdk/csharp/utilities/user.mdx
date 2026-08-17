@@ -1,0 +1,43 @@
+---
+title: User
+sidebar_position: 3
+---
+
+Retrieve the authenticated account's details: request quota and options-data entitlement. Requires a token.
+
+## Making Requests
+
+Use `GetUserAsync` on the `Utilities` resource.
+
+```csharp
+Task<UtilitiesUserResponse> GetUserAsync(CancellationToken cancellationToken = default)
+```
+
+#### Returns
+
+`UtilitiesUserResponse` wrapping a single `User` record:
+
+```csharp
+public record User(
+    int RequestsRemaining,          // requests left in the current billing period
+    int RequestsLimit,              // total quota for the billing period
+    string OptionsDataPermissions); // "" == real-time; otherwise describes the delay
+```
+
+:::note Rate-limit state
+This endpoint is also what the client calls at startup to validate your token. The rate-limit numbers the SDK tracks — including the reset time and consumed count — come from the `x-api-ratelimit-*` response headers, not from this body, and surface through [`client.LatestRateLimit`](/sdk/csharp/client#rate-limits) and `response.RateLimit`. `User` is the typed view of the account body only.
+:::
+
+## Examples
+
+```csharp
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+var user = (await client.Utilities.GetUserAsync()).Values;
+Console.WriteLine($"Quota: {user.RequestsRemaining}/{user.RequestsLimit} remaining");
+Console.WriteLine(string.IsNullOrEmpty(user.OptionsDataPermissions)
+    ? "Options data: real-time"
+    : $"Options data: {user.OptionsDataPermissions}");
+```

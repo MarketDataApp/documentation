@@ -1,0 +1,47 @@
+---
+title: Expirations
+sidebar_position: 2
+---
+
+Retrieve the list of expiration dates that have listed options for an underlying symbol.
+
+## Making Requests
+
+Use `GetExpirationsAsync` on the `Options` resource.
+
+```csharp
+Task<OptionsExpirationsResponse> GetExpirationsAsync(
+    string symbol, decimal? strike = null, DateOnly? date = null,
+    MarketDataRequestOptions? options = null, CancellationToken cancellationToken = default)
+Task<OptionsExpirationsResponse> GetExpirationsAsync(OptionsExpirationsRequest request, ...)
+```
+
+### OptionsExpirationsRequest
+
+```csharp
+new OptionsExpirationsRequest(string symbol)
+{
+    Strike = decimal,   // only expirations that list this strike
+    Date = DateOnly     // expirations available as of this historical date
+}
+```
+
+#### Returns
+
+`OptionsExpirationsResponse` wrapping `IReadOnlyList<DateTimeOffset>` — one entry per expiration date, in ascending order.
+
+## Examples
+
+```csharp
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+var expirations = await client.Options.GetExpirationsAsync("AAPL");
+Console.WriteLine($"{expirations.Values.Count} expirations; next: {expirations.Values[0]:yyyy-MM-dd}");
+
+// Only expirations that list the 200 strike.
+var atStrike = await client.Options.GetExpirationsAsync("AAPL", strike: 200m);
+```
+
+For CSV output, call `client.Options.GetExpirationsCsvAsync(...)` and read `.Csv`. See [Settings](/sdk/csharp/settings#csv-output).

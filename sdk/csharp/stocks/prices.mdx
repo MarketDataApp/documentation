@@ -1,0 +1,58 @@
+---
+title: Prices
+sidebar_position: 3
+---
+
+Retrieve the latest price (mid, change) for one or more stock symbols — a lighter payload than a full quote.
+
+## Making Requests
+
+The `Stocks` resource offers `GetPriceAsync` for a single symbol and `GetPricesAsync` for several symbols in one request.
+
+```csharp
+Task<StockPricesResponse> GetPriceAsync(
+    string symbol,
+    MarketDataRequestOptions? options = null, CancellationToken cancellationToken = default)
+Task<StockPricesResponse> GetPriceAsync(StockPriceRequest request, ...)
+
+Task<StockPricesResponse> GetPricesAsync(
+    string[] symbols,
+    MarketDataRequestOptions? options = null, CancellationToken cancellationToken = default)
+Task<StockPricesResponse> GetPricesAsync(StockPricesRequest request, ...)
+```
+
+### Request types
+
+```csharp
+new StockPriceRequest(string symbol)
+new StockPricesRequest(params string[] symbols)   // or any IEnumerable<string>
+```
+
+#### Returns
+
+`StockPricesResponse` wrapping `IReadOnlyList<StockPrice>`:
+
+```csharp
+public record StockPrice(
+    string? Symbol,
+    decimal? Mid,
+    decimal? Change,
+    double? ChangePct,          // a fraction: 0.0123 == +1.23%
+    DateTimeOffset? Updated);   // America/New_York
+```
+
+## Examples
+
+```csharp
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+var prices = await client.Stocks.GetPricesAsync(["AAPL", "MSFT", "GOOG"]);
+foreach (var price in prices.Values)
+{
+    Console.WriteLine($"{price.Symbol}: {price.Mid}  ({price.ChangePct:P2})");
+}
+```
+
+For CSV output, call `client.Stocks.GetPriceCsvAsync(...)` or `GetPricesCsvAsync(...)` and read `.Csv`. See [Settings](/sdk/csharp/settings#csv-output).

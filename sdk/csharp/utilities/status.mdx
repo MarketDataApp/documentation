@@ -1,0 +1,45 @@
+---
+title: Status
+sidebar_position: 1
+---
+
+Retrieve the current operational status of the Market Data API services, with 30- and 90-day uptime. This is a public endpoint that works in demo mode.
+
+## Making Requests
+
+Use `GetStatusAsync` on the `Utilities` resource.
+
+```csharp
+Task<UtilitiesStatusResponse> GetStatusAsync(CancellationToken cancellationToken = default)
+```
+
+#### Returns
+
+`UtilitiesStatusResponse` wrapping `IReadOnlyList<ServiceStatus>` — one row per service:
+
+```csharp
+public record ServiceStatus(
+    string Service,
+    string Status,
+    bool Online,
+    double UptimePct30d,
+    double UptimePct90d,
+    DateTimeOffset Updated);
+```
+
+The SDK also uses this endpoint internally: before retrying a server error it consults a cached `/status/` reading and skips the retry when the API reports itself offline. Calling `GetStatusAsync` yourself refreshes that same cache.
+
+## Examples
+
+```csharp
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+var status = await client.Utilities.GetStatusAsync();
+foreach (var service in status.Values)
+{
+    Console.WriteLine($"{service.Service}: {service.Status}  ({service.UptimePct30d:F2}% over 30d)");
+}
+Console.WriteLine($"{status.Values.Count(s => s.Online)}/{status.Values.Count} services online");
+```

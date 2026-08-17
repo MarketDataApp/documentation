@@ -1,0 +1,231 @@
+---
+title: Client
+sidebar_position: 3
+---
+
+The `MarketDataClient` is the entry point for the SDK. It groups the API into five resources — `Stocks`, `Options`, `Funds`, `Markets`, and `Utilities` — and owns the cross-cutting behavior: configuration loading, authentication, retries, timeouts, and rate-limit tracking.
+
+### Get Started Quickly
+
+```csharp
+using MarketDataApp;
+
+// Reads MARKETDATA_* from the environment, validates the token, seeds the rate limits.
+using var client = await MarketDataClient.CreateAsync();
+
+var quote = (await client.Stocks.GetQuoteAsync("AAPL")).Values[0];
+Console.WriteLine($"{quote.Symbol} last={quote.Last}");
+```
+
+## MarketDataClient
+
+### Two ways to construct
+
+Every entry point exists in two flavors: an **async factory** (`CreateAsync`) and a **constructor**. Both perform the same startup token validation when a token is configured; the difference is only whether that validation blocks the calling thread.
+
+| Entry point                               | Startup validation | Use when                                                                  |
+|-------------------------------------------|--------------------|---------------------------------------------------------------------------|
+| `await MarketDataClient.CreateAsync(...)` | Asynchronous       | Anywhere you can `await` — the recommended default.                       |
+| `new MarketDataClient(...)`               | Blocking           | Synchronous hosts and dependency-injection factories that cannot `await`. |
+
+Both accept an optional `MarketDataClientOptions`. When omitted, options are loaded from the [configuration cascade](/sdk/csharp/settings#configuration-cascade) (user secrets, `.env`, environment variables).
+
+### Two ways to own the HttpClient
+
+The SDK never disposes an `HttpClient` it did not create, and never reconfigures one you hand it.
+
+- **SDK-owned (default).** The overloads without an `HttpClient` parameter create one backed by `MarketDataClient.CreateDefaultHttpHandler()` (2-second connection timeout, pooled-connection rotation) with the `HttpClient`-level timeout disabled, because the SDK enforces its own fixed 99-second request timeout. `Dispose()` also disposes the owned client.
+- **Application-owned.** Supply your own `HttpClient` — for example one from `IHttpClientFactory` — and the application controls its lifetime. Its handler and `Timeout` are respected as-is.
+
+```csharp
+// SDK-owned transport (simplest).
+using var client = await MarketDataClient.CreateAsync(options);
+
+// Application-owned transport. CreateDefaultHttpHandler() supplies the 2-second
+// connect timeout; a plain new HttpClient() works too.
+using var httpClient = new HttpClient(MarketDataClient.CreateDefaultHttpHandler());
+var client2 = await MarketDataClient.CreateAsync(httpClient, options);
+```
+
+### Dependency injection (ASP.NET Core)
+
+Register the client with one line. `AddMarketDataClient` lives in the `Microsoft.Extensions.DependencyInjection` namespace, so it is discoverable from `Program.cs` without an extra `using`:
+
+```csharp
+// Program.cs
+builder.Services.AddMarketDataClient(builder.Configuration);
+```
+
+Then take `MarketDataClient` as a constructor-injected dependency or a minimal-API parameter:
+
+```csharp
+app.MapGet("/quote/{symbol}", async (string symbol, MarketDataClient client, CancellationToken ct) =>
+    Results.Ok((await client.Stocks.GetQuoteAsync(symbol, cancellationToken: ct)).Values));
+```
+
+`AddMarketDataClient` registers `MarketDataClient` as a **singleton** over an `IHttpClientFactory`-managed `HttpClient` backed by the SDK's default handler. Three overloads resolve the options for you:
+
+| Overload                                               | Options source                                                                            |
+|--------------------------------------------------------|-------------------------------------------------------------------------------------------|
+| `AddMarketDataClient()`                                | `MarketDataClientOptions.FromEnvironment()` — user secrets, `.env`, environment variables |
+| `AddMarketDataClient(IConfiguration configuration)`    | `MarketDataClientOptions.FromConfiguration(configuration)` — the `MARKETDATA_*` keys      |
+| `AddMarketDataClient(MarketDataClientOptions options)` | the supplied instance                                                                     |
+
+Registrations use `TryAdd*`, so you can override either the options or the client by registering your own first. When your app has logging configured, the container's `ILogger<MarketDataClient>` is auto-wired into the SDK. Because the DI path uses the constructor, a configured token is validated with a blocking `GET /user/` the first time the singleton is resolved — typically during startup — so an invalid token fails the application at startup rather than on the first request. Register options with `ValidateTokenOnStartup = false` to defer that.
+
+## Async and Cancellation
+
+Every endpoint method is asynchronous, returns a `Task<TResponse>`, and accepts an optional `CancellationToken` as its last parameter. There are no synchronous endpoint methods.
+
+```csharp
+using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+
+var quotes = await client.Stocks.GetQuotesAsync(
+    ["AAPL", "MSFT", "GOOG"],
+    cancellationToken: timeout.Token);
+```
+
+Caller cancellation surfaces as `OperationCanceledException`, which is deliberately **not** part of the SDK's exception hierarchy — it means *you* stopped the request. An SDK timeout surfaces as `NetworkException`.
+
+### Composing async calls
+
+Endpoint calls are ordinary tasks, so they compose with `Task.WhenAll`. All requests share the client's retry, rate-limit, and concurrency behavior; `MaxConcurrentRequests` (default 50) bounds how many are in flight at once.
+
+```csharp
+var aaplTask = client.Stocks.GetQuoteAsync("AAPL");
+var msftTask = client.Stocks.GetQuoteAsync("MSFT");
+var statusTask = client.Markets.GetStatusAsync("US");
+await Task.WhenAll(aaplTask, msftTask, statusTask);
+
+var aapl = aaplTask.Result.Values[0];      // safe: the tasks are already complete
+var msft = msftTask.Result.Values[0];
+var status = statusTask.Result.Values[0];
+```
+
+## Scalar Parameters and Request Objects
+
+Every endpoint has two overloads. The **scalar** overload takes the common parameters directly and is the fastest way to make a call:
+
+```csharp
+var candles = await client.Stocks.GetCandlesAsync(StockResolution.Daily, "AAPL", countback: 30);
+```
+
+The **request-object** overload takes an immutable request record. Required values are constructor arguments; optional values are `init` properties. Use it when several optional filters should be grouped or reused:
+
+```csharp
+var request = new StockCandlesRequest(StockResolution.Daily, "AAPL")
+{
+    Countback = 30,
+    AdjustDividends = true
+};
+var candles = await client.Stocks.GetCandlesAsync(request);
+```
+
+Both overloads also accept an optional [`MarketDataRequestOptions`](/sdk/csharp/settings#universal-parameters) for the universal parameters (date format, mode, columns, limit, offset).
+
+## The Response Object
+
+Every endpoint returns a typed response record derived from `MarketDataResponse<T>`, wrapping the decoded data plus request metadata, with a uniform surface regardless of endpoint or format.
+
+```csharp
+public abstract record MarketDataResponse<T>
+{
+    public T Values { get; }                          // the typed payload (e.g. IReadOnlyList<StockQuote>)
+    public int StatusCode { get; }                    // 200, 203, or 404
+    public bool IsNoData { get; }                     // true on a 404 "no_data" response
+    public string? RequestId { get; }                 // server request id, for support tickets
+    public Uri RequestUrl { get; }                    // the absolute request URL
+    public RateLimitSnapshot? RateLimit { get; }      // this request's rate limit
+    public IReadOnlyList<MarketDataResponsePart> Parts { get; }  // one per HTTP request
+    public bool IsComposite { get; }                  // assembled from several HTTP responses
+    public string RawBody { get; }                    // the raw response body, as sent
+    public bool IsJson { get; }
+    public bool IsCsv { get; }
+    public bool IsHtml { get; }
+    public string SaveToFile(string path);            // write the body; returns the path
+    public Task<string> SaveToFileAsync(string path, CancellationToken cancellationToken = default);
+}
+```
+
+```csharp
+var response = await client.Stocks.GetQuoteAsync("AAPL");
+
+response.Values;        // IReadOnlyList<StockQuote> — the part you usually want
+response.StatusCode;    // 200
+response.RequestId;     // e.g. for a support ticket
+response.RateLimit;     // this request's rate-limit snapshot (may be null)
+await response.SaveToFileAsync("aapl.json");  // cache the raw body
+```
+
+`SaveToFile` chooses the representation from the file extension (`.json`, `.csv`, `.html`) when the response can provide it, and falls back to the raw body otherwise.
+
+## Error Handling
+
+Everything the SDK throws is a `MarketDataException`. The seven subtypes below are the complete set. Each exception carries support context — `StatusCode`, `RequestId`, `RequestUrl`, `Timestamp`, and `ExceptionType` — plus a preformatted `SupportInfo` block ready to paste into a support ticket.
+
+| Subtype                   | When it's thrown                                                                                 |
+|---------------------------|--------------------------------------------------------------------------------------------------|
+| `AuthenticationException` | Missing or invalid token (HTTP 401 / 403)                                                        |
+| `BadRequestException`     | Invalid parameters (HTTP 400)                                                                    |
+| `NotFoundException`       | The resource doesn't exist (HTTP 404 that is not a "no data" response)                           |
+| `RateLimitException`      | Quota exceeded (HTTP 429), or the client-side rate-limit guard refused to send; see `RetryAfter` |
+| `ServerException`         | API-side failure (HTTP 5xx); see `RetryAfter`                                                    |
+| `NetworkException`        | Connection failure or timeout                                                                    |
+| `ParseException`          | The response could not be decoded                                                                |
+
+Request-shape mistakes caught **before** any HTTP call — an invalid date window, an unsupported option on a typed method — throw `ArgumentException`, the standard .NET signal for a bad argument.
+
+```csharp
+using MarketDataApp.Exceptions;
+
+try
+{
+    var quote = await client.Stocks.GetQuoteAsync("AAPL");
+}
+catch (AuthenticationException)
+{
+    Console.WriteLine("Check your token");
+}
+catch (RateLimitException e)
+{
+    var wait = e.RetryAfter is { } delay ? $"{delay.TotalSeconds:F0}s" : "a moment";
+    Console.WriteLine($"Rate limited — retry after {wait}");
+}
+catch (MarketDataException e)
+{
+    // Any other case. Attach SupportInfo to a bug report.
+    Console.WriteLine(e.SupportInfo);
+}
+```
+
+## Retries and Timeouts
+
+Transient failures — `NetworkException` and HTTP 501–599 — are retried automatically up to `MaxRetries` times (default 3) with a fixed exponential backoff (1s, 2s, 4s, capped at 30s). A server-supplied `Retry-After` header is honored. Authentication, validation, parsing, and rate-limit failures are never retried; before retrying a server error the SDK also consults the cached `/status/` reading and skips the retry if the API reports itself offline.
+
+Every HTTP attempt has a fixed **99-second request timeout**; SDK-owned and DI-registered transports add a **2-second connection timeout** through the default handler. Neither is configurable — `MaxRetries` is the only retry knob.
+
+<a name="rate-limits"></a>
+## Rate Limits
+
+The API reports your quota in `x-api-ratelimit-*` response headers. The SDK captures them two ways:
+
+- **Per response:** `response.RateLimit` — the snapshot returned with that request.
+- **Client-wide:** `client.LatestRateLimit` — the most recent complete snapshot the client has seen, seeded by the startup `GET /user/` when a token is configured.
+
+```csharp
+if (client.LatestRateLimit is { } limit)
+{
+    Console.WriteLine($"{limit.Remaining}/{limit.Limit} remaining, resets {limit.Reset:HH:mm}");
+}
+```
+
+`RateLimitSnapshot` exposes `Limit`, `Remaining`, `Reset` (a `DateTimeOffset`), and `Consumed`. When the latest snapshot shows the quota exhausted and the reset time has not passed, the client refuses to send further requests and throws `RateLimitException` immediately, so you never burn calls that would fail anyway.
+
+## Disposing the Client
+
+`MarketDataClient` implements `IDisposable`. Disposing it releases its internal resources and — only when the SDK created the transport — the owned `HttpClient`. An `HttpClient` you supplied is never disposed. A single client instance is safe to use concurrently from multiple threads or requests, so the typical pattern is one long-lived client per application:
+
+```csharp
+using var client = await MarketDataClient.CreateAsync();
+// ... use for the lifetime of the app
+```
