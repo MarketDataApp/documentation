@@ -1,0 +1,73 @@
+---
+title: Candles
+sidebar_position: 1
+---
+
+Retrieve historical NAV candles (open/high/low/close) for a mutual fund symbol. Fund candles have no volume.
+
+## Making Requests
+
+Use `GetCandlesAsync` on the `Funds` resource, passing a `FundResolution` and a symbol.
+
+```csharp
+Task<FundCandlesResponse> GetCandlesAsync(
+    FundResolution resolution, string symbol,
+    DateOnly? date = null, DateOnly? from = null, DateOnly? to = null, int? countback = null,
+    MarketDataRequestOptions? options = null, CancellationToken cancellationToken = default)
+Task<FundCandlesResponse> GetCandlesAsync(FundCandlesRequest request, ...)
+```
+
+### FundCandlesRequest
+
+```csharp
+new FundCandlesRequest(FundResolution resolution, string symbol)
+{
+    Date = DateOnly,        // a single trading day
+    From = DateOnly,        // window start (inclusive)
+    To = DateOnly,          // window end (inclusive)
+    Countback = int         // N candles back from `To` (or from today), instead of `From`
+}
+```
+
+The same date-window rules as [stock candles](/sdk/csharp/stocks/candles) apply and are validated before any HTTP call.
+
+### FundResolution
+
+Fund NAVs are published daily, so the resolutions are daily and coarser:
+
+```csharp
+FundResolution.Daily          // also Weekly, Monthly, Yearly
+FundResolution.Days(1)        // also Weeks(n), Months(n), Years(n)
+FundResolution.Of("W")        // any raw wire token
+```
+
+#### Returns
+
+`FundCandlesResponse` wrapping `IReadOnlyList<FundCandle>`:
+
+```csharp
+public record FundCandle(
+    DateTimeOffset? Time,   // America/New_York
+    decimal? Open,
+    decimal? High,
+    decimal? Low,
+    decimal? Close);
+```
+
+## Examples
+
+```csharp
+using MarketDataApp;
+using MarketDataApp.Funds;
+
+using var client = await MarketDataClient.CreateAsync();
+
+// The last 30 daily NAVs.
+var candles = await client.Funds.GetCandlesAsync(FundResolution.Daily, "VFINX", countback: 30);
+foreach (var bar in candles.Values)
+{
+    Console.WriteLine($"{bar.Time:yyyy-MM-dd}  NAV close={bar.Close}");
+}
+```
+
+For CSV output, call `client.Funds.GetCandlesCsvAsync(...)` and read `.Csv`. See [Settings](/sdk/csharp/settings#csv-output).

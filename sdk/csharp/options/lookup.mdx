@@ -1,0 +1,43 @@
+---
+title: Lookup
+sidebar_position: 5
+---
+
+Turn a human-readable option description into a well-formed OCC option symbol.
+
+## Making Requests
+
+Use `GetLookupAsync` on the `Options` resource.
+
+```csharp
+Task<OptionsLookupResponse> GetLookupAsync(
+    string userInput,
+    MarketDataRequestOptions? options = null, CancellationToken cancellationToken = default)
+Task<OptionsLookupResponse> GetLookupAsync(OptionsLookupRequest request, ...)
+```
+
+### OptionsLookupRequest
+
+```csharp
+new OptionsLookupRequest(string userInput)
+```
+
+#### Returns
+
+`OptionsLookupResponse` wrapping a `string` — the OCC option symbol. Read it with `.Values`.
+
+## Examples
+
+```csharp
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+var lookup = await client.Options.GetLookupAsync("AAPL 7/28/2023 200 Call");
+Console.WriteLine(lookup.Values);   // e.g. AAPL230728C00200000
+
+// Feed the resolved symbol straight into a quote.
+var quote = await client.Options.GetQuoteAsync(lookup.Values);
+```
+
+For CSV output, call `client.Options.GetLookupCsvAsync(...)` and read `.Csv`. See [Settings](/sdk/csharp/settings#csv-output).

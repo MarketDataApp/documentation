@@ -32,6 +32,7 @@ on:
     paths:
       - 'sdk/js/**'
       - 'sdk/java/**'
+      - 'sdk/csharp/**'
       - 'lib/mdx-to-md.js'
       - 'scripts/export-sdk-docs.js'
       - '.github/workflows/sync-sdk-docs.yml'
@@ -42,7 +43,7 @@ on:
         required: true
         default: 'js'
         type: choice
-        options: [js, java]
+        options: [js, java, csharp]
 
 env:
   SOURCE_OWNER: MarketDataApp
@@ -57,7 +58,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: [js, java]
+        sdk: [js, java, csharp]
     steps:
       - name: Checkout documentation source
         uses: actions/checkout@v4

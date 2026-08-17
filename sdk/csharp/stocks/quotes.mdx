@@ -1,0 +1,91 @@
+---
+title: Quotes
+sidebar_position: 2
+---
+
+Retrieve real-time quotes (bid, ask, mid, last, volume, etc.) for one or more stock symbols.
+
+## Making Requests
+
+The `Stocks` resource offers two quote methods:
+
+- `GetQuoteAsync(...)` — a single symbol.
+- `GetQuotesAsync(...)` — several symbols in **one** request (the stocks backend batches a comma list). The result is a single response with one row per symbol.
+
+```csharp
+// Single symbol
+Task<StockQuotesResponse> GetQuoteAsync(
+    string symbol, bool? extended = null, bool? candle = null, bool? week52 = null,
+    MarketDataRequestOptions? options = null, CancellationToken cancellationToken = default)
+Task<StockQuotesResponse> GetQuoteAsync(StockQuoteRequest request, ...)
+
+// Multiple symbols, one request
+Task<StockQuotesResponse> GetQuotesAsync(
+    string[] symbols, bool? extended = null, bool? candle = null, bool? week52 = null,
+    MarketDataRequestOptions? options = null, CancellationToken cancellationToken = default)
+Task<StockQuotesResponse> GetQuotesAsync(StockQuotesRequest request, ...)
+```
+
+### Request types
+
+```csharp
+// Single symbol
+new StockQuoteRequest(string symbol)
+{
+    Extended = bool,   // include extended-session prices
+    Candle = bool,     // add OHLC columns
+    Week52 = bool      // add 52-week high/low
+}
+
+// Multiple symbols, one request
+new StockQuotesRequest(params string[] symbols)   // or any IEnumerable<string>
+{
+    Extended = bool,
+    Candle = bool,
+    Week52 = bool
+}
+```
+
+#### Returns
+
+`StockQuotesResponse` wrapping `IReadOnlyList<StockQuote>` (one element for `GetQuoteAsync`, one per symbol for `GetQuotesAsync`). All fields are nullable: `Columns` can project any field away, and the backend maps NaN to `null` for closed or illiquid markets.
+
+```csharp
+public record StockQuote(
+    string? Symbol,
+    decimal? Ask, long? AskSize,
+    decimal? Bid, long? BidSize,
+    decimal? Mid, decimal? Last,
+    decimal? Change, double? ChangePct,        // ChangePct is a fraction: 0.0123 == +1.23%
+    long? Volume, DateTimeOffset? Updated,     // Updated is America/New_York
+    // opt-in via Candle = true:
+    decimal? Open, decimal? High, decimal? Low, decimal? Close,
+    // opt-in via Week52 = true:
+    decimal? Week52High, decimal? Week52Low);
+```
+
+## Examples
+
+```csharp
+using MarketDataApp;
+using MarketDataApp.Stocks;
+
+using var client = await MarketDataClient.CreateAsync();
+
+// A single quote — the response is a list; a single symbol is row 0.
+var quote = (await client.Stocks.GetQuoteAsync("AAPL")).Values[0];
+Console.WriteLine($"{quote.Symbol}: bid={quote.Bid} ask={quote.Ask} last={quote.Last}");
+
+// Several symbols in one request, with the 52-week range opted in.
+var quotes = await client.Stocks.GetQuotesAsync(["AAPL", "MSFT", "GOOG"], week52: true);
+foreach (var row in quotes.Values)
+{
+    Console.WriteLine($"{row.Symbol}: last={row.Last}  52w {row.Week52Low}–{row.Week52High}");
+}
+
+// The same call with a request object, grouping the optional flags.
+var detailed = await client.Stocks.GetQuotesAsync(
+    new StockQuotesRequest("AAPL", "MSFT") { Candle = true, Extended = true });
+```
+
+For CSV output, call `client.Stocks.GetQuoteCsvAsync(...)` or `GetQuotesCsvAsync(...)` and read `.Csv`. See [Settings](/sdk/csharp/settings#csv-output).
