@@ -167,7 +167,9 @@ using MarketDataApp.Stocks;
 
 using var client = await MarketDataClient.CreateAsync();
 
-var candles = await client.Stocks.GetCandlesAsync(StockResolution.Daily, "AAPL", countback: 30);
+var candles = await client.Stocks.GetCandlesAsync(
+    StockResolution.Daily, "AAPL",
+    from: DateOnly.Parse("2024-01-01"), to: DateOnly.Parse("2024-01-31"));
 foreach (var candle in candles.Values)
 {
     Console.WriteLine(candle);

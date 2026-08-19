@@ -161,10 +161,16 @@ MarketDataClient().use { client ->
 
 ```csharp title="OptionChain.cs"
 using MarketDataApp;
+using MarketDataApp.Options;
 
 using var client = await MarketDataClient.CreateAsync();
 
-foreach (var contract in (await client.Options.GetChainAsync("AAPL")).Values)
+var chain = await client.Options.GetChainAsync(
+    "AAPL",
+    expiration: ExpirationFilter.ForDate(DateOnly.Parse("2027-12-17")),
+    side: OptionSide.Call);
+
+foreach (var contract in chain.Values)
 {
     Console.WriteLine(contract);
 }

@@ -188,7 +188,9 @@ using MarketDataApp.Funds;
 using var client = await MarketDataClient.CreateAsync();
 
 // VFINX is available without authentication (free test symbol).
-var candles = await client.Funds.GetCandlesAsync(FundResolution.Daily, "VFINX", countback: 30);
+var candles = await client.Funds.GetCandlesAsync(
+    FundResolution.Daily, "VFINX",
+    from: DateOnly.Parse("2024-01-01"), to: DateOnly.Parse("2024-01-31"));
 foreach (var candle in candles.Values)
 {
     Console.WriteLine(candle);
