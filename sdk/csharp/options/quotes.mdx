@@ -1,0 +1,65 @@
+---
+title: Quotes
+sidebar_position: 4
+---
+
+Retrieve a real-time or historical quote for a specific option contract, identified by its OCC option symbol.
+
+## Making Requests
+
+The `Options` resource offers `GetQuoteAsync` for one contract and `GetQuotesAsync` for several. Unlike stock quotes, the options backend does not batch symbols: `GetQuotesAsync` fans out one request per contract (bounded by the client's `MaxConcurrentRequests`) and returns a dictionary keyed by option symbol, so each contract keeps its own response metadata.
+
+```csharp
+// One contract
+Task<OptionsQuotesResponse> GetQuoteAsync(
+    string optionSymbol, DateOnly? date = null, DateOnly? from = null, DateOnly? to = null,
+    MarketDataRequestOptions? options = null, CancellationToken cancellationToken = default)
+Task<OptionsQuotesResponse> GetQuoteAsync(OptionsQuoteRequest request, ...)
+
+// Several contracts, one request each
+Task<IReadOnlyDictionary<string, OptionsQuotesResponse>> GetQuotesAsync(
+    string[] optionSymbols, DateOnly? date = null, DateOnly? from = null, DateOnly? to = null,
+    MarketDataRequestOptions? options = null, CancellationToken cancellationToken = default)
+Task<IReadOnlyDictionary<string, OptionsQuotesResponse>> GetQuotesAsync(OptionsQuotesRequest request, ...)
+```
+
+### Request types
+
+```csharp
+new OptionsQuoteRequest(string optionSymbol)
+{
+    Date = DateOnly,     // a single historical date
+    From = DateOnly,     // historical window start
+    To = DateOnly        // historical window end
+}
+
+new OptionsQuotesRequest(params string[] optionSymbols)   // or any IEnumerable<string>
+{
+    Date = DateOnly, From = DateOnly, To = DateOnly
+}
+```
+
+#### Returns
+
+`OptionsQuotesResponse` wrapping `IReadOnlyList<OptionQuote>` — a single row for a live quote, or one row per trading day for a historical window. See [chain](/sdk/csharp/options/chain#returns) for the full `OptionQuote` record.
+
+## Examples
+
+```csharp
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+// Live quote for one contract.
+var quote = (await client.Options.GetQuoteAsync("AAPL271217C00250000")).Values[0];
+Console.WriteLine($"{quote.OptionSymbol}: bid/ask={quote.Bid}/{quote.Ask}  IV={quote.Iv:P1}  delta={quote.Delta:F2}");
+
+// Several contracts — one response per symbol.
+var quotes = await client.Options.GetQuotesAsync(["AAPL271217C00250000", "AAPL271217P00250000"]);
+foreach (var (symbol, response) in quotes)
+{
+    Console.WriteLine($"{symbol}: mid={response.Values[0].Mid}  (request {response.RequestId})");
+}
+```
+
+For CSV output, call `client.Options.GetQuoteCsvAsync(...)` and read `.Csv`. See [Settings](/sdk/csharp/settings#csv-output).

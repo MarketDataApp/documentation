@@ -158,6 +158,23 @@ MarketDataClient().use { client ->
 ```
 
 </TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="StockCandles.cs"
+using MarketDataApp;
+using MarketDataApp.Stocks;
+
+using var client = await MarketDataClient.CreateAsync();
+
+var candles = await client.Stocks.GetCandlesAsync(StockResolution.Daily, "AAPL", countback: 30);
+foreach (var candle in candles.Values)
+{
+    Console.WriteLine(candle);
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

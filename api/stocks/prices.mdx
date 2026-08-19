@@ -116,6 +116,21 @@ MarketDataClient().use { client ->
 ```
 
 </TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="StockPrices.cs"
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+foreach (var price in (await client.Stocks.GetPriceAsync("AAPL")).Values)
+{
+    Console.WriteLine(price);
+}
+```
+
+</TabItem>
 </Tabs>
 
 </TabItem>
@@ -207,6 +222,21 @@ import com.marketdata.sdk.stocks.StockPricesRequest
 
 MarketDataClient().use { client ->
     client.stocks().prices(StockPricesRequest.of("AAPL", "META", "MSFT")).values().forEach(::println)
+}
+```
+
+</TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="StockPrices.cs"
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+foreach (var price in (await client.Stocks.GetPricesAsync(["AAPL", "META", "MSFT"])).Values)
+{
+    Console.WriteLine(price);
 }
 ```
 

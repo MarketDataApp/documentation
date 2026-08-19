@@ -1,0 +1,73 @@
+---
+title: Earnings
+sidebar_position: 4
+---
+
+Retrieve historical and upcoming earnings reports for a stock symbol: fiscal period, report date and time, and reported vs. estimated EPS.
+
+## Making Requests
+
+Use `GetEarningsAsync` on the `Stocks` resource.
+
+```csharp
+Task<StockEarningsResponse> GetEarningsAsync(
+    string symbol,
+    DateOnly? date = null, DateOnly? from = null, DateOnly? to = null, int? countback = null,
+    string? report = null,
+    MarketDataRequestOptions? options = null, CancellationToken cancellationToken = default)
+Task<StockEarningsResponse> GetEarningsAsync(StockEarningsRequest request, ...)
+```
+
+### StockEarningsRequest
+
+```csharp
+new StockEarningsRequest(string symbol)
+{
+    Date = DateOnly,        // a single date
+    From = DateOnly,        // window start
+    To = DateOnly,          // window end
+    Countback = int,        // N most recent reports
+    Report = string         // a specific report, e.g. "2024-Q1"
+}
+```
+
+The same date-window rules as [candles](/sdk/csharp/stocks/candles) apply and are validated before any HTTP call.
+
+#### Returns
+
+`StockEarningsResponse` wrapping `IReadOnlyList<StockEarning>`:
+
+```csharp
+public record StockEarning(
+    string? Symbol,
+    int? FiscalYear,
+    int? FiscalQuarter,
+    DateTimeOffset? Date,
+    DateTimeOffset? ReportDate,
+    string? ReportTime,          // e.g. "before market open" / "after market close"
+    string? Currency,
+    decimal? ReportedEps,
+    decimal? EstimatedEps,
+    decimal? SurpriseEps,
+    double? SurpriseEpsPct,
+    DateTimeOffset? Updated);
+```
+
+## Examples
+
+```csharp
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+// The four most recent reports.
+var earnings = await client.Stocks.GetEarningsAsync("AAPL", countback: 4);
+foreach (var report in earnings.Values)
+{
+    Console.WriteLine(
+        $"FY{report.FiscalYear} Q{report.FiscalQuarter}: reported {report.ReportedEps} vs est. {report.EstimatedEps} " +
+        $"({report.SurpriseEpsPct:P1} surprise) on {report.ReportDate:yyyy-MM-dd}");
+}
+```
+
+For CSV output, call `client.Stocks.GetEarningsCsvAsync(...)` and read `.Csv`. See [Settings](/sdk/csharp/settings#csv-output).

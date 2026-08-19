@@ -133,6 +133,21 @@ MarketDataClient().use { client ->
 ```
 
 </TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="OptionExpirations.cs"
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+foreach (var expiration in (await client.Options.GetExpirationsAsync("AAPL")).Values)
+{
+    Console.WriteLine(expiration);
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

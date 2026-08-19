@@ -179,6 +179,25 @@ fun main() {
 ```
 
 </TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="Program.cs"
+using MarketDataApp;
+
+// With no options supplied, the SDK reads your token from the MARKETDATA_TOKEN
+// environment variable (or a .env file / user secrets) and validates it on startup.
+// Alternatively, pass it directly:
+//   await MarketDataClient.CreateAsync(new MarketDataClientOptions { ApiToken = "your_token_here" })
+using var client = await MarketDataClient.CreateAsync();
+
+foreach (var quote in (await client.Stocks.GetQuoteAsync("SPY")).Values)
+{
+    Console.WriteLine(quote);
+}
+```
+
+</TabItem>
 </Tabs>
 
 

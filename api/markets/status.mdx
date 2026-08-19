@@ -198,6 +198,31 @@ fun main() {
 ```
 
 </TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="MarketStatusApp.cs"
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+var year2020 = await client.Markets.GetStatusAsync(
+    "US",
+    from: new DateOnly(2020, 1, 1),
+    to: new DateOnly(2020, 12, 31));
+foreach (var day in year2020.Values)
+{
+    Console.WriteLine(day);
+}
+
+var today = await client.Markets.GetStatusAsync();
+foreach (var day in today.Values)
+{
+    Console.WriteLine(day);
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

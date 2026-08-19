@@ -120,6 +120,21 @@ fun main() {
 ```
 
 </TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="StatusCheck.cs"
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+foreach (var service in (await client.Utilities.GetStatusAsync()).Values)
+{
+    Console.WriteLine(service);
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

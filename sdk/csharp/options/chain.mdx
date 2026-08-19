@@ -1,0 +1,129 @@
+---
+title: Chain
+sidebar_position: 1
+---
+
+Retrieve a complete or filtered options chain for an underlying symbol. Every contract comes back as a full option quote — price, size, volume, open interest, greeks, and IV.
+
+## Making Requests
+
+Use `GetChainAsync` on the `Options` resource. The scalar overload exposes every filter as a named optional parameter; the request-object overload groups them on `OptionsChainRequest`.
+
+```csharp
+Task<OptionsChainResponse> GetChainAsync(
+    string symbol,
+    ExpirationFilter? expiration = null,
+    bool? weekly = null, bool? monthly = null, bool? quarterly = null,
+    bool? am = null, bool? pm = null, bool? nonStandard = null,
+    StrikeFilter? strike = null, double? delta = null, int? strikeLimit = null,
+    StrikeRange? strikeRangeFilter = null,
+    decimal? minBid = null, decimal? maxBid = null, decimal? minAsk = null, decimal? maxAsk = null,
+    decimal? maxBidAskSpread = null, double? maxBidAskSpreadPct = null,
+    long? minOpenInterest = null, long? minVolume = null,
+    OptionSide? side = null, DateOnly? date = null,
+    MarketDataRequestOptions? options = null, CancellationToken cancellationToken = default)
+Task<OptionsChainResponse> GetChainAsync(OptionsChainRequest request, ...)
+```
+
+:::caution Quota
+A chain response bills roughly **one credit per contract returned**. An unfiltered chain for a liquid underlying can run to thousands of contracts. Always narrow with an expiration filter, `StrikeLimit`, or `Side` unless you really need the whole chain.
+:::
+
+### OptionsChainRequest
+
+```csharp
+new OptionsChainRequest(string symbol)
+{
+    // Expiration selection (pick one)
+    Expiration = ExpirationFilter,       // see below
+    Weekly = bool, Monthly = bool, Quarterly = bool,   // expiration cycles
+    Am = bool, Pm = bool,                // settlement time
+    NonStandard = bool,                  // include non-standard contracts
+
+    // Strike selection
+    Strike = StrikeFilter,               // see below
+    StrikeLimit = int,                   // N strikes closest to the money
+    StrikeRangeFilter = StrikeRange,     // StrikeRange.Itm / .Otm / .All
+    Delta = double,                      // strikes nearest this delta
+
+    // Liquidity filters
+    MinBid = decimal, MaxBid = decimal, MinAsk = decimal, MaxAsk = decimal,
+    MaxBidAskSpread = decimal, MaxBidAskSpreadPct = double,
+    MinOpenInterest = long, MinVolume = long,
+
+    Side = OptionSide.Call | OptionSide.Put,
+    Date = DateOnly                      // historical chain as of this date
+}
+```
+
+### ExpirationFilter
+
+A typed value for the `expiration` parameter:
+
+```csharp
+ExpirationFilter.ForDate(DateOnly date)                // one exact expiration
+ExpirationFilter.ForDte(int days)                      // the expiration closest to N days out
+ExpirationFilter.ForRange(DateOnly from, DateOnly to)  // every expiration in a window
+ExpirationFilter.ForMonthYear(int year, int month)     // all expirations in a month
+```
+
+### StrikeFilter
+
+```csharp
+StrikeFilter.ForExact(decimal price)                             // one strike
+StrikeFilter.ForRange(decimal min, decimal max)                  // strikes in a band
+StrikeFilter.ForComparison(StrikeFilter.ComparisonOperator.Gte, decimal price)   // Gt / Gte / Lt / Lte
+```
+
+#### Returns
+
+`OptionsChainResponse` wrapping `IReadOnlyList<OptionQuote>` — the same record the [quotes](/sdk/csharp/options/quotes) endpoint returns, one per contract:
+
+```csharp
+public record OptionQuote(
+    string? OptionSymbol, string? Underlying,
+    DateTimeOffset? Expiration, string? Side, decimal? Strike,
+    DateTimeOffset? FirstTraded, int? Dte, DateTimeOffset? Updated,
+    decimal? Bid, long? BidSize, decimal? Mid, decimal? Ask, long? AskSize, decimal? Last,
+    long? OpenInterest, long? Volume,
+    bool? InTheMoney, decimal? IntrinsicValue, decimal? ExtrinsicValue, decimal? UnderlyingPrice,
+    double? Iv, double? Delta, double? Gamma, double? Theta, double? Vega, double? Rho);
+```
+
+`OptionQuote.PresentGreeks` returns the set of greeks that are non-null on a given row (some feeds omit `Rho`).
+
+## Examples
+
+```csharp
+using MarketDataApp;
+using MarketDataApp.Options;
+
+using var client = await MarketDataClient.CreateAsync();
+
+// Calls expiring closest to 45 days out, six strikes around the money.
+var chain = await client.Options.GetChainAsync(
+    "AAPL",
+    expiration: ExpirationFilter.ForDte(45),
+    strikeLimit: 6,
+    side: OptionSide.Call);
+
+foreach (var contract in chain.Values)
+{
+    Console.WriteLine(
+        $"{contract.OptionSymbol}  strike={contract.Strike}  bid/ask={contract.Bid}/{contract.Ask}  " +
+        $"OI={contract.OpenInterest}  IV={contract.Iv:P1}  delta={contract.Delta:F2}" +
+        (contract.InTheMoney == true ? "  ITM" : ""));
+}
+
+// A liquidity-filtered request object: monthly puts, in the money, tight spreads only.
+var puts = await client.Options.GetChainAsync(new OptionsChainRequest("SPY")
+{
+    Monthly = true,
+    Side = OptionSide.Put,
+    StrikeRangeFilter = StrikeRange.Itm,
+    MaxBidAskSpreadPct = 0.05,
+    MinOpenInterest = 100
+});
+```
+
+For CSV output, call `client.Options.GetChainCsvAsync(...)` and read `.Csv`. See [Settings](/sdk/csharp/settings#csv-output).

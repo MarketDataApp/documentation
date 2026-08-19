@@ -1,0 +1,32 @@
+---
+title: Headers
+sidebar_position: 2
+---
+
+Echo back the HTTP request headers the API received. Useful for debugging what your application (or a proxy in between) is actually sending — user agent, authorization scheme, content negotiation.
+
+## Making Requests
+
+Use `GetHeadersAsync` on the `Utilities` resource.
+
+```csharp
+Task<UtilitiesHeadersResponse> GetHeadersAsync(CancellationToken cancellationToken = default)
+```
+
+#### Returns
+
+`UtilitiesHeadersResponse` wrapping `IReadOnlyDictionary<string, string>` — header name to value, as received by the API. The `Authorization` value is returned redacted by the API.
+
+## Examples
+
+```csharp
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+var headers = await client.Utilities.GetHeadersAsync();
+foreach (var (name, value) in headers.Values)
+{
+    Console.WriteLine($"{name}: {value}");
+}
+```

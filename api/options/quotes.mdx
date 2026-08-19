@@ -137,6 +137,21 @@ MarketDataClient().use { client ->
 ```
 
 </TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="OptionQuotes.cs"
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+foreach (var quote in (await client.Options.GetQuoteAsync("AAPL271217C00250000")).Values)
+{
+    Console.WriteLine(quote);
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example
