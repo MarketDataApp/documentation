@@ -31,7 +31,7 @@ func (s *Service) GetQuote(optionSymbol string, opts ...OptionQuoteOption) (*Opt
 ```
 
 `Quote` fetches a real-time or historical quote for a single option contract,
-identified by its OCC option symbol (for example `AAPL250117C00150000`). The
+identified by its OCC option symbol (for example `AAPL271217C00250000`). The
 option symbol is required.
 
 #### Parameters
@@ -101,7 +101,7 @@ func main() {
 	}
 	defer client.Close()
 
-	quote, err := client.Options.GetQuote("AAPL250117C00150000")
+	quote, err := client.Options.GetQuote("AAPL271217C00250000")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -123,7 +123,7 @@ func main() {
 #### Output
 
 ```
-Symbol:        AAPL250117C00150000
+Symbol:        AAPL271217C00250000
 Underlying:    AAPL @ 195.20
 Strike:        $150.00 call
 Bid/Ask:       45.30 x 45  /  45.65 x 30
@@ -139,7 +139,7 @@ IV / Delta:    0.2841 / 0.9210
 ```go
 ctx := context.Background()
 
-quote, resp, err := client.Options.Quote(ctx, "AAPL250117C00150000")
+quote, resp, err := client.Options.Quote(ctx, "AAPL271217C00250000")
 if err != nil {
 	log.Fatal(err)
 }
@@ -160,7 +160,7 @@ fmt.Printf("Requests remaining: %d\n", resp.RateLimit.Remaining)
 ctx := context.Background()
 
 // Quote on one historical date.
-onDate, _, err := client.Options.Quote(ctx, "AAPL250117C00150000",
+onDate, _, err := client.Options.Quote(ctx, "AAPL271217C00250000",
 	options.WithOptionQuoteWindow(options.QuoteOnDate(
 		time.Date(2025, time.January, 2, 0, 0, 0, 0, time.UTC))))
 if err != nil {
@@ -171,7 +171,7 @@ if onDate != nil {
 }
 
 // A series of end-of-day quotes across a range.
-series, _, err := client.Options.Quote(ctx, "AAPL250117C00150000",
+series, _, err := client.Options.Quote(ctx, "AAPL271217C00250000",
 	options.WithOptionQuoteWindow(options.QuoteRange(
 		time.Date(2025, time.January, 1, 0, 0, 0, 0, time.UTC),
 		time.Date(2025, time.January, 31, 0, 0, 0, 0, time.UTC))))
@@ -190,10 +190,10 @@ ctx := context.Background()
 
 // Variadic list of OCC symbols, fetched concurrently.
 quotes, _, err := client.Options.Quotes(ctx,
-	"AAPL250117C00180000",
-	"AAPL250117C00190000",
-	"AAPL250117C00200000",
-	"AAPL250117P00180000",
+	"AAPL271217C00280000",
+	"AAPL271217C00290000",
+	"AAPL271217C00300000",
+	"AAPL271217P00280000",
 )
 if err != nil {
 	log.Fatal(err)

@@ -45,4 +45,18 @@ if [ -n "$realigned" ]; then
   done
 fi
 
+# Expired OCC option symbols cannot be auto-fixed, so this blocks instead.
+# It matters most here: the "Docs: PR Checks" workflow only runs on pull
+# requests into main, but day-to-day work is pushed straight to staging, so
+# without this hook an expired symbol reaches the staging site unchallenged.
+#
+# shellcheck disable=SC2086 # intentional word splitting into separate args
+if ! node scripts/check-option-symbols.js $existing; then
+  echo ""
+  echo "pre-commit: refusing the commit — an option symbol above has expired."
+  echo "Replace it with a contract that still trades, then commit again."
+  echo "To bypass once: git commit --no-verify"
+  exit 1
+fi
+
 exit 0

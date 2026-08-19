@@ -28,7 +28,7 @@ func (s *Service) Lookup(ctx context.Context, underlying string, expiration time
 func (s *Service) GetLookup(underlying string, expiration time.Time, strike float64, optionType OptionType) (string, error)
 ```
 
-`Lookup` builds an OCC option symbol (for example `AAPL250117C00150000`) from
+`Lookup` builds an OCC option symbol (for example `AAPL271217C00250000`) from
 a contract description. The underlying symbol, the expiration date, the strike
 price, and the option type are all required. The resolved symbol can then be
 passed to [`Quote`](/sdk/go/options/quotes) or
@@ -49,7 +49,7 @@ passed to [`Quote`](/sdk/go/options/quotes) or
 
 #### Notes
 
-- The OCC symbol format is `SYMBOL + YYMMDD + C/P + STRIKE (8 digits)`. For example, `AAPL250117C00150000` is an AAPL January 17, 2025 $150 call.
+- The OCC symbol format is `SYMBOL + YYMMDD + C/P + STRIKE (8 digits)`. For example, `AAPL271217C00250000` is an AAPL January 17, 2025 $150 call.
 - If the API cannot resolve the contract (HTTP 404), `Lookup` returns an empty string, a response whose `NoData` field is `true`, and a `nil` error. Check for an empty string before using the result.
 - The lookup query is sent as a single URL path segment; there are no query parameters and no functional options for this endpoint.
 
@@ -93,7 +93,7 @@ func main() {
 #### Output
 
 ```
-OCC symbol: AAPL250117C00150000
+OCC symbol: AAPL271217C00250000
 ```
 
 </TabItem>
