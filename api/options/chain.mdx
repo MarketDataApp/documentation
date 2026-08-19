@@ -228,6 +228,10 @@ foreach (var contract in chain.Values)
 
   Use to lookup a historical end of day options chain from a specific trading day. If no date parameter is specified the chain will be the most current chain available during market hours. When the market is closed the chain will be from the previous session. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
 
+  :::info Historical chains carry no Greeks
+  Greeks and implied volatility are not stored historically. On any request that includes `date`, the `iv`, `delta`, `gamma`, `theta` and `vega` columns are returned as `null`, on every plan. For the same reason the `delta` filter cannot be combined with `date` (the request is rejected with `400`); filter historical chains by `strike` instead.
+  :::
+
 </TabItem>
 
 <TabItem value="expiration" label="Expiration Filters">
@@ -299,6 +303,10 @@ When combining the `weekly`, `monthly`, and `quarterly` parameters, only identic
 
   :::tip
   Filter strikes using the absolute value of the delta. The values used will always return both sides of the chain (e.g. puts & calls). This means you must filter using `side` to exclude puts or calls. Delta cannot be used to filter the side of the chain, only the strikes.
+  :::
+
+  :::caution Not available on historical requests
+  `delta` cannot be combined with the `date` parameter. Greeks are not stored historically, so there is no delta to filter on; such a request is rejected with `400 Bad Request` and the error message `The 'delta' parameter cannot be used with historical requests, because Greeks are not stored historically. Remove 'delta' from your request and filter by 'strike' instead.` Use the `strike` filter for historical chains.
   :::
 
 - **strikeLimit** `number`
@@ -466,6 +474,10 @@ The `am` and `pm` parameters are only applicable for index options such as SPX, 
 - **updated** `array[number]`
 
   The date and time of this quote snapshot. All timestamps use US Eastern Time (America/New_York). See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
+
+:::note Greeks on historical requests
+`iv`, `delta`, `gamma`, `theta` and `vega` are only populated on current (real-time, delayed or end-of-day) chains. On any request that includes the `date` parameter these columns are returned as `null`, on every plan, because Greeks and implied volatility are not stored historically.
+:::
 
 - **iv** `array[number]`
 
