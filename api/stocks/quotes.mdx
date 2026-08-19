@@ -194,6 +194,30 @@ print(quotes)
 ```
 
 </TabItem>
+<TabItem value="Go" label="Go">
+
+```go title="stockQuotes.go"
+
+import (
+  "fmt"
+
+  api "github.com/MarketDataApp/sdk-go"
+)
+
+func ExampleBulkStockQuotesRequest() {
+	quotes, err := api.BulkStockQuotes().Symbols([]string{"AAPL", "META", "MSFT"}).Get()
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+
+	for _, quote := range quotes {
+		fmt.Println(quote)
+	}
+}
+```
+
+</TabItem>
 <TabItem value="PHP" label="PHP">
 
 ```php title="stockQuotes.php"
