@@ -17,6 +17,24 @@ jobs:
       - name: Check markdown table alignment
         run: node scripts/fix-table-alignment.js
 
+  option-symbols:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # An expired option symbol breaks with the passage of time, not with a
+      # diff, so review cannot catch it. Fails on any expired symbol anywhere
+      # in the docs and warns 90 days ahead of the next expiration.
+      - name: Check for expired option symbols
+        run: node scripts/check-option-symbols.js
+
+      - name: Unit-test the checker
+        run: node --test scripts/__tests__/*.test.js
+
   broken-links:
     runs-on: ubuntu-latest
     steps:

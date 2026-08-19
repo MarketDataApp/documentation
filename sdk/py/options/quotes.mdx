@@ -36,7 +36,7 @@ def quotes(
 ) -> OptionsQuotes | OptionsQuotesHumanReadable | dict | str | MarketDataClientErrorResult
 ```
 
-Fetches option quotes for one or more option symbols. Note: `quotes()` takes option symbols (e.g., "AAPL240120C00150000"), not stock symbols. The `symbols` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
+Fetches option quotes for one or more option symbols. Note: `quotes()` takes option symbols (e.g., "AAPL271217C00250000"), not stock symbols. The `symbols` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
 
 #### Parameters
 
@@ -95,12 +95,12 @@ client = MarketDataClient()
 # Get option quotes as DataFrame (default)
 # symbols can be passed positionally or as keyword
 # Note: quotes() takes option symbols, not stock symbols
-df = client.options.quotes("AAPL240120C00150000")
+df = client.options.quotes("AAPL271217C00250000")
 # or
-df = client.options.quotes(symbols="AAPL240120C00150000")
+df = client.options.quotes(symbols="AAPL271217C00250000")
 
 # Get quotes for multiple option symbols
-df = client.options.quotes(["AAPL240120C00150000", "AAPL240120P00150000"])
+df = client.options.quotes(["AAPL271217C00250000", "AAPL271217P00250000"])
 
 print(df)
 ```
@@ -116,7 +116,7 @@ client = MarketDataClient()
 
 # Get option quotes as internal object
 quotes = client.options.quotes(
-    ["AAPL240120C00150000", "AAPL240120P00150000"],
+    ["AAPL271217C00250000", "AAPL271217P00250000"],
     output_format=OutputFormat.INTERNAL
 )
 
@@ -138,7 +138,7 @@ client = MarketDataClient()
 
 # Get option quotes as JSON
 quotes = client.options.quotes(
-    ["AAPL240120C00150000", "AAPL240120P00150000"],
+    ["AAPL271217C00250000", "AAPL271217P00250000"],
     output_format=OutputFormat.JSON
 )
 
@@ -157,7 +157,7 @@ client = MarketDataClient()
 
 # Get option quotes as CSV
 csv_file = client.options.quotes(
-    ["AAPL240120C00150000", "AAPL240120P00150000"],
+    ["AAPL271217C00250000", "AAPL271217P00250000"],
     output_format=OutputFormat.CSV,
     filename=Path("options_quotes.csv")
 )
@@ -176,7 +176,7 @@ client = MarketDataClient()
 
 # Get option quotes in human-readable format
 quotes = client.options.quotes(
-    ["AAPL240120C00150000", "AAPL240120P00150000"],
+    ["AAPL271217C00250000", "AAPL271217P00250000"],
     output_format=OutputFormat.INTERNAL,
     use_human_readable=True
 )

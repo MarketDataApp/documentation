@@ -32,7 +32,7 @@ public function lookup(
 ): Lookup
 ```
 
-Generate a properly formatted OCC option symbol based on a human-readable description of an option. This endpoint converts text such as "AAPL 7/28/23 $200 Call" to OCC option symbol format: `AAPL230728C00200000`.
+Generate a properly formatted OCC option symbol based on a human-readable description of an option. This endpoint converts text such as "AAPL 12/17/27 $250 Call" to OCC option symbol format: `AAPL271217C00250000`.
 
 #### Parameters
 
@@ -44,7 +44,7 @@ Generate a properly formatted OCC option symbol based on a human-readable descri
   3. Expiration date
   4. Option side (put or call)
 
-  Example: `"AAPL 7/28/23 $200 Call"`
+  Example: `"AAPL 12/17/27 $250 Call"`
 
 - `parameters` ([Parameters](/sdk/php/parameters), optional)
 
@@ -59,7 +59,7 @@ Generate a properly formatted OCC option symbol based on a human-readable descri
 #### Notes
 
 - The OCC (Options Clearing Corporation) symbol format is: `SYMBOL + YYMMDD + C/P + STRIKE(8 digits)`
-- Example: `AAPL230728C00200000` = AAPL July 28, 2023 $200 Call
+- Example: `AAPL271217C00250000` = AAPL July 28, 2023 $200 Call
 - The input parser is flexible and accepts various date formats and orderings.
 
 <Tabs>
@@ -73,17 +73,17 @@ use MarketDataApp\Client;
 $client = new Client();
 
 // Convert human-readable description to OCC symbol
-$lookup = $client->options->lookup('AAPL 7/28/23 $200 Call');
+$lookup = $client->options->lookup('AAPL 12/17/27 $250 Call');
 
-echo "Input: AAPL 7/28/23 $200 Call\n";
+echo "Input: AAPL 12/17/27 $250 Call\n";
 echo "OCC Symbol: " . $lookup->option_symbol . "\n";
 ```
 
 #### Output
 
 ```
-Input: AAPL 7/28/23 $200 Call
-OCC Symbol: AAPL230728C00200000
+Input: AAPL 12/17/27 $250 Call
+OCC Symbol: AAPL271217C00250000
 ```
 
 </TabItem>
@@ -114,10 +114,10 @@ foreach ($inputs as $input) {
 #### Output
 
 ```
-AAPL Jan 17, 2025 $180 Call         → AAPL250117C00180000
-MSFT 2025-01-17 400 put             → MSFT250117P00400000
-GOOGL $150 call 1/17/25             → GOOGL250117C00150000
-SPY 500 C 01/19/24                  → SPY240119C00500000
+AAPL Jan 17, 2025 $180 Call         → AAPL271217C00280000
+MSFT 2025-01-17 400 put             → MSFT281215P00485000
+GOOGL $150 call 1/17/25             → GOOGL281215C00345000
+SPY 500 C 01/19/24                  → SPY281215C00770000
 ```
 
 </TabItem>
@@ -161,7 +161,7 @@ $client = new Client();
 
 // Get lookup result as CSV
 $lookup = $client->options->lookup(
-    input: 'AAPL 7/28/23 $200 Call',
+    input: 'AAPL 12/17/27 $250 Call',
     parameters: new Parameters(format: Format::CSV)
 );
 
