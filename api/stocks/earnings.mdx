@@ -142,6 +142,21 @@ MarketDataClient().use { client ->
 ```
 
 </TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="StockEarnings.cs"
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+foreach (var report in (await client.Stocks.GetEarningsAsync("AAPL")).Values)
+{
+    Console.WriteLine(report);
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example
