@@ -225,6 +225,39 @@ MarketDataClient().use { client ->
 ```
 
 </TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="CheckDataAge.cs"
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+var quote = (await client.Stocks.GetQuoteAsync(
+    "AAPL",
+    options: new MarketDataRequestOptions { Mode = Mode.Live })).Values[0];
+
+// Updated is already normalized to America/New_York; compare in UTC.
+var ageMinutes = (DateTimeOffset.UtcNow - quote.Updated!.Value.ToUniversalTime()).TotalMinutes;
+
+Console.WriteLine($"Data timestamp: {quote.Updated}");
+Console.WriteLine($"Data age: {ageMinutes:F1} minutes");
+
+if (ageMinutes < 1)
+{
+    Console.WriteLine("✅ Real-time data (less than 1 minute old)");
+}
+else if (ageMinutes < 20)
+{
+    Console.WriteLine("⚠️ 15-minute delayed data");
+}
+else
+{
+    Console.WriteLine("❌ Historical data (1 day old or more)");
+}
+```
+
+</TabItem>
 </Tabs>
 
 ### Step 2: Check Your Account Status
@@ -618,6 +651,43 @@ fun testRealtimeData(client: MarketDataClient, symbol: String = "AAPL"): Boolean
         ageMinutes < 20 -> { println("⚠️ Receiving 15-minute delayed data — check the IEX agreement"); false }
         else -> { println("❌ Receiving historical data — complete your profile and agreements"); false }
     }
+}
+```
+
+</TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="TestRealtimeData.cs"
+using MarketDataApp;
+
+static async Task<bool> TestRealtimeDataAsync(MarketDataClient client, string symbol)
+{
+    var quote = (await client.Stocks.GetQuoteAsync(
+        symbol,
+        options: new MarketDataRequestOptions { Mode = Mode.Live })).Values[0];
+
+    if (quote.Updated is not { } updated)
+    {
+        Console.WriteLine("Warning: no timestamp in response");
+        return false;
+    }
+
+    var ageMinutes = (DateTimeOffset.UtcNow - updated.ToUniversalTime()).TotalMinutes;
+    Console.WriteLine($"{symbol} data age: {ageMinutes:F2} minutes");
+
+    if (ageMinutes < 1)
+    {
+        Console.WriteLine("✅ Real-time data is working!");
+        return true;
+    }
+    if (ageMinutes < 20)
+    {
+        Console.WriteLine("⚠️ Receiving 15-minute delayed data — check the IEX agreement");
+        return false;
+    }
+    Console.WriteLine("❌ Receiving historical data — complete your profile and agreements");
+    return false;
 }
 ```
 

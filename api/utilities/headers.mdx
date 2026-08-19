@@ -116,6 +116,21 @@ fun main() {
 ```
 
 </TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="HeadersCheck.cs"
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+foreach (var (name, value) in (await client.Utilities.GetHeadersAsync()).Values)
+{
+    Console.WriteLine($"{name}: {value}");
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

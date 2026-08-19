@@ -166,6 +166,24 @@ fun main() {
 ```
 
 </TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="FundCandles.cs"
+using MarketDataApp;
+using MarketDataApp.Funds;
+
+using var client = await MarketDataClient.CreateAsync();
+
+// VFINX is available without authentication (free test symbol).
+var candles = await client.Funds.GetCandlesAsync(FundResolution.Daily, "VFINX", countback: 30);
+foreach (var candle in candles.Values)
+{
+    Console.WriteLine(candle);
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example
