@@ -34,10 +34,7 @@ using MarketDataApp;
 using var client = await MarketDataClient.CreateAsync();
 
 var lookup = await client.Options.GetLookupAsync("AAPL 7/28/2023 200 Call");
-Console.WriteLine(lookup.Values);   // e.g. AAPL230728C00200000
-
-// Feed the resolved symbol straight into a quote.
-var quote = await client.Options.GetQuoteAsync(lookup.Values);
+Console.WriteLine(lookup.Values);   // AAPL230728C00200000
 ```
 
 For CSV output, call `client.Options.GetLookupCsvAsync(...)` and read `.Csv`. See [Settings](/sdk/csharp/settings#csv-output).

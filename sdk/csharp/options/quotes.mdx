@@ -51,11 +51,11 @@ using MarketDataApp;
 using var client = await MarketDataClient.CreateAsync();
 
 // Live quote for one contract.
-var quote = (await client.Options.GetQuoteAsync("AAPL250117C00150000")).Values[0];
+var quote = (await client.Options.GetQuoteAsync("AAPL271217C00250000")).Values[0];
 Console.WriteLine($"{quote.OptionSymbol}: bid/ask={quote.Bid}/{quote.Ask}  IV={quote.Iv:P1}  delta={quote.Delta:F2}");
 
 // Several contracts — one response per symbol.
-var quotes = await client.Options.GetQuotesAsync(["AAPL250117C00150000", "AAPL250117P00150000"]);
+var quotes = await client.Options.GetQuotesAsync(["AAPL271217C00250000", "AAPL271217P00250000"]);
 foreach (var (symbol, response) in quotes)
 {
     Console.WriteLine($"{symbol}: mid={response.Values[0].Mid}  (request {response.RequestId})");
