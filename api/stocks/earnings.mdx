@@ -112,11 +112,7 @@ func ExampleStockEarningsRequest() {
 use MarketDataApp\Client;
 
 $client = new Client();
-$earnings = $client->stocks->earnings(
-    symbol: "AAPL",
-    from: "2023-01-01",
-    to: "2024-01-01"
-);
+$earnings = $client->stocks->earnings(symbol: "AAPL");
 
 // Display formatted earnings summary
 echo $earnings;

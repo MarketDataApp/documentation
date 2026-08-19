@@ -19,7 +19,7 @@ GET https://api.marketdata.app/v1/options/chain/{underlyingSymbol}/
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-**GET** [https://api.marketdata.app/v1/options/chain/AAPL/?expiration=2025-01-17&side=call](https://api.marketdata.app/v1/options/chain/AAPL/?expiration=2025-01-17&side=call)
+**GET** [https://api.marketdata.app/v1/options/chain/AAPL/?expiration=2027-12-17&side=call](https://api.marketdata.app/v1/options/chain/AAPL/?expiration=2027-12-17&side=call)
 
 </TabItem>
 <TabItem value="JavaScript" label="JavaScript">
@@ -30,7 +30,10 @@ import { MarketDataClient } from "@marketdata/sdk";
 const client = new MarketDataClient();
 
 try {
-  const contracts = await client.options.chain("AAPL");
+  const contracts = await client.options.chain("AAPL", {
+    expiration: "2027-12-17",
+    side: "call",
+  });
   console.log(`Got ${contracts.length} contracts`);
 } catch (error) {
   console.error(error);
@@ -47,7 +50,10 @@ import type { OptionsChain } from "@marketdata/sdk";
 const client = new MarketDataClient();
 
 try {
-  const contracts: OptionsChain[] = await client.options.chain("AAPL");
+  const contracts: OptionsChain[] = await client.options.chain("AAPL", {
+    expiration: "2027-12-17",
+    side: "call",
+  });
   console.log(`Got ${contracts.length} contracts`);
 } catch (error) {
   console.error(error);
@@ -61,7 +67,7 @@ try {
 from marketdata import MarketDataClient
 
 client = MarketDataClient()
-chain = client.options.chain("AAPL")
+chain = client.options.chain("AAPL", expiration="2027-12-17", side="call")
 print(chain)
 ```
 
@@ -77,7 +83,7 @@ import (
 )
 
 func ExampleOptionChainRequest() {
-	AAPL, err := OptionChain().UnderlyingSymbol("AAPL").Get()
+	AAPL, err := api.OptionChain().UnderlyingSymbol("AAPL").Expiration("2027-12-17").Side("call").Get()
 	if err != nil {
 		fmt.Println("Error fetching option chain:", err)
 		return
@@ -97,6 +103,7 @@ use MarketDataApp\Enums\Side;
 $client = new Client();
 $chain = $client->options->option_chain(
     symbol: "AAPL",
+    expiration: "2027-12-17",
     side: Side::CALL
 );
 
@@ -113,10 +120,18 @@ $strikes = $chain->getStrikes();
 
 ```java title="OptionChain.java"
 import com.marketdata.sdk.MarketDataClient;
+import com.marketdata.sdk.options.ExpirationFilter;
+import com.marketdata.sdk.options.OptionSide;
 import com.marketdata.sdk.options.OptionsChainRequest;
+import java.time.LocalDate;
 
 try (MarketDataClient client = new MarketDataClient()) {
-    client.options().chain(OptionsChainRequest.of("AAPL")).values().forEach(System.out::println);
+    client.options().chain(
+        OptionsChainRequest.builder("AAPL")
+            .expirationFilter(ExpirationFilter.onDate(LocalDate.parse("2027-12-17")))
+            .side(OptionSide.CALL)
+            .build())
+        .values().forEach(System.out::println);
 }
 ```
 
@@ -125,10 +140,18 @@ try (MarketDataClient client = new MarketDataClient()) {
 
 ```kotlin title="OptionChain.kt"
 import com.marketdata.sdk.MarketDataClient
+import com.marketdata.sdk.options.ExpirationFilter
+import com.marketdata.sdk.options.OptionSide
 import com.marketdata.sdk.options.OptionsChainRequest
+import java.time.LocalDate
 
 MarketDataClient().use { client ->
-    client.options().chain(OptionsChainRequest.of("AAPL")).values().forEach(::println)
+    client.options().chain(
+        OptionsChainRequest.builder("AAPL")
+            .expirationFilter(ExpirationFilter.onDate(LocalDate.parse("2027-12-17")))
+            .side(OptionSide.CALL)
+            .build())
+        .values().forEach(::println)
 }
 ```
 

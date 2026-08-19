@@ -27,7 +27,7 @@ GET
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-**GET** [https://api.marketdata.app/v1/funds/candles/D/VFINX/?from=2020-01-01&to=2020-01-10](https://api.marketdata.app/v1/funds/candles/D/VFINX/?from=2020-01-01&to=2020-01-10)
+**GET** [https://api.marketdata.app/v1/funds/candles/D/VFINX/?from=2024-01-01&to=2024-01-31](https://api.marketdata.app/v1/funds/candles/D/VFINX/?from=2024-01-01&to=2024-01-31)
 
 </TabItem>
 <TabItem value="JavaScript" label="JavaScript">
@@ -39,7 +39,11 @@ const client = new MarketDataClient();
 
 try {
   // VFINX is available without authentication (free test symbol).
-  const candles = await client.funds.candles("VFINX", { countback: 30 });
+  const candles = await client.funds.candles("VFINX", {
+    resolution: "D",
+    from: "2024-01-01",
+    to: "2024-01-31",
+  });
   for (const c of candles) {
     console.log(`t=${c.t} o=${c.o} h=${c.h} l=${c.l} c=${c.c}`);
   }
@@ -59,7 +63,11 @@ const client = new MarketDataClient();
 
 try {
   // VFINX is available without authentication (free test symbol).
-  const candles: FundsCandle[] = await client.funds.candles("VFINX", { countback: 30 });
+  const candles: FundsCandle[] = await client.funds.candles("VFINX", {
+    resolution: "D",
+    from: "2024-01-01",
+    to: "2024-01-31",
+  });
   for (const c of candles) {
     console.log(`t=${c.t} o=${c.o} h=${c.h} l=${c.l} c=${c.c}`);
   }
@@ -75,7 +83,7 @@ try {
 from marketdata import MarketDataClient
 
 client = MarketDataClient()
-candles = client.funds.candles("VFINX", resolution="D", from_date="2020-01-01", to_date="2020-01-10")
+candles = client.funds.candles("VFINX", resolution="D", from_date="2024-01-01", to_date="2024-01-31")
 print(candles)
 ```
 </TabItem>
@@ -90,7 +98,7 @@ import (
 )
 
 func ExampleFundCandlesRequest() {
-  fcr, err := FundCandles().Resolution("D").Symbol("VFINX").From("2023-01-01").To("2023-01-06").Get()
+  fcr, err := FundCandles().Resolution("D").Symbol("VFINX").From("2024-01-01").To("2024-01-31").Get()
   if err != nil {
     fmt.Print(err)
     return
@@ -111,8 +119,8 @@ use MarketDataApp\Client;
 $client = new Client();
 $candles = $client->mutual_funds->candles(
     symbol: "VFINX",
-    from: "2020-01-01",
-    to: "2020-01-10",
+    from: "2024-01-01",
+    to: "2024-01-31",
     resolution: "D"
 );
 
@@ -126,6 +134,7 @@ echo $candles;
 import com.marketdata.sdk.MarketDataClient;
 import com.marketdata.sdk.funds.FundCandlesRequest;
 import com.marketdata.sdk.funds.FundResolution;
+import java.time.LocalDate;
 
 public class FundCandles {
   public static void main(String[] args) {
@@ -133,7 +142,8 @@ public class FundCandles {
       // VFINX is available without authentication (free test symbol).
       client.funds()
           .candles(FundCandlesRequest.builder(FundResolution.DAILY, "VFINX")
-              .countback(30)
+              .from(LocalDate.parse("2024-01-01"))
+              .to(LocalDate.parse("2024-01-31"))
               .build())
           .values()
           .forEach(System.out::println);
@@ -149,6 +159,7 @@ public class FundCandles {
 import com.marketdata.sdk.MarketDataClient
 import com.marketdata.sdk.funds.FundCandlesRequest
 import com.marketdata.sdk.funds.FundResolution
+import java.time.LocalDate
 
 fun main() {
     MarketDataClient().use { client ->
@@ -156,7 +167,8 @@ fun main() {
         client.funds()
             .candles(
                 FundCandlesRequest.builder(FundResolution.DAILY, "VFINX")
-                    .countback(30)
+                    .from(LocalDate.parse("2024-01-01"))
+                    .to(LocalDate.parse("2024-01-31"))
                     .build()
             )
             .values()
