@@ -152,6 +152,10 @@ const config = {
             to: "/sdk/go/options/chain",
           },
           {
+            from: "/sdk/csharp/options/strikes",
+            to: "/sdk/csharp/options/chain",
+          },
+          {
             from: "/sdk/go/stocks/bulkquotes",
             to: "/sdk/go/stocks/quotes",
           },
