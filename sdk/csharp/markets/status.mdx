@@ -55,7 +55,7 @@ Console.WriteLine($"US market is {today.Status} on {today.Date:yyyy-MM-dd}");
 var recent = await client.Markets.GetStatusAsync("US", countback: 5);
 foreach (var day in recent.Values)
 {
-    Console.WriteLine($"{day.Date:yyyy-MM-dd}: {day.Status}");
+    Console.WriteLine(day);   // 2026-08-14 open
 }
 ```
 

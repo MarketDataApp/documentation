@@ -86,7 +86,7 @@ var candles = await client.Stocks.GetCandlesAsync(
 
 foreach (var bar in candles.Values)
 {
-    Console.WriteLine($"{bar.Time:yyyy-MM-dd}  O={bar.Open} H={bar.High} L={bar.Low} C={bar.Close} V={bar.Volume}");
+    Console.WriteLine(bar);   // 2026-08-14 O=228.10 H=230.44 L=227.55 C=229.88 V=41203118
 }
 
 // The last 10 sessions, using countback instead of a left edge.
