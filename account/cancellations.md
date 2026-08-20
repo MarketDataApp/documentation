@@ -3,17 +3,26 @@ title: Cancellations
 sidebar_position: 9
 ---
 
-Your Market Data account can be cancelled at any time. 
+Your Market Data account can be cancelled at any time, directly from your dashboard.
+
+1. Login to the [Customer Dashboard](https://www.marketdata.app/dashboard/).
+2. Find your active subscription. A **cancel** link appears next to it, beside the **upgrade** link.
+3. Click **cancel** and confirm.
+4. You will receive a confirmation email once your subscription has been cancelled.
+
+:::tip
+If your decision to cancel is due to technical issues, missing features, or any other reason, we invite you to first open a support ticket in the [Customer Dashboard](https://www.marketdata.app/dashboard/) before cancelling. Our team is here to help and we will do everything we can to resolve your issue and make sure you're happy with Market Data.
+:::
+
+## Cancelling from the Billing Portal
+
+You can also cancel from the Billing Portal, though this requires a separate login. Use it if you cannot reach your dashboard.
 
 1. Login to the [Billing Portal](https://cc.payproglobal.com/Customer/Account/Login).
 2. If you have never logged-in to the billing portal before, [see our support page](/account/billing-portal) on how to set-up access for the first time.
 3. Navigate to the "Subscriptions" tab on the left sidebar.
 4. Select your Market Data subscription and cancel it.
 5. You will receive a confirmation email once your subscription has been cancelled.
-
-:::tip
-If your decision to cancel is due to technical issues, missing features, or any other reason, we invite you to first open a support ticket in the [Customer Dashboard](https://www.marketdata.app/dashboard/) before cancelling. Our team is here to help and we will do everything we can to resolve your issue and make sure you're happy with Market Data.
-:::
 
 ## Unused Time
 
