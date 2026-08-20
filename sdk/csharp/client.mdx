@@ -14,7 +14,7 @@ using MarketDataApp;
 using var client = await MarketDataClient.CreateAsync();
 
 var quote = (await client.Stocks.GetQuoteAsync("AAPL")).Values[0];
-Console.WriteLine($"{quote.Symbol} last={quote.Last}");
+Console.WriteLine(quote);   // AAPL mid=311.94 last=311.92
 ```
 
 ## MarketDataClient
