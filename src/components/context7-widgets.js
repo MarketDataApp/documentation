@@ -21,6 +21,12 @@ const CONTEXT7_WIDGETS = [
     placeholder: 'Ask about the Java SDK...',
   },
   {
+    pathPattern: /\/sdk\/csharp(\/|$)/,
+    library: '/marketdataapp/sdk-csharp',
+    displayName: 'the Market Data C#/.NET SDK',
+    placeholder: 'Ask about the C#/.NET SDK...',
+  },
+  {
     pathPattern: /\/sdk\/py(\/|$)/,
     library: '/websites/marketdata_app_sdk_py',
     displayName: 'the Market Data Python SDK',
