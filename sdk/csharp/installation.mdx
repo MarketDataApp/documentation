@@ -15,22 +15,22 @@ This guide will help you install the Market Data C#/.NET SDK and configure it fo
 Add the SDK as a NuGet package reference. From your project directory:
 
 ```bash
-dotnet add package marketdata.sdk --prerelease
+dotnet add package MarketDataApp --prerelease
 ```
 
 `dotnet add package` resolves the newest version for you and writes it into your project file. While the SDK is a release candidate every published version is a pre-release, so the `--prerelease` flag is required (in an IDE, tick "Include prerelease" in the package manager).
 
-If you maintain the reference by hand, take the version number from the package's [NuGet page](https://www.nuget.org/packages/marketdata.sdk) or the [releases list](https://github.com/MarketDataApp/sdk-csharp/releases) — versions are derived from git tags, so there is no fixed number to copy from the docs:
+If you maintain the reference by hand, take the version number from the package's [NuGet page](https://www.nuget.org/packages/MarketDataApp) or the [releases list](https://github.com/MarketDataApp/sdk-csharp/releases) — versions are derived from git tags, so there is no fixed number to copy from the docs:
 
 ```xml
 <ItemGroup>
   <!-- Replace with the version shown on NuGet or the releases page. -->
-  <PackageReference Include="marketdata.sdk" Version="1.0.0-rc.N" />
+  <PackageReference Include="MarketDataApp" Version="1.0.0-rc.N" />
 </ItemGroup>
 ```
 
 :::note
-The NuGet **package id** is `marketdata.sdk`, but the root **namespace** you import is `MarketDataApp` — for example `using MarketDataApp;`. These differ on purpose: you install `marketdata.sdk` and then write `using MarketDataApp;`. Endpoint-specific types live under `MarketDataApp.Stocks`, `MarketDataApp.Options`, `MarketDataApp.Funds`, `MarketDataApp.Markets`, and `MarketDataApp.Utilities`.
+The NuGet **package id**, the assembly, and the root **namespace** are all `MarketDataApp` — you install `MarketDataApp` and then write `using MarketDataApp;`. Endpoint-specific types live under `MarketDataApp.Stocks`, `MarketDataApp.Options`, `MarketDataApp.Funds`, `MarketDataApp.Markets`, and `MarketDataApp.Utilities`.
 :::
 
 ## Requirements & Dependencies
