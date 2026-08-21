@@ -128,6 +128,36 @@ MarketDataClient().use { client ->
 ```
 
 </TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="Logger.cs"
+using MarketDataApp;
+using MarketDataApp.Exceptions;
+using Microsoft.Extensions.Logging;
+
+// Enable DEBUG logging by setting MARKETDATA_LOGGING_LEVEL=DEBUG in your environment.
+// The SDK then emits full request/response diagnostics (including the CF-Ray request
+// id) as structured Microsoft.Extensions.Logging events through the logger you attach.
+using var loggerFactory = LoggerFactory.Create(builder => builder.AddMarketDataCanonicalConsole());
+var options = MarketDataClientOptions.FromEnvironment()
+    .WithLogger(loggerFactory.CreateLogger<MarketDataClient>());
+
+try
+{
+    using var client = await MarketDataClient.CreateAsync(options);
+    var quotes = await client.Stocks.GetQuotesAsync(["AAPL"]);
+    Console.WriteLine(quotes);
+}
+catch (MarketDataException e)
+{
+    // The SDK already logged the failing request/response. SupportInfo bundles the
+    // status code, request URL and request id for a bug report.
+    Console.Error.WriteLine(e.SupportInfo);
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## The CF-Ray Header

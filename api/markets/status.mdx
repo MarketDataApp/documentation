@@ -21,7 +21,7 @@ GET
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-**GET** [https://api.marketdata.app/v1/markets/status/?from=2020-01-01&to=2020-12-31](https://api.marketdata.app/v1/markets/status/?from=2020-01-01&to=2020-12-31)
+**GET** [https://api.marketdata.app/v1/markets/status/?from=2024-01-01&to=2024-01-31](https://api.marketdata.app/v1/markets/status/?from=2024-01-01&to=2024-01-31)
 
 **GET** [https://api.marketdata.app/v1/markets/status/?date=yesterday](https://api.marketdata.app/v1/markets/status/?date=yesterday)
 
@@ -34,7 +34,7 @@ import { MarketDataClient } from "@marketdata/sdk";
 const client = new MarketDataClient();
 
 try {
-  const days = await client.markets.status({ from: "2020-01-01", to: "2020-12-31" });
+  const days = await client.markets.status({ from: "2024-01-01", to: "2024-01-31" });
   for (const d of days) {
     console.log(`date=${d.date} status=${d.status}`);
   }
@@ -56,7 +56,7 @@ import type { MarketStatusResponse } from "@marketdata/sdk";
 const client = new MarketDataClient();
 
 try {
-  const days: MarketStatusResponse = await client.markets.status({ from: "2020-01-01", to: "2020-12-31" });
+  const days: MarketStatusResponse = await client.markets.status({ from: "2024-01-01", to: "2024-01-31" });
   for (const d of days) {
     console.log(`date=${d.date} status=${d.status}`);
   }
@@ -75,7 +75,7 @@ try {
 from marketdata import MarketDataClient
 
 client = MarketDataClient()
-status1 = client.markets.status(from_date="2020-01-01", to_date="2020-12-31")
+status1 = client.markets.status(from_date="2024-01-01", to_date="2024-01-31")
 status2 = client.markets.status(date="yesterday")
 
 print(status1)
@@ -94,7 +94,7 @@ import (
 )
 
 func ExampleMarketStatus() {
-	msr, err := api.MarketStatus().From("2020-01-01").To("2020-12-31").Get()
+	msr, err := api.MarketStatus().From("2024-01-01").To("2024-01-31").Get()
 	if err != nil {
 		fmt.Print(err)
 		return
@@ -128,9 +128,8 @@ $client = new Client();
 
 // Get market status for a date range
 $statuses = $client->markets->status(
-    country: "US",
-    from: "2020-01-01",
-    to: "2020-12-31"
+    from: "2024-01-01",
+    to: "2024-01-31"
 );
 
 // Display formatted market statuses
@@ -138,7 +137,6 @@ echo $statuses;
 
 // Get market status for yesterday
 $yesterday = $client->markets->status(
-    country: "US",
     date: "yesterday"
 );
 echo $yesterday;
@@ -156,8 +154,8 @@ public class MarketStatusApp {
     try (MarketDataClient client = new MarketDataClient()) {
       client.markets()
           .status(MarketStatusRequest.builder()
-              .from(LocalDate.of(2020, 1, 1))
-              .to(LocalDate.of(2020, 12, 31))
+              .from(LocalDate.of(2024, 1, 1))
+              .to(LocalDate.of(2024, 1, 31))
               .build())
           .values()
           .forEach(System.out::println);
@@ -184,8 +182,8 @@ fun main() {
         client.markets()
             .status(
                 MarketStatusRequest.builder()
-                    .from(LocalDate.of(2020, 1, 1))
-                    .to(LocalDate.of(2020, 12, 31))
+                    .from(LocalDate.of(2024, 1, 1))
+                    .to(LocalDate.of(2024, 1, 31))
                     .build()
             )
             .values()
@@ -196,6 +194,31 @@ fun main() {
             .values()
             .forEach(::println)
     }
+}
+```
+
+</TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="MarketStatusApp.cs"
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+var year2020 = await client.Markets.GetStatusAsync(
+    "US",
+    from: new DateOnly(2020, 1, 1),
+    to: new DateOnly(2020, 12, 31));
+foreach (var day in year2020.Values)
+{
+    Console.WriteLine(day);
+}
+
+var today = await client.Markets.GetStatusAsync();
+foreach (var day in today.Values)
+{
+    Console.WriteLine(day);
 }
 ```
 

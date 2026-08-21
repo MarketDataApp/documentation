@@ -1,0 +1,62 @@
+---
+title: Status
+sidebar_position: 1
+---
+
+Retrieve whether a country's stock market is open or closed on a given day, or over a range of days — the market calendar.
+
+## Making Requests
+
+Use `GetStatusAsync` on the `Markets` resource. With no parameters it returns today's status for the US market.
+
+```csharp
+Task<MarketStatusResponse> GetStatusAsync(
+    string? country = null,
+    DateOnly? date = null, DateOnly? from = null, DateOnly? to = null, int? countback = null,
+    MarketDataRequestOptions? options = null, CancellationToken cancellationToken = default)
+Task<MarketStatusResponse> GetStatusAsync(MarketStatusRequest request, ...)
+```
+
+### MarketStatusRequest
+
+```csharp
+new MarketStatusRequest
+{
+    Country = string,       // ISO 3166 two-letter code; default US
+    Date = DateOnly,        // one day
+    From = DateOnly,        // range start
+    To = DateOnly,          // range end
+    Countback = int         // N most recent days
+}
+```
+
+#### Returns
+
+`MarketStatusResponse` wrapping `IReadOnlyList<MarketStatus>` — one row per day:
+
+```csharp
+public record MarketStatus(
+    DateTimeOffset? Date,
+    string? Status);        // "open" or "closed"
+```
+
+## Examples
+
+```csharp
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+// Is the US market open today?
+var today = (await client.Markets.GetStatusAsync("US")).Values[0];
+Console.WriteLine($"US market is {today.Status} on {today.Date:yyyy-MM-dd}");
+
+// The last five trading-calendar days.
+var recent = await client.Markets.GetStatusAsync("US", countback: 5);
+foreach (var day in recent.Values)
+{
+    Console.WriteLine(day);   // 2026-08-14 open
+}
+```
+
+For CSV output, call `client.Markets.GetStatusCsvAsync(...)` and read `.Csv`. See [Settings](/sdk/csharp/settings#csv-output).

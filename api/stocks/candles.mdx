@@ -21,7 +21,7 @@ GET
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-**GET** [https://api.marketdata.app/v1/stocks/candles/D/AAPL/?from=2020-01-01&to=2020-12-31](https://api.marketdata.app/v1/stocks/candles/D/AAPL/?from=2020-01-01&to=2020-12-31)
+**GET** [https://api.marketdata.app/v1/stocks/candles/D/AAPL/?from=2024-01-01&to=2024-01-31](https://api.marketdata.app/v1/stocks/candles/D/AAPL/?from=2024-01-01&to=2024-01-31)
 
 </TabItem>
 <TabItem value="JavaScript" label="JavaScript">
@@ -32,8 +32,11 @@ import { MarketDataClient } from "@marketdata/sdk";
 const client = new MarketDataClient();
 
 try {
-  // Default resolution is "D" (daily)
-  const candles = await client.stocks.candles("AAPL", { countback: 30 });
+  const candles = await client.stocks.candles("AAPL", {
+    resolution: "D",
+    from: "2024-01-01",
+    to: "2024-01-31",
+  });
   for (const c of candles) {
     console.log(`t=${c.t} o=${c.o} h=${c.h} l=${c.l} c=${c.c} v=${c.v}`);
   }
@@ -52,8 +55,11 @@ import type { StockCandle } from "@marketdata/sdk";
 const client = new MarketDataClient();
 
 try {
-  // Default resolution is "D" (daily)
-  const candles: StockCandle[] = await client.stocks.candles("AAPL", { countback: 30 });
+  const candles: StockCandle[] = await client.stocks.candles("AAPL", {
+    resolution: "D",
+    from: "2024-01-01",
+    to: "2024-01-31",
+  });
   for (const c of candles) {
     console.log(`t=${c.t} o=${c.o} h=${c.h} l=${c.l} c=${c.c} v=${c.v}`);
   }
@@ -69,7 +75,7 @@ try {
 from marketdata import MarketDataClient
 
 client = MarketDataClient()
-candles = client.stocks.candles("AAPL", resolution="D", from_date="2020-01-01", to_date="2020-12-31")
+candles = client.stocks.candles("AAPL", resolution="D", from_date="2024-01-01", to_date="2024-01-31")
 print(candles)
 ```
 </TabItem>
@@ -84,7 +90,7 @@ import (
 )
 
 func ExampleStockCandlesRequest() {
-	candles, err := StockCandles().Resolution("D").Symbol("AAPL").From("2020-01-01").To("2020-12-31").Get()
+	candles, err := StockCandles().Resolution("D").Symbol("AAPL").From("2024-01-01").To("2024-01-31").Get()
 	if err != nil {
 		fmt.Print(err)
 		return
@@ -105,8 +111,8 @@ use MarketDataApp\Client;
 $client = new Client();
 $candles = $client->stocks->candles(
     symbol: "AAPL",
-    from: "2020-01-01",
-    to: "2020-12-31",
+    from: "2024-01-01",
+    to: "2024-01-31",
     resolution: "D"
 );
 
@@ -120,12 +126,13 @@ echo $candles;
 import com.marketdata.sdk.MarketDataClient;
 import com.marketdata.sdk.stocks.StockCandlesRequest;
 import com.marketdata.sdk.stocks.StockResolution;
+import java.time.LocalDate;
 
 try (MarketDataClient client = new MarketDataClient()) {
-    // Default resolution is DAILY
     var candles = client.stocks().candles(
         StockCandlesRequest.builder(StockResolution.DAILY, "AAPL")
-            .countback(30)
+            .from(LocalDate.parse("2024-01-01"))
+            .to(LocalDate.parse("2024-01-31"))
             .build());
     candles.values().forEach(System.out::println);
 }
@@ -138,14 +145,34 @@ try (MarketDataClient client = new MarketDataClient()) {
 import com.marketdata.sdk.MarketDataClient
 import com.marketdata.sdk.stocks.StockCandlesRequest
 import com.marketdata.sdk.stocks.StockResolution
+import java.time.LocalDate
 
 MarketDataClient().use { client ->
-    // Default resolution is DAILY
     val candles = client.stocks().candles(
         StockCandlesRequest.builder(StockResolution.DAILY, "AAPL")
-            .countback(30)
+            .from(LocalDate.parse("2024-01-01"))
+            .to(LocalDate.parse("2024-01-31"))
             .build())
     candles.values().forEach(::println)
+}
+```
+
+</TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="StockCandles.cs"
+using MarketDataApp;
+using MarketDataApp.Stocks;
+
+using var client = await MarketDataClient.CreateAsync();
+
+var candles = await client.Stocks.GetCandlesAsync(
+    StockResolution.Daily, "AAPL",
+    from: DateOnly.Parse("2024-01-01"), to: DateOnly.Parse("2024-01-31"));
+foreach (var candle in candles.Values)
+{
+    Console.WriteLine(candle);
 }
 ```
 

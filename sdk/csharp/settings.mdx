@@ -1,0 +1,156 @@
+---
+title: Settings
+sidebar_position: 4
+---
+
+The SDK is configured at two levels: **client options** (`MarketDataClientOptions`, applied once when the client is created) and **per-request options** (`MarketDataRequestOptions`, passed to any endpoint call). Client options can be set programmatically or bound from configuration; per-request options override the client-level defaults field by field.
+
+## Configuration Cascade
+
+When you create a client without explicit options, `MarketDataClientOptions.FromEnvironment()` loads every `MARKETDATA_*` key from these sources, in **increasing precedence order**:
+
+1. .NET user secrets (lowest priority)
+2. An optional `.env` file in the current working directory
+3. Environment variables (highest priority)
+
+So an environment variable overrides the same key in `.env`, which overrides user secrets. Explicit options — `new MarketDataClientOptions { ... }` — bypass the cascade entirely.
+
+In ASP.NET Core and generic-host apps, `MarketDataClientOptions.FromConfiguration(IConfiguration)` reads the same keys from your app's `IConfiguration` (appsettings, user secrets, environment variables — whatever the host has wired up). `AddMarketDataClient(builder.Configuration)` does this for you.
+
+The **per-request** layer sits on top: any `MarketDataRequestOptions` field you set on an endpoint call wins over the matching client-level default; fields you leave `null` fall back to the client default.
+
+```csharp
+// MARKETDATA_DATE_FORMAT=timestamp and MARKETDATA_MODE=cached configured in the environment.
+using var client = await MarketDataClient.CreateAsync();
+
+// dateformat=timestamp and mode=cached are applied from the client defaults.
+await client.Stocks.GetPricesAsync(["AAPL"]);
+
+// dateformat=unix wins from the per-request options; mode=cached still fills from the default.
+await client.Stocks.GetPricesAsync(
+    ["AAPL"],
+    new MarketDataRequestOptions { DateFormat = DateFormat.Unix });
+```
+
+## Universal Parameters
+
+`MarketDataRequestOptions` carries the parameters every data endpoint understands. Pass it as the `options` argument of any endpoint method:
+
+```csharp
+var response = await client.Stocks.GetQuotesAsync(
+    ["AAPL", "MSFT"],
+    options: new MarketDataRequestOptions
+    {
+        DateFormat = DateFormat.Timestamp,
+        Mode = Mode.Delayed,
+        Limit = 50,
+        Columns = ["symbol", "last"]
+    });
+```
+
+### Date Format
+
+`DateFormat` controls how the API renders date/time fields in the raw response. Client-level default: `DefaultDateFormat` (`MARKETDATA_DATE_FORMAT`).
+
+| Value                    | Wire value    | Notes                                                                                                                                            |
+|--------------------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| `DateFormat.Unix`        | `unix`        | Unix epoch seconds.                                                                                                                              |
+| `DateFormat.Timestamp`   | `timestamp`   | ISO-8601 timestamp strings.                                                                                                                      |
+| `DateFormat.Spreadsheet` | `spreadsheet` | Excel/Sheets serial dates. **CSV-only**: typed methods reject it with `ArgumentException`, because the typed decoders cannot parse serial dates. |
+
+Regardless of the wire format, typed responses always expose dates as `DateTimeOffset` values normalized to **America/New_York**.
+
+### Data Mode
+
+`Mode` selects the data freshness. Client-level default: `DefaultMode` (`MARKETDATA_MODE`).
+
+| Value          | Wire value |
+|----------------|------------|
+| `Mode.Live`    | `live`     |
+| `Mode.Delayed` | `delayed`  |
+| `Mode.Cached`  | `cached`   |
+
+### Columns
+
+`Columns` restricts the response to the named fields, which reduces both payload size and, on some endpoints, the credits consumed. It applies to both typed and CSV requests. Fields projected away come back as `null` on the typed models — which is why every field on the response records is nullable. Client-level default: `DefaultColumns` (`MARKETDATA_COLUMNS`, comma-separated).
+
+### Limit and Offset
+
+`Limit` caps the number of rows and `Offset` skips rows, for endpoints that support paging. They have no client-level default and are taken only from the per-request options.
+
+### Headers and Human
+
+`Headers` (include a header row) and `Human` (human-readable field names and values) apply to **CSV output only**. Typed JSON responses are always decoded into typed models keyed by property name, so neither flag is sent on the typed request path. Client-level defaults: `DefaultAddHeaders` (`MARKETDATA_ADD_HEADERS`) and `DefaultHuman` (`MARKETDATA_USE_HUMAN_READABLE`).
+
+## CSV Output
+
+Every endpoint has a paired `*CsvAsync` method that returns the API's CSV output as text instead of typed models. The output format is chosen by **which method you call**, not by a setting: `GetQuotesAsync` returns typed models, `GetQuotesCsvAsync` returns CSV.
+
+```csharp
+var csv = await client.Stocks.GetPricesCsvAsync(
+    ["AAPL", "MSFT"],
+    new MarketDataRequestOptions { Headers = true, Human = true });
+
+Console.WriteLine(csv.Csv);                     // the CSV text (also available as Values / RawBody)
+await csv.SaveToFileAsync("prices.csv");        // write it to disk
+```
+
+`CsvResponse` carries the same metadata as every other response (`StatusCode`, `RequestId`, `RateLimit`, `IsNoData`, ...), with `IsCsv == true`.
+
+:::note `MARKETDATA_OUTPUT_FORMAT`
+This key exists for parity with the other Market Data SDKs and is **advisory only** in C#: it stores a hint on `OutputFormat` but never reroutes a typed method to CSV or vice versa. Call the `*CsvAsync` method when you want CSV.
+:::
+
+## Logging
+
+The SDK emits structured `Microsoft.Extensions.Logging` events for its lifecycle, requests, responses, retries, and errors — tokens are always redacted. Attach any `ILogger` through `Logger` (or `options.WithLogger(logger)`); in ASP.NET Core, `AddMarketDataClient` auto-wires the container's `ILogger<MarketDataClient>` when logging is configured.
+
+`MinimumLogLevel` (`MARKETDATA_LOGGING_LEVEL`) controls the SDK's own verbosity. The default `Information` suppresses the per-request Debug logs unless you set `MARKETDATA_LOGGING_LEVEL=DEBUG`. Accepted values are `DEBUG` / `INFO` / `WARNING` / `ERROR` or any .NET `LogLevel` name.
+
+For the canonical `{timestamp} - {logger_name} - {level} - {message}` console line shared by the Market Data SDKs, add the opt-in formatter to your logging builder:
+
+```csharp
+builder.Logging.AddMarketDataCanonicalConsole();
+// Output: 2025-02-21 12:00:00 - marketdata.client - INFO - Making request...
+```
+
+## Programmatic Options
+
+Everything the cascade can bind is also settable in code, plus a few knobs that are code-only:
+
+```csharp
+var options = new MarketDataClientOptions
+{
+    ApiToken = token,
+    MaxRetries = 2,                        // the only retry knob (default 3)
+    MaxConcurrentRequests = 10,            // 1–50, default 50
+    ValidateTokenOnStartup = false,        // default true
+    TimeProvider = TimeProvider.System,    // inject a fake clock in tests
+    UserAgent = "my-app/1.0",
+    Logger = logger,
+    DefaultDateFormat = DateFormat.Timestamp,
+    DefaultMode = Mode.Cached
+};
+```
+
+Retry timing (the 1-second base delay, exponential growth, 30-second cap, and the `Retry-After` ceiling) is fixed by the SDK requirements and is not configurable.
+
+## Environment Variables Reference
+
+| Key                                  | Property                | Default                           | Notes                                   |
+|--------------------------------------|-------------------------|-----------------------------------|-----------------------------------------|
+| `MARKETDATA_TOKEN`                   | `ApiToken`              | `null`                            | Bearer token; `null` means demo mode.   |
+| `MARKETDATA_BASE_URL`                | `BaseAddress`           | `https://api.marketdata.app/`     | Absolute HTTP(S) URI.                   |
+| `MARKETDATA_API_VERSION`             | `ApiVersion`            | `v1`                              | Version path segment.                   |
+| `MARKETDATA_MAX_RETRIES`             | `MaxRetries`            | `3`                               | Retries after a transient failure.      |
+| `MARKETDATA_MAX_CONCURRENT_REQUESTS` | `MaxConcurrentRequests` | `50`                              | In-flight request cap, 1–50.            |
+| `MARKETDATA_USER_AGENT`              | `UserAgent`             | `marketdata-sdk-csharp/{version}` | Sent on every request.                  |
+| `MARKETDATA_DATE_FORMAT`             | `DefaultDateFormat`     | `null`                            | `unix` / `timestamp` / `spreadsheet`.   |
+| `MARKETDATA_MODE`                    | `DefaultMode`           | `null`                            | `live` / `delayed` / `cached`.          |
+| `MARKETDATA_COLUMNS`                 | `DefaultColumns`        | `null`                            | Comma-separated column list.            |
+| `MARKETDATA_ADD_HEADERS`             | `DefaultAddHeaders`     | `null`                            | `true` / `false`; CSV only.             |
+| `MARKETDATA_USE_HUMAN_READABLE`      | `DefaultHuman`          | `null`                            | `true` / `false`; CSV only.             |
+| `MARKETDATA_LOGGING_LEVEL`           | `MinimumLogLevel`       | `Information`                     | `DEBUG` / `INFO` / `WARNING` / `ERROR`. |
+| `MARKETDATA_OUTPUT_FORMAT`           | `OutputFormat`          | `null`                            | `json` / `csv`; advisory only.          |
+
+Invalid values for any key throw a `FormatException` naming the offending key.

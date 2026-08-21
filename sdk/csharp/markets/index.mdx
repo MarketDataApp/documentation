@@ -1,0 +1,16 @@
+---
+title: Markets
+slug: /csharp/markets
+sidebar_position: 13
+---
+
+The C#/.NET SDK from Market Data provides methods to streamline your use of the Markets endpoints. These methods provide a typed interface over the underlying HTTP requests and responses; every method is asynchronous and accepts an optional `CancellationToken`.
+
+Reach the resource through `client.Markets`. For CSV output, call the paired `*CsvAsync` method of the same name (for example `GetStatusCsvAsync`).
+
+## Markets Endpoints
+
+import DocCardList from "@theme/DocCardList";
+import { useCurrentSidebarCategory } from "@docusaurus/theme-common";
+
+<DocCardList items={useCurrentSidebarCategory().items} />

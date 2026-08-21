@@ -152,6 +152,10 @@ const config = {
             to: "/sdk/go/options/chain",
           },
           {
+            from: "/sdk/csharp/options/strikes",
+            to: "/sdk/csharp/options/chain",
+          },
+          {
             from: "/sdk/php/stocks/bulk-candles",
             to: "/sdk/php/stocks/bulkcandles",
           },

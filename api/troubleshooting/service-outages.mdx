@@ -177,6 +177,25 @@ MarketDataClient().use { client ->
 ```
 
 </TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="Status.cs"
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+var services = (await client.Utilities.GetStatusAsync()).Values;
+
+foreach (var path in new[] { "/v1/stocks/quotes/", "/v1/options/chain/", "/v1/stocks/candles/" })
+{
+    var service = services.FirstOrDefault(s => s.Service == path);
+    var state = service is null ? "Not found" : service.Online ? "Online" : "Offline";
+    Console.WriteLine($"{path}: {state}");
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## What To Do During Downtime

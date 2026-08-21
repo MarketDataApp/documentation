@@ -168,6 +168,26 @@ println(response.body())
 ```
 
 </TabItem>
+
+<TabItem value="C#" label="C#">
+
+:::note
+The C# SDK does not yet provide a method for the bulk candles endpoint, so this example uses `System.Net.Http.HttpClient` directly. It will be replaced with a `MarketDataApp` SDK example once bulk support is added.
+:::
+
+```csharp title="BulkStockCandles.cs"
+using System.Net.Http.Headers;
+
+using var http = new HttpClient();
+http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+    "Bearer",
+    Environment.GetEnvironmentVariable("MARKETDATA_TOKEN"));
+
+var response = await http.GetAsync("https://api.marketdata.app/v1/stocks/bulkcandles/D/?symbols=AAPL,META,MSFT");
+Console.WriteLine(await response.Content.ReadAsStringAsync());
+```
+
+</TabItem>
 </Tabs>
 
 ## Response Example

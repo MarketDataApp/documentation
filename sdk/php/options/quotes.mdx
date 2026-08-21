@@ -81,7 +81,7 @@ use MarketDataApp\Client;
 $client = new Client();
 
 // Get quote for a single option
-$quotes = $client->options->quotes('AAPL250117C00200000');
+$quotes = $client->options->quotes('AAPL271217C00300000');
 
 foreach ($quotes->quotes as $quote) {
     echo "Symbol: " . $quote->option_symbol . "\n";
@@ -99,7 +99,7 @@ foreach ($quotes->quotes as $quote) {
 #### Output
 
 ```
-Symbol: AAPL250117C00200000
+Symbol: AAPL271217C00300000
 Underlying: AAPL
 Strike: $200
 Expiration: 2025-01-17
@@ -123,11 +123,11 @@ $client = new Client();
 
 // Get quotes for multiple options (fetched concurrently)
 $symbols = [
-    'AAPL250117C00180000',
-    'AAPL250117C00190000',
-    'AAPL250117C00200000',
-    'AAPL250117P00180000',
-    'AAPL250117P00190000',
+    'AAPL271217C00280000',
+    'AAPL271217C00290000',
+    'AAPL271217C00300000',
+    'AAPL271217P00280000',
+    'AAPL271217P00290000',
 ];
 
 $quotes = $client->options->quotes($symbols);
@@ -161,7 +161,7 @@ $client = new Client();
 
 // Get historical quote from a specific date
 $quotes = $client->options->quotes(
-    option_symbols: 'AAPL250117C00200000',
+    option_symbols: 'AAPL271217C00300000',
     date: '2024-01-15'
 );
 
@@ -185,7 +185,7 @@ $client = new Client();
 
 // Get a series of historical quotes
 $quotes = $client->options->quotes(
-    option_symbols: 'AAPL250117C00200000',
+    option_symbols: 'AAPL271217C00300000',
     from: '2024-01-01',
     to: '2024-01-31'
 );
@@ -218,7 +218,7 @@ $client = new Client();
 
 // Get quotes as CSV
 $quotes = $client->options->quotes(
-    option_symbols: ['AAPL250117C00180000', 'AAPL250117C00200000'],
+    option_symbols: ['AAPL271217C00280000', 'AAPL271217C00300000'],
     parameters: new Parameters(format: Format::CSV)
 );
 

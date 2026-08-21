@@ -1,0 +1,68 @@
+---
+title: Installation
+sidebar_position: 1
+---
+
+This guide will help you install the Market Data C#/.NET SDK and configure it for your project.
+
+|                       |                                                                              |
+|-----------------------|------------------------------------------------------------------------------|
+| **Package**           | [`MarketDataApp`](https://www.nuget.org/packages/MarketDataApp) on NuGet.org |
+| **Target frameworks** | `net8.0`, `net10.0`                                                          |
+| **License**           | MIT                                                                          |
+| **Source**            | [MarketDataApp/sdk-csharp](https://github.com/MarketDataApp/sdk-csharp)      |
+
+## Prerequisites
+
+- **.NET 8.0 or newer.** The package multi-targets `net8.0` and `net10.0` (both LTS releases), so projects on either runtime get a native build.
+- The [.NET SDK](https://dotnet.microsoft.com/download) command line, or an IDE such as Visual Studio, Rider, or VS Code with the C# Dev Kit.
+
+## Basic Installation
+
+Add the SDK as a NuGet package reference. From your project directory:
+
+```bash
+dotnet add package MarketDataApp
+```
+
+`dotnet add package` resolves the newest stable version for you and writes it into your project file.
+
+If you maintain the reference by hand, take the version number from the package's [NuGet page](https://www.nuget.org/packages/MarketDataApp) or the [releases list](https://github.com/MarketDataApp/sdk-csharp/releases) — versions are derived from git tags, so there is no fixed number to copy from the docs:
+
+```xml
+<ItemGroup>
+  <!-- Replace with the version shown on NuGet or the releases page. -->
+  <PackageReference Include="MarketDataApp" Version="1.0.0" />
+</ItemGroup>
+```
+
+:::note
+The NuGet **package id**, the assembly, and the root **namespace** are all `MarketDataApp` — you install `MarketDataApp` and then write `using MarketDataApp;`. Endpoint-specific types live under `MarketDataApp.Stocks`, `MarketDataApp.Options`, `MarketDataApp.Funds`, `MarketDataApp.Markets`, and `MarketDataApp.Utilities`.
+:::
+
+## Requirements & Dependencies
+
+The SDK stays on the standard Microsoft stack, with one small helper:
+
+- **No third-party HTTP client.** It uses the built-in `System.Net.Http.HttpClient`, and can either create its own or use one your application manages (including clients from `IHttpClientFactory`, via `Microsoft.Extensions.Http`).
+- **`System.Text.Json`** for JSON decoding — no Newtonsoft dependency.
+- **`Microsoft.Extensions.Configuration`** (with the environment-variables and user-secrets providers), **`Microsoft.Extensions.Logging`**, and **`Microsoft.Extensions.DependencyInjection`** for configuration binding, structured logging, and the `AddMarketDataClient` service-collection extension.
+- **`DotNetEnv`** to load an optional `.env` file from the working directory.
+
+## Updating the SDK
+
+To move to the latest stable version:
+
+```bash
+dotnet add package MarketDataApp
+```
+
+The SDK follows [semantic versioning](https://semver.org/) from `1.0.0`, so a `1.x` update never contains a breaking change. Review the [release notes](https://github.com/MarketDataApp/sdk-csharp/releases) before moving to a new major version.
+
+## Next Steps
+
+After installation, you'll need to:
+
+1. Set up your [authentication token](/sdk/csharp/authentication).
+2. Learn about the [client](/sdk/csharp/client) and how to make your first API requests.
+3. Configure [Settings](/sdk/csharp/settings) to customize output format, date format, and other universal parameters.

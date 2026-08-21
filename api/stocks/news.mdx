@@ -110,11 +110,7 @@ func ExampleStockNewsRequest_get() {
 use MarketDataApp\Client;
 
 $client = new Client();
-$news = $client->stocks->news(
-    symbol: "AAPL",
-    from: "2024-01-01",
-    to: "2024-01-31"
-);
+$news = $client->stocks->news(symbol: "AAPL");
 
 // Display formatted news summary
 echo $news;
@@ -140,6 +136,21 @@ import com.marketdata.sdk.stocks.StockNewsRequest
 
 MarketDataClient().use { client ->
     client.stocks().news(StockNewsRequest.of("AAPL")).values().forEach(::println)
+}
+```
+
+</TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="StockNews.cs"
+using MarketDataApp;
+
+using var client = await MarketDataClient.CreateAsync();
+
+foreach (var article in (await client.Stocks.GetNewsAsync("AAPL")).Values)
+{
+    Console.WriteLine(article);
 }
 ```
 

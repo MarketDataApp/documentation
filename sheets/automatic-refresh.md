@@ -24,7 +24,7 @@ Google Sheets has a hard limit of 20,000 [urlfetch](/sheets/troubleshooting/urlf
 Place `=GOOGLEFINANCE("AAPL")` in a cell somewhere in your workbook. For this example, we'll assume it is in cell A1.
 
 ```excel-formula
-=OPTIONDATA("AAPL260116C00150000","all,"&A1)
+=OPTIONDATA("AAPL271217C00250000","all,"&A1)
 =STOCKDATA("AAPL","all,"&A1)
 ```
 

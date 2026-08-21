@@ -1,0 +1,105 @@
+---
+title: Candles
+sidebar_position: 1
+---
+
+Retrieve historical OHLCV (open/high/low/close/volume) candles for a stock symbol.
+
+## Making Requests
+
+Use `GetCandlesAsync` on the `Stocks` resource, passing a `StockResolution` and a symbol. For large intraday ranges the SDK automatically splits the request into year-sized chunks, fetches them concurrently, and merges the results into a single response (`IsComposite == true`, one entry in `Parts` per HTTP request).
+
+```csharp
+// Scalar overload — the common parameters directly:
+Task<StockCandlesResponse> GetCandlesAsync(
+    StockResolution resolution, string symbol,
+    DateOnly? date = null, DateOnly? from = null, DateOnly? to = null, int? countback = null,
+    string? exchange = null, bool? extended = null, string? country = null,
+    bool? adjustSplits = null, bool? adjustDividends = null,
+    MarketDataRequestOptions? options = null, CancellationToken cancellationToken = default)
+
+// Request-object overload:
+Task<StockCandlesResponse> GetCandlesAsync(
+    StockCandlesRequest request,
+    MarketDataRequestOptions? options = null, CancellationToken cancellationToken = default)
+```
+
+### StockCandlesRequest
+
+```csharp
+new StockCandlesRequest(StockResolution resolution, string symbol)
+{
+    Date = DateOnly,             // a single trading day
+    From = DateOnly,             // window start (inclusive)
+    To = DateOnly,               // window end (inclusive)
+    Countback = int,             // N candles back from `To` (or from today), instead of `From`
+    Exchange = string,           // disambiguate exchange
+    Extended = bool,             // include extended-hours bars (intraday)
+    Country = string,            // exchange country (ISO 3166, 2-letter)
+    AdjustSplits = bool,         // default: true for daily
+    AdjustDividends = bool       // default: true for daily
+}
+```
+
+The date window is validated before any HTTP call: `Date` is exclusive with `From`/`To`/`Countback`, and `Countback` cannot be combined with `From`. An invalid combination throws `ArgumentException`.
+
+### StockResolution
+
+A value type for the candle interval:
+
+```csharp
+StockResolution.Daily          // also Weekly, Monthly, Yearly
+StockResolution.Minutes(5)     // 5-minute bars
+StockResolution.Hours(1)       // hourly bars
+StockResolution.Days(1)        // also Weeks(n), Months(n), Years(n)
+StockResolution.Of("1H")       // any raw wire token
+```
+
+#### Returns
+
+`StockCandlesResponse` wrapping `IReadOnlyList<StockCandle>`:
+
+```csharp
+public record StockCandle(
+    DateTimeOffset? Time,   // bar opening moment (America/New_York)
+    decimal? Open,
+    decimal? High,
+    decimal? Low,
+    decimal? Close,
+    long? Volume);
+```
+
+## Examples
+
+```csharp
+using MarketDataApp;
+using MarketDataApp.Stocks;
+
+using var client = await MarketDataClient.CreateAsync();
+
+// Daily candles over a date range.
+var today = DateOnly.FromDateTime(DateTime.Today);
+var candles = await client.Stocks.GetCandlesAsync(
+    StockResolution.Daily, "AAPL",
+    from: today.AddDays(-7),
+    to: today);
+
+foreach (var bar in candles.Values)
+{
+    Console.WriteLine(bar);   // 2026-08-14 O=228.10 H=230.44 L=227.55 C=229.88 V=41203118
+}
+
+// The last 10 sessions, using countback instead of a left edge.
+var lastTen = await client.Stocks.GetCandlesAsync(StockResolution.Daily, "AAPL", countback: 10);
+
+// A long intraday range: the SDK chunks it by year and merges the parts.
+var intraday = await client.Stocks.GetCandlesAsync(
+    new StockCandlesRequest(StockResolution.Minutes(30), "AAPL")
+    {
+        From = today.AddYears(-2),
+        To = today
+    });
+Console.WriteLine($"{intraday.Values.Count} bars from {intraday.Parts.Count} requests");
+```
+
+For CSV output, call `client.Stocks.GetCandlesCsvAsync(...)` with the same parameters and read `.Csv`. See [Settings](/sdk/csharp/settings#csv-output).

@@ -225,6 +225,34 @@ fun <T> requestWithBackoff(maxRetries: Int = 5, call: () -> T): T {
 ```
 
 </TabItem>
+
+<TabItem value="C#" label="C#">
+
+```csharp title="RequestWithBackoff.cs"
+using MarketDataApp.Exceptions;
+
+// The SDK already retries with exponential backoff internally, and its
+// MaxConcurrentRequests option (default 50) bounds fan-out. For a 429 caused by
+// too many *concurrent* requests, wrap your call in an outer backoff and lower
+// the fan-out. RateLimitException is the SDK's 429; honour RetryAfter if set.
+static async Task<T> RequestWithBackoffAsync<T>(Func<Task<T>> call, int maxRetries = 3)
+{
+    for (var attempt = 0; ; attempt++)
+    {
+        try
+        {
+            return await call();
+        }
+        catch (RateLimitException e) when (attempt < maxRetries)
+        {
+            var backoff = TimeSpan.FromMilliseconds(200 * Math.Pow(2, attempt) + Random.Shared.Next(100));
+            await Task.Delay(e.RetryAfter ?? backoff);
+        }
+    }
+}
+```
+
+</TabItem>
 </Tabs>
 
 ## Common Concurrency Traps

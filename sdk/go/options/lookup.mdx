@@ -74,7 +74,7 @@ These methods are used to send the request in different formats or retrieve the 
 
 
 ```go
-resp, err := OptionLookup().UserInput("AAPL 7/28/2023 200 Call").Get()
+resp, err := OptionLookup().UserInput("AAPL 12/17/2027 250 Call").Get()
 if err != nil {
 	fmt.Print(err)
 	return
@@ -86,7 +86,7 @@ fmt.Println(resp)
 #### Output
 
 ```
-AAPL230728C00200000
+AAPL271217C00250000
 ```
 
 </TabItem>
@@ -97,7 +97,7 @@ AAPL230728C00200000
 
 
 ```go
-resp, err := OptionLookup().UserInput("AAPL 7/28/2023 200 Call").Packed()
+resp, err := OptionLookup().UserInput("AAPL 12/17/2027 250 Call").Packed()
 if err != nil {
 	fmt.Print(err)
 	return
@@ -109,7 +109,7 @@ fmt.Println(resp)
 #### Output
 
 ```
-OptionLookupResponse{OptionSymbol: "AAPL230728C00200000"}
+OptionLookupResponse{OptionSymbol: "AAPL271217C00250000"}
 ```
 
 </TabItem>
