@@ -20,15 +20,18 @@ jobs:
 
       - run: yarn install --frozen-lockfile
 
-      - name: Install worker test dependencies
-        working-directory: worker
-        run: yarn install --frozen-lockfile
-
-      - name: Run integration tests
-        working-directory: worker
+      # This used to install worker/'s dependencies and run its integration
+      # suite. The worker moved to MarketDataApp/www-marketdata-app, which runs
+      # that suite plus a new smoke test after its own deploys. What remains
+      # here is the half that tests THIS repo's content: the 19 redirects
+      # declared in docusaurus.config.js.
+      #
+      # No install step -- `node --test` against the standard library and
+      # global fetch. The root `yarn install` above stays for the e2e run.
+      - name: Run redirect tests
         env:
           TEST_ENV: ${{ github.event.client_payload.environment }}
-        run: yarn test:integration
+        run: yarn test:redirects
 
       - run: npx playwright install chromium
 

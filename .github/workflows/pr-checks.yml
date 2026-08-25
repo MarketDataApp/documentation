@@ -53,23 +53,14 @@ jobs:
       - name: Check for broken links
         run: yarn lint:links
 
-  worker-unit-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+  # `worker-unit-tests` was here. The worker moved to
+  # MarketDataApp/www-marketdata-app, which runs those 38 tests on its own pull
+  # requests. Nothing is lost by deleting the job; keeping it would have run
+  # tests against a directory this branch removes.
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-          cache-dependency-path: worker/yarn.lock
-
-      - run: yarn install --frozen-lockfile
-        working-directory: worker
-
-      - run: yarn test
-        working-directory: worker
-
+  # Job name kept, though it now runs only the redirect suite. Renaming it
+  # would rename a status check, and a branch protection rule that requires the
+  # old name would go on waiting for a job that no longer reports.
   staging-integration-tests:
     runs-on: ubuntu-latest
     steps:
@@ -78,17 +69,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
-          cache-dependency-path: worker/yarn.lock
 
-      - run: yarn install --frozen-lockfile
-        working-directory: worker
-
-      - name: Run integration tests against staging
-        working-directory: worker
+      # No install step. This suite is `node --test` against the standard
+      # library and global fetch, so it needs no dependencies -- it used to
+      # borrow worker/'s vitest, and worker/ has gone. Same reason there is no
+      # `cache: yarn` here any more: there is no lockfile to key it on.
+      - name: Run redirect tests against staging
         env:
           TEST_ENV: staging
-        run: yarn test:integration
+        run: yarn test:redirects
 
       - name: Notify Slack on failure
         if: failure()
