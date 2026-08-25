@@ -88,12 +88,6 @@ const config = {
     './plugins/markdown-twins',
     './plugins/redirects-file',
     [
-      "@docusaurus/plugin-client-redirects",
-      {
-        redirects: REDIRECTS,
-      },
-    ],
-    [
       "@docusaurus/plugin-content-docs",
       /** @type {import('@docusaurus/plugin-content-docs').Options} */
       {
