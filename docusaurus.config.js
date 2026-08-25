@@ -1,3 +1,5 @@
+const { REDIRECTS } = require("./redirects");
+
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
@@ -84,87 +86,11 @@ const config = {
   plugins: [
     './plugins/theme-cookie-sync',
     './plugins/markdown-twins',
+    './plugins/redirects-file',
     [
       "@docusaurus/plugin-client-redirects",
       {
-        redirects: [
-          {
-            from: "/account/troubleshooting/linkedin-missing",
-            to: "/account/troubleshooting/linkedin-issues",
-          },
-          {
-            from: "/api/troubleshooting/http-status-codes",
-            to: "/api/troubleshooting",
-          },
-          {
-            from: "/sheets/troubleshooting/common-error-messages",
-            to: "/sheets/troubleshooting",
-          },
-          {
-            from: "/api/universal-parameters/feed",
-            to: "/api/universal-parameters/mode",
-          },
-          {
-            from: "/sheets/automatic-refreshing",
-            to: "/sheets/automatic-refresh",
-          },
-          {
-            from: "/sheets/stockdata",
-            to: "/sheets/stocks/stockdata",
-          },
-          {
-            from: "/sheets/earnings",
-            to: "/sheets/stocks/earnings",
-          },
-          {
-            from: "/sheets/optiondata",
-            to: "/sheets/options/optiondata",
-          },
-          {
-            from: "/sheets/optionlookup",
-            to: "/sheets/options/optionlookup",
-          },
-          {
-            from: "/sheets/optionchain",
-            to: "/sheets/options/optionchain",
-          },
-          {
-            from: "/sheets/marketstatus",
-            to: "/sheets/markets/marketstatus",
-          },
-          {
-            from: "/account/compliance",
-            to: "/account/data-policies/account-verification",
-          },
-          {
-            from: "/api/options/strikes",
-            to: "/api/options/chain",
-          },
-          {
-            from: "/sdk/py/options/strikes",
-            to: "/sdk/py/options/chain",
-          },
-          {
-            from: "/sdk/php/options/strikes",
-            to: "/sdk/php/options/chain",
-          },
-          {
-            from: "/sdk/go/options/strikes",
-            to: "/sdk/go/options/chain",
-          },
-          {
-            from: "/sdk/csharp/options/strikes",
-            to: "/sdk/csharp/options/chain",
-          },
-          {
-            from: "/sdk/go/stocks/bulkquotes",
-            to: "/sdk/go/stocks/quotes",
-          },
-          {
-            from: "/sdk/php/stocks/bulk-candles",
-            to: "/sdk/php/stocks/bulkcandles",
-          },
-        ],
+        redirects: REDIRECTS,
       },
     ],
     [
