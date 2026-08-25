@@ -1,36 +1,33 @@
 'use strict';
 
 /**
- * Integration test: verifies every client-side redirect declared in
- * docusaurus.config.js works on the live site.
- *
- * Redirects are extracted from the config rather than restated here, so adding
- * one to the config adds a test case and the two cannot drift.
+ * Integration test: verifies every redirect in redirects.js works on the live
+ * site, for GET and for HEAD.
  *
  * ---------------------------------------------------------------------------
- * Why this file is here and not in worker/
+ * What changed, and why the assertions are stronger now
  * ---------------------------------------------------------------------------
  *
- * It used to live in worker/, which moved to MarketDataApp/www-marketdata-app.
- * It did not go with it: it reads ../docusaurus.config.js and tests this repo's
- * redirect declarations. The worker only converts the stubs Docusaurus emits
- * for them.
+ * These used to be Docusaurus client-redirect stubs: a page carrying
+ * `<meta http-equiv="refresh">`, answering 200, with the edge worker reading
+ * the body and converting it to a 301. So the old assertions could only be
+ * "the page loads, and the HTML mentions the destination". They are now real
+ * `_redirects` rules served by Cloudflare Pages, so this asserts what actually
+ * matters: the status is 301 and Location names the destination.
  *
- * Rewritten from vitest to node:test in the same change. vitest was worker/'s
- * devDependency and left with it, and this repo already runs `node --test` for
- * lib/ and scripts/. Adding vitest back to the root for one file would have
- * re-introduced GHSA-5xrq-8626-4rwp, which deleting worker/ removes.
+ * HEAD IS TESTED, and that is the point of the exercise. The old arrangement
+ * could not work for HEAD -- a HEAD response has no body, so the worker's
+ * match never fired and every one of these answered 301 to GET and 200 to
+ * HEAD. Nothing caught it, because every test here used GET. See
+ * MarketDataApp/www-marketdata-app#2.
  *
- * The assertions are a faithful port -- same three checks, same order.
+ * `redirect: 'manual'` throughout. Following the redirect is what hid the
+ * defect: fetch chased the 301 to a destination that returns 200, so a test
+ * asserting 200 passed whether or not a redirect had happened at all.
  *
- * ONE NOTE ON `html.includes(to)`. It was written when a stub was served as a
- * page carrying a <meta http-equiv="refresh"> to `to`, so the check read the
- * refresh target out of the body. Since MarketDataApp/documentation@179ee28 the
- * edge worker converts those stubs to real 301s, so fetch() now follows the
- * redirect and this asserts against the DESTINATION page, which contains its
- * own URL. It still passes, for a different reason than the one it was written
- * for. Left as-is deliberately: changing what a test means during a move makes
- * a later failure impossible to attribute. Worth revisiting on its own.
+ * The redirect list is imported rather than parsed out of docusaurus.config.js
+ * with a regular expression, so adding one to redirects.js adds a test case and
+ * the two cannot drift.
  *
  * Set TEST_ENV=staging or TEST_ENV=production for one host. Unset tests both.
  *
@@ -40,13 +37,14 @@
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const { readFileSync } = require('node:fs');
-const { resolve } = require('node:path');
+const { REDIRECTS } = require('../redirects');
 
 const ALL_ENVIRONMENTS = {
-  staging: 'https://www-staging.marketdata.app/docs',
-  production: 'https://www.marketdata.app/docs',
+  staging: 'https://www-staging.marketdata.app',
+  production: 'https://www.marketdata.app',
 };
+
+const PREFIX = '/docs';
 
 const TEST_ENV = process.env.TEST_ENV;
 const envs = TEST_ENV
@@ -54,48 +52,38 @@ const envs = TEST_ENV
   : ALL_ENVIRONMENTS;
 
 /**
- * Parses the redirects array out of docusaurus.config.js so the test stays in
- * step with the config without anyone updating it by hand.
+ * Cloudflare emits a relative Location, which is why one rule serves both
+ * hosts. Resolve it against the request so the assertion reads as a URL.
  */
-function extractRedirects() {
-  const configPath = resolve(__dirname, '..', 'docusaurus.config.js');
-  const configText = readFileSync(configPath, 'utf-8');
+const resolve = (location, requestUrl) => new URL(location, requestUrl).href;
 
-  const redirectsMatch = configText.match(/redirects:\s*\[([\s\S]*?)\]\s*,?\s*\}/);
-  if (!redirectsMatch) throw new Error('Could not find redirects in docusaurus.config.js');
-
-  const redirects = [];
-  const pattern = /\{\s*from:\s*"([^"]+)"\s*,\s*to:\s*"([^"]+)"\s*,?\s*\}/g;
-  let match;
-  while ((match = pattern.exec(redirectsMatch[1]))) {
-    redirects.push({ from: match[1], to: match[2] });
-  }
-
-  return redirects;
-}
-
-const redirects = extractRedirects();
-
-for (const [env, baseUrl] of Object.entries(envs)) {
-  describe(`client-side redirects (${env})`, () => {
+for (const [env, host] of Object.entries(envs)) {
+  describe(`redirects (${env})`, () => {
     test('found redirects to test', () => {
-      assert.ok(redirects.length > 0, 'no redirects parsed from docusaurus.config.js');
+      assert.ok(REDIRECTS.length > 0, 'redirects.js is empty');
     });
 
-    for (const { from, to } of redirects) {
-      test(`${from} -> ${to}`, async () => {
-        const fromRes = await fetch(`${baseUrl}${from}`);
-        assert.equal(fromRes.status, 200, `${from} returned ${fromRes.status}`);
+    for (const { from, to } of REDIRECTS) {
+      const fromUrl = `${host}${PREFIX}${from}/`;
+      const toUrl = `${host}${PREFIX}${to}/`;
 
-        const html = await fromRes.text();
-        assert.ok(
-          html.includes(to),
-          `${from} page does not contain redirect to ${to}`
-        );
+      test(`GET ${from} -> ${to}`, async () => {
+        const res = await fetch(fromUrl, { redirect: 'manual' });
+        assert.equal(res.status, 301, `${from} returned ${res.status}`);
+        assert.equal(resolve(res.headers.get('location'), fromUrl), toUrl);
+      });
 
-        // Verify the destination actually exists.
-        const toRes = await fetch(`${baseUrl}${to}`);
-        assert.equal(toRes.status, 200, `destination ${to} returned ${toRes.status}`);
+      // The case the old suite could not express. Identical expectations to
+      // GET -- that is the whole claim.
+      test(`HEAD ${from} -> ${to}`, async () => {
+        const res = await fetch(fromUrl, { method: 'HEAD', redirect: 'manual' });
+        assert.equal(res.status, 301, `HEAD ${from} returned ${res.status}`);
+        assert.equal(resolve(res.headers.get('location'), fromUrl), toUrl);
+      });
+
+      test(`destination ${to} exists`, async () => {
+        const res = await fetch(toUrl, { redirect: 'manual' });
+        assert.equal(res.status, 200, `destination ${to} returned ${res.status}`);
       });
     }
   });
