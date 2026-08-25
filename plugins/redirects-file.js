@@ -4,6 +4,10 @@
  * Writes the documentation redirects into the build as Cloudflare `_redirects`
  * rules, so Pages serves a real 301 instead of a page that fakes one.
  *
+ * TWO RULES PER REDIRECT, bare and slashed. This is the correction to a
+ * regression, and the reasoning is not obvious, so it is written out below
+ * under "Why both slash forms".
+ *
  * ---------------------------------------------------------------------------
  * What this replaces
  * ---------------------------------------------------------------------------
@@ -31,15 +35,31 @@
  * identically, and needs no code at the edge at all.
  *
  * ---------------------------------------------------------------------------
- * Why the trailing slash, and why only one rule per redirect
+ * Why both slash forms
  * ---------------------------------------------------------------------------
  *
- * `trailingSlash: true`, so `/docs/x` is not a real URL here -- Pages
- * normalises it with a 308 to `/docs/x/` and the rule matches on the second
- * hop. That is already the observed behaviour: before this plugin existed,
- * `/docs/api/troubleshooting/http-status-codes` answered 308 and then the
- * worker's 301. One rule in the slashed form therefore covers both spellings,
- * and a second rule for the bare form would be dead weight.
+ * This plugin originally emitted only the slashed form, reasoning that
+ * `trailingSlash: true` means Pages normalises `/docs/x` to `/docs/x/` with a
+ * 308 and the rule matches on the second hop. That was observed behaviour at
+ * the time, and it was true for the wrong reason.
+ *
+ * Cloudflare only normalises a trailing slash when a DIRECTORY exists at that
+ * path. Measured 2026-08-25:
+ *
+ *   /definitely-not-a-page   404              no directory -> no normalisation
+ *   /pricing                 308 -> /pricing/ directory exists -> normalised
+ *
+ * While @docusaurus/plugin-client-redirects was installed, every redirect
+ * source had a stub page and therefore a directory, so the bare form
+ * normalised. Removing the plugin removed the directories -- and a redirect
+ * source has no directory by definition, since the point of it is that the page
+ * is gone. All 18 bare forms went from 308-then-301 to a flat 404 on both
+ * hosts, silently, because the slashed form kept working and that is what
+ * everything tested.
+ *
+ * So both spellings need their own rule. MarketDataApp/website's hand-written
+ * _redirects has paired them all along for exactly this reason; the pairing
+ * looked redundant until it was measured.
  *
  * ---------------------------------------------------------------------------
  * Where the file lands
@@ -118,15 +138,22 @@ module.exports = function redirectsFilePlugin() {
         '# stub pages Docusaurus emits for the same paths and answer every',
         '# method the same way. Nothing at the edge is involved.',
         '',
-        ...REDIRECTS.map(({ from, to }) => `${PREFIX}${from}/  ${PREFIX}${to}/  301`),
+        // Bare first, then slashed. Order is irrelevant to Cloudflare here --
+        // the two sources are distinct literals and cannot both match one
+        // request -- but keeping the pair adjacent makes a missing half
+        // visible when reading the generated file.
+        ...REDIRECTS.flatMap(({ from, to }) => [
+          `${PREFIX}${from}   ${PREFIX}${to}/  301`,
+          `${PREFIX}${from}/  ${PREFIX}${to}/  301`,
+        ]),
         '',
       ];
 
       await fs.writeFile(path.join(outDir, '_redirects'), lines.join('\n'), 'utf8');
 
       console.log(
-        `[redirects-file] ${REDIRECTS.length} redirect(s) written to _redirects; ` +
-          'none shadow a built page'
+        `[redirects-file] ${REDIRECTS.length} redirect(s) written to _redirects ` +
+          `as ${REDIRECTS.length * 2} rules (bare and slashed); none shadow a built page`
       );
 
       if (REDIRECTS.length === 0) {

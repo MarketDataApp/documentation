@@ -15,6 +15,13 @@
  * `_redirects` rules served by Cloudflare Pages, so this asserts what actually
  * matters: the status is 301 and Location names the destination.
  *
+ * BOTH SLASH FORMS ARE TESTED, and that gap is why a regression shipped. The
+ * suite originally probed only `<from>/`. Cloudflare normalises a bare path to
+ * its slashed form only when a DIRECTORY exists there, and dropping
+ * @docusaurus/plugin-client-redirects removed the stub pages that were
+ * providing those directories -- so all 18 bare forms went from working to a
+ * flat 404 on both hosts while every test stayed green.
+ *
  * HEAD IS TESTED, and that is the point of the exercise. The old arrangement
  * could not work for HEAD -- a HEAD response has no body, so the worker's
  * match never fired and every one of these answered 301 to GET and 200 to
@@ -64,22 +71,29 @@ for (const [env, host] of Object.entries(envs)) {
     });
 
     for (const { from, to } of REDIRECTS) {
-      const fromUrl = `${host}${PREFIX}${from}/`;
       const toUrl = `${host}${PREFIX}${to}/`;
 
-      test(`GET ${from} -> ${to}`, async () => {
-        const res = await fetch(fromUrl, { redirect: 'manual' });
-        assert.equal(res.status, 301, `${from} returned ${res.status}`);
-        assert.equal(resolve(res.headers.get('location'), fromUrl), toUrl);
-      });
+      // Both spellings, because they are separate rules in _redirects and a
+      // missing one fails silently -- the other keeps working, so nothing
+      // reports it. `slashed` is the canonical form; `bare` is what somebody
+      // typed or an old link carries.
+      for (const [label, fromUrl] of [
+        ['bare', `${host}${PREFIX}${from}`],
+        ['slashed', `${host}${PREFIX}${from}/`],
+      ]) {
+        test(`GET ${from} (${label}) -> ${to}`, async () => {
+          const res = await fetch(fromUrl, { redirect: 'manual' });
+          assert.equal(res.status, 301, `${label} ${from} returned ${res.status}`);
+          assert.equal(resolve(res.headers.get('location'), fromUrl), toUrl);
+        });
 
-      // The case the old suite could not express. Identical expectations to
-      // GET -- that is the whole claim.
-      test(`HEAD ${from} -> ${to}`, async () => {
-        const res = await fetch(fromUrl, { method: 'HEAD', redirect: 'manual' });
-        assert.equal(res.status, 301, `HEAD ${from} returned ${res.status}`);
-        assert.equal(resolve(res.headers.get('location'), fromUrl), toUrl);
-      });
+        // Identical expectations to GET -- that is the whole claim.
+        test(`HEAD ${from} (${label}) -> ${to}`, async () => {
+          const res = await fetch(fromUrl, { method: 'HEAD', redirect: 'manual' });
+          assert.equal(res.status, 301, `HEAD ${label} ${from} returned ${res.status}`);
+          assert.equal(resolve(res.headers.get('location'), fromUrl), toUrl);
+        });
+      }
 
       test(`destination ${to} exists`, async () => {
         const res = await fetch(toUrl, { redirect: 'manual' });
