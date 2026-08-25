@@ -100,30 +100,20 @@ jobs:
               "commit_sha": "${{ github.sha }}"
             }
 
-      - name: Check if Worker changed
-        id: worker
-        run: |
-          if git diff --name-only HEAD~1 HEAD -- worker/ 2>/dev/null | grep -q .; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Test Worker
-        if: steps.worker.outputs.changed == 'true'
-        working-directory: worker
-        run: |
-          yarn install --frozen-lockfile
-          yarn test
-
-      - name: Deploy Worker
-        if: steps.worker.outputs.changed == 'true'
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy
-          workingDirectory: worker
+      # The "Check if Worker changed" / "Test Worker" / "Deploy Worker" steps
+      # were here. The edge worker moved to MarketDataApp/www-marketdata-app,
+      # which owns the unified host, and that repo deploys it from its own
+      # worker.yml. It was deployed from there for the first time on
+      # 2026-08-25 (version 3656d1ba) and verified live on both hosts before
+      # these steps were removed, so there was never a window with no deployer.
+      #
+      # This job now does one thing: build the docs and upload them to R2.
+      #
+      # NOTE FOR WHOEVER MERGES staging INTO main. Until that merge lands, main
+      # still carries these steps and a worker/ directory. A push to main would
+      # redeploy the worker from here and overwrite the orchestrator's version.
+      # The code is the same, so the harm is a confusing version history rather
+      # than an outage -- but merge promptly and do not push to main in between.
 
       - name: Notify Slack on failure
         if: failure()
