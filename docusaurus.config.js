@@ -83,6 +83,7 @@ const config = {
 
   plugins: [
     './plugins/theme-cookie-sync',
+    './plugins/markdown-twins',
     [
       "@docusaurus/plugin-client-redirects",
       {
