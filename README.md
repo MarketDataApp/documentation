@@ -7,12 +7,12 @@ The official documentation for [Market Data](https://www.marketdata.app/) — co
 
 ## Documentation Sections
 
-| Section | Path | Description |
-|---------|------|-------------|
-| **API** | `/api` | REST API reference — stocks, options, funds, markets, and utilities |
-| **SDKs** | `/sdk` | Client libraries for Go, Python, and PHP |
-| **Sheets Add-On** | `/sheets` | Google Sheets Add-On documentation |
-| **Accounts & Billing** | `/account` | Account management, plans, billing, and entitlements |
+| Section                | Path       | Description                                                         |
+|------------------------|------------|---------------------------------------------------------------------|
+| **API**                | `/api`     | REST API reference — stocks, options, funds, markets, and utilities |
+| **SDKs**               | `/sdk`     | Client libraries for Go, Python, and PHP                            |
+| **Sheets Add-On**      | `/sheets`  | Google Sheets Add-On documentation                                  |
+| **Accounts & Billing** | `/account` | Account management, plans, billing, and entitlements                |
 
 ## Local Development
 
@@ -41,10 +41,10 @@ Browser → Cloudflare DNS → Worker (hostname lookup) → Cloudflare Pages →
 
 ### Environments
 
-| Environment | Hostname | Pages Project | Git Branch |
-|-------------|----------|---------------|------------|
-| Production | `www.marketdata.app` | `www-marketdata-app` | `main` |
-| Staging | `www-staging.marketdata.app` | `www-staging-marketdata-app` | `staging` |
+| Environment | Hostname                     | Pages Project                | Git Branch |
+|-------------|------------------------------|------------------------------|------------|
+| Production  | `www.marketdata.app`         | `www-marketdata-app`         | `main`     |
+| Staging     | `www-staging.marketdata.app` | `www-staging-marketdata-app` | `staging`  |
 
 ### Worker features
 
@@ -85,7 +85,22 @@ cd worker && TEST_ENV=staging yarn test:integration
 
 # E2E tests (Playwright — Context7 widget)
 TEST_ENV=staging yarn test:e2e
+
+# Script tests (option-symbol checker, Chromium resolver)
+yarn test:scripts
 ```
+
+### Which browser the e2e tests run
+
+The e2e suite runs against **whatever Chromium the machine already has** — `/usr/bin/chromium` on Linux, `Chromium.app`/`Google Chrome.app` on macOS — not against a build this repository pins. `scripts/resolve-chromium.js` picks it, and `playwright.config.js` uses that one resolver.
+
+This is deliberate. `browserName: 'chromium'` is an invisible version pin: it resolves to the single revision bundled with the installed `@playwright/test`, so the browser under test only moves when someone bumps a devDependency and re-runs `playwright install`. That would make this repository the gate on every Chromium update. These specs load third-party script into a real page, so they should see the browser our readers run, the day their OS updates it, with no commit here.
+
+- Every run prints the binary it chose (`Chromium: /usr/bin/chromium (system)`). Read that line first when an e2e test fails.
+- Set `CHROMIUM_PATH=/path/to/binary` to force a specific browser.
+- With no system browser found, it falls back to Playwright's bundled build, so a fresh clone still works after `npx playwright install chromium`.
+- CI runs `node scripts/resolve-chromium.js || npx playwright install --with-deps chromium`, so the runner downloads a browser only when it has none.
+- Trade-off: Playwright only guarantees the revision it bundles, so a system browser far ahead of it can drift on CDP behaviour. That is the price of not holding updates back, and it fails loudly rather than silently.
 
 ## Project Structure
 

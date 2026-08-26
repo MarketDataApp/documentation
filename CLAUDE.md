@@ -5,10 +5,10 @@
 - Docs site is hosted on **Cloudflare Pages** with a **Cloudflare Worker** reverse proxy
 - Both environments use the same `/docs/` base path — routing is by hostname, not path prefix
 
-| Environment | URL | Pages Project | Branch |
-|-------------|-----|---------------|--------|
-| Production | `www.marketdata.app/docs/` | `www-marketdata-app` | `main` |
-| Staging | `www-staging.marketdata.app/docs/` | `www-staging-marketdata-app` | `staging` |
+| Environment | URL                                | Pages Project                | Branch    |
+|-------------|------------------------------------|------------------------------|-----------|
+| Production  | `www.marketdata.app/docs/`         | `www-marketdata-app`         | `main`    |
+| Staging     | `www-staging.marketdata.app/docs/` | `www-staging-marketdata-app` | `staging` |
 
 ## Architecture
 
@@ -87,3 +87,4 @@
 - **Integration tests**: `cd worker && TEST_ENV=staging yarn test:integration` — fetches live sitemap and verifies markdown serving for every doc URL
 - **Redirect tests**: `cd worker && TEST_ENV=staging yarn test:integration` — verifies client-side redirects from `docusaurus.config.js`
 - **E2E tests**: `TEST_ENV=staging yarn test:e2e` — Playwright tests for Context7 widget rendering
+- **Browser for e2e**: the machine's own Chromium, not a build this repo pins. `scripts/resolve-chromium.js` resolves it (`CHROMIUM_PATH` override → system browser → Playwright's bundled build) and `playwright.config.js` feeds it to `launchOptions`. Do not reintroduce a bare `browserName: 'chromium'` with no `executablePath` — that re-pins the browser to the installed `@playwright/test`. CI installs Playwright's build only when the runner has no browser. See README.md "Which browser the e2e tests run".
