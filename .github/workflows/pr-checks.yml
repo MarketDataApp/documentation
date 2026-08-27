@@ -87,6 +87,22 @@ jobs:
       # library and global fetch, so it needs no dependencies -- it used to
       # borrow worker/'s vitest, and worker/ has gone. Same reason there is no
       # `cache: yarn` here any more: there is no lockfile to key it on.
+      # #185: this job probes the LIVE staging site, which a merge to `staging`
+      # takes through a ~5 minute deploy chain. A run landing inside that window
+      # fails on pages that are mid-deploy, with a message identical to a broken
+      # redirect -- and telling the two apart cost correlating timestamps across
+      # two workflows in two repositories.
+      #
+      # This waits instead of retrying. A retry charges its delay to every
+      # genuine failure forever, and automates the "it passed second time, must
+      # be flake" reflex that #185 is about. The wait costs nothing when the
+      # site is ready, and it never fails the job: on timeout it says what is
+      # still down and lets the suites be the judges.
+      - name: Wait for staging to finish deploying
+        env:
+          TEST_ENV: staging
+        run: yarn wait:deploy
+
       - name: Run redirect tests against staging
         env:
           TEST_ENV: staging
@@ -133,6 +149,14 @@ jobs:
       # covers a runner image that ships without a browser.
       - name: Install Playwright Chromium, only when the runner has none
         run: node scripts/resolve-chromium.js || npx playwright install --with-deps chromium
+
+      # Same deploy race as the integration job above (#185). This suite drives
+      # a real browser against the same host and can fail the same way; that it
+      # has not yet is luck rather than design.
+      - name: Wait for staging to finish deploying
+        env:
+          TEST_ENV: staging
+        run: yarn wait:deploy
 
       - name: Run e2e tests against staging
         env:
