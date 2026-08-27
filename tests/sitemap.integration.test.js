@@ -26,6 +26,47 @@
  * reads what the public reads.
  *
  * ---------------------------------------------------------------------------
+ * What this measures, and what it CANNOT measure
+ * ---------------------------------------------------------------------------
+ *
+ * This probe is cache-warm: a plain GET, served by whatever Cloudflare has at
+ * the edge. That is deliberate -- it is the only check here that sees what a
+ * visitor sees. But it means a green run proves DELIVERY, not that the
+ * deployment contains the page.
+ *
+ * Those two diverge whenever a file leaves the origin while an edge copy
+ * survives, and they stay diverged for the life of the cache entry. Measured
+ * on 2026-08-27, mid-#188:
+ *
+ *     plain    ?cb=<random>
+ *      200         404      /docs/sdk/csharp/                 HIT, age 179581
+ *      200         404      /docs/sdk/go/stocks/bulkquotes/   HIT, age 171723
+ *      200         200      /docs/api/stocks/    (control, genuinely present)
+ *
+ * `age: 179581` is 2.08 days -- exactly the deploy that deleted them. Both
+ * pages were absent from production and being served from a stale edge copy,
+ * and both would have passed this suite.
+ *
+ * Cloudflare puts the query string in the cache key, so a unique value per
+ * request forces a miss and the edge must fetch from the origin. That is the
+ * whole trick:
+ *
+ *     a cache-warm probe measures delivery, a cache-busted probe measures the
+ *     deployment, and only the second can tell you what a fresh visitor will
+ *     get tomorrow.
+ *
+ * Three numbers in #188 were wrong for want of that distinction: the issue's
+ * original count of 15, a later count of 16, and the traffic figure -- which
+ * is edge-side, so a dead URL served 200 from cache never enters the 404
+ * report and the total is a floor rather than a count.
+ *
+ * WHEN A NUMBER FROM THIS SUITE MATTERS, cache-bust as well and compare. A
+ * disagreement is not noise; it is a delayed failure, already queued, that
+ * will surface when the cache expires with no new deploy and no new cause.
+ *
+ *     curl -s -o /dev/null -w '%{http_code}' "<url>?cb=$RANDOM$RANDOM"
+ *
+ * ---------------------------------------------------------------------------
  * Why staging asserts the OPPOSITE
  * ---------------------------------------------------------------------------
  *
