@@ -101,6 +101,40 @@ deleted from R2 after the build by `aws s3 sync --delete`.
 delete and an upload for the same key and races them; see the comment above the
 "Upload to R2" step for the measurements.
 
+### Cache-warm vs cache-busted probes
+
+**When a page count matters, cache-bust.** A plain request is served from the
+Cloudflare edge, so it can return 200 for a page that is no longer in the
+deployment — for as long as the cache entry lives, which was over two days
+during #188.
+
+| Probe        | Request                          | Answers                                |
+|--------------|----------------------------------|----------------------------------------|
+| Cache-warm   | `curl <url>`                     | what a visitor is served **right now** |
+| Cache-busted | `curl "<url>?cb=$RANDOM$RANDOM"` | what the **deployment** contains       |
+
+Cloudflare puts the query string in the cache key, so a unique value forces a
+miss and a fetch from the origin.
+
+> A cache-warm probe measures delivery, a cache-busted probe measures the
+> deployment, and only the second one can tell you what a fresh visitor will get
+> tomorrow.
+
+Run both and compare. **A disagreement is a delayed failure, already queued** —
+the page looks correct today and starts 404ing when the cache expires, with no
+new deploy and no new cause.
+
+Three numbers in #188 were wrong for want of this: the original count of 15, a
+later count of 16, and the production 404 traffic figure. That last one is
+edge-side, so a dead URL served 200 from a warm cache never enters the 404
+report at all — those counts are a floor, not a total, and the flaw is
+self-concealing, because anyone testing the tooling against a known-dead URL
+sees 200s and concludes it works.
+
+`tests/sitemap.integration.test.js` is deliberately cache-warm: it is the only
+check that reads what the public reads. A green run there proves delivery, not
+completeness.
+
 ## Testing
 
 - **Unit tests**: `cd worker && yarn test` — tests worker routing, markdown serving, robots.txt, 404 logging
