@@ -5,9 +5,9 @@ on:
     branches: [staging, main]
 
 # Serialize deploys per branch. Two pushes in quick succession would otherwise
-# run concurrent `aws s3 sync --delete` jobs into the same R2 prefix, where each
-# build's --delete removes the other's freshly-uploaded chunks, producing a
-# deploy with one build's HTML and another's assets (404'd JS).
+# run concurrent sync jobs into the same R2 prefix, where each build's prune
+# removes the other's freshly-uploaded chunks, producing a deploy with one
+# build's HTML and another's assets (404'd JS).
 concurrency:
   group: deploy-docs-${{ github.ref }}
   cancel-in-progress: true
@@ -73,6 +73,35 @@ jobs:
             "  Cache-Control: public, max-age=31536000, immutable" \
             > build/_headers
 
+      # UPLOAD, THEN PRUNE, THEN PROVE IT. Not `aws s3 sync --delete`.
+      #
+      # This was one `aws s3 sync build/ ... --delete`, and it was silently
+      # deleting pages it had just uploaded. #188.
+      #
+      # In the production run of 2026-08-25 (32891982296), 210 keys appear in
+      # that step's log as BOTH an upload and a delete. `aws s3 sync` runs the
+      # two through one concurrent queue, so for each of those keys the outcome
+      # was whichever request R2 committed last. 18 deletes landed after their
+      # own upload, and 16 of those pages were still 404 on production twelve
+      # days later -- every one of the 15 in #188, plus one more that appeared
+      # after it was filed. The gaps were 30-125 ms, which is why the set drifts
+      # from deploy to deploy and why staging and production lost different
+      # pages from identical builds.
+      #
+      # The trigger was ours. Before plugins/markdown-twins.js landed on
+      # 2026-08-25 no build wrote a file beside a directory of the same stem;
+      # the twins added `<stem>.md` next to `<stem>/`, and the delete count in
+      # this step went from 0 on every prior run to ~220 on every run since.
+      # The comparator disagreeing with R2's key listing over those stems is
+      # the part that cannot be instrumented from here without bucket
+      # credentials -- but it does not need to be, because nothing below asks
+      # `aws s3 sync` to decide what to delete.
+      #
+      # So: sync WITHOUT --delete, which cannot remove anything; then compute
+      # the stale set here, from two explicit lists, where a key the build
+      # produced can never appear; then re-list and assert that every built
+      # file is really in R2. That last step is the one that would have caught
+      # #188 on the day it started, on staging, before production.
       - name: Upload to R2
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
@@ -80,10 +109,68 @@ jobs:
           AWS_ENDPOINT_URL: https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
           AWS_REGION: auto
           ENVIRONMENT: ${{ steps.env.outputs.environment }}
+          BUCKET: www-marketdata-app-builds
         run: |
-          aws s3 sync build/ \
-            "s3://www-marketdata-app-builds/${ENVIRONMENT}/sources/docs/" \
-            --delete
+          set -euo pipefail
+          PREFIX="${ENVIRONMENT}/sources/docs"
+
+          list_remote() {
+            aws s3api list-objects-v2 \
+              --bucket "$BUCKET" --prefix "${PREFIX}/" \
+              --query 'Contents[].Key' --output text \
+              | tr '\t' '\n' \
+              | sed -e "s|^${PREFIX}/||" -e '/^None$/d' -e '/^[[:space:]]*$/d' \
+              | LC_ALL=C sort
+          }
+
+          ( cd build && find . -type f -printf '%P\n' ) | LC_ALL=C sort > local-keys.txt
+          local_n=$(wc -l < local-keys.txt)
+
+          # An empty build must never reach the prune below, which would read it
+          # as "every key in R2 is stale" and empty the prefix.
+          if [ "$local_n" -eq 0 ]; then
+            echo "::error::build/ contains no files; refusing to sync or prune ${PREFIX}"
+            exit 1
+          fi
+          echo "build produced ${local_n} file(s)"
+
+          # --- 1. upload. No --delete: this pass cannot remove anything. -----
+          aws s3 sync build/ "s3://${BUCKET}/${PREFIX}/"
+
+          # --- 2. prune, from a set this script computes ---------------------
+          list_remote > remote-keys.txt
+          comm -13 local-keys.txt remote-keys.txt > stale-keys.txt
+          stale_n=$(wc -l < stale-keys.txt)
+          remote_n=$(wc -l < remote-keys.txt)
+          echo "remote holds ${remote_n} key(s); ${stale_n} stale"
+
+          # A prune this large is a bug in this script, not a release that
+          # deleted a quarter of the site.
+          if [ "$stale_n" -gt 20 ] && [ "$stale_n" -gt $(( remote_n / 4 )) ]; then
+            echo "::error::prune would delete ${stale_n} of ${remote_n} key(s); refusing"
+            sed -n '1,40p' stale-keys.txt
+            exit 1
+          fi
+
+          while IFS= read -r key; do
+            [ -n "$key" ] || continue
+            aws s3 rm "s3://${BUCKET}/${PREFIX}/${key}"
+          done < stale-keys.txt
+
+          # --- 3. prove the prefix now matches the build --------------------
+          list_remote > remote-after.txt
+          comm -23 local-keys.txt remote-after.txt > lost-keys.txt
+          lost_n=$(wc -l < lost-keys.txt)
+          if [ "$lost_n" -ne 0 ]; then
+            echo "::error::${lost_n} of ${local_n} built file(s) are missing from ${PREFIX} after the sync"
+            sed -n '1,50p' lost-keys.txt
+            exit 1
+          fi
+
+          # "${local_n} of ${local_n}" is only meaningful because the zero case
+          # exited above. A check that can print "0 of 0" and pass is the defect
+          # it is supposed to catch.
+          echo "verified ${local_n} of ${local_n} built file(s) present in ${PREFIX}"
 
       - name: Notify orchestrator
         if: success()
