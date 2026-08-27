@@ -142,3 +142,4 @@ completeness.
 - **Sitemap tests**: `TEST_ENV=production yarn test:sitemap` — fetches the deployed sitemap and requires every URL to answer 200. On staging it asserts the opposite: a `noIndex` build must publish no sitemap
 - **Sitemap lint**: `yarn lint:sitemap` — builds with `PROD=true` and fails if the sitemap lists a URL with no page in `build/`
 - **E2E tests**: `TEST_ENV=staging yarn test:e2e` — Playwright tests for Context7 widget rendering
+- **Browser for e2e**: the machine's own Chromium, not a build this repo pins. `scripts/resolve-chromium.js` resolves it (`CHROMIUM_PATH` override → system browser → Playwright's bundled build) and `playwright.config.js` feeds it to `launchOptions`. Do not reintroduce a bare `browserName: 'chromium'` with no `executablePath` — that re-pins the browser to the installed `@playwright/test`. CI installs Playwright's build only when the runner has no browser. See README.md "Which browser the e2e tests run".

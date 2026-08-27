@@ -47,7 +47,12 @@ jobs:
           TEST_ENV: ${{ github.event.client_payload.environment }}
         run: yarn test:sitemap
 
-      - run: npx playwright install chromium
+      # Safety net only. The suite prefers the browser already on the runner
+      # (see scripts/resolve-chromium.js), so Chromium updates never wait on a
+      # commit here and the runner downloads nothing it already has. This step
+      # covers a runner image that ships without a browser.
+      - name: Install Playwright Chromium, only when the runner has none
+        run: node scripts/resolve-chromium.js || npx playwright install --with-deps chromium
 
       - name: Run e2e tests
         env:
