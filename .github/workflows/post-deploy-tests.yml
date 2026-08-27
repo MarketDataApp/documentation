@@ -28,6 +28,21 @@ jobs:
       #
       # No install step -- `node --test` against the standard library and
       # global fetch. The root `yarn install` above stays for the e2e run.
+      # #185. This job fires on `deploy-complete`, but the orchestrator reports
+      # success before Cloudflare has finished propagating -- measured at ~47s
+      # once, upper bound unknown. Every suite below probes the live site, so
+      # they all sit in that tail; the sitemap one probes 258 URLs and is the
+      # widest surface of the three.
+      #
+      # The wait probes cache-busted on purpose. A warm probe is answered by the
+      # PREVIOUS deployment's edge copy and would report ready before anything
+      # propagated -- during #188 two deleted pages answered 200 that way for
+      # 2.08 days.
+      - name: Wait for the deploy to propagate
+        env:
+          TEST_ENV: ${{ github.event.client_payload.environment }}
+        run: yarn wait:deploy
+
       - name: Run redirect tests
         env:
           TEST_ENV: ${{ github.event.client_payload.environment }}

@@ -21,6 +21,7 @@
     "test:lib": "node --test lib/__tests__/*.test.js",
     "test:redirects": "node --test tests/redirects.integration.test.js",
     "test:sitemap": "node --test tests/sitemap.integration.test.js",
+    "wait:deploy": "node scripts/wait-for-deploy.js",
     "lint:links": "STRICT_LINKS=true yarn build",
     "lint:sitemap": "PROD=true yarn build && node scripts/lint-sitemap.js",
     "lint:tables": "node scripts/fix-table-alignment.js",
