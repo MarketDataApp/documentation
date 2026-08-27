@@ -33,6 +33,20 @@ jobs:
           TEST_ENV: ${{ github.event.client_payload.environment }}
         run: yarn test:redirects
 
+      # The check #188 did not have. On production it fetches the deployed
+      # sitemap and requires all ~258 URLs to answer 200; on staging, where a
+      # noIndex build publishes no sitemap, it requires that there is none.
+      #
+      # This is the only gate here that reads what the public reads. The other
+      # two -- scripts/lint-sitemap.js and the "Upload to R2" step's own
+      # verification -- sit earlier in the chain and would both have passed
+      # throughout #188, because the build was correct and the loss happened
+      # after it.
+      - name: Run sitemap tests
+        env:
+          TEST_ENV: ${{ github.event.client_payload.environment }}
+        run: yarn test:sitemap
+
       - run: npx playwright install chromium
 
       - name: Run e2e tests
