@@ -177,12 +177,35 @@ jobs:
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.ORCHESTRATOR_PAT }}
-          repository: MarketDataApp/www-marketdata-app
+          # A LITERAL, and deliberately not owner-relative. The orchestrator moved
+          # to the MarketData-App ORG on 2026-08-28; this repo stayed on the
+          # MarketDataApp USER account, because it is public and public repos have
+          # unlimited Actions. So the two live under different owners and
+          # `${{ github.repository_owner }}` would resolve to the wrong one here.
+          #
+          # (MarketData-App/website CAN use the owner-relative form, because it
+          # moved with the orchestrator. Same dispatch, different answer, because
+          # of where each repo lives.)
+          #
+          # `repository_dispatch` does NOT follow GitHub's transfer redirect the
+          # way `git` does, so the old path did not fail over -- it would simply
+          # have 404ed on the next docs deploy, after a clean build and upload.
+          repository: MarketData-App/www-marketdata-app
           event-type: site-built
+          # `source_repo` is derived, never a literal: the orchestrator dispatches
+          # `deploy-complete` back to whatever this names, and post-deploy-tests.yml
+          # listens for it. A stale literal after a transfer routes that event to
+          # the old path with no error anywhere, and the post-deploy verification
+          # silently stops running.
+          #
+          # NOTE the block below is JSON, not YAML. `#` is a syntax error in it,
+          # not a comment -- which is why these lines are up here. Putting four
+          # of them inside the equivalent block in MarketData-App/website on
+          # 2026-08-28 failed that dispatch after a clean build, sync and reconcile.
           client-payload: >-
             {
               "source": "docs",
-              "source_repo": "MarketDataApp/documentation",
+              "source_repo": "${{ github.repository }}",
               "environment": "${{ steps.env.outputs.environment }}",
               "commit_sha": "${{ github.sha }}"
             }
