@@ -51,8 +51,8 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
     - "volume" – The number of shares traded.
     - "all" – Returns all values.
     - "symbol" - The ticker symbol of the stock. _Only returned when using a bulk candles formula._ 
-    - "adjusted" - Adjust intraday data for splits. 
-    - "unadjusted" - Do not adjust daily data for splits.
+    - "adjusted" - Returns split- and dividend-adjusted prices (CRSP methodology). On daily resolutions both split and dividend adjustments are applied; on intraday resolutions only split adjustment is applied, since dividend adjustment is available for daily resolutions only. Can be used on its own — `=STOCKDATA("AAPL", "adjusted", ...)` returns the full adjusted OHLCV row, just like "all" — or combined with a specific column, e.g. "adjusted,close".
+    - "unadjusted" - Returns raw prices with no split or dividend adjustment. Can be used on its own — `=STOCKDATA("AAPL", "unadjusted", ...)` returns the full unadjusted OHLCV row, just like "all" — or combined with a specific column, e.g. "unadjusted,close".
 
   - **quote attributes** _(OPTIONAL – "mid" by default)_ Use one of the following attributes when requesting a quote:
     - "mid", "mark" – The midpoint price of the stock.

@@ -249,7 +249,14 @@ There is no maximum date range limit on daily candles. When requesting intraday 
 
 - **adjustsplits** `boolean`
 
-  Adjust historical data for stock splits. Market Data uses the CRSP methodology for adjustment.
+  Adjust historical data for stock splits. Market Data uses the CRSP methodology for adjustment. Only certain combinations with `adjustdividends` are supported — see [Split and Dividend Adjustments](#split-and-dividend-adjustments).
+
+  - Daily candles default: `true`.
+  - Intraday candles default: `false`.
+
+- **adjustdividends** `boolean`
+
+  Adjust historical data for dividends. Market Data uses the CRSP methodology for adjustment. Dividend adjustment is available for daily resolutions only. Unsupported combinations are rejected with an HTTP 400 — see [Split and Dividend Adjustments](#split-and-dividend-adjustments).
 
   - Daily candles default: `true`.
   - Intraday candles default: `false`.
@@ -269,6 +276,40 @@ There is no dividend-only adjustment. Requesting `adjustsplits=false` while `adj
 
 </TabItem>
 </Tabs>
+
+### Split and Dividend Adjustments
+
+Only three price series are supported: **raw**, **split-only**, and **fully adjusted** (CRSP-style). There is no dividend-only series — no data source publishes one — so that combination is rejected with an HTTP 400.
+
+**Daily** — the `adjustsplits=false, adjustdividends=true` combination is rejected. Because `adjustdividends` defaults to `true` on daily candles, this is most commonly triggered by passing `adjustsplits=false` alone. To receive raw prices on daily candles, set **both** `adjustsplits=false` and `adjustdividends=false`.
+
+| `adjustsplits` | `adjustdividends` | Series         | Result       |
+|:--------------:|:-----------------:|----------------|--------------|
+| `false`        | `false`           | raw            | ✅           |
+| `true`         | `false`           | split-only     | ✅           |
+| `true`         | `true`            | fully adjusted | ✅ (default) |
+| `false`        | `true`            | dividend-only  | ❌ HTTP 400  |
+
+The rejected daily combination returns:
+
+```json
+{"s":"error","errmsg":"Unsupported parameter combination: adjustsplits=false with adjustdividends=true. Note: adjustdividends defaults to true on daily candles, so if your request only sets adjustsplits=false (without explicitly setting adjustdividends), dividend adjustment is still being applied via the default. Dividend-only adjustment is not supported. To receive unadjusted prices, set both adjustsplits=false and adjustdividends=false explicitly. To keep CRSP-style full adjustment, omit adjustsplits (or set it to true)."}
+```
+
+**Intraday** — any `adjustdividends=true` is rejected regardless of `adjustsplits`, because no intraday data source implements dividend adjustment. The intraday default is `false`, so the error only occurs on an explicit `adjustdividends=true`.
+
+| `adjustsplits` | `adjustdividends` | Series         | Result       |
+|:--------------:|:-----------------:|----------------|--------------|
+| `false`        | `false`           | raw            | ✅ (default) |
+| `true`         | `false`           | split-only     | ✅           |
+| `false`        | `true`            | dividend-only  | ❌ HTTP 400  |
+| `true`         | `true`            | fully adjusted | ❌ HTTP 400  |
+
+Both rejected intraday combinations return:
+
+```json
+{"s":"error","errmsg":"adjustdividends=true is not supported for intraday candles. Dividend adjustment is only available for daily resolutions."}
+```
 
 ## Response Attributes
 
