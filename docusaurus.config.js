@@ -34,6 +34,38 @@ const config = {
   projectName: "documentation",
 
   headTags: [
+    // The Cloudflare Zaraz loader, and PRODUCTION ONLY.
+    //
+    // Zaraz is configured per ZONE, and www. and www-staging. are both in the
+    // marketdata.app zone. A staging build that loads this fires the same tools
+    // into the same GA4 property as production, and polluted analytics cannot be
+    // un-collected. The gate is therefore the same `PROD` flag that drives
+    // `noIndex` and `url` above, which `deploy-docs.yml` sets only on `main`.
+    //
+    // The tag lives here rather than in `src/theme/Root.js` because the client
+    // bundle cannot read `process.env.PROD`; only this file can. It previously
+    // gated on `NODE_ENV`, which every `yarn build` sets, so staging loaded it.
+    //
+    // The attributes match `ZARAZ_LOADER_ATTRS` in MarketDataApp/website's
+    // `src/lib/site-env.mjs` — the marketing half of the same origin — and each
+    // one is load-bearing:
+    //   data-cfasync="false"     keeps Rocket Loader from deferring the loader
+    //                            past the pageview it exists to record
+    //   referrerpolicy="origin"  sends the origin, not the measured page's path
+    //
+    // Cloudflare answers /cdn-cgi/zaraz/i.js at the edge. No origin serves it.
+    ...(process.env.PROD == "true"
+      ? [
+          {
+            tagName: "script",
+            attributes: {
+              "data-cfasync": "false",
+              src: "/cdn-cgi/zaraz/i.js",
+              referrerpolicy: "origin",
+            },
+          },
+        ]
+      : []),
     {
       tagName: "meta",
       attributes: {
