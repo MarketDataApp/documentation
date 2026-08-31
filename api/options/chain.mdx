@@ -306,7 +306,13 @@ When combining the `weekly`, `monthly`, and `quarterly` parameters, only identic
   :::
 
   :::caution Not available on historical requests
-  `delta` cannot be combined with the `date` parameter. Greeks are not stored historically, so there is no delta to filter on; such a request is rejected with `400 Bad Request` and the error message `The 'delta' parameter cannot be used with historical requests, because Greeks are not stored historically. Remove 'delta' from your request and filter by 'strike' instead.` Use the `strike` filter for historical chains.
+  `delta` cannot be combined with the `date` parameter. Greeks are not stored historically, so there is no delta to filter on, and the request is rejected with `400 Bad Request`:
+
+  ```json
+  {"s":"error","errmsg":"The 'delta' parameter is not supported on historical requests for now."}
+  ```
+
+  Use the `strike` filter for historical chains.
   :::
 
 - **strikeLimit** `number`
