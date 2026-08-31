@@ -60,6 +60,101 @@ const REDIRECTS = [
   // the prose already knew.
   { from: "/api/category/universal-parameters", to: "/api/universal-parameters" },
   { from: "/api/stocks/bulkquotes", to: "/api/stocks/quotes" },
+
+  // --- MarketData-App/website#30: the Python SDK moved from `python` to `py`.
+  //
+  // Commit b87a7af (2026-01-08), "rename python sdk to py", moved all twenty
+  // pages of sdk/python/ to sdk/py/ and took no redirect with it. Every one of
+  // those URLs has been dead since. The 404 log store still measures 9 hits a
+  // day on /docs/sdk/python/stocks/news alone, seven months later.
+  //
+  // ENUMERATED RATHER THAN SPLATTED, for the reason the SDK_PHP block below
+  // gives: this is a CLOSED SET. Nothing will ever be added under
+  // /docs/sdk/python/ again, because the directory has not existed since
+  // January. The twenty rules here are the twenty files that commit deleted,
+  // and a splat would buy nothing except a second hop on the bare form --
+  // `:splat` carries the trailing slash it was given, so /sdk/python/x lands
+  // on /sdk/py/x and needs Cloudflare's 308 to reach /sdk/py/x/.
+  //
+  // Verified against production on 2026-08-31, cache-busted: all nineteen
+  // destinations answer 200 and all twenty sources answer 404.
+  //
+  // options/strikes is the one that is not a straight `python` -> `py` swap.
+  // That page was deleted repo-wide by e665871 and folded into options/chain,
+  // so it points where /sdk/py/options/strikes already points. A _redirects
+  // rule does not chain -- Cloudflare does not re-run the file against its own
+  // Location -- so this has to name the final destination itself.
+  { from: "/sdk/python", to: "/sdk/py" },
+  { from: "/sdk/python/authentication", to: "/sdk/py/authentication" },
+  { from: "/sdk/python/client", to: "/sdk/py/client" },
+  { from: "/sdk/python/settings", to: "/sdk/py/settings" },
+  { from: "/sdk/python/funds", to: "/sdk/py/funds" },
+  { from: "/sdk/python/funds/candles", to: "/sdk/py/funds/candles" },
+  { from: "/sdk/python/markets", to: "/sdk/py/markets" },
+  { from: "/sdk/python/markets/status", to: "/sdk/py/markets/status" },
+  { from: "/sdk/python/options", to: "/sdk/py/options" },
+  { from: "/sdk/python/options/chain", to: "/sdk/py/options/chain" },
+  { from: "/sdk/python/options/expirations", to: "/sdk/py/options/expirations" },
+  { from: "/sdk/python/options/lookup", to: "/sdk/py/options/lookup" },
+  { from: "/sdk/python/options/quotes", to: "/sdk/py/options/quotes" },
+  { from: "/sdk/python/options/strikes", to: "/sdk/py/options/chain" },
+  { from: "/sdk/python/stocks", to: "/sdk/py/stocks" },
+  { from: "/sdk/python/stocks/candles", to: "/sdk/py/stocks/candles" },
+  { from: "/sdk/python/stocks/earnings", to: "/sdk/py/stocks/earnings" },
+  { from: "/sdk/python/stocks/news", to: "/sdk/py/stocks/news" },
+  { from: "/sdk/python/stocks/prices", to: "/sdk/py/stocks/prices" },
+  { from: "/sdk/python/stocks/quotes", to: "/sdk/py/stocks/quotes" },
+
+  // --- MarketData-App/website#30, second batch: /docs/api/ URLs that have
+  // never existed in this repo.
+  //
+  // These differ in kind from every rule above, and the difference is worth
+  // stating because it changes how much confidence to attach to each target.
+  // The rules above revive a URL this repo once served and can prove it, from
+  // the commit that removed it. NONE of the five below appear anywhere in the
+  // history of this repository -- not as a file, not as a `slug`, not as a
+  // link. A grep across all 1376 revisions finds nothing. They arrive from
+  // outside: old search results, external documentation, hand-typed guesses.
+  //
+  // So the target is chosen by what serves the reader, not recovered from a
+  // rename, and each one is a live page verified 200 on 2026-08-31:
+  //
+  //   /api/universal          a truncation of /api/universal-parameters
+  //   /api/options/chains     a plural slip; /api/options/chain is the page
+  //   /options                the `api` segment dropped by hand
+  //   /api/getting-started    no page carries that name; /api is the overview
+  //                           and its first section is "Get Started Quick"
+  //   troubleshooting/feed-*  "feed" was this API's old word for `mode` --
+  //                           api/universal-parameters/feed.mdx became mode.md
+  //                           -- and no page of either name has ever existed.
+  //                           They land on the troubleshooting index, which
+  //                           lists every topic, exactly as the two rules at
+  //                           the top of this array already do for
+  //                           http-status-codes and common-error-messages.
+  //
+  // /api/getting-started is by far the largest of these: 14 hits in a
+  // fifteen-minute window against 1 for most of the others. If somebody
+  // identifies what links to it, a more specific target beats /api.
+  { from: "/api/getting-started", to: "/api" },
+  { from: "/api/universal", to: "/api/universal-parameters" },
+  { from: "/api/options/chains", to: "/api/options/chain" },
+  { from: "/api/troubleshooting/feed-status", to: "/api/troubleshooting" },
+  { from: "/api/troubleshooting/feed-selection", to: "/api/troubleshooting" },
+  { from: "/options", to: "/api/options" },
+
+  // --- NOT here, deliberately: the three /docs/sdk/go/ paths in the same
+  // issue. /sdk/go/utilities/, /sdk/go/utilities/user/ and
+  // /sdk/go/markets/status-history/ 404 on production, and the issue reads
+  // that as pages the Go v2 rewrite retired without a redirect. It is the
+  // reverse. `git log --all --diff-filter=A` puts all four files in commit
+  // 5e91489, "comprehensive Go v2 SDK docs", which is on staging and has
+  // never been on main. They are pages arriving, not pages removed, and they
+  // start answering 200 the day staging merges.
+  //
+  // A redirect would therefore be wrong twice: it would send readers away
+  // from pages that are about to exist, and the shadow check in
+  // plugins/redirects-file.js would fail the staging build the moment this
+  // array reached the branch that has them.
 ];
 
 /**
