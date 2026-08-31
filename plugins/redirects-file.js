@@ -76,7 +76,7 @@
 
 const { promises: fs } = require('node:fs');
 const path = require('node:path');
-const { REDIRECTS } = require('../redirects');
+const { REDIRECTS, SDK_PHP } = require('../redirects');
 
 /** The URL prefix this site is served under. Matches `baseUrl` in the config. */
 const PREFIX = '/docs';
@@ -147,13 +147,38 @@ module.exports = function redirectsFilePlugin() {
           `${PREFIX}${from}/  ${PREFIX}${to}/  301`,
         ]),
         '',
+        // --- the legacy PHP SDK space, which leaves this site entirely ------
+        //
+        // See the SDK_PHP block in redirects.js for why these exist and why the
+        // doubled prefixes are a closed set rather than a regex.
+        //
+        // THE COLLAPSE RULES MUST COME FIRST. Cloudflare takes the first rule
+        // that matches, so `/docs/sdk-php/*` would swallow every doubled path
+        // and forward the doubling intact if it were emitted above them.
+        '# Legacy PHP SDK docs, now served from GitHub Pages. Generated from the',
+        '# SDK_PHP block in redirects.js. Collapse rules first — Cloudflare takes',
+        '# the first match, so the catch-all below must stay last.',
+        ...SDK_PHP.doubledPrefixes.map(
+          (dir) =>
+            `${PREFIX}${SDK_PHP.source}/${dir}/${dir}/*  ${SDK_PHP.target}/${dir}/:splat  301`
+        ),
+        `${PREFIX}${SDK_PHP.source}/*  ${SDK_PHP.target}/:splat  301`,
+        // The bare form needs its own literal. Cloudflare only normalises a
+        // missing trailing slash when a directory exists at that path, and no
+        // directory is built here — the same defect that took out all 18 bare
+        // redirect sources in #186.
+        `${PREFIX}${SDK_PHP.source}  ${SDK_PHP.target}/  301`,
+        '',
       ];
 
       await fs.writeFile(path.join(outDir, '_redirects'), lines.join('\n'), 'utf8');
 
+      const sdkPhpRules = SDK_PHP.doubledPrefixes.length + 2;
       console.log(
         `[redirects-file] ${REDIRECTS.length} redirect(s) written to _redirects ` +
-          `as ${REDIRECTS.length * 2} rules (bare and slashed); none shadow a built page`
+          `as ${REDIRECTS.length * 2} rules (bare and slashed); none shadow a built page. ` +
+          `Plus ${sdkPhpRules} legacy PHP SDK rules ` +
+          `(${SDK_PHP.doubledPrefixes.length} collapse, 1 catch-all, 1 bare).`
       );
 
       if (REDIRECTS.length === 0) {
