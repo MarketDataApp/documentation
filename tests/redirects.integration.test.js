@@ -44,7 +44,7 @@
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const { REDIRECTS } = require('../redirects');
+const { REDIRECTS, SDK_PHP } = require('../redirects');
 
 const ALL_ENVIRONMENTS = {
   staging: 'https://www-staging.marketdata.app',
@@ -100,5 +100,73 @@ for (const [env, host] of Object.entries(envs)) {
         assert.equal(res.status, 200, `destination ${to} returned ${res.status}`);
       });
     }
+
+    // --- the legacy PHP SDK space ---------------------------------------
+    //
+    // These left the edge worker and became _redirects rules when the worker
+    // was retired (MarketData-App/www-marketdata-app#15). The worker was the
+    // only thing answering them, so an ordering mistake here does not degrade
+    // a behaviour -- it 404s every inbound link the outside world still holds.
+    //
+    // THE ORDERING IS THE THING UNDER TEST. `/docs/sdk-php/*` matches a
+    // doubled path just as well as a plain one, and Cloudflare takes the first
+    // rule that matches. If the collapse rules ever sort below the catch-all,
+    // every plain URL keeps working and only the doubled ones break -- silent,
+    // and invisible to anyone spot-checking a normal link.
+    describe('legacy PHP SDK', () => {
+      const { source, target, doubledPrefixes } = SDK_PHP;
+
+      for (const dir of doubledPrefixes) {
+        const doubled = `${host}${PREFIX}${source}/${dir}/${dir}/Example.html`;
+        const expected = `${target}/${dir}/Example.html`;
+
+        // Named for what breaks: the doubling must be gone from Location.
+        test(`GET ${dir}/${dir}/ collapses to ${dir}/`, async () => {
+          const res = await fetch(doubled, { redirect: 'manual' });
+          assert.equal(res.status, 301, `${dir} doubled returned ${res.status}`);
+          assert.equal(resolve(res.headers.get('location'), doubled), expected);
+        });
+
+        test(`HEAD ${dir}/${dir}/ collapses to ${dir}/`, async () => {
+          const res = await fetch(doubled, { method: 'HEAD', redirect: 'manual' });
+          assert.equal(res.status, 301, `HEAD ${dir} doubled returned ${res.status}`);
+          assert.equal(resolve(res.headers.get('location'), doubled), expected);
+        });
+
+        // The plain form must survive the collapse rule sitting above it.
+        test(`GET ${dir}/ passes through undoubled`, async () => {
+          const plain = `${host}${PREFIX}${source}/${dir}/Example.html`;
+          const res = await fetch(plain, { redirect: 'manual' });
+          assert.equal(res.status, 301, `${dir} plain returned ${res.status}`);
+          assert.equal(
+            resolve(res.headers.get('location'), plain),
+            `${target}/${dir}/Example.html`
+          );
+        });
+      }
+
+      // Both slash forms of the root, for the reason given at the top of this
+      // file: Cloudflare normalises a bare path only when a directory exists
+      // there, and none is built for this space.
+      for (const [label, url] of [
+        ['bare', `${host}${PREFIX}${source}`],
+        ['slashed', `${host}${PREFIX}${source}/`],
+      ]) {
+        test(`GET root (${label}) -> GitHub Pages`, async () => {
+          const res = await fetch(url, { redirect: 'manual' });
+          assert.equal(res.status, 301, `root ${label} returned ${res.status}`);
+          assert.equal(resolve(res.headers.get('location'), url), `${target}/`);
+        });
+      }
+
+      // A deep path with no doubling, proving the catch-all still carries the
+      // whole remainder rather than truncating at the first segment.
+      test('GET deep path keeps its full subpath', async () => {
+        const deep = `${host}${PREFIX}${source}/a/b/c.html`;
+        const res = await fetch(deep, { redirect: 'manual' });
+        assert.equal(res.status, 301, `deep path returned ${res.status}`);
+        assert.equal(resolve(res.headers.get('location'), deep), `${target}/a/b/c.html`);
+      });
+    });
   });
 }
