@@ -63,4 +63,77 @@ const REDIRECTS = [
   { from: "/api/stocks/bulkquotes", to: "/api/stocks/quotes" },
 ];
 
-module.exports = { REDIRECTS };
+/**
+ * The legacy PHP SDK URL space, which redirects OFF this site entirely.
+ *
+ * These are not route pairs like REDIRECTS above. The source is a prefix under
+ * /docs/sdk-php/ and the target is another host, so they need splats and their
+ * own emitter in plugins/redirects-file.js.
+ *
+ * ---------------------------------------------------------------------------
+ * Why this exists at all
+ * ---------------------------------------------------------------------------
+ *
+ * The PHP SDK documentation moved to /docs/sdk/php/ and nothing in this repo
+ * links to /docs/sdk-php/ any more -- a grep across every .md, .mdx, .js and
+ * .tsx finds zero. This whole space is inbound links the outside world still
+ * holds: old search results, old READMEs, old forum posts.
+ *
+ * It was served by the edge worker until now. The worker is being retired
+ * (MarketData-App/www-marketdata-app#15), and it was the ONLY thing answering
+ * these. Without the rules below every legacy PHP SDK URL becomes a 404.
+ *
+ * ---------------------------------------------------------------------------
+ * The doubled prefixes, and why they are enumerated
+ * ---------------------------------------------------------------------------
+ *
+ * Something in the wild emits doubled directory names -- /sdk-php/classes/
+ * classes/Client rather than /sdk-php/classes/Client. The worker collapsed them
+ * with `subpath.replace(/^(\w+)\/\1\//, '$1/')`, which is logic, and a
+ * _redirects rule cannot run logic.
+ *
+ * It does not need to. The doubled prefix is always a top-level directory of
+ * the generated phpDocumentor site, and that is a CLOSED SET. Measured against
+ * the live site on 2026-08-31:
+ *
+ *   classes namespaces packages indices reports files   all serve pages
+ *   graphs                                              404, does not exist
+ *
+ * So six explicit rules replace the regex, each with a single terminal splat,
+ * which is all Cloudflare Pages _redirects supports. Issue #15 called this
+ * blocked because it read the pattern as needing two wildcards. It does not --
+ * the first wildcard was only ever standing in for this list.
+ *
+ * The collapse is worth keeping rather than dropping. Measured the same day:
+ *
+ *   /sdk-php/classes/MarketDataApp-Client.html          200
+ *   /sdk-php/classes/classes/MarketDataApp-Client.html  404
+ *
+ * ORDER MATTERS. Cloudflare takes the first matching rule, so every collapse
+ * rule must be emitted before the catch-all. plugins/redirects-file.js does
+ * that, and tests/redirects.integration.test.js proves it against the live
+ * site rather than trusting the ordering by eye.
+ */
+const SDK_PHP = {
+  /** Where the generated PHP SDK documentation lives now. No trailing slash. */
+  target: "https://marketdataapp.github.io/sdk-php",
+
+  /** The path this site serves it under. No trailing slash. */
+  source: "/sdk-php",
+
+  /**
+   * Top-level directories of the generated site, each of which shows up
+   * doubled in links the outside world holds. Verified to serve pages; `graphs`
+   * is deliberately absent because that directory does not exist.
+   */
+  doubledPrefixes: [
+    "classes",
+    "namespaces",
+    "packages",
+    "indices",
+    "reports",
+    "files",
+  ],
+};
+
+module.exports = { REDIRECTS, SDK_PHP };
