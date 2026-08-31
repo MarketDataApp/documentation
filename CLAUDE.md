@@ -135,9 +135,56 @@ sees 200s and concludes it works.
 check that reads what the public reads. A green run there proves delivery, not
 completeness.
 
+## Markdown Twins
+
+`plugins/markdown-twins.js` writes a Markdown copy of **every** built route into
+the build, under three names that hold identical bytes:
+
+```
+api/stocks/candles.md             what a person or an agent guesses
+api/stocks/candles/index.md       what sits beside index.html
+api/stocks/candles/index.html.md  the llmstxt.org v2 spelling
+```
+
+Two converters feed it, and they do not overlap:
+
+| Source                                            | Converter                         | Routes |
+|---------------------------------------------------|-----------------------------------|--------|
+| a `.md`/`.mdx` file resolved through `CANDIDATES` | `lib/mdx-to-md.js` (`cleanMdx`)   | 261    |
+| the built HTML, when no source file exists        | `lib/html-to-md.js` (`cleanHtml`) | 10     |
+
+`cleanMdx` is the converter for our MDX and stays that way — **do not put
+`cleanHtml` on a route that has a source.** `cleanHtml` exists only for routes
+that have no source for *any* converter to read: the docs root
+(`src/pages/index.tsx`), the 404, the Algolia search UI, and the seven generated
+tag pages.
+
+**Every built route must have a twin, and `postBuild` fails the build if one
+does not.** It cannot be a warning. The worker answers `Accept: text/markdown`
+today and *falls through* to the HTML proxy for a twin-less route, so the gap is
+invisible from outside — `/docs/` returned HTML rather than 404. Its
+replacement, a Cloudflare Transform Rule that rewrites `<route>` to
+`<route>index.md` (MarketData-App/www-marketdata-app#15), is unconditional and
+cannot fall through, so a route with no twin becomes a 404 on the day the worker
+is switched off, with no deploy and no other cause.
+
+Two routes get a name set that is not `<stem>` three ways:
+
+- **the docs root** gets `index.md` and `index.html.md` only — its alias name
+  would be `.md`
+- **the 404** gets `404.md`, `404/index.md` and `404.html.md`, matching
+  `NOT_FOUND_TWINS` in `MarketDataApp/website`'s `src/lib/markdown-twins.mjs`,
+  because it is a file rather than a directory route
+
+`lib/html-to-md.js` mirrors the Turndown configuration in
+`MarketDataApp/website`'s `src/integrations/markdown-versions.mjs`, so the two
+halves of the origin answer in one Markdown dialect. That repo is private with
+no `exports`, so it is vendored rather than imported.
+
 ## Testing
 
 - **Unit tests**: `cd worker && yarn test` — tests worker routing, markdown serving, robots.txt, 404 logging
+- **Converter tests**: `yarn test:lib` — `cleanMdx` (MDX→Markdown) and `cleanHtml` (built HTML→Markdown), the two twin converters
 - **Redirect tests**: `TEST_ENV=staging yarn test:redirects` — verifies every rule in `redirects.js` answers 301 for GET and HEAD, in both slash forms
 - **Sitemap tests**: `TEST_ENV=production yarn test:sitemap` — fetches the deployed sitemap and requires every URL to answer 200. On staging it asserts the opposite: a `noIndex` build must publish no sitemap
 - **Sitemap lint**: `yarn lint:sitemap` — builds with `PROD=true` and fails if the sitemap lists a URL with no page in `build/`
