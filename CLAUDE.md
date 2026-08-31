@@ -21,15 +21,32 @@
 5. Pages serves the file from its `docs/` directory (built and nested there by CI)
 6. Worker returns the response to the client — path stays the same throughout
 
-### Worker features (`worker/`)
+### Worker features
+
+**The worker lives in `MarketData-App/www-marketdata-app`, not here, and it is
+being retired** (MarketData-App/www-marketdata-app#15). Nothing in this repo
+deploys it. What it still does:
 
 - **Hostname-based routing**: `TARGETS` map in `handler.js` maps each hostname to its Cloudflare Pages deployment
-- **Markdown serving**: Requests with `.md` extension or `Accept: text/markdown` header fetch raw source from GitHub and return cleaned markdown (frontmatter stripped, JSX components converted)
-- **SDK PHP redirect**: `/docs/sdk-php/*` → `marketdataapp.github.io/sdk-php/*` (301)
-- **robots.txt blocking**: Returns 404 for `/docs/robots.txt` to prevent stale cached copies
+- **Markdown serving**: rewrites `Accept: text/markdown` to the twin's path and proxies it. It does NOT fetch source from GitHub — it stopped on 2026-08-25, for reasons recorded in `handler.js`
+- **SDK PHP redirect**: `/docs/sdk-php/*` → `marketdataapp.github.io/sdk-php/*` (301), with a doubled-directory collapse
+- **cdn-cgi rescue**: `/docs/**/cdn-cgi/**` → `/cdn-cgi/**` (302)
 - **Edge caching**: Passes `cf.cacheEverything` on subrequests
 - **404 logging**: Logs pathname and referer for 404 responses
-- Non-docs paths pass through to the origin (WordPress)
+
+What has already moved off it, and needs nothing at the edge:
+
+| Behaviour                           | Now served by                                                     |
+|-------------------------------------|-------------------------------------------------------------------|
+| `Accept: text/markdown` negotiation | a Cloudflare Transform Rule, live on both hostnames               |
+| the legacy `/docs/sdk-php/*` space  | `_redirects`, generated from `SDK_PHP` in `redirects.js`          |
+| `/docs/robots.txt` returning 404    | nothing — the build writes no `robots.txt`, so it 404s on its own |
+| 404 logging                         | Cloudflare zone analytics, which exposes referer on this plan     |
+
+One behaviour dies with the worker and is **accepted, not replaced**: the
+canonical `Link` header on Markdown responses. See
+MarketData-App/www-marketdata-app#16. Pages types `.md` correctly without help,
+so only the header is lost.
 
 ### CI/CD pipeline
 
