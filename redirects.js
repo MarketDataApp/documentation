@@ -268,6 +268,32 @@ const REDIRECTS = [
   { from: "/api/credits", to: "/api/rate-limiting" },
   { from: "/api/troubleshooting/credits", to: "/api/rate-limiting" },
 
+  // --- MarketData-App/website#60: /api/rate-limits, the plural.
+  //
+  // 9 hits in 24 hours across both slash forms, path-filtered rather than
+  // read off a ranked list, measured 2026-09-01. That is the repeating side
+  // of the line drawn above, not the one-hit tail.
+  //
+  // GIT SAYS THIS WAS A RENAME. IT WAS NOT, AND THE TIMESTAMPS ARE WHY.
+  // `git log --diff-filter=ADR` turns up exactly what a stranded rename looks
+  // like:
+  //
+  //   ac98d66  2023-08-23 18:20:28  Create rate-limits.md
+  //   77ee1cc  2023-08-23 18:23:16  Update and rename rate-limits.md to
+  //                                 rate-limiting.md
+  //
+  // Two minutes and forty-eight seconds apart. The file never survived long
+  // enough for a build to run, so /docs/api/rate-limits was almost certainly
+  // never served and there are no stranded inbound links from our own site to
+  // recover. Anyone reading only the first line of that log would file this
+  // with the python -> py rules; it belongs with the guesses instead.
+  //
+  // It earns a rule anyway, on the two tests that actually decide it: it
+  // repeats, and the target is not in doubt. rate-limiting.md IS the renamed
+  // file -- same page, plural spelling -- so this is the least ambiguous
+  // destination in the whole array, whatever the provenance turns out to be.
+  { from: "/api/rate-limits", to: "/api/rate-limiting" },
+
   // --- NOT here, deliberately: the three /docs/sdk/go/ paths in the same
   // issue. /sdk/go/utilities/, /sdk/go/utilities/user/ and
   // /sdk/go/markets/status-history/ 404 on production, and the issue reads
