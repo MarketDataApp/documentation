@@ -239,6 +239,27 @@ const REDIRECTS = [
   // a floor. Treat any top-N traffic view as a lower bound when deciding
   // whether a URL is worth a rule.
   //
+  // WHAT THE VOLUMES DID AND DID NOT DECIDE, since both figures above were
+  // wrong and the rules were right anyway:
+  //
+  //   the TARGET rested on no volume at all. rate-limiting.md carries the
+  //   "## API Credits" heading; that is true at 6 hits a day or 8,600.
+  //
+  //   the decision to add THESE TWO and not credit-usage or accounts/credits
+  //   did use volume -- but only ORDINALLY, as "does it repeat at all". That
+  //   answer was the same under both figures: 4-and-2 against 1 said repeat,
+  //   and 8,600-a-day against 1 says it louder. No magnitude was load-bearing.
+  //
+  // So quote the numbers here for context and size the rule on whether the URL
+  // once worked or plainly means a page we have. Both hit counts in this batch
+  // were wrong in OPPOSITE directions -- website#30's were inflated by a
+  // crawler sweep, these were deflated by the top-N floor -- and that rule
+  // produces the same array from either.
+  //
+  // To measure a path properly, filter the query on the path itself and
+  // include BOTH slash forms; they are separate rows. A ranked view can only
+  // ever give a floor, and should be quoted as one.
+  //
   // A steady ~6/minute is also not a person guessing. It has the signature of
   // an automated caller -- evenly spaced, one shape, no taper -- so the reader
   // model in the paragraphs above is wrong for these two even though the
