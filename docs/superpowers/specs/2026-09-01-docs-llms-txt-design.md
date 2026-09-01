@@ -97,7 +97,27 @@ line:
 ```
 
 The orchestrator replaces that line with the body of the corresponding docs
-file, taken from `sources/docs/llms.txt` and `sources/docs/llms-full.txt`.
+file, taken from **`sources/docs/docs/llms.txt`** and
+**`sources/docs/docs/llms-full.txt`**. The doubled segment is correct and is
+not a typo.
+
+`deploy-docs.yml`'s "Restructure build output" step moves everything Docusaurus
+emitted under `build/docs/`, lifting only `404.html` and `_headers` to the build
+root, and then syncs the whole of `build/` to `{env}/sources/docs/`. Both levels
+are visible in the merge log: `sources/docs/_headers` (lifted) beside
+`sources/docs/docs/_redirects` (Docusaurus output).
+
+**The files must stay nested. Do not lift a copy to `sources/docs/llms.txt`,**
+for two reasons:
+
+1. The nested file is the same file served at `/docs/llms.txt`, so the
+   standalone artifact and the splice source cannot disagree. A lifted copy is
+   a second artifact that can drift from the first.
+2. A root-level `sources/docs/llms.txt` would collide with the website's root
+   `llms.txt` during the merge. The merge runs `rsync -a sources/docs/ build/`
+   then `rsync -a sources/website/ build/` in alphabetical order, so `website`
+   sorts last and would overwrite ours **with no error** — the last-write-wins
+   hazard that `_headers` and `_redirects` are hand-concatenated to avoid.
 
 **Both failure modes must fail the deploy, not degrade silently:**
 
