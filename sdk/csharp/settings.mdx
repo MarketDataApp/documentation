@@ -11,7 +11,7 @@ When you create a client without explicit options, `MarketDataClientOptions.From
 
 1. .NET user secrets (lowest priority)
 2. An optional `.env` file in the current working directory
-3. Environment variables (highest priority)
+3. `MARKETDATA_*` environment variables (highest priority)
 
 So an environment variable overrides the same key in `.env`, which overrides user secrets. Explicit options — `new MarketDataClientOptions { ... }` — bypass the cascade entirely.
 
