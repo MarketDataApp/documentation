@@ -31,7 +31,7 @@
 const { promises: fs } = require('node:fs');
 const path = require('node:path');
 
-const { renderIndex, renderFull } = require('../lib/llms-txt');
+const { renderIndex, renderFull, assertNoSpliceMarker } = require('../lib/llms-txt');
 
 const CANONICAL_ORIGIN = 'https://www.marketdata.app/docs';
 
@@ -82,6 +82,12 @@ async function emitLlmsTxt({ entries, outDir, routeCount }) {
     preamble: PREAMBLE,
   });
   const full = renderFull({ entries, origin: CANONICAL_ORIGIN });
+
+  // Before writing, not after: an artifact carrying the marker must never
+  // reach R2, where the orchestrator would find it and report the failure from
+  // the wrong repository.
+  assertNoSpliceMarker(index, 'llms.txt');
+  assertNoSpliceMarker(full, 'llms-full.txt');
 
   await writeAtomic(path.join(outDir, 'llms.txt'), index);
   await writeAtomic(path.join(outDir, 'llms-full.txt'), full);
