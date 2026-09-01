@@ -122,7 +122,8 @@ for two reasons:
 **Both failure modes must fail the deploy, not degrade silently:**
 
 1. the marker is absent from a root file;
-2. `sources/docs/llms.txt` or `sources/docs/llms-full.txt` is missing.
+2. `sources/docs/docs/llms.txt` or `sources/docs/docs/llms-full.txt` is
+   missing. Doubled, as above.
 
 A root file that quietly loses 252 entries is the same class of defect this
 group has already paid for twice — a check that stops covering most of what it
