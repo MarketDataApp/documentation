@@ -27,7 +27,10 @@ function HomepageHeader() {
 export default function Home(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
   return (
-    <Layout title="HOME" description="">
+    <Layout
+      title="HOME"
+      description="Documentation for the Market Data REST API, the Go, Python, JavaScript, C#, PHP and Java SDKs, and the Google Sheets add-on."
+    >
       <HomepageHeader />
       <main>
         <HomepageFeatures />
