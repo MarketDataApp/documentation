@@ -142,6 +142,55 @@ const REDIRECTS = [
   { from: "/api/troubleshooting/feed-selection", to: "/api/troubleshooting" },
   { from: "/options", to: "/api/options" },
 
+  // --- MarketData-App/website#30 and #60, third batch: six troubleshooting/
+  // children and an option-chain slip, all measured 404 on production and
+  // cache-busted on 2026-08-31.
+  //
+  // Like the five above, none of these has ever been a file, a `slug` or a
+  // link in this repository. They are outside guesses at our information
+  // architecture, so each target is argued from what the reader wanted, and
+  // every one was verified 200 on the same date.
+  //
+  // Two of the six do NOT land on the troubleshooting index, and that is the
+  // point. The array's own convention -- "a more specific target beats /api"
+  // -- applies whenever a page answers the question by name:
+  //
+  //   status-codes    the index IS the status code reference; its first line
+  //                   says so and every 2xx/4xx/5xx code is on it. Same page,
+  //                   shorter name, as the http-status-codes rule at the top
+  //                   of this array already sends there.
+  //   rate-limiting   api/rate-limiting.md, titled "Rate Limits", is a SIBLING
+  //                   of troubleshooting/ rather than a child, which is very
+  //                   likely how the URL was mistyped in the first place.
+  //   api-credits     the same page carries the "## API Credits" heading -- a
+  //                   literal match for the segment -- and links onward to
+  //                   running-out-of-credits, so the narrower 429 page is
+  //                   reachable in one hop and nothing is lost by aiming wide.
+  //   data-freshness  account/data-freshness.md is titled "Data Freshness".
+  //                   An exact title match beats troubleshooting/real-time-data,
+  //                   which is the "not working" guide, not the definition.
+  //   cached-feed     "feed" was this API's old word for `mode`, the same
+  //                   equivalence the feed-status and feed-selection rules
+  //                   above rest on. universal-parameters/mode.md documents
+  //                   "## Cached Mode", so this one CAN be resolved to a
+  //                   specific page where those two could not.
+  //   licensing       no page of that name, but account/data-policies is the
+  //                   index of exactly that subject -- redistribution rights,
+  //                   exchange agreements, professional status. Deliberately
+  //                   NOT account/plans/commercial.mdx, which is `unlisted`
+  //                   and noindex and must not be a redirect destination.
+  //
+  // option-chain is the singular-hyphenated sibling of options/chains, which
+  // this array already redirects. The plural was fixed and the hyphen was
+  // missed.
+  { from: "/api/troubleshooting/status-codes", to: "/api/troubleshooting" },
+  { from: "/api/troubleshooting/rate-limiting", to: "/api/rate-limiting" },
+  { from: "/api/troubleshooting/api-credits", to: "/api/rate-limiting" },
+  { from: "/api/troubleshooting/data-freshness", to: "/account/data-freshness" },
+  { from: "/api/troubleshooting/cached-feed", to: "/api/universal-parameters/mode" },
+  { from: "/api/troubleshooting/licensing", to: "/account/data-policies" },
+  { from: "/api/options/option-chain", to: "/api/options/chain" },
+
   // --- NOT here, deliberately: the three /docs/sdk/go/ paths in the same
   // issue. /sdk/go/utilities/, /sdk/go/utilities/user/ and
   // /sdk/go/markets/status-history/ 404 on production, and the issue reads
