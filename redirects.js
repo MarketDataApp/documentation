@@ -195,8 +195,8 @@ const REDIRECTS = [
   // production and cache-busted on 2026-09-01, and neither has ever been a
   // file on either branch.
   //
-  // These are the same reader as api-credits above, guessing a shorter name.
-  // They go to the same place for the same reason: api/rate-limiting.md
+  // They go to the same place as api-credits above, for the same reason:
+  // api/rate-limiting.md
   // carries the "## API Credits" heading and links onward to
   // running-out-of-credits, so the narrower 429 page stays one hop away.
   //
@@ -209,12 +209,41 @@ const REDIRECTS = [
   // site (it is `account`, singular), so the next guess will be a different
   // wrong word.
   //
-  // The two below earn rules because they REPEAT -- 4 and 2 hits in 24 hours,
-  // against 1 for the tail. A splat over /api/*credits* would cover the tail
-  // and is the wrong instrument twice: it costs a slot in the scarce
-  // positional pattern budget that the merged _redirects file gates, and it
-  // would match paths nobody has ever requested. If the tail starts repeating,
-  // add it here as another literal.
+  // The two below earn rules because they REPEAT, against 1 hit for the tail.
+  // A splat over /api/*credits* would cover the tail and is the wrong
+  // instrument twice: it costs a slot in the scarce positional pattern budget
+  // that the merged _redirects file gates, and it would match paths nobody has
+  // ever requested. If the tail starts repeating, add it here as another
+  // literal.
+  //
+  // ---------------------------------------------------------------------
+  // HOW MUCH THEY REPEAT -- corrected 2026-09-01, and the correction is the
+  // useful part.
+  //
+  // These were first reported at "4 and 2 hits in 24 hours", which is what
+  // justified them here as marginal-but-real. That figure was wrong by three
+  // orders of magnitude. Measured per minute across the deploy:
+  //
+  //   before 07:48Z   130 x 404, arriving at a steady ~6/minute
+  //   after  07:48Z    18 x 301, and ZERO 404s
+  //
+  // That is roughly 8,600 requests a day, which makes these two rules the
+  // highest-volume entries in this entire array -- not the marginal pair the
+  // original note described.
+  //
+  // WHY THE FIRST NUMBER WAS SO LOW, because the flaw repeats: it came from a
+  // "top 400 paths by hits" view, which has a FLOOR. These paths sat below it
+  // and were counted only by whatever fraction surfaced. This is the same
+  // shape of self-concealing undercount that CLAUDE.md records for cache-warm
+  // probes, in a different tool: the number looks like a total and is actually
+  // a floor. Treat any top-N traffic view as a lower bound when deciding
+  // whether a URL is worth a rule.
+  //
+  // A steady ~6/minute is also not a person guessing. It has the signature of
+  // an automated caller -- evenly spaced, one shape, no taper -- so the reader
+  // model in the paragraphs above is wrong for these two even though the
+  // target is right. Referer and user-agent are queryable from the zone
+  // analytics if it ever matters what it is.
   { from: "/api/credits", to: "/api/rate-limiting" },
   { from: "/api/troubleshooting/credits", to: "/api/rate-limiting" },
 
