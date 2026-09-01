@@ -80,6 +80,9 @@ const { promises: fs } = require('node:fs');
 const path = require('node:path');
 const { cleanMdx } = require('../lib/mdx-to-md');
 const { cleanHtml } = require('../lib/html-to-md');
+const { routeSuffix, stemOf } = require('../lib/route-stem');
+const { categoryOf, titleForStem, descriptionFromHtml } = require('../lib/llms-txt');
+const { emitLlmsTxt } = require('./llms-txt');
 
 /** The worker's candidate order. Do not reorder without changing the worker. */
 const CANDIDATES = ['.md', '.mdx', '/index.md', '/index.mdx'];
@@ -87,24 +90,14 @@ const CANDIDATES = ['.md', '.mdx', '/index.md', '/index.mdx'];
 /** Absolute URL a twin's canonical points at. Matches the worker's Link header. */
 const CANONICAL_ORIGIN = 'https://www.marketdata.app/docs';
 
-/** The route path with `baseUrl` taken off: "/docs/api/tags/" -> "api/tags/". */
-function routeSuffix(routePath, baseUrl) {
-  return routePath
-    .replace(new RegExp(`^${baseUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`), '')
-    .replace(/^\/+/, '');
-}
-
-/**
- * Turns a built route path into the stem the candidate list is resolved
- * against: "/docs/api/stocks/candles/" -> "api/stocks/candles".
- *
- * Returns null for the docs root, which has no source of its own. That is still
- * true and is still why the candidate list is not consulted for it -- but it is
- * no longer a reason to emit nothing. See `twinTargets`.
- */
-function stemOf(routePath, baseUrl) {
-  return routeSuffix(routePath, baseUrl).replace(/\/+$/, '') || null;
-}
+// routeSuffix and stemOf live in lib/route-stem.js because plugins/llms-txt.js
+// needs the identical mapping: this plugin WRITES a twin at a path derived from
+// the stem and that one READS it back. Two copies that drifted would not fail
+// loudly -- the llms.txt index would quietly lose the routes they disagreed on.
+//
+// stemOf still returns null for the docs root, which has no source of its own.
+// That is why the candidate list is not consulted for it -- but it is not a
+// reason to emit nothing. See `twinTargets`.
 
 /**
  * The built HTML file a route is served from, which is what the twin is
@@ -171,6 +164,7 @@ module.exports = function markdownTwinsPlugin() {
       let fromHtml = 0;
       let files = 0;
       const untwinned = [];
+      const indexed = [];
 
       for (const routePath of routesPaths) {
         const stem = stemOf(routePath, baseUrl);
@@ -180,6 +174,7 @@ module.exports = function markdownTwinsPlugin() {
         // bytes. `stem === null` only at the docs root, which has no source to
         // look for, so the lookup is skipped rather than attempted with null.
         let markdown = null;
+        let html = null;
         if (stem !== null) {
           const found = await readFirstCandidate(siteDir, stem);
           if (found) {
@@ -195,7 +190,6 @@ module.exports = function markdownTwinsPlugin() {
         // being true.
         if (markdown === null) {
           const htmlFile = builtHtmlOf(outDir, routePath, baseUrl);
-          let html;
           try {
             html = await fs.readFile(htmlFile, 'utf8');
           } catch (err) {
@@ -216,6 +210,30 @@ module.exports = function markdownTwinsPlugin() {
           await fs.mkdir(path.dirname(target), { recursive: true });
           await fs.writeFile(target, markdown, 'utf8');
           files++;
+        }
+
+        // ---- The llms.txt corpus ------------------------------------------
+        // Collected HERE rather than in a plugin of its own because Docusaurus
+        // runs postBuild hooks with `Promise.all` -- concurrently, not in the
+        // order docusaurus.config.js lists them. A second plugin reading these
+        // twins back off disk would race the loop that writes them, and would
+        // usually lose. One traversal, in order, by construction.
+        const indexStem = stem === null ? '' : stem;
+        if (categoryOf(indexStem)) {
+          if (html === null) {
+            try {
+              html = await fs.readFile(builtHtmlOf(outDir, routePath, baseUrl), 'utf8');
+            } catch (err) {
+              if (err.code !== 'ENOENT') throw err;
+              html = '';
+            }
+          }
+          indexed.push({
+            stem: indexStem,
+            markdown,
+            title: titleForStem(indexStem, markdown),
+            description: descriptionFromHtml(html),
+          });
         }
       }
 
@@ -241,6 +259,8 @@ module.exports = function markdownTwinsPlugin() {
             'falling through to HTML.'
         );
       }
+
+      await emitLlmsTxt({ entries: indexed, outDir, routeCount: routesPaths.length });
 
       if (fromSource === 0) {
         throw new Error(
