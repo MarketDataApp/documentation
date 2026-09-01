@@ -191,6 +191,33 @@ const REDIRECTS = [
   { from: "/api/troubleshooting/licensing", to: "/account/data-policies" },
   { from: "/api/options/option-chain", to: "/api/options/chain" },
 
+  // --- MarketData-App/website#60, the "credits" tail. Both measured 404 on
+  // production and cache-busted on 2026-09-01, and neither has ever been a
+  // file on either branch.
+  //
+  // These are the same reader as api-credits above, guessing a shorter name.
+  // They go to the same place for the same reason: api/rate-limiting.md
+  // carries the "## API Credits" heading and links onward to
+  // running-out-of-credits, so the narrower 429 page stays one hop away.
+  //
+  // DELIBERATELY NOT ENUMERATED FURTHER, and this is the interesting part.
+  // The 404 store also shows /api/troubleshooting/credit-usage and
+  // /api/accounts/credits at one hit each. Every rule above this line revives
+  // a CLOSED set -- a rename with a known file list, or a fixed handful of
+  // URLs the outside world holds. A guessing tail is an OPEN set: there is no
+  // last member to enumerate, and "accounts" is not even a section of this
+  // site (it is `account`, singular), so the next guess will be a different
+  // wrong word.
+  //
+  // The two below earn rules because they REPEAT -- 4 and 2 hits in 24 hours,
+  // against 1 for the tail. A splat over /api/*credits* would cover the tail
+  // and is the wrong instrument twice: it costs a slot in the scarce
+  // positional pattern budget that the merged _redirects file gates, and it
+  // would match paths nobody has ever requested. If the tail starts repeating,
+  // add it here as another literal.
+  { from: "/api/credits", to: "/api/rate-limiting" },
+  { from: "/api/troubleshooting/credits", to: "/api/rate-limiting" },
+
   // --- NOT here, deliberately: the three /docs/sdk/go/ paths in the same
   // issue. /sdk/go/utilities/, /sdk/go/utilities/user/ and
   // /sdk/go/markets/status-history/ 404 on production, and the issue reads
