@@ -57,10 +57,31 @@ orchestrator, which can see both halves.
 A `postBuild` plugin, ordered **after** `./plugins/markdown-twins` in
 `docusaurus.config.js`.
 
-**Metadata.** Title and description come from the built HTML. Only 2 of 259
-source files carry a frontmatter `description`, but Docusaurus synthesises
-`<meta name="description">` from the first paragraph, so all 252 routes have
-one with no authoring work.
+**Metadata.** Titles come from the Markdown twin's first heading; descriptions
+come from the built HTML. Only 2 of 259 source files carried a frontmatter
+`description`, but Docusaurus synthesises `<meta name="description">` from the
+first paragraph, so 248 of 252 routes had one with no authoring work.
+
+The remaining four were the docs root and the three generated Sheets category
+indexes, which have no first paragraph to synthesise from. They are exactly the
+pages an agent uses to orient, so they were given real descriptions rather than
+left blank: three in frontmatter, one in the root page's `Layout`. All 252 now
+carry one.
+
+Titles deliberately do NOT come from the built page's `<title>`, which carries a
+" | Market Data" suffix. That is also why this repo needs no suffix-stripping
+rule, and why the same shortcut does not transfer to the website repo: their
+`<h1>` is a marketing headline rather than a page name, so their titles must
+come from `<title>` and be stripped.
+
+**Disambiguation.** The 252 entries carry only 130 distinct titles, because
+every SDK documents the same endpoints. Most repeats are separated by their
+headings, but 14 collide *within* one section -- funds and stocks both have
+"Candles" under a single language, and universal-parameters and utilities both
+have "Headers" under API. Those are qualified with their parent segment, giving
+"Candles (Funds)" and "Candles (Stocks)". Only collisions are qualified;
+qualifying every title would cost every reader a parenthesis to pay for 14
+cases.
 
 **Links** point at the `.md` twin, matching the root file's convention.
 
@@ -128,6 +149,25 @@ for two reasons:
 A root file that quietly loses 252 entries is the same class of defect this
 group has already paid for twice — a check that stops covering most of what it
 names, while still passing.
+
+## The composed file's second H1
+
+The standalone `/docs/llms.txt` opens with `# Market Data Documentation`, which
+it needs -- it is served on its own. Once spliced into the root file, that
+becomes a second H1 halfway down a document that already has one. The llms.txt
+convention is a single H1 naming the project, so a parser splitting on H1 sees
+two documents or takes the wrong title.
+
+**Resolved in the splice**: the orchestrator demotes the docs body's single
+leading H1 to an H2 during composition, fails if the body carries more than one
+H1, and logs that it did so. The standalone artifact stays correct, the composed
+file becomes correct, and the only component that knows the body is being
+embedded rather than served is the one doing the embedding.
+
+The alternative -- emitting an H2 from this repo -- was rejected because it
+fixes the composed file by breaking the standalone one. This tension is inherent
+to serving one artifact two ways, which remains the right trade: a single file
+cannot drift from itself.
 
 ## Testing
 
