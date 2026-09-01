@@ -255,7 +255,9 @@ const REDIRECTS = [
   // once worked or plainly means a page we have. Both hit counts in this batch
   // were wrong in OPPOSITE directions -- website#30's were inflated by a
   // crawler sweep, these were deflated by the top-N floor -- and that rule
-  // produces the same array from either.
+  // produces the same array from either. A third followed on /api/rate-limits
+  // below, inflated by our own probes. Every volume figure that has entered
+  // this array was wrong; none of the rules was. Treat that as settled.
   //
   // To measure a path properly, filter the query on the path itself and
   // include BOTH slash forms; they are separate rows. A ranked view can only
@@ -271,9 +273,39 @@ const REDIRECTS = [
 
   // --- MarketData-App/website#60: /api/rate-limits, the plural.
   //
-  // 9 hits in 24 hours across both slash forms, path-filtered rather than
-  // read off a ranked list, measured 2026-09-01. That is the repeating side
-  // of the line drawn above, not the one-hit tail.
+  // 3-5 hits in 24 hours across both slash forms from callers we did not
+  // generate, measured 2026-09-01. That is the repeating side of the line
+  // drawn above, not the one-hit tail, and the spread carries more weight
+  // than the count: Claro NXT in Brazil, Verizon and Vodafone -- three
+  // distinct consumer ASNs, so people rather than one crawler.
+  //
+  // THE FIRST FIGURE FOR THIS RULE WAS 9, AND IT WAS OUR OWN PROBES.
+  // Broken down by user agent, six of the nine were curl from this box and
+  // three were Claude agents. In one hour of verifying, 16 requests hit this
+  // path and ZERO were external -- roughly four days of apparent demand for a
+  // path nobody asked for that hour. The largest single source was a
+  // verification loop polling it every 20 seconds.
+  //
+  // This is the third bad hit count in this array's history and the three
+  // fail in three different directions:
+  //
+  //   website#30's counts  INFLATED   a crawler sweep, ua=node, one ASN
+  //   the credits pair     DEFLATED   a top-N ranked view with a floor
+  //   this rule            INFLATED   our own verification traffic
+  //
+  // The third is the one to watch, because it gets WORSE the more carefully
+  // the fix is verified: measuring a path and probing a path are the same
+  // act. On a 3-per-day URL, checking it is fixed can manufacture the
+  // repetition that justified fixing it. Two defences, both cheap. Ask the
+  // edge log what it answered instead of becoming another caller -- it
+  // already knows, and reading costs nothing. And when a probe is genuinely
+  // needed, probe the redirect's TARGET rather than its source; the target
+  // is a fact about the destination and nobody counts demand on it.
+  //
+  // A user agent separates our traffic from the world's, which is what the
+  // ordinal test needs. It does NOT separate one agent on this box from
+  // another -- same binary, same egress IP -- so never attribute a share of
+  // it to a particular session.
   //
   // GIT SAYS THIS WAS A RENAME. IT WAS NOT, AND THE TIMESTAMPS ARE WHY.
   // `git log --diff-filter=ADR` turns up exactly what a stranded rename looks
