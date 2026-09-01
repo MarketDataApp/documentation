@@ -48,27 +48,29 @@ const SUMMARY =
   'Java, and the Google Sheets add-on.';
 
 /**
- * ONE URL convention, deliberately.
+ * NO URL convention here, deliberately.
  *
- * Every page here is served under three names -- `<stem>.md`,
- * `<stem>/index.md` and `<stem>/index.html.md` -- and this paragraph used to
- * list all three. It no longer does, for two reasons.
+ * Every page is served under three names -- `<stem>.md`, `<stem>/index.md` and
+ * `<stem>/index.html.md`. This paragraph named all three, then named one, and
+ * now names none.
  *
- * Every entry below already links straight at the `.md` URL, so a reader never
- * has to build one; the three names answered a question nobody reading this
- * file has. And these sections are spliced into the site root's llms.txt, whose
- * owner ruled against advertising several forms of one URL there -- "we
- * shouldn't confuse the llms". The root file dropped its own copy of this
- * paragraph; ours would have been the surviving one.
+ * One was still one too many. These sections are spliced into the site root's
+ * llms.txt, whose "Getting started" already explains the convention for the
+ * WHOLE site and in both directions -- append `index.md` to reach Markdown,
+ * remove it to reach HTML. Ours restated the weaker half of that seven lines
+ * later in the same document. Two statements of one rule is what the root
+ * file's owner ruled against; dropping to one form fixed the wording and left
+ * the duplication.
  *
- * The remaining sentence goes the useful direction: from the Markdown URL a
- * reader already has, to the HTML page it may want.
+ * Nothing is lost standalone: every entry below is already an absolute `.md`
+ * URL, so a reader never has to construct one.
+ *
+ * What stays is the one thing the root file does not have -- a pointer to the
+ * authentication reference. That is a link to more detail rather than a
+ * restatement of the root's token guidance.
  */
 const PREAMBLE = [
-  'Every link below points at a page\'s Markdown. For the HTML page, drop the',
-  'trailing `index.md`.',
-  '',
-  'The API requires a token on every request. See',
+  'Authentication, and how to obtain a token:',
   `${CANONICAL_ORIGIN}/api/authentication/index.md`,
 ].join('\n');
 
