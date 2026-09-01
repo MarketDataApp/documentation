@@ -47,10 +47,26 @@ const SUMMARY =
   'The Market Data REST API, its SDKs for Go, Python, JavaScript, C#, PHP and ' +
   'Java, and the Google Sheets add-on.';
 
+/**
+ * ONE URL convention, deliberately.
+ *
+ * Every page here is served under three names -- `<stem>.md`,
+ * `<stem>/index.md` and `<stem>/index.html.md` -- and this paragraph used to
+ * list all three. It no longer does, for two reasons.
+ *
+ * Every entry below already links straight at the `.md` URL, so a reader never
+ * has to build one; the three names answered a question nobody reading this
+ * file has. And these sections are spliced into the site root's llms.txt, whose
+ * owner ruled against advertising several forms of one URL there -- "we
+ * shouldn't confuse the llms". The root file dropped its own copy of this
+ * paragraph; ours would have been the surviving one.
+ *
+ * The remaining sentence goes the useful direction: from the Markdown URL a
+ * reader already has, to the HTML page it may want.
+ */
 const PREAMBLE = [
-  'Every page below is also available as Markdown, at three URLs that serve',
-  'the same file: append `index.md` to the page URL, append `index.html.md`',
-  'to it, or replace its trailing slash with `.md`.',
+  'Every link below points at a page\'s Markdown. For the HTML page, drop the',
+  'trailing `index.md`.',
   '',
   'The API requires a token on every request. See',
   `${CANONICAL_ORIGIN}/api/authentication/index.md`,
@@ -102,4 +118,4 @@ async function emitLlmsTxt({ entries, outDir, routeCount }) {
   );
 }
 
-module.exports = { emitLlmsTxt, CANONICAL_ORIGIN, TITLE };
+module.exports = { emitLlmsTxt, CANONICAL_ORIGIN, TITLE, PREAMBLE };
