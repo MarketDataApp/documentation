@@ -700,6 +700,34 @@ Integration tests make **actual REST requests** to the live API:
 - **Run in CI by default for all pull requests and release pipelines**
 - **Not run for every commit/push** and not part of standard default/local test runs
 
+#### Minimum coverage: at least one live test per endpoint
+
+**Every endpoint in §2.2 must have at least one integration test that calls it against
+the live API.** A mocked test does not satisfy this: a mock proves the SDK parses the
+response the author *expected*, which is precisely the assumption that goes stale when the
+API changes. Only a live call can tell you the contract still holds.
+
+| Resource    | Endpoints requiring live coverage                 |
+|-------------|---------------------------------------------------|
+| `stocks`    | `prices`, `quotes`, `candles`, `earnings`, `news` |
+| `options`   | `chain`, `expirations`, `quotes`, `lookup`        |
+| `funds`     | `candles`                                         |
+| `markets`   | `status`                                          |
+| `utilities` | `status`, `headers`, `user`                       |
+
+Each test must assert on the **shape of the decoded response** — that the fields the SDK
+models actually arrived and carry usable values — not merely that the call returned a
+2xx. A test that checks only the status code passes against an endpoint that has silently
+started returning an empty body.
+
+Where an endpoint has materially different response shapes, cover each one: a no-data
+answer is a different contract from a populated one, and both are worth a witness.
+
+> **A missing token must fail the suite, never skip it.** An integration suite that skips
+> when unauthenticated reports success while testing nothing, which is worse than having
+> no suite at all — it produces a green check that means nothing. If the token is absent,
+> fail and say so.
+
 ### Code Coverage
 
 - **100% code coverage required**
@@ -949,6 +977,8 @@ Before accepting an SDK, verify:
 ### Code Quality
 - [ ] Unit tests exist and pass (mocked, no real API calls)
 - [ ] Integration tests exist (gated by env var)
+- [ ] At least one live integration test per §2.2 endpoint, asserting on the decoded response shape
+- [ ] A missing API token fails the integration suite rather than skipping it
 - [ ] 100% code coverage (or explicit ignores with comments)
 - [ ] CI pipeline configured
 - [ ] Code follows language style guide (PEP 8, PSR-12, etc.)
