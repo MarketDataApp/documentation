@@ -60,16 +60,17 @@ jobs:
       fail-fast: false
       matrix:
         # `sdk` = source dir (sdk/<sdk>/) and exporter key; `repo` = target repo.
-        # These are decoupled so Go v2 (authored at sdk/go/) targets the
-        # sdk-go-v2 repo rather than sdk-go (the v1 repo that `sdk-${sdk}` would
-        # otherwise resolve to).
+        # These stay decoupled even though every pair now matches `sdk-${sdk}`:
+        # Go v2 was transplanted into sdk-go on 2026-09-02, so sdk/go/ targets
+        # sdk-go again. Keeping the explicit `repo` keeps the next divergence
+        # a one-line change.
         include:
           - sdk: js
             repo: sdk-js
           - sdk: java
             repo: sdk-java
           - sdk: go
-            repo: sdk-go-v2
+            repo: sdk-go
           - sdk: csharp
             repo: sdk-csharp
     steps:
