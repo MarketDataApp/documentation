@@ -26,7 +26,7 @@ Visit our [status page](https://www.marketdata.app/status/) to view the current 
 
 ### Confirm Downtime Programmatically
 
-Use the [/utilities/status/ endpoint](/api/utilities/status) to programmatically check the status of all Market Data API endpoints. This endpoint returns the current status for each endpoint (e.g., `/v1/stocks/quotes/`, `/v1/options/chain/`, etc.) and will remain online during outages, allowing you to determine which specific endpoints are affected.
+Use the [status endpoint](/api/utilities/status) at `https://api.marketdata.app/status/` to programmatically check the status of all Market Data API endpoints. This endpoint returns the current status for each endpoint (e.g., `/v1/stocks/quotes/`, `/v1/options/chain/`, etc.) and will remain online during outages, allowing you to determine which specific endpoints are affected. Unlike every other endpoint, the status endpoint is not versioned: it is served at `/status/`, not under `/v1/`.
 
 :::tip
 This endpoint is ideal to allow for automatic switching between Market Data and your backup provider when specific endpoints are down.
