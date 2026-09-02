@@ -255,7 +255,7 @@ foreach (var quote in (await client.Options.GetQuoteAsync("AAPL271217C00250000")
 
 - **openInterest** `array[number]`
 
-  The total number of contracts outstanding. Open interest is published once per trading day: it is calculated after the close and released at the start of the next session, and it does not change intraday. On a historical request (`date=D`), this is therefore the figure settled out of the D−1 session and available before the open on D — unlike every other field in the row, which is as of the 16:00 ET `updated` timestamp. To get the open interest produced by trading on day D, request the next trading day.
+  The total number of contracts outstanding. Open interest is published once per trading day: it is calculated after the close and released at the start of the next session, and it does not change intraday. On a historical request (`date=D`, or a `from`/`to` series), this is therefore the figure settled out of the D−1 session and available before the open on D — unlike every other field in the row, which is as of the 16:00 ET `updated` timestamp. To get the open interest produced by trading on day D, request the next trading day.
 
 - **underlyingPrice** `array[number]`
 
