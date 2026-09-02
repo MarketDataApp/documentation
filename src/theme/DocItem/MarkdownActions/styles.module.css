@@ -5,14 +5,44 @@
  * site's light and dark palettes instead of carrying a second definition of
  * them. That is the mistake the http token colours had to fix elsewhere in
  * this repo: a hard-coded colour that was only ever checked in one theme.
+ *
+ * The two themes take DIFFERENT tokens, because Infima's emphasis scale is not
+ * symmetric. `--ifm-color-emphasis-600` is rgb(141,148,158) in light and
+ * rgb(204,208,213) in dark: fine on a dark ground, far too pale on a white one.
+ * Measured against the page background:
+ *
+ *     light  emphasis-600        #8d949e on #fff   3.06:1   fails WCAG AA
+ *     light  content-secondary   #525860 on #fff   7.19:1   passes AAA
+ *     dark   emphasis-600        #ccd0d5 on #1b1b1d  11.1:1  passes AAA
+ *
+ * `--ifm-color-content-secondary` is white in dark mode, which is why it is not
+ * simply used for both. The light value lands next to the marketing site's own
+ * `text-body-subtle` (#4b5563), which is what this row is ported from.
+ *
+ * The hover colour is `--ifm-color-content` and NOT `--ifm-heading-color`.
+ * Infima does not declare the latter on :root, so `var(--ifm-heading-color)`
+ * is invalid, `color` computes to `unset`, and because `color` inherits, the
+ * control silently keeps the row's resting colour. Nothing reports that: the
+ * rule matches, its `text-decoration` applies, and only the colour is dropped.
+ * Probing the variable is not enough to catch it either — reading it back on
+ * an element inside `.markdown` returns the inherited heading colour and looks
+ * like a successful lookup.
  */
+
+:root {
+  --md-actions-color: var(--ifm-color-content-secondary);
+}
+
+[data-theme='dark'] {
+  --md-actions-color: var(--ifm-color-emphasis-600);
+}
 
 .row {
   margin: -0.5rem 0 1.5rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--ifm-toc-border-color);
   font-size: 0.875rem;
-  color: var(--ifm-color-emphasis-600);
+  color: var(--md-actions-color);
 }
 
 .list {
@@ -73,12 +103,28 @@
   transition: color var(--ifm-transition-fast) ease;
 }
 
-/* Both controls, so the affordance does not depend on which element it is.
-   A link picks up the site's anchor colour otherwise, and the button does
-   not, which is how the two end up looking like different things. */
-.control:hover,
-.control:focus-visible {
-  color: var(--ifm-heading-color);
+/**
+ * The link must not be underlined at rest, and beating Docusaurus to that takes
+ * three classes:
+ *
+ *     .theme-doc-markdown.markdown li a { text-decoration: underline }   (0,2,2)
+ *     .control                                                           (0,1,0)
+ *     .row .list .control                                                (0,3,0)  wins
+ *
+ * The row sits inside the markdown body and its items are <li>, so that rule
+ * matches the link and not the button — which is exactly how the two controls
+ * end up looking like different things.
+ *
+ * Both get the same treatment, so the affordance does not depend on which
+ * element it happens to be.
+ */
+.row .list .control {
+  text-decoration: none;
+}
+
+.row .list .control:hover,
+.row .list .control:focus-visible {
+  color: var(--ifm-color-content);
   text-decoration: underline;
 }
 
@@ -125,7 +171,7 @@
    state is carried by the icon and the word regardless, which is 1.4.1. */
 .control[data-state='copied'],
 .control[data-state='error'] {
-  color: var(--ifm-heading-color);
+  color: var(--ifm-color-content);
 }
 
 .srOnly {

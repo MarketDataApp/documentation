@@ -16,6 +16,11 @@
  *     not walk. `markdown-twins.js` fails the build when a route has no twin,
  *     but nothing downstream re-checks that the URL this control names is the
  *     one that got written.
+ *   - The HOVER colour comes from a CSS variable. `--ifm-heading-color` is not
+ *     declared on :root, so `var()` on it is invalid, `color` computes to
+ *     `unset`, and since colour inherits, the control silently keeps its
+ *     resting colour. The rule still matches and its `text-decoration` still
+ *     applies, so nothing looks broken from the stylesheet's side.
  *   - The DATE METADATA is invisible by definition. Three spellings have to
  *     agree with each other and with the page's canonical URL.
  *
@@ -84,6 +89,33 @@ test('the last-updated date is per page, not one build date', async ({ page }) =
   // Identical dates on two pages with different edit histories is the
   // signature of a shallow clone at build time.
   expect(dates[0]).not.toBe(dates[1]);
+});
+
+test('the link underlines on hover and not before', async ({ page }) => {
+  await page.goto(`${BASE_URL}/api/options/chain`, { waitUntil: 'domcontentloaded' });
+
+  for (const item of [
+    page.getByRole('link', { name: 'View as Markdown' }),
+    page.getByRole('button', { name: 'Copy as Markdown' }),
+  ]) {
+    const rest = await item.evaluate((el) => ({
+      deco: getComputedStyle(el).textDecorationLine,
+      color: getComputedStyle(el).color,
+    }));
+    expect(rest.deco).toBe('none');
+
+    await item.hover();
+    const hover = await item.evaluate((el) => ({
+      deco: getComputedStyle(el).textDecorationLine,
+      color: getComputedStyle(el).color,
+    }));
+    expect(hover.deco).toBe('underline');
+    // A colour that does not move is the signature of an undefined CSS
+    // variable, which is how this shipped the first time.
+    expect(hover.color).not.toBe(rest.color);
+
+    await page.mouse.move(0, 0);
+  }
 });
 
 test('the last-updated date is machine readable', async ({ page }) => {
