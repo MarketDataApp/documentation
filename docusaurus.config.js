@@ -243,7 +243,13 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ['json', 'http', 'php', 'bash', 'excel-formula', 'java', 'kotlin', 'groovy'],
+        // Every language used in a ``` fence that Prism does not bundle by
+        // default has to be listed here, or the block renders as plain text
+        // with no error -- the page still builds and still looks like a code
+        // block, so nothing catches it but reading one. `csharp` was missing
+        // while 99 fences used it. scripts/check-highlighting.js now fails
+        // the build instead.
+        additionalLanguages: ['json', 'http', 'php', 'bash', 'excel-formula', 'java', 'kotlin', 'groovy', 'csharp', 'powershell', 'batch', 'ini'],
       },
     }),
 };

@@ -52,13 +52,13 @@ echo $MARKETDATA_TOKEN
 
 Using Command Prompt (persists for future sessions, not the current one):
 
-```cmd
+```batch
 setx MARKETDATA_TOKEN "your_api_token"
 ```
 
 Open a **new** Command Prompt and verify:
 
-```cmd
+```batch
 echo %MARKETDATA_TOKEN%
 ```
 
@@ -75,7 +75,7 @@ client, err := marketdata.NewClient()
 
 `NewClient` automatically loads a `.env` file from the current working directory. Create one in your project root:
 
-```env
+```ini
 MARKETDATA_TOKEN=your_api_token
 ```
 

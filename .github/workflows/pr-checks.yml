@@ -72,6 +72,13 @@ jobs:
       - name: Check the sitemap lists only pages this build serves
         run: node scripts/lint-sitemap.js
 
+      # Also reuses that build. A fence whose language Prism has no grammar for
+      # renders as grey plain text and reports nothing: the build succeeds and
+      # the block still looks like a code block. `csharp` was unregistered
+      # while 99 fences used it, and a person browsing a page is what found it.
+      - name: Check every code fence language highlights
+        run: node scripts/check-highlighting.js
+
   # `worker-unit-tests` was here. The worker moved to
   # MarketDataApp/www-marketdata-app, which runs those 38 tests on its own pull
   # requests. Nothing is lost by deleting the job; keeping it would have run

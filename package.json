@@ -29,6 +29,7 @@
     "test:e2e": "playwright test",
     "lint:options": "node scripts/check-option-symbols.js",
     "lint:examples": "node scripts/check-example-parity.js",
+    "lint:highlighting": "node scripts/check-highlighting.js",
     "test:scripts": "node --test scripts/__tests__/*.test.js"
   },
   "dependencies": {
