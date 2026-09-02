@@ -32,7 +32,13 @@ jobs:
       - name: Check for expired option symbols
         run: node scripts/check-option-symbols.js
 
-      - name: Unit-test the checker
+      # The other half of #167: a reader switching language tabs should see
+      # how the language differs, not a different request. A tab added months
+      # after its siblings is not wrong in its own diff, so review misses it.
+      - name: Check every language tab makes the same request
+        run: node scripts/check-example-parity.js
+
+      - name: Unit-test the checkers
         run: node --test scripts/__tests__/*.test.js
 
   broken-links:
