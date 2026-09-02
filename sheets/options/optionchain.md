@@ -40,7 +40,7 @@ Fetches a current option chain from Market Data.
   - "ask" – The ask price of the option.
   - "ask size" – The quantity of contracts offered at the ask price.
   - "last" – The last price of the option. Depending on the liquidity of the symbol, the last traded price could have occurred one second ago or one day ago.
-  - "open interest" – The number of open contracts.
+  - "open interest" – The number of open contracts. Open interest is published once per trading day, before the open, and does not change intraday. On a historical request it is the figure settled out of the previous session, so it lags every other field in the row by one session.
   - "volume" – The number of contracts negotiated during the day.
   - "in the money" – Will return TRUE if the option contract was in the money at the time of the quote or FALSE if the contract was not in the money at the time of the quote.
   - "intrinsic value" - The intrinsic value of the option, if any.

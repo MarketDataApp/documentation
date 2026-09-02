@@ -28,7 +28,7 @@ Fetches a current or historical option quote from Market Data.
   - "bid size" – The quantity of contracts offered at the bid price.
   - "ask size" – The quantity of contracts offered at the ask price.
   - "volume" – The number of contracts negotiated during the day.
-  - "open interest" – The number of open contracts.
+  - "open interest" – The number of open contracts. Open interest is published once per trading day, before the open, and does not change intraday. On a historical request it is the figure settled out of the previous session, so it lags every other field in the row by one session.
   - "underlying price" – The price of the underlying security at the time of this option quote.
   - "in the money" – Will return TRUE if the option contract was in the money at the time of the quote or FALSE if the contract was not in the money at the time of the quote.
   - "intrinsic value" - The intrinsic value of the option, if any.

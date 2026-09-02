@@ -459,7 +459,7 @@ The `am` and `pm` parameters are only applicable for index options such as SPX, 
 
 - **openInterest** `array[number]`
 
-  The total number of contracts that have not yet been settled at the time of this quote.
+  The total number of contracts outstanding. Open interest is published once per trading day: it is calculated after the close and released at the start of the next session, and it does not change intraday. On a historical request (`date=D`), this is therefore the figure settled out of the D−1 session and available before the open on D — unlike every other field in the row, which is as of the 16:00 ET `updated` timestamp. To get the open interest produced by trading on day D, request the next trading day.
 
 - **underlyingPrice** `array[number]`
 
@@ -545,6 +545,21 @@ The type of option chain data you receive depends on your user type and OPRA ent
 | Non-Professional | ❌               | 15-min delayed         |
 | Professional     | Any              | Historical (1 day old) |
 | Unknown          | Any              | Historical (1 day old) |
+
+### Point-in-Time Semantics
+
+One historical row does not carry one as-of time. On a `date=D` request:
+
+| Field                                                    | As of                                        |
+|----------------------------------------------------------|----------------------------------------------|
+| `openInterest`                                           | before the open on D, settled out of D−1     |
+| `bid`, `ask`, `mid`, `last`, `underlyingPrice`, `volume` | the row's `updated` timestamp, 16:00 ET on D |
+| `iv`, `delta`, `gamma`, `theta`, `vega`                  | not returned — see the note on `date` above  |
+
+Two consequences matter when you build a point-in-time dataset:
+
+- `openInterest` carries no look-ahead. It was published before trading on D began, so it is safe to use at any time on D. To read the open interest that D's trading produced, request the next trading day.
+- `volume` does carry look-ahead relative to an intraday cutoff. It is the full-session total for D, not the volume up to a given moment.
 
 ### Pricing
 
