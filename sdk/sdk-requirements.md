@@ -775,6 +775,156 @@ Integration tests make **actual REST requests** to the live API:
 
 ---
 
+## 17. Repository and Release Configuration
+
+Sections 1–16 govern the SDK's code. This section governs the **repository that ships
+it**. These items are invisible in a code review and are exactly the ones that get
+skipped: a documented label that was never created, a security policy pointing at a
+disabled button, a release cut by hand because no workflow existed.
+
+Every SDK repository must satisfy this section, regardless of language.
+
+### 17.1 Required Repository Files
+
+| Path                                | Purpose                                                          |
+|-------------------------------------|------------------------------------------------------------------|
+| `SECURITY.md`                       | Vulnerability reporting instructions and the security fix policy |
+| `.github/RELEASE_PROCESS.md`        | How to cut a release for this SDK                                |
+| `.github/ISSUE_WORKFLOW.md`         | How a maintainer triages an incoming bug report                  |
+| `.github/BUG_FINDING.md`            | How to hunt for bugs proactively, before users hit them          |
+| `.github/ISSUE_TEMPLATE/bug.yml`    | Structured bug report form                                       |
+| `.github/ISSUE_TEMPLATE/config.yml` | Contact links; `blank_issues_enabled: false`                     |
+| `.github/dependabot.yml`            | Dependency updates (see §17.4)                                   |
+| `.github/FUNDING.yml`               | `github: MarketDataApp`                                          |
+| `CHANGELOG.md`                      | Keep a Changelog format (see §15)                                |
+| `LICENSE`                           | MIT (see §15)                                                    |
+
+These are **language-adapted, not copied**. A bug template must ask for the runtime
+version, package manager and platform values that actually exist for that language, and
+must name real methods and error types from that SDK. A template that asks a Go user for
+their target framework is worse than no template.
+
+### 17.2 Repository Settings
+
+- [ ] **Private Vulnerability Reporting is enabled.** `SECURITY.md` tells reporters to use
+      Security → "Report a vulnerability". If the setting is off, that button does not
+      exist and the instruction is a dead end.
+- [ ] **Every label referenced by `ISSUE_WORKFLOW.md` exists.** At minimum `bug`,
+      `accepted`, `needs-info`, `wontfix`, `dependencies`. A documented triage step that
+      applies a non-existent label fails on execution.
+- [ ] **Description is set** and names the language and what the SDK covers.
+- [ ] **Topics are set** — at minimum the language, `sdk`, and the asset classes the SDK
+      actually supports. Remove topics for resources the SDK does not cover; they
+      misrepresent the package in search.
+- [ ] **`ISSUE_TEMPLATE/config.yml` links only to destinations that exist.** If
+      Discussions are disabled on the repository, the config must not link to them.
+- [ ] **Default branch is `main`**, with a `development` branch when the CI workflows
+      reference one.
+- [ ] **Branch protection on the default branch**, or a deliberate, recorded decision not
+      to have it. `RELEASE_PROCESS.md` must state which, because it determines whether a
+      release merge needs an approval.
+
+### 17.3 Required Secrets
+
+| Secret               | Required     | Purpose                                                                          |
+|----------------------|--------------|----------------------------------------------------------------------------------|
+| `MARKETDATA_TOKEN`   | Yes          | Live integration suite (§13). Its absence must **fail** the job, never skip it   |
+| `CODECOV_TOKEN`      | Optional     | Coverage badge; absence must not break CI                                        |
+| Registry credentials | Per language | Publishing (see §15) — e.g. Maven Central signing keys, NuGet Trusted Publishing |
+
+> **A skipped integration suite must never report success.** The failure mode this
+> prevents is a green pipeline that ran nothing. If the token is absent, the job fails and
+> says so.
+
+### 17.4 Dependency Updates
+
+- [ ] `dependabot.yml` covers the CI ecosystem (`github-actions`) **and** every package
+      manifest in the repository — including example or sample applications that carry
+      their own manifest.
+- [ ] **Updates are grouped.** Ungrouped Dependabot opens one pull request per dependency
+      per manifest. Where several sample apps share a dependency set, one upstream release
+      becomes a wall of near-identical pull requests and the updates stop being read.
+- [ ] **Major versions are grouped separately** from minor and patch, so routine bumps
+      merge without waiting on a major that needs review.
+- [ ] **Dependencies satisfied by a local path override are ignored** (for example a Go
+      `replace` directive, or an npm `file:` dependency). A pull request bumping one
+      changes nothing and can never merge.
+- [ ] Dependabot pull requests carry the `dependencies` label.
+
+### 17.5 Release Automation
+
+Every SDK needs a release workflow. Cutting a release by hand is not acceptable as a
+steady state: the steps that get skipped under pressure are exactly the ones that matter.
+
+- [ ] A **`tag-and-release` workflow** exists, triggered **only** by manual
+      `workflow_dispatch`. No push, merge, or tag event may reach it.
+- [ ] It requires a **typed confirmation input** (`confirm: RELEASE`).
+- [ ] It **validates before spending runner time**: the version is well-formed SemVer, the
+      tag does not already exist, and `CHANGELOG.md` contains the section for the version.
+- [ ] It **runs the full test suite, including live integration tests, before the tag is
+      cut**, against the exact ref being released. Reuse the existing CI workflow rather
+      than copying it — a second copy of the suite will drift.
+- [ ] **Release notes are extracted from `CHANGELOG.md`**, never written by hand at
+      release time and never generated back into the changelog. The heading format is
+      matched exactly (`## [X.Y.Z]`), so the changelog must carry a `## [Unreleased]`
+      section for maintainers to promote.
+- [ ] The workflow **resolves the ref to a concrete commit SHA** and tags that SHA, so a
+      branch moving mid-run cannot change what ships.
+- [ ] It **verifies the release after publishing**: the artifact resolves from the public
+      registry, and a throwaway project can install it and report the expected version.
+
+> **A tag or release created by a workflow using the default `GITHUB_TOKEN` does not start
+> another workflow run.** GitHub suppresses this to prevent recursive triggering. Any
+> workflow gated on `release: published` or `push: tags` therefore stays **silent** for an
+> automated release. Do not rely on it to test or publish; chain the work explicitly from
+> the release workflow, and say so in `RELEASE_PROCESS.md`.
+
+#### Registries and irreversibility
+
+`RELEASE_PROCESS.md` must state where the point of no return is and what the remedy is,
+because it differs sharply by language:
+
+| Language                          | Publication                                                                              | Can a bad version be withdrawn?                                                                              |
+|-----------------------------------|------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| Python, JavaScript, Java, C#, PHP | Upload to a registry                                                                     | No — versions are immutable. Unlist or yank where supported, then ship a patch                               |
+| Go                                | **The git tag itself.** `proxy.golang.org` reads the tag; `sum.golang.org` logs the hash | No. Deleting the tag does not withdraw it. The only remedy is a later version carrying a `retract` directive |
+
+Go has no publish step and no staging feed: the moment the tag exists and one person
+fetches it, the version is public and permanent. Its release workflow therefore ends in
+verification rather than upload, and all validation must precede the tag.
+
+### 17.6 Verifying a Repository
+
+These checks are mechanical and should be run against every SDK repository periodically,
+not only at acceptance.
+
+```bash
+REPO=MarketDataApp/sdk-<lang>
+
+# Required files
+for f in SECURITY.md .github/RELEASE_PROCESS.md .github/ISSUE_WORKFLOW.md \
+         .github/BUG_FINDING.md .github/dependabot.yml .github/FUNDING.yml \
+         .github/ISSUE_TEMPLATE/bug.yml .github/ISSUE_TEMPLATE/config.yml; do
+  gh api "repos/$REPO/contents/$f" --jq '.name' >/dev/null 2>&1 \
+    && echo "ok      $f" || echo "MISSING $f"
+done
+
+# Private Vulnerability Reporting
+gh api "repos/$REPO/private-vulnerability-reporting" --jq '.enabled'
+
+# Labels the triage workflow depends on
+for l in bug accepted needs-info wontfix dependencies; do
+  gh api "repos/$REPO/labels/$l" --jq '.name' >/dev/null 2>&1 \
+    && echo "ok      label:$l" || echo "MISSING label:$l"
+done
+
+# Integration token, description, topics
+gh api "repos/$REPO/actions/secrets" --jq '[.secrets[].name] | join(", ")'
+gh api "repos/$REPO" --jq '{description, topics: (.topics | length), discussions: .has_discussions}'
+```
+
+---
+
 ## Acceptance Checklist
 
 Before accepting an SDK, verify:
@@ -824,3 +974,15 @@ Before accepting an SDK, verify:
 - [ ] Version auto-detected from package metadata
 - [ ] Changelog exists
 - [ ] MIT license included
+
+### Repository & Release Configuration
+- [ ] All required repository files present (§17.1), language-adapted rather than copied
+- [ ] Private Vulnerability Reporting enabled
+- [ ] Every label referenced by `ISSUE_WORKFLOW.md` exists in the repository
+- [ ] Description and topics set, and topics do not claim unsupported resources
+- [ ] `ISSUE_TEMPLATE/config.yml` links only to destinations that exist
+- [ ] `MARKETDATA_TOKEN` secret present; a missing token fails the integration job rather than skipping it
+- [ ] Dependabot covers every manifest, groups its updates, and separates majors
+- [ ] Manual-dispatch release workflow with typed confirmation, gated on the full suite
+- [ ] Release notes extracted from `CHANGELOG.md`; an `## [Unreleased]` section exists
+- [ ] `RELEASE_PROCESS.md` states where the point of no return is and how to remedy a bad release
