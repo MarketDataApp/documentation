@@ -46,7 +46,7 @@ The SDK stays on the standard Microsoft stack, with one small helper:
 
 - **No third-party HTTP client.** It uses the built-in `System.Net.Http.HttpClient`, and can either create its own or use one your application manages (including clients from `IHttpClientFactory`, via `Microsoft.Extensions.Http`).
 - **`System.Text.Json`** for JSON decoding — no Newtonsoft dependency.
-- **`Microsoft.Extensions.Configuration`** (with the environment-variables and user-secrets providers), **`Microsoft.Extensions.Logging`**, and **`Microsoft.Extensions.DependencyInjection`** for configuration binding, structured logging, and the `AddMarketDataClient` service-collection extension.
+- **`Microsoft.Extensions.Configuration`** (with the user-secrets provider), **`Microsoft.Extensions.Logging`**, and **`Microsoft.Extensions.DependencyInjection`** for configuration binding, structured logging, and the `AddMarketDataClient` service-collection extension.
 - **`DotNetEnv`** to load an optional `.env` file from the working directory.
 
 ## Updating the SDK
