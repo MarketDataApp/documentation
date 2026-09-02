@@ -844,8 +844,9 @@ their target framework is worse than no template.
 - [ ] **Updates are grouped.** Ungrouped Dependabot opens one pull request per dependency
       per manifest. Where several sample apps share a dependency set, one upstream release
       becomes a wall of near-identical pull requests and the updates stop being read.
-- [ ] **Major versions are grouped separately** from minor and patch, so routine bumps
-      merge without waiting on a major that needs review.
+- [ ] **Major versions are kept out of the routine group** — either in a group of their
+      own or as individual pull requests — so routine bumps merge without waiting on a
+      major, and each major still gets read on its own.
 - [ ] **Dependencies satisfied by a local path override are ignored** (for example a Go
       `replace` directive, or an npm `file:` dependency). A pull request bumping one
       changes nothing and can never merge.
