@@ -83,6 +83,17 @@ jobs:
         with:
           node-version: 22
 
+      - name: Install the conversion lib's dependencies
+        working-directory: docs-source
+        # lib/ and scripts/ require turndown and @mixmark-io/domino, both
+        # declared in package.json's `dependencies`. Nothing ever installed
+        # them: this job went from setup-node straight to `node --test`,
+        # which passed only while the lib was dependency-free. PR #199 added
+        # lib/html-to-md.js (turndown) on 2026-08-31, and every sync run has
+        # failed on `Cannot find module 'turndown'` since. The repo has no
+        # lockfile, so `npm ci` is not available here.
+        run: npm install --omit=dev --no-audit --no-fund
+
       - name: Run unit tests for the conversion lib
         working-directory: docs-source
         run: node --test lib/__tests__/*.test.js
