@@ -132,6 +132,10 @@ const config = {
           const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
           return `https://${host}/docs/api/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
+        // Read from git history, so it needs full history at build time:
+        // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
+        // With a shallow clone every page reports the same date.
+        showLastUpdateTime: true,
       },
     ],
     [
@@ -145,6 +149,10 @@ const config = {
           const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
           return `https://${host}/docs/sdk/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
+        // Read from git history, so it needs full history at build time:
+        // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
+        // With a shallow clone every page reports the same date.
+        showLastUpdateTime: true,
         sidebarPath: require.resolve("./sidebars.js"),
       },
     ],
@@ -159,6 +167,10 @@ const config = {
           const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
           return `https://${host}/docs/sheets/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
+        // Read from git history, so it needs full history at build time:
+        // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
+        // With a shallow clone every page reports the same date.
+        showLastUpdateTime: true,
         sidebarPath: require.resolve("./sidebars.js"),
       },
     ],
@@ -173,6 +185,10 @@ const config = {
           const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
           return `https://${host}/docs/account/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
+        // Read from git history, so it needs full history at build time:
+        // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
+        // With a shallow clone every page reports the same date.
+        showLastUpdateTime: true,
         sidebarPath: require.resolve("./sidebars.js"),
       },
     ],

@@ -1,11 +1,8 @@
 import React from 'react';
 import clsx from 'clsx';
-import {ThemeClassNames, useWindowSize} from '@docusaurus/theme-common';
+import {ThemeClassNames} from '@docusaurus/theme-common';
 import {useDoc} from '@docusaurus/theme-common/internal';
-import LastUpdated from '@theme/LastUpdated';
-import EditThisPage from '@theme/EditThisPage';
 import TagsListInline from '@theme/TagsListInline';
-import styles from './styles.module.css';
 function TagsRow(props) {
   return (
     <div
@@ -19,57 +16,22 @@ function TagsRow(props) {
     </div>
   );
 }
-function EditMetaRow({
-  editUrl,
-  lastUpdatedAt,
-  lastUpdatedBy,
-  formattedLastUpdatedAt,
-}) {
-  const windowSize = useWindowSize();
-  const isMobile = windowSize === "mobile";
-  
-  return (
-    <div className={clsx(ThemeClassNames.docs.docFooterEditMetaRow, 'row')}>
-      {editUrl && isMobile && (
-        <div className="col">
-          <EditThisPage editUrl={editUrl} />
-        </div>
-      )}
-
-      <div className={clsx('col', styles.lastUpdated)}>
-        {(lastUpdatedAt || lastUpdatedBy) && (
-          <LastUpdated
-            lastUpdatedAt={lastUpdatedAt}
-            formattedLastUpdatedAt={formattedLastUpdatedAt}
-            lastUpdatedBy={lastUpdatedBy}
-          />
-        )}
-      </div>
-    </div>
-  );
-}
+/**
+ * Tags only. The last-updated date and the Markdown link used to sit here, and
+ * in the breadcrumbs row; both now live in one row under the h1, in
+ * `DocItem/MarkdownActions`. Leaving either here would print the same date
+ * twice on every page.
+ */
 export default function DocItemFooter() {
   const {metadata} = useDoc();
-  const {editUrl, lastUpdatedAt, formattedLastUpdatedAt, lastUpdatedBy, tags} =
-    metadata;
-  const canDisplayTagsRow = tags.length > 0;
-  const canDisplayEditMetaRow = !!(editUrl || lastUpdatedAt || lastUpdatedBy);
-  const canDisplayFooter = canDisplayTagsRow || canDisplayEditMetaRow;
-  if (!canDisplayFooter) {
+  const {tags} = metadata;
+  if (tags.length === 0) {
     return null;
   }
   return (
     <footer
       className={clsx(ThemeClassNames.docs.docFooter, 'docusaurus-mt-lg')}>
-      {canDisplayTagsRow && <TagsRow tags={tags} />}
-      {canDisplayEditMetaRow && (
-        <EditMetaRow
-          editUrl={editUrl}
-          lastUpdatedAt={lastUpdatedAt}
-          lastUpdatedBy={lastUpdatedBy}
-          formattedLastUpdatedAt={formattedLastUpdatedAt}
-        />
-      )}
+      <TagsRow tags={tags} />
     </footer>
   );
 }

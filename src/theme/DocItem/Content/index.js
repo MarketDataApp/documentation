@@ -5,6 +5,7 @@ import { useDoc } from "@docusaurus/theme-common/internal";
 import Heading from "@theme/Heading";
 import MDXContent from "@theme/MDXContent";
 import RenderTag from "../../RenderTag";
+import MarkdownActions from "../MarkdownActions";
 /**
  Title can be declared inside md content or declared through
  front matter and added manually. To make both cases consistent,
@@ -52,6 +53,7 @@ export default function DocItemContent({ children }) {
           </Heading>
         </header>
       )}
+      <MarkdownActions />
       <MDXContent>{children}</MDXContent>
     </div>
   );

@@ -45,6 +45,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # This job builds the site, and `showLastUpdateTime` reads each
+          # page's date out of git history. Matches deploy-docs.yml.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
