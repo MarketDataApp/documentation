@@ -89,7 +89,23 @@ async function writeAtomic(target, contents) {
   await fs.rename(temporary, target);
 }
 
-async function emitLlmsTxt({ entries, outDir, routeCount }) {
+async function emitLlmsTxt({ entries, outDir, routeCount, unclassified = [] }) {
+  // A route that is neither content nor a known navigation artifact means a
+  // section nobody taught lib/llms-txt.js about. It would vanish from the index
+  // silently, and the old log line would have called it a navigation artifact.
+  if (unclassified.length) {
+    throw new Error(
+      `[llms-txt] ${unclassified.length} route(s) belong to no section and are ` +
+        `not navigation artifacts:\n` +
+        `${[...new Set(unclassified.map((s) => s.split('/')[0]))]
+          .map((d) => `    ${d}/`)
+          .join('\n')}\n\n` +
+        '  Add the directory to SECTIONS in lib/llms-txt.js so its pages are\n' +
+        '  indexed, or to isNavigationArtifact if it is not content. Leaving it\n' +
+        '  unclassified drops the pages from llms.txt with nothing to notice.'
+    );
+  }
+
   // renderIndex and renderFull both refuse an empty corpus. Letting that throw
   // here is the point: an empty artifact splices cleanly and loses everything.
   const index = renderIndex({
@@ -115,7 +131,8 @@ async function emitLlmsTxt({ entries, outDir, routeCount }) {
     `[llms-txt] ${entries.length} of ${routeCount} route(s) indexed in llms.txt ` +
       `(${Math.round(index.length / 1024)} KB); llms-full.txt is ` +
       `${Math.round(full.length / 1024)} KB. ` +
-      `${routeCount - entries.length} navigation artifact(s) skipped, ` +
+      `${routeCount - entries.length} navigation artifact(s) skipped ` +
+      `(all classified), ` +
       `${withoutDescription} without a description.`
   );
 }

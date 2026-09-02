@@ -81,7 +81,12 @@ const path = require('node:path');
 const { cleanMdx } = require('../lib/mdx-to-md');
 const { cleanHtml } = require('../lib/html-to-md');
 const { routeSuffix, stemOf } = require('../lib/route-stem');
-const { categoryOf, titleForStem, descriptionFromHtml } = require('../lib/llms-txt');
+const {
+  categoryOf,
+  isNavigationArtifact,
+  titleForStem,
+  descriptionFromHtml,
+} = require('../lib/llms-txt');
 const { emitLlmsTxt } = require('./llms-txt');
 
 /** The worker's candidate order. Do not reorder without changing the worker. */
@@ -165,6 +170,7 @@ module.exports = function markdownTwinsPlugin() {
       let files = 0;
       const untwinned = [];
       const indexed = [];
+      const unclassified = [];
 
       for (const routePath of routesPaths) {
         const stem = stemOf(routePath, baseUrl);
@@ -219,6 +225,13 @@ module.exports = function markdownTwinsPlugin() {
         // twins back off disk would race the loop that writes them, and would
         // usually lose. One traversal, in order, by construction.
         const indexStem = stem === null ? '' : stem;
+        if (!categoryOf(indexStem) && !isNavigationArtifact(indexStem)) {
+          // Neither content nor a known artifact: a section lib/llms-txt.js has
+          // not been taught. Collected rather than counted, because the log
+          // used to call these "navigation artifacts" and a whole new docs
+          // section would have read as housekeeping.
+          unclassified.push(indexStem);
+        }
         if (categoryOf(indexStem)) {
           if (html === null) {
             try {
@@ -260,7 +273,12 @@ module.exports = function markdownTwinsPlugin() {
         );
       }
 
-      await emitLlmsTxt({ entries: indexed, outDir, routeCount: routesPaths.length });
+      await emitLlmsTxt({
+        entries: indexed,
+        outDir,
+        routeCount: routesPaths.length,
+        unclassified,
+      });
 
       if (fromSource === 0) {
         throw new Error(
