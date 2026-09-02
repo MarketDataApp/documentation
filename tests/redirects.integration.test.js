@@ -45,6 +45,7 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const { REDIRECTS, SDK_PHP } = require('../redirects');
+const { probeInit } = require('../lib/probe-agent');
 
 const ALL_ENVIRONMENTS = {
   staging: 'https://www-staging.marketdata.app',
@@ -82,21 +83,21 @@ for (const [env, host] of Object.entries(envs)) {
         ['slashed', `${host}${PREFIX}${from}/`],
       ]) {
         test(`GET ${from} (${label}) -> ${to}`, async () => {
-          const res = await fetch(fromUrl, { redirect: 'manual' });
+          const res = await fetch(fromUrl, probeInit({ redirect: 'manual' }));
           assert.equal(res.status, 301, `${label} ${from} returned ${res.status}`);
           assert.equal(resolve(res.headers.get('location'), fromUrl), toUrl);
         });
 
         // Identical expectations to GET -- that is the whole claim.
         test(`HEAD ${from} (${label}) -> ${to}`, async () => {
-          const res = await fetch(fromUrl, { method: 'HEAD', redirect: 'manual' });
+          const res = await fetch(fromUrl, probeInit({ method: 'HEAD', redirect: 'manual' }));
           assert.equal(res.status, 301, `HEAD ${label} ${from} returned ${res.status}`);
           assert.equal(resolve(res.headers.get('location'), fromUrl), toUrl);
         });
       }
 
       test(`destination ${to} exists`, async () => {
-        const res = await fetch(toUrl, { redirect: 'manual' });
+        const res = await fetch(toUrl, probeInit({ redirect: 'manual' }));
         assert.equal(res.status, 200, `destination ${to} returned ${res.status}`);
       });
     }
@@ -122,13 +123,13 @@ for (const [env, host] of Object.entries(envs)) {
 
         // Named for what breaks: the doubling must be gone from Location.
         test(`GET ${dir}/${dir}/ collapses to ${dir}/`, async () => {
-          const res = await fetch(doubled, { redirect: 'manual' });
+          const res = await fetch(doubled, probeInit({ redirect: 'manual' }));
           assert.equal(res.status, 301, `${dir} doubled returned ${res.status}`);
           assert.equal(resolve(res.headers.get('location'), doubled), expected);
         });
 
         test(`HEAD ${dir}/${dir}/ collapses to ${dir}/`, async () => {
-          const res = await fetch(doubled, { method: 'HEAD', redirect: 'manual' });
+          const res = await fetch(doubled, probeInit({ method: 'HEAD', redirect: 'manual' }));
           assert.equal(res.status, 301, `HEAD ${dir} doubled returned ${res.status}`);
           assert.equal(resolve(res.headers.get('location'), doubled), expected);
         });
@@ -136,7 +137,7 @@ for (const [env, host] of Object.entries(envs)) {
         // The plain form must survive the collapse rule sitting above it.
         test(`GET ${dir}/ passes through undoubled`, async () => {
           const plain = `${host}${PREFIX}${source}/${dir}/Example.html`;
-          const res = await fetch(plain, { redirect: 'manual' });
+          const res = await fetch(plain, probeInit({ redirect: 'manual' }));
           assert.equal(res.status, 301, `${dir} plain returned ${res.status}`);
           assert.equal(
             resolve(res.headers.get('location'), plain),
@@ -153,7 +154,7 @@ for (const [env, host] of Object.entries(envs)) {
         ['slashed', `${host}${PREFIX}${source}/`],
       ]) {
         test(`GET root (${label}) -> GitHub Pages`, async () => {
-          const res = await fetch(url, { redirect: 'manual' });
+          const res = await fetch(url, probeInit({ redirect: 'manual' }));
           assert.equal(res.status, 301, `root ${label} returned ${res.status}`);
           assert.equal(resolve(res.headers.get('location'), url), `${target}/`);
         });
@@ -163,7 +164,7 @@ for (const [env, host] of Object.entries(envs)) {
       // whole remainder rather than truncating at the first segment.
       test('GET deep path keeps its full subpath', async () => {
         const deep = `${host}${PREFIX}${source}/a/b/c.html`;
-        const res = await fetch(deep, { redirect: 'manual' });
+        const res = await fetch(deep, probeInit({ redirect: 'manual' }));
         assert.equal(res.status, 301, `deep path returned ${res.status}`);
         assert.equal(resolve(res.headers.get('location'), deep), `${target}/a/b/c.html`);
       });

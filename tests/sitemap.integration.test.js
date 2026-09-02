@@ -87,6 +87,7 @@
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
+const { probeInit } = require('../lib/probe-agent');
 
 const ALL_ENVIRONMENTS = {
   staging: 'https://www-staging.marketdata.app',
@@ -134,7 +135,7 @@ async function pooled(items, worker) {
  * page, which is not what a sitemap should contain.
  */
 async function status(url) {
-  const res = await fetch(url, { redirect: 'manual' });
+  const res = await fetch(url, probeInit({ redirect: 'manual' }));
   await res.body?.cancel();
   return res.status;
 }
@@ -143,7 +144,7 @@ for (const [env, host] of Object.entries(envs)) {
   describe(`sitemap (${env})`, () => {
     if (env !== 'production') {
       test('no sitemap is published, because this build sets noIndex', async () => {
-        const res = await fetch(`${host}${SITEMAP_PATH}`, { redirect: 'manual' });
+        const res = await fetch(`${host}${SITEMAP_PATH}`, probeInit({ redirect: 'manual' }));
         await res.body?.cancel();
         assert.equal(
           res.status,
@@ -159,7 +160,7 @@ for (const [env, host] of Object.entries(envs)) {
     let locs;
 
     test('the sitemap is published and lists pages', async () => {
-      const res = await fetch(`${host}${SITEMAP_PATH}`, { redirect: 'manual' });
+      const res = await fetch(`${host}${SITEMAP_PATH}`, probeInit({ redirect: 'manual' }));
       assert.equal(res.status, 200, `${host}${SITEMAP_PATH} answered ${res.status}`);
       locs = locsFrom(await res.text());
       assert.ok(
