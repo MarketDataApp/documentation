@@ -1,0 +1,230 @@
+---
+title: Quote
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Get a real-time price quote for a single stock symbol, including bid/ask, last trade, change, and volume.
+
+## Making Requests
+
+Both call styles live on the `Stocks` service (`client.Stocks`). Use `GetQuote` for the simplest call, or `Quote` when you also need the raw response and rate-limit metadata.
+
+| Method                            | Return                                | Description                                                                          |
+|-----------------------------------|---------------------------------------|--------------------------------------------------------------------------------------|
+| **`GetQuote(symbol, opts...)`**   | `(*Quote, error)`                     | Convenience wrapper; uses `context.Background()` and discards the response metadata. |
+| **`Quote(ctx, symbol, opts...)`** | `(*Quote, *response.Response, error)` | Context-aware; also returns the raw response + rate-limit metadata.                  |
+
+## Quote
+
+```go
+func (s *Service) Quote(ctx context.Context, symbol string, opts ...QuoteOption) (*Quote, *response.Response, error)
+func (s *Service) GetQuote(symbol string, opts ...QuoteOption) (*Quote, error)
+```
+
+Fetch a real-time quote for one stock symbol.
+
+#### Parameters
+
+- `ctx` (`context.Context`) — controls cancellation and deadlines (context method only).
+- `symbol` (`string`) — the stock ticker symbol, e.g. `"AAPL"`. Required; an empty string returns a validation error without making a request.
+- Options (`stocks.QuoteOption`):
+  - `stocks.WithFiftyTwoWeek(enabled bool)` — request 52-week high/low data, populating the `FiftyTwoWeekHigh` and `FiftyTwoWeekLow` fields. Defaults to off; passing `false` is equivalent to omitting the option.
+  - `stocks.WithExtended(extended bool)` — control whether the quote includes extended-hours (pre-market/after-hours) data. When omitted, the parameter is not sent and the API default applies. Pass `true` to return the most recent quote regardless of session, or `false` to restrict to the primary session.
+
+#### Returns
+
+- `*Quote` — the quote for the requested symbol.
+- `*response.Response` — raw response + rate-limit metadata (context method only).
+- `error` — non-nil on request/validation failure.
+
+#### Notes
+
+- If the API responds with 404 because no data is available, `Quote` returns a `nil` quote, a `nil` error, and a non-nil `*response.Response` whose `NoData` field is `true`. `GetQuote` discards that metadata, so a no-data result is simply a `nil` quote with a `nil` error.
+- If the API reports success but returns no quote for the symbol, `Quote` returns a `*stocks.QuoteNotFoundError` (detect it with `errors.As`).
+
+<Tabs>
+<TabItem value="Get" label="Get (simple)">
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	client, err := marketdata.NewClient(marketdata.WithToken("YOUR_TOKEN"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	quote, err := client.Stocks.GetQuote("AAPL")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Symbol: %s\n", quote.Symbol)
+	fmt.Printf("Last:   $%.2f\n", quote.Last)
+	fmt.Printf("Bid:    $%.2f x %d\n", quote.Bid, quote.BidSize)
+	fmt.Printf("Ask:    $%.2f x %d\n", quote.Ask, quote.AskSize)
+	fmt.Printf("Change: $%.2f (%.2f%%)\n", quote.Change, quote.ChangePercent)
+	fmt.Printf("Volume: %d\n", quote.Volume)
+}
+```
+
+#### Output
+
+```
+Symbol: AAPL
+Last:   $186.19
+Bid:    $186.18 x 200
+Ask:    $186.20 x 300
+Change: $1.05 (0.57%)
+Volume: 48234500
+```
+
+</TabItem>
+
+<TabItem value="Context" label="Context + Response">
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+)
+
+func main() {
+	client, err := marketdata.NewClient(marketdata.WithToken("YOUR_TOKEN"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	ctx := context.Background()
+
+	quote, resp, err := client.Stocks.Quote(ctx, "AAPL")
+	if err != nil {
+		log.Fatal(err)
+	}
+	if resp.NoData {
+		fmt.Println("no quote available")
+		return
+	}
+
+	fmt.Println(quote) // Quote implements Stringer
+
+	// Inspect rate-limit metadata carried on the response.
+	fmt.Printf("Requests remaining: %d\n", resp.RateLimit.Remaining)
+}
+```
+
+#### Output
+
+```
+AAPL Last: $186.19 Bid: 186.18 (200) Ask: 186.20 (300) Mid: 186.19 Chg: 1.05 (0.57%) Vol: 48234500 Updated: 2024-01-15 16:00:00
+Requests remaining: 99998
+```
+
+</TabItem>
+
+<TabItem value="Options" label="With options">
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/MarketDataApp/sdk-go/v2/marketdata"
+	"github.com/MarketDataApp/sdk-go/v2/marketdata/stocks"
+)
+
+func main() {
+	client, err := marketdata.NewClient(marketdata.WithToken("YOUR_TOKEN"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	ctx := context.Background()
+
+	// 52-week data, regular session only.
+	quote, _, err := client.Stocks.Quote(ctx, "AAPL",
+		stocks.WithFiftyTwoWeek(true),
+		stocks.WithExtended(false),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("%s: $%.2f\n", quote.Symbol, quote.Last)
+	fmt.Printf("52-week high: $%.2f\n", quote.FiftyTwoWeekHigh)
+	fmt.Printf("52-week low:  $%.2f\n", quote.FiftyTwoWeekLow)
+}
+```
+
+#### Output
+
+```
+AAPL: $186.19
+52-week high: $199.62
+52-week low:  $164.08
+```
+
+</TabItem>
+</Tabs>
+
+## Quote
+
+```go
+type Quote struct {
+	Symbol           string    `json:"symbol"`      // Stock ticker symbol
+	Ask              float64   `json:"ask"`         // Current ask price
+	AskSize          int       `json:"askSize"`     // Size of the ask
+	Bid              float64   `json:"bid"`         // Current bid price
+	BidSize          int       `json:"bidSize"`     // Size of the bid
+	Mid              float64   `json:"mid"`         // Midpoint between bid and ask
+	Last             float64   `json:"last"`        // Last trade price
+	Change           float64   `json:"change"`      // Price change from previous close
+	ChangePercent    float64   `json:"changepct"`   // Percentage change from previous close
+	Volume           int64     `json:"volume"`      // Trading volume
+	Updated          time.Time `json:"updated"`     // When the quote was last updated
+	FiftyTwoWeekHigh float64   `json:"52weekHigh,omitempty"` // 52-week high (WithFiftyTwoWeek)
+	FiftyTwoWeekLow  float64   `json:"52weekLow,omitempty"`  // 52-week low (WithFiftyTwoWeek)
+}
+```
+
+Represents a real-time stock quote. Timestamps are normalized to US Eastern time. `FiftyTwoWeekHigh` and `FiftyTwoWeekLow` are populated only when the quote was requested with `stocks.WithFiftyTwoWeek(true)`.
+
+#### Fields
+
+- `Symbol` — the stock ticker symbol.
+- `Ask` / `AskSize` — the current ask price and the number of shares offered at it.
+- `Bid` / `BidSize` — the current bid price and the number of shares bid at it.
+- `Mid` — the midpoint between bid and ask.
+- `Last` — the last traded price.
+- `Change` — price change in dollars from the previous close.
+- `ChangePercent` — the change from the previous close (JSON alias `changepct`).
+- `Volume` — trading volume for the session.
+- `Updated` — timestamp of the quote (US Eastern).
+- `FiftyTwoWeekHigh` / `FiftyTwoWeekLow` — 52-week high/low, present only with `WithFiftyTwoWeek`.
+
+#### Helper Methods
+
+- `Spread() float64` — the bid-ask spread (`Ask - Bid`).
+- `SpreadPercent() float64` — the spread as a percentage of `Mid`.
+- `String() string` — a one-line summary of the quote.

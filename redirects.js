@@ -37,6 +37,7 @@ const REDIRECTS = [
   { from: "/sdk/php/options/strikes", to: "/sdk/php/options/chain" },
   { from: "/sdk/go/options/strikes", to: "/sdk/go/options/chain" },
   { from: "/sdk/csharp/options/strikes", to: "/sdk/csharp/options/chain" },
+  { from: "/sdk/go/stocks/bulkquotes", to: "/sdk/go/stocks/quotes" },
   { from: "/sdk/php/stocks/bulk-candles", to: "/sdk/php/stocks/bulkcandles" },
 
   // --- #197: two pages that moved years apart and took no redirect with them.

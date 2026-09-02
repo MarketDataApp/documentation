@@ -32,6 +32,7 @@ on:
     paths:
       - 'sdk/js/**'
       - 'sdk/java/**'
+      - 'sdk/go/**'
       - 'sdk/csharp/**'
       - 'lib/mdx-to-md.js'
       - 'scripts/export-sdk-docs.js'
@@ -43,7 +44,7 @@ on:
         required: true
         default: 'js'
         type: choice
-        options: [js, java, csharp]
+        options: [js, java, go, csharp]
 
 env:
   SOURCE_OWNER: MarketDataApp
@@ -58,7 +59,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: [js, java, csharp]
+        # `sdk` = source dir (sdk/<sdk>/) and exporter key; `repo` = target repo.
+        # These are decoupled so Go v2 (authored at sdk/go/) targets the
+        # sdk-go-v2 repo rather than sdk-go (the v1 repo that `sdk-${sdk}` would
+        # otherwise resolve to).
+        include:
+          - sdk: js
+            repo: sdk-js
+          - sdk: java
+            repo: sdk-java
+          - sdk: go
+            repo: sdk-go-v2
+          - sdk: csharp
+            repo: sdk-csharp
     steps:
       - name: Checkout documentation source
         uses: actions/checkout@v4
@@ -87,12 +100,12 @@ jobs:
           app-id: ${{ vars.SDK_DOCS_APP_ID }}
           private-key: ${{ secrets.SDK_DOCS_APP_PRIVATE_KEY }}
           owner: ${{ env.TARGET_OWNER }}
-          repositories: sdk-${{ matrix.sdk }}
+          repositories: ${{ matrix.repo }}
 
       - name: Checkout target SDK repo
         uses: actions/checkout@v4
         with:
-          repository: ${{ env.TARGET_OWNER }}/sdk-${{ matrix.sdk }}
+          repository: ${{ env.TARGET_OWNER }}/${{ matrix.repo }}
           token: ${{ steps.app-token.outputs.token }}
           path: target
 
