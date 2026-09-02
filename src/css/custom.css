@@ -286,3 +286,53 @@ img[alt="Google OAuth consent screen—select all permissions and click Continue
     margin-left: 0;
   }
 }
+/* ---------------------------------------------------------------------------
+   Syntax colours for ```http request lines.
+
+   Prism tokenises a request line into `method`, `request-target` and
+   `http-version`, but neither Prism theme we use paints all three:
+
+     github   method/version -> `property`, target -> `url`; all three are the
+              same teal, so the line renders one flat colour
+     dracula  no entry for `property`, `url`, `method`, `request-target` or
+              `http-version` at all, so the whole line falls back to plain and
+              has no highlighting whatsoever
+
+   That is a gap in the themes, not in the grammar. These rules fill it, so a
+   request line reads the same way in both: the method stands out, the target
+   is the data, and the version is boilerplate and stays quiet.
+
+   `!important` because Docusaurus applies the theme as an inline style on each
+   token, and scoped to .language-http because `method` is not an http-only
+   token name.
+   --------------------------------------------------------------------------- */
+
+:root {
+  --md-http-method: #d73a49;
+  --md-http-target: #36acaa;
+  --md-http-version: #6a737d;
+  --md-http-header-value: #e3116c;
+}
+
+[data-theme="dark"] {
+  --md-http-method: rgb(80, 250, 123);
+  --md-http-target: rgb(139, 233, 253);
+  --md-http-version: rgb(98, 114, 164);
+  --md-http-header-value: rgb(255, 121, 198);
+}
+
+.language-http .token.method {
+  color: var(--md-http-method) !important;
+}
+
+.language-http .token.request-target {
+  color: var(--md-http-target) !important;
+}
+
+.language-http .token.http-version {
+  color: var(--md-http-version) !important;
+}
+
+.language-http .token.header-value {
+  color: var(--md-http-header-value) !important;
+}
