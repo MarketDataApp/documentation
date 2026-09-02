@@ -16,6 +16,8 @@
  *     not walk. `markdown-twins.js` fails the build when a route has no twin,
  *     but nothing downstream re-checks that the URL this control names is the
  *     one that got written.
+ *   - The DATE METADATA is invisible by definition. Three spellings have to
+ *     agree with each other and with the page's canonical URL.
  *
  * Run with: TEST_ENV=staging yarn test:e2e
  */
@@ -82,6 +84,29 @@ test('the last-updated date is per page, not one build date', async ({ page }) =
   // Identical dates on two pages with different edit histories is the
   // signature of a shallow clone at build time.
   expect(dates[0]).not.toBe(dates[1]);
+});
+
+test('the last-updated date is machine readable', async ({ page }) => {
+  await page.goto(`${BASE_URL}/api/options/chain`, { waitUntil: 'domcontentloaded' });
+
+  const iso = await page.locator('time').first().getAttribute('datetime');
+  expect(iso).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+
+  const og = await page.locator('meta[property="article:modified_time"]').getAttribute('content');
+  expect(og).toBe(iso);
+
+  // textContent, not innerText: a <script> renders no text, so innerText is
+  // empty and JSON.parse fails on it.
+  const ld = JSON.parse(
+    await page.locator('script[type="application/ld+json"]').evaluate((el) => el.textContent),
+  );
+  expect(ld['@type']).toBe('TechArticle');
+  expect(ld.dateModified).toBe(iso);
+
+  // The JSON-LD must name the same URL as the canonical, or it describes a
+  // second page. The site uses trailingSlash: true and `permalink` does not.
+  const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
+  expect(ld.url).toBe(canonical);
 });
 
 test('a failed fetch reports failure and copies nothing', async ({ page }) => {

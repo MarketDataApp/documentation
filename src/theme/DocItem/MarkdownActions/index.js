@@ -41,6 +41,8 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import Head from '@docusaurus/Head';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { useDoc } from '@docusaurus/theme-common/internal';
 import styles from './styles.module.css';
 
@@ -201,13 +203,52 @@ function CopyAsMarkdown({ href }) {
 
 export default function MarkdownActions() {
   const { metadata } = useDoc();
-  const { permalink, formattedLastUpdatedAt } = metadata;
+  const { siteConfig } = useDocusaurusContext();
+  const { permalink, title, formattedLastUpdatedAt, lastUpdatedAt } = metadata;
 
   if (!permalink) return null;
   const href = `${permalink.replace(/\/$/, '')}/index.md`;
 
+  // `lastUpdatedAt` is unix SECONDS. The visible string stays Docusaurus's own
+  // locale-aware rendering; this is the machine-readable twin of it.
+  const modifiedIso = lastUpdatedAt ? new Date(lastUpdatedAt * 1000).toISOString() : null;
+  // Must match the <link rel="canonical"> Docusaurus emits, or the JSON-LD
+  // names a second URL for the same page. The site sets trailingSlash: true,
+  // so the canonical ends in "/" and `permalink` does not.
+  const canonicalPath =
+    siteConfig.trailingSlash && !permalink.endsWith('/') ? `${permalink}/` : permalink;
+  const canonical = siteConfig.url
+    ? new URL(canonicalPath, siteConfig.url).href
+    : canonicalPath;
+
   return (
     <div className={styles.row}>
+      {/* Before this, a doc page carried no machine-readable date at all: no
+          <time>, no article:modified_time, no JSON-LD. A crawler had only the
+          rendered words "Last updated Sep 2, 2026" to work from.
+          Three spellings, because they are read by different things: <time>
+          below for anything parsing the document, OpenGraph for social cards
+          and the crawlers that read it, and schema.org for Google, which
+          documents dateModified as what it uses. */}
+      {modifiedIso && (
+        <Head>
+          <meta property="article:modified_time" content={modifiedIso} />
+          <script type="application/ld+json">
+            {JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'TechArticle',
+              headline: title,
+              url: canonical,
+              dateModified: modifiedIso,
+              publisher: {
+                '@type': 'Organization',
+                name: siteConfig.title,
+                url: siteConfig.url,
+              },
+            })}
+          </script>
+        </Head>
+      )}
       <ul className={styles.list}>
         {formattedLastUpdatedAt && (
           <li className={styles.item}>
@@ -216,7 +257,14 @@ export default function MarkdownActions() {
                 line, and stops there. */}
             <span className={styles.meta}>
               <ClockIcon />
-              <span>Last updated {formattedLastUpdatedAt}</span>
+              <span>
+                Last updated{' '}
+                {modifiedIso ? (
+                  <time dateTime={modifiedIso}>{formattedLastUpdatedAt}</time>
+                ) : (
+                  formattedLastUpdatedAt
+                )}
+              </span>
             </span>
           </li>
         )}
