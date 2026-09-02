@@ -11,7 +11,7 @@ import TabItem from "@theme/TabItem";
 ## Endpoint
 
 ```http
-GET https://api.marketdata.app/v1/options/chain/{underlyingSymbol}/ HTTP/1.1
+GET https://api.marketdata.app/v1/options/chain/{underlyingSymbol}/
 ```
 
 ## Request Example
@@ -19,7 +19,12 @@ GET https://api.marketdata.app/v1/options/chain/{underlyingSymbol}/ HTTP/1.1
 <Tabs>
 <TabItem value="HTTP" label="HTTP" default>
 
-**GET** [https://api.marketdata.app/v1/options/chain/AAPL/?expiration=2027-12-17&side=call](https://api.marketdata.app/v1/options/chain/AAPL/?expiration=2027-12-17&side=call)
+```http
+GET /v1/options/chain/AAPL/?expiration=2027-12-17&side=call HTTP/1.1
+Host: api.marketdata.app
+Accept: application/json
+Authorization: Bearer {token}
+```
 
 </TabItem>
 <TabItem value="JavaScript" label="JavaScript">
