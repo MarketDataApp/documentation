@@ -83,9 +83,9 @@ const ROOT = path.resolve(__dirname, '..');
 // Flags for the rules that are measured but not yet gated. See docs/SEO.md.
 // ---------------------------------------------------------------------------
 
-const TITLE_UNIQUE_ENFORCED = false; // 33 duplicate title groups
+const TITLE_UNIQUE_ENFORCED = true; // 270 distinct titles across 270 pages
 const DESC_UNIQUE_ENFORCED = false; // 12 duplicate description groups
-const LENGTH_ENFORCED = false; // 1 title > 60, 107 descriptions > 160
+const LENGTH_ENFORCED = false; // 0 titles > 60, 107 descriptions > 160
 const CARD_IMAGE_ENFORCED = true; // themeConfig.image landed; 271 of 271 declare one
 const HEADING_ORDER_ENFORCED = false; // 89 pages skip a heading level
 // The 404 emits a canonical naming /docs/404.html/, a URL that 404s. Measured
@@ -131,7 +131,7 @@ const FLOOR_PAGES = 50; // against a real 271
  * arms, and the first version of this rule asserted otherwise and was caught by
  * its own staging run: siteConfig.title is "Market Data Docs (staging)" there
  * against "Market Data" in production, so the suffix Docusaurus appends to every
- * title is 15 characters longer and I1 measures 10 titles over 60 rather than 1.
+ * title is 15 characters longer and I1 measures 6 titles over 60 rather than 0.
  * The document describes what crawlers are served, which is production.
  */
 const SPEC = path.join(ROOT, 'docs', 'SEO.md');
@@ -588,7 +588,7 @@ function main() {
   // has nothing to say about a number beside one.
   //
   // So every reported rule's backlog is declared in docs/SEO.md and asserted
-  // here. Pay ten titles down and this fails until the table agrees.
+  // here. Pay ten descriptions down and this fails until the table agrees.
   const gatesSpec = args.dir === OWN_BUILD && env.name === 'production';
   const declared = gatesSpec ? declaredBacklog(SPEC) : null;
   if (gatesSpec && declared === null && fs.existsSync(SPEC)) {

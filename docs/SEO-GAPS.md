@@ -38,6 +38,11 @@ A soft 404 *is* crawled, and then the canonical is read and points at nothing.
 
 ### Title and description length (I1–I3)
 
+`I1` is clean on production and stays reported rather than gated only because
+`LENGTH_ENFORCED` is one flag over three rules: the same flag holds I2 and I3,
+and those are still a backlog. Gating title length alone means splitting the
+flag, which is worth doing when the descriptions are paid down and not before.
+
 Docusaurus derives a description from the page's first paragraph when the
 frontmatter sets none. The pages outside the budget are outside it because of
 that default, not because their authors were careless — enforcing it means

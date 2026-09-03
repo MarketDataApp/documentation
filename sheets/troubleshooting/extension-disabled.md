@@ -1,5 +1,6 @@
 ---
-title: Extensions Menu Disabled When Using Market Data
+title: Extensions Menu Disabled in Google Sheets
+sidebar_label: Extensions Menu Disabled When Using Market Data
 sidebar_position: 7
 ---
 

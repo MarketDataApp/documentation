@@ -1,5 +1,6 @@
 ---
-title: Dates and Times
+title: Dates and Times (Sheets)
+sidebar_label: Dates and Times
 sidebar_position: 3
 ---
 

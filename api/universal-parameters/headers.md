@@ -1,5 +1,6 @@
 ---
-title: Headers
+title: Headers Parameter
+sidebar_label: Headers
 sidebar_position: 7
 ---
 

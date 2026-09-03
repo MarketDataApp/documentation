@@ -140,8 +140,10 @@ test('B1 fails when a content page has no description', () => {
 test('B1 exempts navigation artifacts, using the classifier llms-txt already exports', () => {
   const r = run({
     '/api/thing/': page('/api/thing/'),
-    '/api/tags/': page('/api/tags/', { description: null }),
-    '/search/': page('/search/', { description: null }),
+    // Distinct titles, because H1 is gated: three pages all titled "A Page"
+    // would fail the run on a rule this test is not about.
+    '/api/tags/': page('/api/tags/', { title: 'Tags', description: null }),
+    '/search/': page('/search/', { title: 'Search', description: null }),
   }, { sitemap: ['/api/thing/', '/api/tags/', '/search/'] });
   assert.strictEqual(r.code, 0, r.out);
 });
@@ -257,15 +259,20 @@ test('F1 fails when JSON-LD does not parse', () => {
   assert.match(r.out, /JSON-LD does not parse/);
 });
 
+const SHARED_DESC = 'One description on two pages, written long enough to clear the minimum.';
+
 test('reported rules do not fail the run, and name their pages', () => {
-  // Two pages sharing a title is rule H1, which is measured and not gated.
+  // Two pages sharing a DESCRIPTION is rule H2, which is measured and not
+  // gated. This was H1 until the duplicate titles were paid down and
+  // TITLE_UNIQUE_ENFORCED went true: a gated rule cannot demonstrate that a
+  // reported one leaves the exit code alone.
   const r = run({
-    '/api/a/': page('/api/a/', { title: 'Same' }),
-    '/api/b/': page('/api/b/', { title: 'Same' }),
+    '/api/a/': page('/api/a/', { title: 'A', description: SHARED_DESC }),
+    '/api/b/': page('/api/b/', { title: 'B', description: SHARED_DESC }),
   }, { sitemap: ['/api/a/', '/api/b/'] });
   assert.strictEqual(r.code, 0, r.out);
   assert.match(r.out, /REPORTED, not gated/);
-  assert.match(r.out, /H1.*more than one page/);
+  assert.match(r.out, /H2.*more than one page/);
   assert.match(r.out, /\/api\/a\//);
 });
 
@@ -275,7 +282,10 @@ test('--report prints every offender rather than the first few', () => {
   for (let g = 0; g < 4; g++) {
     for (const half of ['a', 'b']) {
       const route = `/api/g${g}${half}/`;
-      pages[route] = page(route, { title: `Shared ${g}` });
+      pages[route] = page(route, {
+        title: `Page ${g}${half}`,
+        description: `Shared description number ${g}, long enough to clear the minimum length.`,
+      });
       sitemap.push(route);
     }
   }
@@ -313,15 +323,15 @@ const hasBuild = fs.existsSync(path.resolve(__dirname, '..', '..', 'build', 'sit
   || fs.existsSync(path.resolve(__dirname, '..', '..', 'build', 'index.html'));
 
 test('S1 fails when the spec understates a backlog', { skip: !hasBuild && 'no build/ to read' }, () => {
-  // Someone pays ten titles down and does not touch the document. This is the
+  // Someone pays ten descriptions down and does not touch the document. This is the
   // rot that happened in the sibling repo: "101 of 101" against a real 127.
   // Padding-tolerant, because the repo's pre-commit hook re-aligns markdown
   // tables. A spacing-exact pattern silently stops mutating and the test then
   // asserts nothing at all.
-  const r = withSpec((src) => src.replace(/^\|\s*H1\s*\|\s*\d+\s*\|/m, '| H1 | 23 |'));
+  const r = withSpec((src) => src.replace(/^\|\s*I2\s*\|\s*\d+\s*\|/m, '| I2 | 23 |'));
   assert.strictEqual(r.code, 1);
   assert.match(r.out, /S1 {2}docs\/SEO\.md disagrees/);
-  assert.match(r.out, /H1: docs\/SEO\.md declares 23/);
+  assert.match(r.out, /I2: docs\/SEO\.md declares 23/);
 });
 
 test('S1 fails when the spec claims a backlog for a rule that is clean', { skip: !hasBuild && 'no build/ to read' }, () => {
