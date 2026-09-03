@@ -99,6 +99,17 @@ test('--list prints the table even when everything passes', () => {
   assert.match(r.out, /php/);
 });
 
+test('the tripwire fires when the walk finds almost nothing', () => {
+  // A "the walk found nothing" guard, not a content baseline: it asks whether
+  // the walk found anything at all, which only the mechanism can change. The
+  // real floor is 50 pages against 271; `--floor` drives the same branch here.
+  const r = run({ 'index.html': block('go', ['keyword']) }, ['--floor', '999']);
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /below the floor of 999/);
+  assert.match(r.out, /tripwire for a walk that stopped matching/);
+  assert.match(r.out, /Do not lower the floor/);
+});
+
 test('a missing build directory is an error, not a pass', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hl-'));
   fs.rmSync(dir, { recursive: true, force: true });

@@ -361,6 +361,15 @@ test('S1 is skipped rather than failed when no spec sits beside the build', () =
   assert.doesNotMatch(r.out, /S1/);
 });
 
+test('the tripwire fires when the walk finds almost nothing', () => {
+  // Not a count baseline. Content changes a baseline constantly and it rots;
+  // this asks only whether the walk found anything, which the mechanism owns.
+  const r = run(OK.pages, { sitemap: OK.sitemap, args: ['--floor', '999'] });
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /below the floor of 999/);
+  assert.match(r.out, /tripwire for a walk that stopped matching/);
+});
+
 test('a missing build directory is an error, not a pass', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'seo-'));
   fs.rmSync(dir, { recursive: true, force: true });

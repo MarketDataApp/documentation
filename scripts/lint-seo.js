@@ -111,6 +111,13 @@ const HOSTS = {
 const SKIP_DIRS = new Set(['assets', 'img', 'fonts', 'node_modules']);
 
 /**
+ * A "the walk found nothing" tripwire, not a content baseline. See the same
+ * note in scripts/check-example-parity.js. Applies only to this repo's own
+ * build; `--dir` is how the self-tests drive three-page fixtures.
+ */
+const FLOOR_PAGES = 50; // against a real 271
+
+/**
  * The spec whose backlog table rule S1 gates. See the S1 block in main().
  *
  * S1's subject is THIS repository's PRODUCTION corpus, so it runs only when the
@@ -181,10 +188,13 @@ function declaredBacklog(file) {
 }
 
 function parseArgs(argv) {
-  const out = { dir: path.join(ROOT, 'build'), report: false };
+  // `--floor` lets the self-tests drive the tripwire against a small fixture,
+  // rather than leaving that branch provable only by truncating the real build.
+  const out = { dir: path.join(ROOT, 'build'), report: false, floor: null };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--dir') out.dir = path.resolve(ROOT, argv[++i]);
     else if (argv[i] === '--report') out.report = true;
+    else if (argv[i] === '--floor') out.floor = Number(argv[++i]);
   }
   return out;
 }
@@ -309,6 +319,17 @@ function main() {
   const files = walk(args.dir);
   if (files.length === 0) {
     console.error(`No HTML found under ${path.relative(ROOT, args.dir)}.`);
+    process.exit(1);
+  }
+
+  const pageFloor = args.floor === null ? FLOOR_PAGES : args.floor;
+  if ((args.dir === OWN_BUILD || args.floor !== null) && files.length < pageFloor) {
+    console.error(
+      `Only ${files.length} page(s) under ${path.relative(ROOT, args.dir)}/, ` +
+        `below the floor of ${pageFloor}.\n\n` +
+        'This is a tripwire for a walk that stopped matching, not a content\n' +
+        'baseline. Do not lower the floor to make it pass.'
+    );
     process.exit(1);
   }
 

@@ -50,11 +50,37 @@ const TOKEN = /class="token ([a-z-]+)/g;
 // Directories with no rendered code blocks in them.
 const SKIP_DIRS = new Set(['assets', 'img', 'fonts']);
 
+/**
+ * A "the walk found nothing" tripwire, NOT a second inventory to keep in step
+ * with the content.
+ *
+ * The distinction is the whole reason this is safe to add. A count BASELINE
+ * asks "is this number still exactly right", which content changes constantly
+ * and which therefore rots -- and the moment it rots someone updates the number
+ * rather than investigating, which is how a baseline becomes decoration. A
+ * TRIPWIRE asks "did the walk find anything at all", which only the mechanism
+ * can change. It is set far below any plausible content state, so no ordinary
+ * edit approaches it and nobody is ever tempted to raise it.
+ *
+ * It exists because this check reported success on an empty corpus. A glob that
+ * stops matching, a selector that goes stale, a renamed directory -- all of them
+ * land at or near zero and none of them was failing anything.
+ *
+ * Credit where due: the shape is `lint:api-link-targets` in
+ * MarketDataApp/website, whose floor of 20 links guards a real 65.
+ */
+const FLOOR = { pages: 50, blocks: 200 }; // against a real 271 and 1029
+
 function parseArgs(argv) {
-  const out = { dir: path.join(ROOT, 'build'), list: false };
+  // `--floor` exists so the self-tests can drive the tripwire's real code path
+  // against a small fixture. Without it the tripwire would be verifiable only
+  // by truncating the actual build by hand, which is the position that leaves a
+  // check's most important branch resting on somebody having tried it once.
+  const out = { dir: path.join(ROOT, 'build'), list: false, floor: null };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--dir') out.dir = path.resolve(ROOT, argv[++i]);
     else if (argv[i] === '--list') out.list = true;
+    else if (argv[i] === '--floor') out.floor = Number(argv[++i]);
   }
   return out;
 }
@@ -120,6 +146,23 @@ function main() {
 
   const files = walk(args.dir, []);
   const stats = scan(args.dir, files);
+  const blocks = [...stats.values()].reduce((n, st) => n + st.blocks, 0);
+
+  // Only for a full-corpus run against this repo's own build. `--dir` pointing
+  // somewhere else is how the self-tests drive three-page fixtures, and a floor
+  // there would fail every one of them for being small on purpose.
+  const ownBuild = args.dir === path.join(ROOT, 'build');
+  const floor = args.floor === null ? FLOOR : { pages: args.floor, blocks: args.floor };
+  if ((ownBuild || args.floor !== null) && (files.length < floor.pages || blocks < floor.blocks)) {
+    console.error(
+      `Only ${files.length} page(s) and ${blocks} code block(s) under ` +
+        `${path.relative(ROOT, args.dir)}/, below the floor of ${floor.pages} and ${floor.blocks}.\n\n` +
+        'This is a tripwire for a walk that stopped matching, not a content\n' +
+        'baseline. Either the build is incomplete or this check is no longer\n' +
+        'finding what it reads. Do not lower the floor to make it pass.'
+    );
+    process.exit(1);
+  }
 
   console.log(`Checked ${files.length} page(s), ${[...stats.values()].reduce((n, s) => n + s.blocks, 0)} code block(s).\n`);
 

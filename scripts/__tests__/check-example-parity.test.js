@@ -145,6 +145,19 @@ test('a second block with one language tab is not compared against the first', (
   assert.strictEqual(run(src).code, 0);
 });
 
+test('the tripwire fires when the walk finds almost nothing', () => {
+  // This check earned its floor: it once read only "## Request Example", and
+  // five pages kept their tabs elsewhere -- 38 tabs nothing had compared, while
+  // the run printed a confident "16 tab group(s)".
+  const r = run(page({
+    HTTP: '**GET** https://api.marketdata.app/v1/stocks/quotes/AAPL/',
+    Python: '```python\nclient.stocks.quotes("AAPL")\n```',
+  }), ['--floor', '999']);
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /below the floor of 999/);
+  assert.match(r.out, /tripwire for a walk that stopped matching/);
+});
+
 test('fixturesOf normalises the three date spellings to one token', () => {
   assert.deepStrictEqual(fixturesOf('from=2024-01-01'), ['2024-01-01']);
   assert.deepStrictEqual(fixturesOf('LocalDate.of(2024, 1, 1)'), ['2024-01-01']);

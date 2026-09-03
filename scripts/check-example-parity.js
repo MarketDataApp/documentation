@@ -49,6 +49,27 @@ const ROOT = path.resolve(__dirname, '..');
 // Only the REST endpoint pages. The sdk/** sections document one language by
 // definition, so tab parity is not a question there.
 const SCAN_DIRS = ['api'];
+
+/**
+ * A "the walk found nothing" tripwire, NOT a second inventory to keep in step
+ * with the content.
+ *
+ * A count BASELINE asks "is this number still exactly right", which content
+ * changes constantly, so it rots -- and the moment it rots someone updates the
+ * number rather than investigating. A TRIPWIRE asks "did the walk find anything
+ * at all", which only the mechanism can change. Set far below any plausible
+ * content state, so no ordinary edit approaches it.
+ *
+ * This check earned one the hard way. It used to read only the
+ * "## Request Example" section, and five pages kept their tabs under other
+ * headings -- 38 language tabs that nothing had ever compared, while the run
+ * printed a confident "16 tab group(s)". Removing the heading anchor fixed that
+ * particular hole; the floor catches the next one, where the walk itself breaks.
+ *
+ * Applies only to a full-corpus run. Passing explicit paths -- which is how the
+ * pre-commit hook drives its checks -- legitimately yields very few groups.
+ */
+const FLOOR = { files: 20, groups: 8 }; // against a real 49 and 22
 const SKIP_DIRS = new Set(['node_modules', 'build', 'llm-docs', 'sop', '.git', '.docusaurus']);
 
 // A tab is a language tab when its label is one of these. Pages also use
@@ -87,9 +108,12 @@ const NOT_A_TICKER = new Set([
 ]);
 
 function parseArgs(argv) {
-  const out = { files: [], list: false };
-  for (const a of argv) {
+  // `--floor` lets the self-tests drive the tripwire against a small fixture.
+  const out = { files: [], list: false, floor: null };
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
     if (a === '--list') out.list = true;
+    else if (a === '--floor') out.floor = Number(argv[++i]);
     else if (a.startsWith('--')) continue;
     else out.files.push(a);
   }
@@ -297,6 +321,20 @@ function main() {
       }
       problems.push({ rel, group, tabs });
     }
+  }
+
+  // Only when no explicit paths were given: a targeted run is small on purpose.
+  const floor = args.floor === null ? FLOOR : { files: args.floor, groups: args.floor };
+  if ((args.files.length === 0 || args.floor !== null)
+      && (files.length < floor.files || groupCount < floor.groups)) {
+    console.error(
+      `Only ${files.length} file(s) and ${groupCount} tab group(s) found, below ` +
+        `the floor of ${floor.files} and ${floor.groups}.\n\n` +
+        'This is a tripwire for a walk that stopped matching, not a content\n' +
+        'baseline. The pages are still there; something in this check is no\n' +
+        'longer finding them. Do not lower the floor to make it pass.'
+    );
+    process.exit(1);
   }
 
   console.log(`Checked ${files.length} file(s), ${groupCount} tab group(s).\n`);
