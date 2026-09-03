@@ -85,6 +85,7 @@ const fs = require('fs');
 const path = require('path');
 const domino = require('@mixmark-io/domino');
 const { isNavigationArtifact } = require('../lib/llms-txt');
+const { assertFreshBuild } = require('../lib/build-freshness');
 
 const ROOT = path.resolve(__dirname, '..');
 
@@ -369,6 +370,12 @@ function main() {
   if (!fs.existsSync(args.dir)) {
     console.error(`No build at ${path.relative(ROOT, args.dir)} — run \`yarn build\` first.`);
     process.exit(1);
+  }
+
+  // Only for this repo's own build: `--dir` is a throwaway fixture with no
+  // sources to be older than.
+  if (args.dir === OWN_BUILD) {
+    assertFreshBuild(ROOT, args.dir, 'PROD=true yarn build && node scripts/lint-seo.js');
   }
 
   const files = walk(args.dir);

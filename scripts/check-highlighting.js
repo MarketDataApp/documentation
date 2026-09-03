@@ -37,6 +37,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { assertFreshBuild } = require('../lib/build-freshness');
 
 const ROOT = path.resolve(__dirname, '..');
 
@@ -142,6 +143,10 @@ function main() {
   if (!fs.existsSync(args.dir)) {
     console.error(`No build at ${path.relative(ROOT, args.dir)} — run \`yarn build\` first.`);
     process.exit(1);
+  }
+
+  if (args.dir === path.join(ROOT, 'build')) {
+    assertFreshBuild(ROOT, args.dir, 'yarn build && node scripts/check-highlighting.js');
   }
 
   const files = walk(args.dir, []);
