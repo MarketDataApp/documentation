@@ -72,6 +72,10 @@ function run(pages, opts = {}) {
       fs.writeFileSync(path.join(dir, route.replace(/^\//, ''), 'index.md'), '# Twin\n', 'utf8');
     }
   }
+  if (opts.llms) {
+    fs.writeFileSync(path.join(dir, 'llms.txt'), opts.llms, 'utf8');
+    fs.writeFileSync(path.join(dir, 'llms-full.txt'), opts.llms, 'utf8');
+  }
   if (sitemap) {
     const locs = sitemap.map((p) => `<url><loc>${PROD}/docs${p}</loc></url>`).join('');
     fs.writeFileSync(path.join(dir, 'sitemap.xml'), `<urlset>${locs}</urlset>`, 'utf8');
@@ -609,6 +613,65 @@ test('L3 fails when the sitemap advertises the 404, in any spelling', () => {
     assert.strictEqual(r.code, 1, `not caught: ${spelling}`);
     assert.match(r.out, /L3 {2}the sitemap advertises the 404 page/);
   }
+});
+
+test('G2 fails when a noindex route is advertised in the llms files', () => {
+  // Owner's ruling: telling a crawler "do not index this" and an LLM consumer
+  // "here is the page and its Markdown" is the site contradicting itself.
+  // website#95 is how it happens -- two lists equal once, then a ruling moves
+  // one of them and nothing goes red.
+  const r = run({
+    '/api/thing/': page('/api/thing/'),
+    '/api/secret/': page('/api/secret/', {
+      robots: 'noindex, nofollow',
+      title: 'Secret',
+      description: 'A second description, distinct from its sibling so H1 and H2 stay out of the way.',
+    }),
+  }, {
+    sitemap: ['/api/thing/'],
+    llms: '- [Thing](https://x/docs/api/thing/index.md): a\n'
+        + '- [Secret](https://x/docs/api/secret/index.md): b\n',
+  });
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /G2 {2}noindex routes advertised in the llms files/);
+  assert.match(r.out, /\/api\/secret\/ appears in llms\.txt/);
+});
+
+test('G2 passes when the noindex route is withheld', () => {
+  const r = run({
+    '/api/thing/': page('/api/thing/'),
+    '/api/secret/': page('/api/secret/', {
+      robots: 'noindex, nofollow',
+      title: 'Secret',
+      description: 'A second description, distinct from its sibling so H1 and H2 stay out of the way.',
+    }),
+  }, {
+    sitemap: ['/api/thing/'],
+    llms: '- [Thing](https://x/docs/api/thing/index.md): a\n',
+  });
+  assert.strictEqual(r.code, 0, r.out);
+});
+
+test('G2 floor fires on a truncated index', () => {
+  // An assertion that passes because it examined nothing: an empty llms.txt
+  // satisfies "no noindex route appears in it" perfectly.
+  //
+  // `--floor` drives the page tripwire and this one from one number, so the
+  // fixture is sized to clear the first and trip the second: two pages against
+  // a floor of two passes the walk check, and one llms entry does not.
+  const r = run({
+    '/api/thing/': page('/api/thing/'),
+    '/api/other/': page('/api/other/', {
+      title: 'Other',
+      description: 'A second description, distinct from its sibling so H1 and H2 stay out of the way.',
+    }),
+  }, {
+    sitemap: ['/api/thing/', '/api/other/'],
+    llms: '- [Thing](https://x/docs/api/thing/index.md): a\n',
+    args: ['--floor', '2'],
+  });
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /llms\.txt lists only 1 route\(s\), below the floor of 2/);
 });
 
 test('the tripwire fires when the walk finds almost nothing', () => {

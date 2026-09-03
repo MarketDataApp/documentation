@@ -81,12 +81,7 @@ const path = require('node:path');
 const { cleanMdx } = require('../lib/mdx-to-md');
 const { cleanHtml } = require('../lib/html-to-md');
 const { routeSuffix, stemOf } = require('../lib/route-stem');
-const {
-  categoryOf,
-  isNavigationArtifact,
-  titleForStem,
-  descriptionFromHtml,
-} = require('../lib/llms-txt');
+const { categoryOf, isNavigationArtifact, titleForStem, descriptionFromHtml, isNoindexHtml } = require('../lib/llms-txt');
 const { emitLlmsTxt } = require('./llms-txt');
 
 /** The worker's candidate order. Do not reorder without changing the worker. */
@@ -171,6 +166,7 @@ module.exports = function markdownTwinsPlugin() {
       const untwinned = [];
       const indexed = [];
       const unclassified = [];
+      const noindexSkipped = [];
 
       for (const routePath of routesPaths) {
         const stem = stemOf(routePath, baseUrl);
@@ -241,18 +237,52 @@ module.exports = function markdownTwinsPlugin() {
               html = '';
             }
           }
-          indexed.push({
-            stem: indexStem,
-            markdown,
-            title: titleForStem(indexStem, markdown),
-            description: descriptionFromHtml(html),
-          });
+          // A route that tells crawlers not to index it must not be
+          // advertised to an LLM consumer either -- owner's ruling,
+          // 2026-09-03. Derived from the RENDERED page rather than from a
+          // list of routes: Docusaurus can set noindex from
+          // siteConfig.noIndex, from a page's front matter, or from plugin
+          // config, and a list keyed to any one of them misses the others.
+          // A second list would also be a second thing to keep in step, which
+          // is the defect this rule exists to close rather than repeat --
+          // MarketDataApp/website#95, where two route lists were equal once
+          // and then a ruling moved one of them.
+          //
+          // The TWIN is still written. Every route must have one or the
+          // Transform Rule turns it into a 404 (see the header, and lint:seo
+          // G1); only the llms listing is withheld.
+          // `siteConfig.noIndex` puts noindex on EVERY page, which is how
+          // staging is built. Withholding on that basis would empty the index
+          // -- 262 of 262 routes on the first attempt -- and the distinction
+          // carries no information when it is true of everything. The ruling
+          // is about a page that opts out while its neighbours do not.
+          //
+          // Caught by lib/llms-txt.js's own refusal to render an empty index,
+          // which is exactly the "assertion that passes because it examined
+          // nothing" guard this repo has been adding all week, working.
+          if (!siteConfig.noIndex && isNoindexHtml(html)) {
+            noindexSkipped.push(indexStem);
+          } else {
+            indexed.push({
+              stem: indexStem,
+              markdown,
+              title: titleForStem(indexStem, markdown),
+              description: descriptionFromHtml(html),
+            });
+          }
         }
       }
 
       // Every number, every build. One total would read the same whether the
       // routes without a source were converted from their HTML or quietly
       // dropped, and that is the exact failure this pass was changed to end.
+      if (noindexSkipped.length) {
+        console.log(
+          `[markdown-twins] ${noindexSkipped.length} noindex route(s) withheld from ` +
+            `llms.txt and llms-full.txt: ${noindexSkipped.join(', ')}`
+        );
+      }
+
       console.log(
         `[markdown-twins] ${fromSource + fromHtml} of ${routesPaths.length} route(s) ` +
           `twinned as ${files} file(s): ${fromSource} from a Markdown source via ` +
@@ -278,6 +308,12 @@ module.exports = function markdownTwinsPlugin() {
         outDir,
         routeCount: routesPaths.length,
         unclassified,
+        // Counted apart from the artifacts, because they are not artifacts.
+        // The old line said "N navigation artifact(s) skipped" for
+        // routes-minus-entries, and a whole new docs section would have read
+        // as housekeeping -- lib/llms-txt.js records that lesson; withholding
+        // a noindex CONTENT page under the same label would repeat it.
+        noindexCount: noindexSkipped.length,
       });
 
       if (fromSource === 0) {

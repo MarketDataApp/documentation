@@ -735,6 +735,66 @@ function main() {
     fail('G1', 'built pages whose Markdown twin is not in the build', twinless);
   }
 
+  // --- G2. Nothing noindex is advertised to an LLM consumer -----------------
+  //
+  // Owner's ruling, 2026-09-03. Telling a crawler "do not index this" and an
+  // LLM consumer "here is the page and here is its Markdown" is the site
+  // contradicting itself, and the two halves are written by different code
+  // that never consults the other.
+  //
+  // The generator derives the exclusion from the rendered <meta>, so this
+  // gate and that generator start from the same artefact -- G1's argument
+  // again. What it catches is the generator's list and the pages drifting,
+  // which is exactly how MarketDataApp/website#95 happened: two route lists
+  // were equal once, a ruling moved one, and eight noindex archives kept
+  // being advertised with nothing red.
+  //
+  // The floor is not decoration. An assertion that passes because it examined
+  // nothing is the shape this file has spent a week removing, and an empty or
+  // truncated llms.txt would satisfy "no noindex route appears in it"
+  // perfectly.
+  if (env.name === 'production') {
+    const llms = ['llms.txt', 'llms-full.txt']
+      .map((name) => ({ name, file: path.join(args.dir, name) }))
+      .filter((f) => fs.existsSync(f.file))
+      .map((f) => ({ ...f, text: fs.readFileSync(f.file, 'utf8') }));
+
+    // Their ABSENCE is only a defect in this repo's own build. A throwaway
+    // fixture has no llms files and is not claiming to -- failing it there
+    // would be asserting something about a corpus nobody generated.
+    if (llms.length !== 2) {
+      if (args.dir === OWN_BUILD) {
+        fail('G2', 'the llms files are missing from the build', [
+          `found ${llms.length} of 2 (llms.txt, llms-full.txt)`,
+        ]);
+      }
+    } else {
+      // The floor is scoped the same way, and for the same reason a fixture
+      // is small on purpose. `--floor` drives it against one.
+      const LLMS_FLOOR = args.floor === null ? 100 : args.floor; // real: 260 indexed
+      const floored = args.dir === OWN_BUILD || args.floor !== null;
+      const listed = (llms[0].text.match(/^- \[/gm) ?? []).length;
+      if (floored && listed < LLMS_FLOOR) {
+        fail('G2', `llms.txt lists only ${listed} route(s), below the floor of ${LLMS_FLOOR}`, [
+          'a truncated index would satisfy the noindex rule below by containing nothing',
+        ]);
+      }
+
+      const advertised = [];
+      for (const p of routes.filter((p) => /noindex/i.test(p.robots ?? ''))) {
+        const stem = p.route.replace(/^\/|\/$/g, '');
+        for (const f of llms) {
+          if (f.text.includes(`/${stem}/`) || f.text.includes(`/${stem}.md`)) {
+            advertised.push(`${p.route} appears in ${f.name}`);
+          }
+        }
+      }
+      if (advertised.length) {
+        fail('G2', 'noindex routes advertised in the llms files', advertised);
+      }
+    }
+  }
+
   // --- S1. The numbers in the prose are gated too --------------------------
   //
   // A count in a document is the one thing on the page nothing keeps true.
