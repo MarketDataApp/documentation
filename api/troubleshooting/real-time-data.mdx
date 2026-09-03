@@ -620,6 +620,9 @@ static boolean testRealtimeData(MarketDataClient client, String symbol) {
     return false;
   }
 }
+
+// Test during market hours for best results
+testRealtimeData(client, "AAPL");
 ```
 
 </TabItem>
@@ -689,6 +692,9 @@ static async Task<bool> TestRealtimeDataAsync(MarketDataClient client, string sy
     Console.WriteLine("❌ Receiving historical data — complete your profile and agreements");
     return false;
 }
+
+// Test during market hours for best results
+await TestRealtimeDataAsync(client, "AAPL");
 ```
 
 </TabItem>

@@ -82,6 +82,8 @@ const NOT_A_TICKER = new Set([
   'GET', 'POST', 'HTTP', 'HTTPS', 'JSON', 'API', 'URL', 'SDK', 'ID', 'UTC', 'ET',
   'TRUE', 'FALSE', 'NULL', 'NONE', 'AND', 'OR', 'IF', 'FOR', 'NEW', 'VAR', 'USE',
   'D', 'W', 'M', 'Y', 'C', 'P', 'US',
+  // Exchange and standards names that appear in prose, not as symbols.
+  'IEX', 'OPRA', 'SIP', 'NBBO',
 ]);
 
 function parseArgs(argv) {
@@ -203,10 +205,47 @@ function tabsOf(body, prefix = '') {
   return out;
 }
 
-/** The "## Request Example" / "## Request Examples" section of a page. */
-function requestSection(src) {
-  const m = src.match(/^## Request Examples?\b([\s\S]*?)(?=^## |\Z)/m);
-  return m ? m[1] : null;
+/**
+ * Every top-level `<Tabs>` block in a page, as source text.
+ *
+ * This used to read only the "## Request Example" section, and that was a
+ * fail-open: renaming the heading dropped a page's nine tabs out of the check
+ * silently -- 16 groups became 15, exit 0, no complaint. Worse, it was already
+ * happening. Five pages keep their language tabs under other headings
+ * (`### Code Examples` on api/authentication.mdx), so 38 tabs had never been
+ * compared by anything, while #167 recorded those pages as consistent from a
+ * hand audit.
+ *
+ * Nothing is matched by heading now. Every `<Tabs>` block is read wherever it
+ * sits, so there is no name for an edit to get wrong.
+ *
+ * They are returned SEPARATELY, and that is the reason this is not simply
+ * `tabsOf(wholeFile)`: two independent blocks on one page demonstrate two
+ * different requests on purpose, and flattening them would compare a chain
+ * request against a status request and fail an entirely correct page.
+ */
+function tabsBlocks(src) {
+  const out = [];
+  const open = /<Tabs\b[^>]*>/g;
+  let m;
+  while ((m = open.exec(src)) !== null) {
+    let depth = 1;
+    const start = m.index + m[0].length;
+    let end = src.length;
+    const token = /<Tabs\b[^>]*>|<\/Tabs>/g;
+    token.lastIndex = start;
+    let t;
+    while ((t = token.exec(src)) !== null) {
+      depth += t[0] === '</Tabs>' ? -1 : 1;
+      if (depth === 0) {
+        end = t.index;
+        break;
+      }
+    }
+    out.push(src.slice(start, end));
+    open.lastIndex = end;
+  }
+  return out;
 }
 
 function main() {
@@ -227,22 +266,28 @@ function main() {
     } catch {
       continue;
     }
-    const section = requestSection(src);
-    if (!section) continue;
+    const blocks = tabsBlocks(src);
+    if (blocks.length === 0) continue;
 
     const byGroup = new Map();
-    for (const tab of tabsOf(section)) {
+    // The block index keeps two independent <Tabs> on one page apart; without
+    // it both would carry the same empty nesting path and be merged.
+    blocks.forEach((block, blockIndex) => {
+    for (const tab of tabsOf(block)) {
       if (!LANGUAGES.has(tab.label)) continue;
       const fixtures = fixturesOf(tab.source);
       for (const t of offFixtureTickers(tab.source)) {
         if (!unknownTickers.has(t)) unknownTickers.set(t, new Set());
         unknownTickers.get(t).add(rel);
       }
-      if (!byGroup.has(tab.group)) byGroup.set(tab.group, new Map());
-      byGroup.get(tab.group).set(tab.label, fixtures);
+      const key = `${blockIndex}\u0000${tab.group}`;
+      if (!byGroup.has(key)) byGroup.set(key, new Map());
+      byGroup.get(key).set(tab.label, fixtures);
     }
+    });
 
-    for (const [group, tabs] of byGroup) {
+    for (const [key, tabs] of byGroup) {
+      const group = key.slice(key.indexOf('\u0000') + 1);
       if (tabs.size < 2) continue;
       groupCount++;
       const distinct = new Set([...tabs.values()].map((f) => f.join(',')));
@@ -296,4 +341,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { fixturesOf, offFixtureTickers, tabsOf, requestSection, stripComments };
+module.exports = { fixturesOf, offFixtureTickers, tabsOf, tabsBlocks, stripComments };

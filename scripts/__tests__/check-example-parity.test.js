@@ -8,7 +8,7 @@ const os = require('node:os');
 const path = require('node:path');
 
 const SCRIPT = path.resolve(__dirname, '..', 'check-example-parity.js');
-const { fixturesOf, offFixtureTickers, tabsOf, requestSection } = require(SCRIPT);
+const { fixturesOf, offFixtureTickers, tabsOf, tabsBlocks } = require(SCRIPT);
 
 /** Run the checker over one temp page. Returns { code, out }. */
 function run(content, args = []) {
@@ -122,7 +122,22 @@ test('reports an off-fixture ticker without failing', () => {
   assert.match(r.out, /TSLA/);
 });
 
-test('only the Request Example section is compared', () => {
+test('a renamed heading does not drop a page out of the check', () => {
+  // The fail-open this replaced: 16 groups became 15, exit 0, no complaint.
+  const under = (heading) => `---\ntitle: T\n---\n\n${heading}\n\n<Tabs>\n`
+    + '<TabItem value="HTTP" label="HTTP">\n\n`AAPL`\n\n</TabItem>\n'
+    + '<TabItem value="Go" label="Go">\n\n`MSFT`\n\n</TabItem>\n</Tabs>\n';
+  for (const heading of ['## Request Example', '## Example Request', '### Code Examples']) {
+    const r = run(under(heading));
+    assert.strictEqual(r.code, 1, `heading ${heading} was not compared`);
+    assert.match(r.out, /different requests/);
+  }
+});
+
+test('a second block with one language tab is not compared against the first', () => {
+  // Response Attributes carries a <Tabs> too. It is read like any other block
+  // now that nothing is matched by heading, and it is not a parity question
+  // because it holds a single language tab -- not because of where it sits.
   const src = page({
     HTTP: '**GET** https://api.marketdata.app/v1/stocks/quotes/AAPL/',
     Python: '```python\nclient.stocks.quotes("AAPL")\n```',
@@ -144,8 +159,22 @@ test('offFixtureTickers ignores an interpolated output line', () => {
   assert.deepStrictEqual([...offFixtureTickers('console.log(`FY${y} Q${q}`)')], []);
 });
 
-test('requestSection returns null for a page with no examples', () => {
-  assert.strictEqual(requestSection('# Title\n\n## Response Example\n\nnothing\n'), null);
+test('tabsBlocks finds tabs under any heading, not just Request Example', () => {
+  // The check used to read only "## Request Example". Renaming that heading
+  // dropped a page's tabs out of the run silently, and five pages already kept
+  // their language tabs under other headings -- 38 tabs nothing had ever
+  // compared. Nothing is matched by heading now.
+  const src = '## Code Examples\n\n<Tabs>\n<TabItem value="Go" label="Go">x</TabItem>\n</Tabs>\n';
+  assert.strictEqual(tabsBlocks(src).length, 1);
+  assert.strictEqual(tabsOf(tabsBlocks(src)[0]).length, 1);
+});
+
+test('tabsBlocks keeps two independent Tabs blocks apart', () => {
+  // Two blocks on one page demonstrate two different requests on purpose.
+  // Flattening them would compare one against the other and fail a correct page.
+  const src = '<Tabs>\n<TabItem value="Go" label="Go">`AAPL`</TabItem>\n</Tabs>\n\n'
+    + '<Tabs>\n<TabItem value="Go" label="Go">`MSFT`</TabItem>\n</Tabs>\n';
+  assert.strictEqual(tabsBlocks(src).length, 2);
 });
 
 test('tabsOf reports the outer path of a nested tab', () => {
