@@ -104,6 +104,27 @@ carries no trailing slash, so it named `…/chain` against a canonical of
 trailing slash), C3 (`og:url` and `og:description` agree with their sources),
 F1 (JSON-LD agrees).*
 
+### Every built page's twin must still be in the build
+
+`plugins/markdown-twins.js` fails the build when a route has no Markdown twin,
+so the guarantee is enforced — at build time, by the same code that writes
+them. Rule **G1** re-checks it afterwards from an independent walk: it starts
+from the built HTML this check already enumerates, not from the plugin's route
+list.
+
+Two reasons that is worth a second assertion rather than trust:
+
+- **#188.** `aws s3 sync --delete` removed files from R2 *after* the build that
+  had just produced them. Pages, that time. Losing an artefact between the
+  build and the deploy has happened here.
+- Every doc page now links to its twin from the actions row, so a missing one
+  is a 404 a reader can click, not only an agent's problem.
+
+Two checks pinned to one artefact cannot disagree without one of them failing.
+That is the argument D2 already makes about robots and the sitemap, applied one
+level out — and it is the structural answer to a guarantee that otherwise holds
+only because two checks happen to overlap, with nothing stating that it holds.
+
 ### The Markdown twins carry their own canonical
 
 `.md` responses are not HTML and are not covered here. They get
@@ -162,6 +183,7 @@ same date and nothing says so.
 | every staging page is `noindex`                               | `lint:seo` D1              | against `build/`          |
 | robots and the sitemap agree, in both directions              | `lint:seo` D2              | against `build/`          |
 | exactly one `<h1>`                                            | `lint:seo` E1              | against `build/`          |
+| every built page's Markdown twin is still in the build        | `lint:seo` G1              | against `build/`          |
 | JSON-LD parses and agrees with the head around it             | `lint:seo` F1              | against `build/`          |
 | the sitemap lists only pages that built                       | `lint:sitemap`             | against `build/`          |
 | every sitemap URL is served                                   | `test:sitemap`             | against the deployed site |

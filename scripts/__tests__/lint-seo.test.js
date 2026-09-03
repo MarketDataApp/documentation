@@ -51,7 +51,8 @@ function page(route, o = {}) {
 }
 
 /** Build a throwaway build/ and run the checker over it. */
-function run(pages, { sitemap, args = [] } = {}) {
+function run(pages, opts = {}) {
+  const { sitemap, args = [] } = opts;
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'seo-'));
   for (const [route, html] of Object.entries(pages)) {
     const file = route === '/404.html'
@@ -59,6 +60,14 @@ function run(pages, { sitemap, args = [] } = {}) {
       : path.join(dir, route.replace(/^\//, ''), 'index.html');
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, html, 'utf8');
+  }
+  if (opts.twins !== false) {
+    // Every route gets its Markdown twin unless a test suppresses it, so rule
+    // G1 is satisfied by default and only the test that targets it sees it.
+    for (const route of Object.keys(pages)) {
+      if (route === '/404.html') continue;
+      fs.writeFileSync(path.join(dir, route.replace(/^\//, ''), 'index.md'), '# Twin\n', 'utf8');
+    }
   }
   if (sitemap) {
     const locs = sitemap.map((p) => `<url><loc>${PROD}/docs${p}</loc></url>`).join('');
@@ -359,6 +368,16 @@ test('S1 is skipped rather than failed when no spec sits beside the build', () =
   const r = run(OK.pages, { sitemap: OK.sitemap });
   assert.strictEqual(r.code, 0, r.out);
   assert.doesNotMatch(r.out, /S1/);
+});
+
+test('G1 fails when a built page has no Markdown twin', () => {
+  // Two independent walks pinned to one artefact. markdown-twins guarantees
+  // this at build time; #188 is the case where files went missing AFTER the
+  // build that produced them, and nothing downstream re-checked.
+  const r = run(OK.pages, { sitemap: OK.sitemap, twins: false });
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /G1 {2}built pages whose Markdown twin is not in the build/);
+  assert.match(r.out, /api\/thing\/index\.md missing/);
 });
 
 test('the tripwire fires when the walk finds almost nothing', () => {

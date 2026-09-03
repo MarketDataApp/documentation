@@ -543,6 +543,41 @@ function main() {
     (HEADING_ORDER_ENFORCED ? fail : report)('D3', 'heading level skipped', skips);
   }
 
+  // --- G1. Two independent walks, pinned to one artefact -------------------
+  //
+  // `plugins/markdown-twins.js` fails the build when a route has no Markdown
+  // twin, so the guarantee is enforced -- at build time, by the same code that
+  // writes them. Nothing re-checks it afterwards, and the two facts that make
+  // that worth doing are both in CLAUDE.md:
+  //
+  //   * #188: `aws s3 sync --delete` removed files from R2 AFTER the build that
+  //     had just produced them. Pages, that time. Losing an artefact between
+  //     the build and the deploy is a thing that has happened here.
+  //   * every doc page now carries a "View as Markdown" link to its twin, so a
+  //     missing one is a 404 a reader can click, not only an agent's problem.
+  //
+  // This walk is independent: it starts from the built HTML this check already
+  // enumerates, not from the plugin's route list. If that list ever narrows,
+  // the page is still here and its twin is not, and the two walks disagree.
+  // Two checks pinned to one artefact cannot disagree without one of them
+  // failing -- which is the argument D2 already makes about robots and the
+  // sitemap, applied one level out.
+  //
+  // Only `<route>index.md` is asserted, of the three names the plugin writes.
+  // It is the one that exists for every route including the docs root, and the
+  // one the actions row links to. `markdown-twins` owns the other two and the
+  // rule that all three hold identical bytes.
+  const twinless = [];
+  for (const p of routes) {
+    const twin = p.route === '/'
+      ? path.join(args.dir, 'index.md')
+      : path.join(args.dir, p.route.replace(/^\//, ''), 'index.md');
+    if (!fs.existsSync(twin)) twinless.push(`${p.route} -> ${path.relative(args.dir, twin)} missing`);
+  }
+  if (twinless.length) {
+    fail('G1', 'built pages whose Markdown twin is not in the build', twinless);
+  }
+
   // --- S1. The numbers in the prose are gated too --------------------------
   //
   // A count in a document is the one thing on the page nothing keeps true.
