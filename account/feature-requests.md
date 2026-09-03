@@ -1,5 +1,6 @@
 ---
 title: Feature Requests
+description: Submit and upvote ideas on the Market Data Feature Request Board, follow the Product Roadmap, and learn how urgent requests are handled.
 sidebar_position: 11
 ---
 

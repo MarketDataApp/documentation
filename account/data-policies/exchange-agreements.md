@@ -1,5 +1,6 @@
 ---
 title: Exchange Agreements
+description: Market Data is an authorized vendor for the UTP Plan, OPRA and IEX. Read the subscriber agreement each exchange requires you to accept for its data.
 sidebar_position: 1
 ---
 

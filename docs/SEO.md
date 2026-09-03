@@ -62,8 +62,8 @@ Exactly one per page, with text, and more than the site name alone. Docusaurus
 appends `| Market Data`, so a page whose own title is empty would emit
 `| Market Data` and nothing else.
 
-*Gated by rule A1 (presence) and rule H1 (uniqueness).* Length is **reported,
-not gated** — see below.
+*Gated by rule A1 (presence), rule H1 (uniqueness) and rule I1 (60 characters
+or fewer, counting the appended site name as production writes it).*
 
 ## `<meta name="description">`
 
@@ -76,12 +76,14 @@ function already answers "is this route content, or scaffolding?" for the
 and the two would drift.
 
 Docusaurus derives the description from the page's first paragraph when the
-frontmatter does not set one. That is why some are a bare heading
-(`"Problem Overview"`) and why so many exceed 160 characters — see rules I2 and
-I3 below for the current count. It is a systemic default, not per-page
-carelessness.
+frontmatter does not set one. That default produced descriptions of every wrong
+shape: a bare heading (`"Problem Overview"`, 16 characters, on eight pages at
+once), and 107 descriptions running past 160 characters to as many as 493.
+Every content page now sets its own `description:` in frontmatter, so nothing
+is derived and nothing repeats.
 
-*Gated by rule B1 (presence). Uniqueness and length are reported.*
+*Gated by rule B1 (presence), rule H2 (uniqueness) and rules I2 and I3
+(160 characters or fewer, 70 or more).*
 
 ## Canonical URLs
 
@@ -208,13 +210,10 @@ the named flag in `scripts/lint-seo.js` is the whole change once clean.
 <!-- lint:seo S1 gates the counts in this table. Do not edit them by hand;
      run `node scripts/lint-seo.js` and copy what it reports. -->
 
-| Rule | Backlog | What it is                              | Flag                           |
-|------|---------|-----------------------------------------|--------------------------------|
-| H2   | 12      | descriptions used by more than one page | `DESC_UNIQUE_ENFORCED`         |
-| I2   | 107     | descriptions over 160 characters        | `LENGTH_ENFORCED`              |
-| I3   | 44      | descriptions under 70 characters        | `LENGTH_ENFORCED`              |
-| D3   | 89      | pages skipping a heading level          | `HEADING_ORDER_ENFORCED`       |
-| L1   | 1       | the 404's canonical                     | `NOT_FOUND_CANONICAL_ENFORCED` |
+| Rule | Backlog | What it is                     | Flag                           |
+|------|---------|--------------------------------|--------------------------------|
+| D3   | 89      | pages skipping a heading level | `HEADING_ORDER_ENFORCED`       |
+| L1   | 1       | the 404's canonical            | `NOT_FOUND_CANONICAL_ENFORCED` |
 
 ### Why those numbers are gated too
 
@@ -226,8 +225,10 @@ is supposed to be the statement of intent the check gates against. Its
 to say about a number beside one.
 
 So rule **S1** parses the table above and asserts every row equals what this
-run measured. Write ten frontmatter descriptions and the check fails until the
-table says 97 — the backlog can only be paid down on purpose.
+run measured. Fix ten pages that skip a heading level and the check fails until
+the table says 79 — the backlog can only be paid down on purpose. It also
+fails when a rule goes clean and its row survives, which is how the H2, I2 and
+I3 rows were caught the moment the descriptions landed.
 
 S1 finds the table by its header row, not by matching a rule-shaped line
 anywhere in the file, and **fails closed when it cannot find it**: delete or
@@ -244,9 +245,16 @@ totals by design, and — less obviously — `I1`, because `siteConfig.title` is
 title is 15 characters longer. The first version of S1 assumed every count was
 environment-independent and its own staging run proved otherwise.
 
-`I1` is why that matters more now than it did: production measures 0 and has
-no row, while the same corpus measures 6 on staging. A table gating both arms
-would have to be wrong for one of them.
+`I1` no longer differs between the arms, and gating it is what forced the
+issue. `LENGTH_ENFORCED` turned a difference S1 could route around into a
+failure nothing could: the same authored titles measured 0 on production and
+10 on staging, so an ordinary `yarn build` — CI always passes `PROD=true` —
+failed on ten titles whose extra characters are all in the suffix.
+
+**I1's budget now moves with the suffix.** Staging measures against
+`60 + 15`, which is the same 60 characters of authored title as production,
+and three self-tests hold the equivalence in both directions: a 47-character
+title fails on either arm, a 46-character one passes on either.
 
 **H1 is fixed and now gated.** 270 pages shared 137 distinct titles, because
 the SDK and Sheets sections document the same endpoints and so repeat the API
@@ -284,5 +292,24 @@ every page stated `twitter:card=summary_large_image` and no page declared
 URL. The promise is emitted unconditionally by Docusaurus; the image needed one
 config key that was never set. `themeConfig.image` now supplies a 1200×630 card
 and `CARD_IMAGE_ENFORCED` is `true`, so the two cannot come apart again.
+
+**H2, I2 and I3 are fixed and now gated.** All three had one cause: almost no
+page set a `description:`, so Docusaurus derived one from the first paragraph.
+That is why eight account troubleshooting pages and one Sheets page all
+described themselves as `Problem Overview`, and why 107 descriptions ran past
+160 characters — the longest, `/account/upgrades/`, was 493. 165 pages now
+carry a hand-written description of 70 to 160 characters.
+
+The six language SDKs document the same endpoints, so a description written
+for the endpoint alone collides the way the titles did. **Every SDK
+description names its language**, which makes the collision impossible rather
+than merely unlikely: "Retrieve news articles for a stock symbol" was served by
+four pages, and is now four sentences that each name the C#, Go, Java or PHP
+SDK. The same rule separates `/api/stocks/earnings/` from
+`/sdk/php/stocks/earnings/`.
+
+Frontmatter is stripped before a page becomes its Markdown twin, so none of
+this reaches `build/**/index.md`. `lib/__tests__/mdx-to-md.test.js` holds that,
+and it is why the descriptions could be written in bulk at all.
 
 See [SEO-GAPS.md](./SEO-GAPS.md) for what is deliberately not checked at all.

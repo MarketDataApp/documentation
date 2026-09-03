@@ -1,5 +1,6 @@
 ---
 title: Urlfetch Errors
+description: Google caps urlfetch calls at 20,000 a day for consumer accounts and 100,000 for Workspace. Learn to cut your usage or raise the limit.
 sidebar_position: 4
 ---
 

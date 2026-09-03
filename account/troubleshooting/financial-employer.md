@@ -1,5 +1,6 @@
 ---
 title: Financial Industry Employer
+description: Working for a bank, brokerage or investment firm triggers extra verification review. Learn what documents show your actual job responsibilities.
 sidebar_position: 5
 ---
 

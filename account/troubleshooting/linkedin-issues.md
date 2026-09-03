@@ -1,5 +1,6 @@
 ---
 title: LinkedIn Profile Issues
+description: Verification stalls when a LinkedIn profile does not confirm your employer. Learn how to fix the profile or supply alternative documentation.
 sidebar_position: 2
 ---
 

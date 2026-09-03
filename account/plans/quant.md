@@ -1,5 +1,6 @@
 ---
 title: Quant Plan
+description: The Quant plan suits systematic traders who need extensive data access and a high daily request allowance. See its pricing, features and limits.
 sidebar_position: 6
 ---
 

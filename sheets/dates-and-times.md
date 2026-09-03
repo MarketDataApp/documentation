@@ -1,6 +1,7 @@
 ---
 title: Dates and Times (Sheets)
 sidebar_label: Dates and Times
+description: Market Data formulas accept several date formats, along with relative dates and option expiration dates, so you can write dates that suit your sheet.
 sidebar_position: 3
 ---
 

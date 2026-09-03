@@ -1,5 +1,6 @@
 ---
 title: Billing Portal Access
+description: Cannot sign in to the Billing Portal? Create the portal account, reset a forgotten password, and fix a reset email that never arrives.
 sidebar_position: 7
 ---
 

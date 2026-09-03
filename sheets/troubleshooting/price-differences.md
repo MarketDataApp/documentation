@@ -1,5 +1,6 @@
 ---
 title: Price Differences
+description: Market Data prices come from quotes while Google Finance and others use trades, so after-hours figures differ. Learn why and how to match them.
 sidebar_position: 8
 ---
 

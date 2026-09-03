@@ -1,5 +1,6 @@
 ---
 title: Free Forever Plan
+description: The Free Forever plan gives 100 API requests a day at no cost. Learn what it includes, where its limits fall, and how it compares to the paid plans.
 sidebar_position: 1
 ---
 

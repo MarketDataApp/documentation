@@ -1,5 +1,6 @@
 ---
 title: Plan Limits
+description: Every Market Data plan sets limits on credits, devices, historical data age, data type and endpoints. Compare the standard plans and their usage windows.
 sidebar_position: 3
 ---
 

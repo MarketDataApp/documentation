@@ -1,5 +1,6 @@
 ---
 title: Plan Upgrades
+description: Upgrade a Market Data plan and keep your unused time. See how the credit is calculated when you move between monthly and annual billing.
 sidebar_position: 8
 ---
 

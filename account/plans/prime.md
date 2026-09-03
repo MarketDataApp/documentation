@@ -1,5 +1,6 @@
 ---
 title: Prime Plan
+description: The Prime plan is the largest Market Data subscription, built for traders who need very high request volumes and the deepest data access.
 sidebar_position: 7
 ---
 

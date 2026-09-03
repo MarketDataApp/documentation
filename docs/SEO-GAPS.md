@@ -36,18 +36,26 @@ for a tag nothing reads.
 **Flip `NOT_FOUND_CANONICAL_ENFORCED` if the 404 ever starts answering 200.**
 A soft 404 *is* crawled, and then the canonical is read and points at nothing.
 
-### Title and description length (I1–I3)
+### Title and description length (I1–I3) — fixed, no longer a gap
 
-`I1` is clean on production and stays reported rather than gated only because
-`LENGTH_ENFORCED` is one flag over three rules: the same flag holds I2 and I3,
+Kept here as the record of what the entry said and how it ended. It read:
+"`LENGTH_ENFORCED` is one flag over three rules: the same flag holds I2 and I3,
 and those are still a backlog. Gating title length alone means splitting the
-flag, which is worth doing when the descriptions are paid down and not before.
+flag, which is worth doing when the descriptions are paid down and not before."
 
-Docusaurus derives a description from the page's first paragraph when the
-frontmatter sets none. The pages outside the budget are outside it because of
-that default, not because their authors were careless — enforcing it means
-writing a frontmatter description for every one of them. SEO.md's gated table
-holds the current count; this sentence deliberately does not restate it.
+The descriptions were paid down instead, so the flag never had to be split.
+Docusaurus derived a description from the first paragraph on every page that
+set none, which is what put 107 pages over 160 characters and 44 under 70.
+165 pages gained a hand-written `description:` in frontmatter, `LENGTH_ENFORCED`
+is `true`, and I1, I2 and I3 are gated together as one flag always intended.
+
+### Description uniqueness (H2) — fixed, no longer a gap
+
+Same cause and the same fix. Twelve descriptions were shared by more than one
+page, eight of them reading `Problem Overview` because that was the first
+heading of eight account troubleshooting pages. Every SDK description now
+names its language, which is what keeps six sections documenting the same
+endpoints from writing the same sentence. `DESC_UNIQUE_ENFORCED` is `true`.
 
 ### The card image (F2) — fixed, no longer a gap
 

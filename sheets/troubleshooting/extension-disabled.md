@@ -1,6 +1,7 @@
 ---
 title: Extensions Menu Disabled in Google Sheets
 sidebar_label: Extensions Menu Disabled When Using Market Data
+description: A grayed-out Extensions menu comes from viewing a fully protected sheet, not from the add-on. Switch to a tab with an editable cell to fix it.
 sidebar_position: 7
 ---
 

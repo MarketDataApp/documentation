@@ -84,8 +84,8 @@ const ROOT = path.resolve(__dirname, '..');
 // ---------------------------------------------------------------------------
 
 const TITLE_UNIQUE_ENFORCED = true; // 270 distinct titles across 270 pages
-const DESC_UNIQUE_ENFORCED = false; // 12 duplicate description groups
-const LENGTH_ENFORCED = false; // 0 titles > 60, 107 descriptions > 160
+const DESC_UNIQUE_ENFORCED = true; // 262 distinct descriptions across 262 content pages
+const LENGTH_ENFORCED = true; // 0 titles > 60, and every description is 70-160
 const CARD_IMAGE_ENFORCED = true; // themeConfig.image landed; 271 of 271 declare one
 const HEADING_ORDER_ENFORCED = false; // 89 pages skip a heading level
 // The 404 emits a canonical naming /docs/404.html/, a URL that 404s. Measured
@@ -102,6 +102,23 @@ const DESC_MAX = 160;
 const DESC_MIN = 70;
 
 const SITE_SUFFIX = 'Market Data';
+
+/**
+ * The same string on the staging arm. `docusaurus.config.js:13` picks between
+ * the two on `PROD`, and Docusaurus appends ` | <siteConfig.title>` to every
+ * page title, so the SAME authored title is 15 characters longer on staging.
+ *
+ * I1's budget is about what Google renders, and Google is only ever served
+ * production. Measuring a staging build against a production-sized budget
+ * fails ten titles on characters nobody can delete, so the budget is widened
+ * there by exactly the difference between the two suffixes -- which measures
+ * the authored title against the same 60 on both arms.
+ *
+ * Found by gating LENGTH_ENFORCED and then running an ordinary `yarn build`:
+ * CI always passes PROD=true, so the trap would have sprung first on a
+ * developer's machine, on a rule they had not touched.
+ */
+const SITE_SUFFIX_STAGING = 'Market Data Docs (staging)';
 
 const HOSTS = {
   production: 'https://www.marketdata.app',
@@ -506,18 +523,26 @@ function main() {
     record('H1', `${dupTitles.length} title(s) used by more than one page`,
       dupTitles.map(([t, v]) => `"${t}" x${v.length}: ${v.slice(0, 3).join(' ')}${v.length > 3 ? ' …' : ''}`));
   }
-  (DESC_UNIQUE_ENFORCED ? fail : report)('H2',
-    dupDescs.length ? `${dupDescs.length} description(s) used by more than one page` : null,
-    dupDescs.map(([d, v]) => `"${d.slice(0, 40)}…" x${v.length}: ${v.slice(0, 3).join(' ')}`));
+  // Guarded like H1 rather than passing a null message when clean. A null
+  // message renders as nothing and S1 reads it as clean, which was harmless
+  // while the rule was reported -- but `fail` has no such convention, so a
+  // gated H2 with no duplicates failed the run with "H2 null [0]".
+  if (dupDescs.length) {
+    (DESC_UNIQUE_ENFORCED ? fail : report)('H2',
+      `${dupDescs.length} description(s) used by more than one page`,
+      dupDescs.map(([d, v]) => `"${d.slice(0, 40)}…" x${v.length}: ${v.slice(0, 3).join(' ')}`));
+  }
 
-  const longTitles = routes.filter((p) => p.title && p.title.length > TITLE_MAX)
+  const titleMax = TITLE_MAX
+    + (env.name === 'staging' ? SITE_SUFFIX_STAGING.length - SITE_SUFFIX.length : 0);
+  const longTitles = routes.filter((p) => p.title && p.title.length > titleMax)
     .map((p) => `${p.route} (${p.title.length})`);
   const longDescs = contentPages.filter((p) => p.description && p.description.length > DESC_MAX)
     .map((p) => `${p.route} (${p.description.length})`);
   const shortDescs = contentPages.filter((p) => p.description && p.description.trim().length < DESC_MIN)
     .map((p) => `${p.route} (${p.description.trim().length})`);
   const lengthRule = LENGTH_ENFORCED ? fail : report;
-  if (longTitles.length) lengthRule('I1', `title over ${TITLE_MAX} characters`, longTitles);
+  if (longTitles.length) lengthRule('I1', `title over ${titleMax} characters`, longTitles);
   if (longDescs.length) lengthRule('I2', `description over ${DESC_MAX} characters`, longDescs);
   if (shortDescs.length) lengthRule('I3', `description under ${DESC_MIN} characters`, shortDescs);
 

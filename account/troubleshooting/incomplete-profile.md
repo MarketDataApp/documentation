@@ -1,5 +1,6 @@
 ---
 title: Incomplete Profile
+description: Missing, vague or placeholder profile fields stall account verification. Learn which employer, job title and contact details Market Data needs.
 sidebar_position: 1
 ---
 

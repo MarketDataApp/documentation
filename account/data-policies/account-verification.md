@@ -1,5 +1,6 @@
 ---
 title: Account Verification Policy
+description: Market Data verifies the identity and employer of every paid subscriber, then certifies each account to the exchanges as professional or non-professional.
 sidebar_position: 6
 ---
 

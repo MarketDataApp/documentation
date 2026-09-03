@@ -1,5 +1,6 @@
 ---
 title: Exchange Entitlements
+description: Exchange entitlements let Market Data send you IEX, UTP and OPRA data. Learn what each entitlement covers and how to sign the agreement that grants it.
 sidebar_position: 5
 ---
 

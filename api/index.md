@@ -1,5 +1,6 @@
 ---
 title: Market Data API
+description: The Market Data API is a REST service with standard HTTP methods and status codes, returning JSON for code or CSV for a spreadsheet.
 sidebar_position: 1
 slug: /
 ---

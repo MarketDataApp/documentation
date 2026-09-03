@@ -1,5 +1,6 @@
 ---
 title: Offset
+description: Use the offset parameter with limit to paginate a Market Data API response, starting the returned values at a position you choose.
 sidebar_position: 5
 ---
 

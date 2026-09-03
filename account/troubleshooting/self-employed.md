@@ -1,5 +1,6 @@
 ---
 title: Self-Employed or Business Owner
+description: Self-employed subscribers must show what their business does. Provide a public link, answer a few questions, or send supporting documentation.
 sidebar_position: 4
 ---
 

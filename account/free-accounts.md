@@ -1,5 +1,6 @@
 ---
 title: Free Accounts
+description: Compare the Free Forever plan and the 30-day free trial on request limits, delayed data, premium endpoint access and historical data depth.
 sidebar_position: 4
 ---
 

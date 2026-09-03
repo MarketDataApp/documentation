@@ -35,7 +35,9 @@ function page(route, o = {}) {
   const parts = [];
   parts.push(`<meta charset="utf-8">`);
   parts.push(`<meta name="viewport" content="width=device-width">`);
-  if (o.title !== null) parts.push(`<title>${o.title ?? 'A Page'} | Market Data</title>`);
+  // `suffix` is what Docusaurus appends, which differs by environment: see
+  // SITE_SUFFIX_STAGING in the checker. Only the I1 tests set it.
+  if (o.title !== null) parts.push(`<title>${o.title ?? 'A Page'} | ${o.suffix ?? 'Market Data'}</title>`);
   if (o.extraTitle) parts.push(`<title>Second</title>`);
   if (o.description !== null) {
     parts.push(`<meta name="description" content="${o.description ?? 'A description long enough to be a real one for the purposes of this fixture.'}">`);
@@ -259,41 +261,87 @@ test('F1 fails when JSON-LD does not parse', () => {
   assert.match(r.out, /JSON-LD does not parse/);
 });
 
-const SHARED_DESC = 'One description on two pages, written long enough to clear the minimum.';
+/** An h3 with no h2 above it, which is rule D3. */
+const SKIPPED_HEADING = '<h3>Straight to level three</h3>';
 
 test('reported rules do not fail the run, and name their pages', () => {
-  // Two pages sharing a DESCRIPTION is rule H2, which is measured and not
-  // gated. This was H1 until the duplicate titles were paid down and
-  // TITLE_UNIQUE_ENFORCED went true: a gated rule cannot demonstrate that a
-  // reported one leaves the exit code alone.
+  // A page that jumps h1 -> h3 is rule D3, which is measured and not gated.
+  // This fixture was duplicate TITLES until they were paid down and
+  // TITLE_UNIQUE_ENFORCED went true, then duplicate DESCRIPTIONS until those
+  // were paid down and DESC_UNIQUE_ENFORCED went true: a gated rule cannot
+  // demonstrate that a reported one leaves the exit code alone.
   const r = run({
-    '/api/a/': page('/api/a/', { title: 'A', description: SHARED_DESC }),
-    '/api/b/': page('/api/b/', { title: 'B', description: SHARED_DESC }),
-  }, { sitemap: ['/api/a/', '/api/b/'] });
+    '/api/a/': page('/api/a/', { title: 'A', body: SKIPPED_HEADING }),
+  }, { sitemap: ['/api/a/'] });
   assert.strictEqual(r.code, 0, r.out);
   assert.match(r.out, /REPORTED, not gated/);
-  assert.match(r.out, /H2.*more than one page/);
+  assert.match(r.out, /D3 {2}heading level skipped/);
   assert.match(r.out, /\/api\/a\//);
 });
 
 test('--report prints every offender rather than the first few', () => {
   const pages = {};
   const sitemap = [];
-  for (let g = 0; g < 4; g++) {
-    for (const half of ['a', 'b']) {
-      const route = `/api/g${g}${half}/`;
-      pages[route] = page(route, {
-        title: `Page ${g}${half}`,
-        description: `Shared description number ${g}, long enough to clear the minimum length.`,
-      });
-      sitemap.push(route);
-    }
+  for (let i = 0; i < 4; i++) {
+    const route = `/api/g${i}/`;
+    // Distinct titles and distinct descriptions: H1 and H2 are gated now, so a
+    // fixture that repeats either fails the run before D3 can be counted.
+    pages[route] = page(route, {
+      title: `Page ${i}`,
+      description: `Description number ${i}, written long enough to clear the minimum length.`,
+      body: SKIPPED_HEADING,
+    });
+    sitemap.push(route);
   }
   const brief = run(pages, { sitemap });
   const full = run(pages, { sitemap, args: ['--report'] });
   assert.strictEqual(full.code, 0);
   assert.match(brief.out, /--report for all/);
   assert.doesNotMatch(full.out, /--report for all/);
+});
+
+// --- I1, and the suffix that is not the same length on both arms ----------
+//
+// Docusaurus appends ` | <siteConfig.title>` to every title, and that string
+// is 15 characters longer on staging. All three of these use the SAME authored
+// title lengths, so they measure only whether the budget moves with the suffix.
+
+const PROD_SUFFIX = 'Market Data';
+const STAGING_SUFFIX = 'Market Data Docs (staging)';
+const AUTHORED_46 = 'A'.repeat(46); // 46 + ' | Market Data' = exactly 60
+const AUTHORED_47 = 'A'.repeat(47); // one over, on either arm
+
+test('I1 fails when an authored title puts the production title over 60', () => {
+  const r = run({
+    '/api/thing/': page('/api/thing/', { title: AUTHORED_47, suffix: PROD_SUFFIX }),
+  }, { sitemap: ['/api/thing/'] });
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /I1 {2}title over 60 characters/);
+});
+
+test('I1 widens its budget on staging, where the suffix is 15 characters longer', () => {
+  // The same authored title that fits on production. Against a production-sized
+  // budget this measures 75 and fails on characters nobody can delete -- which
+  // is what gating LENGTH_ENFORCED did to every non-PROD build until the budget
+  // followed the suffix.
+  const r = run({
+    '/api/thing/': page('/api/thing/', {
+      title: AUTHORED_46, suffix: STAGING_SUFFIX, host: STAGING, robots: 'noindex, nofollow',
+    }),
+  });
+  assert.strictEqual(r.code, 0, r.out);
+});
+
+test('I1 still fails on staging when the AUTHORED title is too long', () => {
+  // The widening must be exactly the suffix difference and no more, or staging
+  // stops gating I1 rather than gating it equivalently.
+  const r = run({
+    '/api/thing/': page('/api/thing/', {
+      title: AUTHORED_47, suffix: STAGING_SUFFIX, host: STAGING, robots: 'noindex, nofollow',
+    }),
+  });
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /I1 {2}title over 75 characters/);
 });
 
 // --- S1 -------------------------------------------------------------------
@@ -323,15 +371,15 @@ const hasBuild = fs.existsSync(path.resolve(__dirname, '..', '..', 'build', 'sit
   || fs.existsSync(path.resolve(__dirname, '..', '..', 'build', 'index.html'));
 
 test('S1 fails when the spec understates a backlog', { skip: !hasBuild && 'no build/ to read' }, () => {
-  // Someone pays ten descriptions down and does not touch the document. This is the
-  // rot that happened in the sibling repo: "101 of 101" against a real 127.
+  // Someone fixes ten heading orders and does not touch the document. This is
+  // the rot that happened in the sibling repo: "101 of 101" against a real 127.
   // Padding-tolerant, because the repo's pre-commit hook re-aligns markdown
   // tables. A spacing-exact pattern silently stops mutating and the test then
   // asserts nothing at all.
-  const r = withSpec((src) => src.replace(/^\|\s*I2\s*\|\s*\d+\s*\|/m, '| I2 | 23 |'));
+  const r = withSpec((src) => src.replace(/^\|\s*D3\s*\|\s*\d+\s*\|/m, '| D3 | 23 |'));
   assert.strictEqual(r.code, 1);
   assert.match(r.out, /S1 {2}docs\/SEO\.md disagrees/);
-  assert.match(r.out, /I2: docs\/SEO\.md declares 23/);
+  assert.match(r.out, /D3: docs\/SEO\.md declares 23/);
 });
 
 test('S1 fails when the spec claims a backlog for a rule that is clean', { skip: !hasBuild && 'no build/ to read' }, () => {

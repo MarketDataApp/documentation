@@ -1,5 +1,6 @@
 ---
 title: OPTIONDATA
+description: The OPTIONDATA formula fetches a current or historical option quote into your spreadsheet. See the syntax, sample usage and data availability.
 sidebar_position: 1
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: Unknown Function Error
+description: "A #NAME error means the add-on is not connected to the open spreadsheet. Re-enable it, or perform a clean installation, to restore the formulas."
 sidebar_position: 3
 ---
 

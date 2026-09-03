@@ -1,5 +1,6 @@
 ---
 title: "401: Authentication"
+description: A 401 from the Market Data API almost always means a malformed Authorization header. Check the header and URL parameter forms against these examples.
 sidebar_position: 5
 ---
 

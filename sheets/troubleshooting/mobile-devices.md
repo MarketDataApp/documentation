@@ -1,5 +1,6 @@
 ---
 title: Mobile Devices
+description: Google does not support add-on sidebars on mobile, but custom formulas such as STOCKDATA and OPTIONDATA still work. See the workarounds.
 sidebar_position: 9
 ---
 

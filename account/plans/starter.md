@@ -1,5 +1,6 @@
 ---
 title: Starter Plan
+description: The Starter plan adds deeper historical records and premium endpoints for growing projects. See its pricing, allowances and advantages.
 sidebar_position: 2
 ---
 

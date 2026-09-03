@@ -1,5 +1,6 @@
 ---
 title: Permissions Not Granted During Installation
+description: Formulas and menus fail when a permission was unchecked during installation. Uninstall and reinstall the add-on, accepting every permission.
 sidebar_position: 2
 ---
 

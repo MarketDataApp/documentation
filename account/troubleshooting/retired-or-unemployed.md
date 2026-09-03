@@ -1,5 +1,6 @@
 ---
 title: Retired or Not Working
+description: Exchanges require proof of employment status even when you are retired or out of work. Learn what documentation Market Data accepts as confirmation.
 sidebar_position: 3
 ---
 
