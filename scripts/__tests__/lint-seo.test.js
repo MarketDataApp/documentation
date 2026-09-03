@@ -327,6 +327,31 @@ test('S1 fails when a measured rule has no row in the spec', { skip: !hasBuild &
   assert.match(r.out, /D3: measured \d+, and docs\/SEO\.md's table has no row for it/);
 });
 
+test('S1 fails closed when the backlog table is deleted', { skip: !hasBuild && 'no build/ to read' }, () => {
+  // The failure mode that matters most: a parser that finds no rows and
+  // compares them against no expectations passes forever while gating nothing.
+  const r = withSpec((src) => src.replace(/^\|\s*(Rule|-+|[A-Z]\d)\s*\|.*$\n?/gm, ''));
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /S1 {2}docs\/SEO\.md has no backlog table/);
+  // and it must say the table is missing, not that eight rules need rows
+  assert.doesNotMatch(r.out, /has no row for it/);
+});
+
+test('S1 fails closed when the table header is renamed', { skip: !hasBuild && 'no build/ to read' }, () => {
+  const r = withSpec((src) => src.replace(/^\|\s*Rule\s*\|\s*Backlog\s*\|/m, '| Rule | Count |'));
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /has no backlog table/);
+});
+
+test('S1 still finds the table after a formatter re-pads it', { skip: !hasBuild && 'no build/ to read' }, () => {
+  // This repo's pre-commit hook re-aligns every markdown table, so an exact
+  // header match would break on the first commit after a column grew.
+  const r = withSpec((src) => src.replace(
+    /^\|\s*Rule\s*\|\s*Backlog\s*\|\s*What it is\s*\|\s*Flag\s*\|$/m,
+    '|   Rule   |   Backlog   |   What it is   |   Flag   |'));
+  assert.strictEqual(r.code, 0, r.out);
+});
+
 test('S1 is skipped rather than failed when no spec sits beside the build', () => {
   // Every other test in this file runs against a throwaway build with no
   // docs/ beside it, so this is really an assertion that they are not all

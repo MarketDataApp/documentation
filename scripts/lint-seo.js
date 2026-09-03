@@ -131,17 +131,51 @@ const SPEC = path.join(ROOT, 'docs', 'SEO.md');
 const OWN_BUILD = path.join(ROOT, 'build');
 
 /**
+ * The header that identifies the backlog table, as normalised cell names.
+ *
+ * The table is found by its header rather than by matching `| H1 | 33 |`
+ * anywhere in the file, for two reasons: a second table starting with a
+ * rule-shaped cell cannot feed this rule, and a table that is renamed or
+ * deleted is NOTICED rather than silently yielding no rows.
+ *
+ * Compared cell by cell after trimming, NOT as an exact string. The sibling
+ * check in MarketDataApp/website matches its header exactly and can afford to,
+ * because nothing formats its Markdown. This repo's pre-commit hook re-aligns
+ * every table on every commit, so an exact match would break the first time a
+ * column grew.
+ */
+const BACKLOG_HEADER = ['Rule', 'Backlog', 'What it is', 'Flag'];
+
+/** `| A |  B  |` -> ['A', 'B'], or null if the line is not a table row. */
+function cells(line) {
+  const t = line.trim();
+  if (!t.startsWith('|') || !t.endsWith('|')) return null;
+  return t.slice(1, -1).split('|').map((c) => c.trim());
+}
+
+/**
  * Parse the backlog table out of docs/SEO.md.
  *
- * Rows look like:  | H1 | 33 | titles used by more than one page | `FLAG` |
- * Returns Map<ruleId, count>.
+ * Returns Map<ruleId, count>, or null when the table cannot be found — which
+ * the caller turns into a loud, distinct failure. Failing closed matters more
+ * than parsing leniently: a rule that compares an empty table against an empty
+ * expectation passes forever while gating nothing.
  */
 function declaredBacklog(file) {
   if (!fs.existsSync(file)) return null;
+  const lines = fs.readFileSync(file, 'utf8').split('\n');
+  const header = lines.findIndex((l) => {
+    const c = cells(l);
+    return c && c.length === BACKLOG_HEADER.length && c.every((v, i) => v === BACKLOG_HEADER[i]);
+  });
+  if (header === -1) return null;
+
   const out = new Map();
-  for (const line of fs.readFileSync(file, 'utf8').split('\n')) {
-    const m = /^\|\s*([A-Z]\d)\s*\|\s*(\d+)\s*\|/.exec(line);
-    if (m) out.set(m[1], Number(m[2]));
+  // Skip the header and its `|---|` separator, then read until the table ends.
+  for (let i = header + 2; i < lines.length; i++) {
+    const c = cells(lines[i]);
+    if (!c) break;
+    if (/^[A-Z]\d$/.test(c[0]) && /^\d+$/.test(c[1])) out.set(c[0], Number(c[1]));
   }
   return out;
 }
@@ -499,10 +533,18 @@ function main() {
   //
   // So every reported rule's backlog is declared in docs/SEO.md and asserted
   // here. Pay ten titles down and this fails until the table agrees.
-  const declared = args.dir === OWN_BUILD && env.name === 'production'
-    ? declaredBacklog(SPEC)
-    : null;
-  if (declared) {
+  const gatesSpec = args.dir === OWN_BUILD && env.name === 'production';
+  const declared = gatesSpec ? declaredBacklog(SPEC) : null;
+  if (gatesSpec && declared === null && fs.existsSync(SPEC)) {
+    // Fail closed, and name which of the two things went wrong. Reporting this
+    // as "eight rules have no row" would read as eight rules needing rows
+    // rather than as one table having gone missing.
+    fail('S1', 'docs/SEO.md has no backlog table for this rule to gate', [
+      `looked for a header row reading: | ${BACKLOG_HEADER.join(' | ')} |`,
+      'restore it, or delete rule S1 -- but do not leave hand-written counts',
+      'in the document with nothing keeping them honest',
+    ]);
+  } else if (declared) {
     const measured = new Map(reports.filter((r) => r.message).map((r) => [r.rule, r.offenders.length]));
     const drift = [];
     for (const [rule, count] of declared) {

@@ -209,6 +209,13 @@ So rule **S1** parses the table above and asserts every row equals what this
 run measured. Fix ten titles and the check fails until the table says 23 — the
 backlog can only be paid down on purpose.
 
+S1 finds the table by its header row, not by matching a rule-shaped line
+anywhere in the file, and **fails closed when it cannot find it**: delete or
+rename the table and the check says so, rather than comparing an empty table
+against an empty expectation and passing forever while gating nothing. The
+header is matched cell by cell after trimming rather than as an exact string,
+because this repo's pre-commit hook re-aligns every table on every commit.
+
 **These counts describe the PRODUCTION build**, which is the one crawlers are
 served, and S1 only runs against that arm. Two things differ on staging and
 would make a single table wrong for one of them: the `sitemap` and `robots`
