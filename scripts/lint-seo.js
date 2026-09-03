@@ -60,10 +60,19 @@
  * clean. None of them is a count baseline — they name every offending page on
  * every run rather than freezing a number, so the list can only be paid down.
  *
+ * EVERY FLAG IS NOW `true`, and the reported half of this file still has to
+ * work. The backlog table in docs/SEO.md is empty, no rule reports anything,
+ * and the machinery that prints and gates that table is therefore unexercised
+ * by an ordinary run. `--ungate` exists so the self-tests can construct the
+ * condition rather than borrow whichever rule happened to be red that month —
+ * a fixture that moved four times as rules went green, and had nowhere left to
+ * move. See `gate` in main().
+ *
  * Usage:
  *   yarn build && node scripts/lint-seo.js
  *   node scripts/lint-seo.js --dir some/other/build
  *   node scripts/lint-seo.js --report   # print the reported-rule backlogs in full
+ *   node scripts/lint-seo.js --ungate L1  # report one gated rule instead of failing
  *
  * Exit codes
  *   0  every gated rule passed
@@ -80,7 +89,10 @@ const { isNavigationArtifact } = require('../lib/llms-txt');
 const ROOT = path.resolve(__dirname, '..');
 
 // ---------------------------------------------------------------------------
-// Flags for the rules that are measured but not yet gated. See docs/SEO.md.
+// The flags. Every one is `true`: nothing here is measured-but-not-gated any
+// more, and docs/SEO.md's backlog table is empty. They are kept rather than
+// deleted because each one records what was paid down to earn it, and because
+// `--ungate` needs something to name. See docs/SEO.md.
 // ---------------------------------------------------------------------------
 
 const TITLE_UNIQUE_ENFORCED = true; // 270 distinct titles across 270 pages
@@ -88,14 +100,36 @@ const DESC_UNIQUE_ENFORCED = true; // 262 distinct descriptions across 262 conte
 const LENGTH_ENFORCED = true; // 0 titles > 60, and every description is 70-160
 const CARD_IMAGE_ENFORCED = true; // themeConfig.image landed; 271 of 271 declare one
 const HEADING_ORDER_ENFORCED = true; // 0 pages skip a heading level
-// The 404 emits a canonical naming /docs/404.html/, a URL that 404s. Measured
-// not gated, and the reason is in docs/SEO-GAPS.md rather than here: the page
-// is served with a real 404 status, so a crawler drops the URL before it reads
-// the hint. Suppressing it means swizzling @theme/SiteMetadata -- a core
-// internal that also emits og:url, the hreflang alternates and the search
-// metadata -- and carrying that copy across every Docusaurus upgrade. Flip
-// this if the 404 ever starts answering 200, which is when the hint is read.
-const NOT_FOUND_CANONICAL_ENFORCED = false;
+// The 404 names no URL of its own: plugins/not-found-head.js cuts the
+// canonical, og:url and the two hreflang alternates out of the built page.
+//
+// This was the last rule measured and not gated, on the argument that the page
+// only ever answers 404 and a crawler drops the response before it reads the
+// hint. Measured against production on 2026-09-03, that argument was false:
+// Pages strips the .html, so /docs/404.html 308s to /docs/404 and THAT answers
+// 200. A soft 404, crawlable, carrying a canonical to a URL that 404s -- which
+// is the trigger the gap note itself named for flipping this flag.
+const NOT_FOUND_CANONICAL_ENFORCED = true;
+
+/**
+ * Which flag holds which rule. The ONLY place that mapping is written down:
+ * `gate(rule)` reads it, and `--ungate` validates against it.
+ *
+ * It used to be implicit -- each rule's call site named its own flag -- and a
+ * table beside it would then have been a second copy to keep true. Rules with
+ * no flag are absent on purpose: a rule that never had a backlog has nothing
+ * to ungate, and listing it would invite ungating it.
+ */
+const ENFORCED = {
+  H1: TITLE_UNIQUE_ENFORCED,
+  H2: DESC_UNIQUE_ENFORCED,
+  I1: LENGTH_ENFORCED,
+  I2: LENGTH_ENFORCED,
+  I3: LENGTH_ENFORCED,
+  F2: CARD_IMAGE_ENFORCED,
+  D3: HEADING_ORDER_ENFORCED,
+  L1: NOT_FOUND_CANONICAL_ENFORCED,
+};
 
 const TITLE_MAX = 60;
 const DESC_MAX = 160;
@@ -207,11 +241,12 @@ function declaredBacklog(file) {
 function parseArgs(argv) {
   // `--floor` lets the self-tests drive the tripwire against a small fixture,
   // rather than leaving that branch provable only by truncating the real build.
-  const out = { dir: path.join(ROOT, 'build'), report: false, floor: null };
+  const out = { dir: path.join(ROOT, 'build'), report: false, floor: null, ungate: [] };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--dir') out.dir = path.resolve(ROOT, argv[++i]);
     else if (argv[i] === '--report') out.report = true;
     else if (argv[i] === '--floor') out.floor = Number(argv[++i]);
+    else if (argv[i] === '--ungate') out.ungate.push(...argv[++i].split(',').map((r) => r.trim()));
   }
   return out;
 }
@@ -260,6 +295,9 @@ function readPage(file, dir) {
     description: attr('meta[name="description"]', 'content'),
     canonicals: Array.from(doc.querySelectorAll('link[rel="canonical"]')),
     canonical: attr('link[rel="canonical"]', 'href'),
+    // Only the hreflang ones. A feed link is also a rel=alternate and says
+    // nothing about which URL the page itself is; these do. Read for rule L1.
+    alternates: Array.from(doc.querySelectorAll('link[rel="alternate"][hreflang]')),
     robots: attr('meta[name="robots"]', 'content'),
     charsets: Array.from(doc.querySelectorAll('meta[charset]')),
     viewport: attr('meta[name="viewport"]', 'content'),
@@ -361,6 +399,33 @@ function main() {
   const fail = (rule, message, offenders = []) => failures.push({ rule, message, offenders });
   const report = (rule, message, offenders = []) => reports.push({ rule, message, offenders });
 
+  /**
+   * Where a flagged rule's verdict goes: `fail`, or `report` when its flag is
+   * false or `--ungate` names it for this run.
+   *
+   * `--ungate` is here so the reporting machinery stays PROVEN now that every
+   * flag is true. Four self-tests used to stand on whichever rule was still
+   * red — duplicate titles, then duplicate descriptions, then skipped
+   * headings, then the 404's canonical — and each one had to be rewritten when
+   * that rule went green. There is no fifth rule to move them to, and a
+   * reporting path that nothing exercises is a reporting path that has stopped
+   * working without telling anyone.
+   *
+   * It changes no rule's verdict about the corpus, only whether that verdict
+   * is fatal, and it announces itself in the run header. Nothing in CI passes
+   * it: `pr-checks.yml` runs `node scripts/lint-seo.js` with no arguments.
+   */
+  const ungated = new Set(args.ungate);
+  const gate = (rule) => (message, offenders) =>
+    (ENFORCED[rule] && !ungated.has(rule) ? fail : report)(rule, message, offenders);
+
+  const unknownUngate = [...ungated].filter((r) => !(r in ENFORCED));
+  if (unknownUngate.length) {
+    console.error(`--ungate names no flagged rule: ${unknownUngate.join(', ')}`);
+    console.error(`Flagged rules are: ${Object.keys(ENFORCED).join(', ')}`);
+    process.exit(1);
+  }
+
   // --- Environment ---------------------------------------------------------
   // The build must be recognisably one environment or the other. A canonical
   // host we do not know is a deploy pointing somewhere unintended, and every
@@ -441,14 +506,53 @@ function main() {
     .map((p) => p.route);
   if (ogDescMismatch.length) fail('C3', 'og:description disagrees with the description', ogDescMismatch);
 
-  // --- L1. The 404 must not canonicalise ----------------------------------
-  // Its canonical would name /docs/404.html/, a URL that does not resolve.
-  // Telling a crawler "this is my preferred URL" about a page that only ever
-  // answers 404 is a contradiction, and the URL it names is itself a 404.
-  if (notFound && notFound.canonicals.length > 0) {
-    (NOT_FOUND_CANONICAL_ENFORCED ? fail : report)(
-      'L1', 'the 404 page emits a canonical, and it names a URL that 404s',
-      [`/404.html -> ${notFound.canonical}`]);
+  // --- L1. The 404 must not name a URL of its own -------------------------
+  //
+  // Docusaurus emits the page's own URL four times, and on this page all four
+  // read /docs/404.html/ -- a URL that 404s, because applyTrailingSlash adds a
+  // slash and the result is not a route. A page that only ever means "not
+  // found" has no preferred URL to declare, and the one it declares is nothing.
+  //
+  // All four are one defect, so all four are one rule. Gating the canonical
+  // alone would leave og:url stating the same dead URL with nothing checking
+  // it -- C3 compares og:url against the canonical, and it runs over `routes`,
+  // which excludes this page.
+  //
+  // plugins/not-found-head.js cuts them out of the built page.
+  if (notFound) {
+    const href = (n) => n.getAttribute('href');
+    const selfNaming = [
+      ...notFound.canonicals.map((n) => `rel=canonical -> ${href(n)}`),
+      ...(notFound.ogUrl ? [`og:url -> ${notFound.ogUrl}`] : []),
+      ...notFound.alternates.map((n) => `rel=alternate hreflang=${n.getAttribute('hreflang')} -> ${href(n)}`),
+    ];
+    if (selfNaming.length) {
+      gate('L1')(
+        'the 404 page names a URL of its own, and that URL 404s',
+        selfNaming.map((s) => `/404.html: ${s}`));
+    }
+  }
+
+  // --- L2. The 404 says noindex, because it is reachable with a 200 -------
+  //
+  // The other half of L1, and the half that stops this being cosmetic. This
+  // page is not only served as the body of a 404 response. Cloudflare Pages
+  // strips the .html, so production answers:
+  //
+  //     /docs/404.html   308 -> /docs/404
+  //     /docs/404        200                 the same page, as a success
+  //
+  // A soft 404 with no directive is indexable, and it is indexable under a URL
+  // that looks like a real page. Staging emits noindex on every page already;
+  // production sets none, so the plugin adds one there. Gated on both arms
+  // rather than only on production, because the claim is about this page and
+  // not about the environment.
+  //
+  // Kept apart from L1 deliberately: it is a second, independent statement,
+  // and the two fail for different reasons and take different fixes.
+  if (notFound && !/noindex/i.test(notFound.robots ?? '')) {
+    fail('L2', 'the 404 page does not say noindex, and Pages serves it at /docs/404 with a 200',
+      [`/404.html robots=${notFound.robots ?? 'absent'}`]);
   }
 
   // --- D1. Robots and the sitemap are two halves of one statement ----------
@@ -518,9 +622,8 @@ function main() {
 
   const dupTitles = groupBy(routes, (p) => p.title);
   const dupDescs = groupBy(contentPages, (p) => p.description?.trim());
-  const record = TITLE_UNIQUE_ENFORCED ? fail : report;
   if (dupTitles.length) {
-    record('H1', `${dupTitles.length} title(s) used by more than one page`,
+    gate('H1')(`${dupTitles.length} title(s) used by more than one page`,
       dupTitles.map(([t, v]) => `"${t}" x${v.length}: ${v.slice(0, 3).join(' ')}${v.length > 3 ? ' …' : ''}`));
   }
   // Guarded like H1 rather than passing a null message when clean. A null
@@ -528,7 +631,7 @@ function main() {
   // while the rule was reported -- but `fail` has no such convention, so a
   // gated H2 with no duplicates failed the run with "H2 null [0]".
   if (dupDescs.length) {
-    (DESC_UNIQUE_ENFORCED ? fail : report)('H2',
+    gate('H2')(
       `${dupDescs.length} description(s) used by more than one page`,
       dupDescs.map(([d, v]) => `"${d.slice(0, 40)}…" x${v.length}: ${v.slice(0, 3).join(' ')}`));
   }
@@ -541,17 +644,16 @@ function main() {
     .map((p) => `${p.route} (${p.description.length})`);
   const shortDescs = contentPages.filter((p) => p.description && p.description.trim().length < DESC_MIN)
     .map((p) => `${p.route} (${p.description.trim().length})`);
-  const lengthRule = LENGTH_ENFORCED ? fail : report;
-  if (longTitles.length) lengthRule('I1', `title over ${titleMax} characters`, longTitles);
-  if (longDescs.length) lengthRule('I2', `description over ${DESC_MAX} characters`, longDescs);
-  if (shortDescs.length) lengthRule('I3', `description under ${DESC_MIN} characters`, shortDescs);
+  if (longTitles.length) gate('I1')(`title over ${titleMax} characters`, longTitles);
+  if (longDescs.length) gate('I2')(`description over ${DESC_MAX} characters`, longDescs);
+  if (shortDescs.length) gate('I3')(`description under ${DESC_MIN} characters`, shortDescs);
 
   // The card type is a promise about an image. summary_large_image with no
   // og:image renders as a bare link on every platform that reads it.
   const cardNoImage = routes.filter((p) => p.twitterCard === 'summary_large_image' && !p.ogImage)
     .map((p) => p.route);
   if (cardNoImage.length) {
-    (CARD_IMAGE_ENFORCED ? fail : report)('F2',
+    gate('F2')(
       'twitter:card is summary_large_image but the page declares no og:image', cardNoImage);
   }
 
@@ -565,7 +667,7 @@ function main() {
     }
   }
   if (skips.length) {
-    (HEADING_ORDER_ENFORCED ? fail : report)('D3', 'heading level skipped', skips);
+    gate('D3')('heading level skipped', skips);
   }
 
   // --- G1. Two independent walks, pinned to one artefact -------------------
@@ -649,11 +751,17 @@ function main() {
   // --- Output --------------------------------------------------------------
 
   console.log(`${pages.length} built page(s) read from ${path.relative(ROOT, args.dir)}/`);
-  console.log(`environment    ${env.name ?? 'UNRESOLVED'} (${env.host ?? '—'})\n`);
+  console.log(`environment    ${env.name ?? 'UNRESOLVED'} (${env.host ?? '—'})`);
+  // A run that ungated something must say so, or its exit code means something
+  // different from every other run's and nothing on the page records that.
+  if (ungated.size) console.log(`ungated        ${[...ungated].join(', ')} — reported for this run, not gated`);
+  console.log('');
 
   const distinctTitles = new Set(routes.map((p) => p.title)).size;
   const distinctDescs = new Set(contentPages.map((p) => p.description?.trim()).filter(Boolean)).size;
-  console.log(`canonical      ${routes.filter((p) => p.canonicals.length === 1).length} of ${routes.length} emit exactly one; 404 emits ${notFound ? notFound.canonicals.length : 'n/a'}`);
+  const selfNamed = notFound ? notFound.canonicals.length + notFound.alternates.length + (notFound.ogUrl ? 1 : 0) : 0;
+  console.log(`canonical      ${routes.filter((p) => p.canonicals.length === 1).length} of ${routes.length} emit exactly one`);
+  console.log(`404            names ${notFound ? selfNamed : 'n/a'} URL(s) of its own; robots ${notFound ? (notFound.robots ?? 'absent') : 'n/a'}`);
   console.log(`sitemap        ${sitemap ? `${sitemap.size} URLs` : 'none (correct for a noIndex build)'}`);
   console.log(`robots         ${routes.filter((p) => /noindex/i.test(p.robots ?? '')).length} page(s) noindex`);
   console.log(`titles         ${distinctTitles} distinct across ${routes.length} pages`);

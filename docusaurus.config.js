@@ -118,6 +118,7 @@ const config = {
   plugins: [
     './plugins/theme-cookie-sync',
     './plugins/markdown-twins',
+    './plugins/not-found-head',
     './plugins/redirects-file',
     [
       "@docusaurus/plugin-content-docs",

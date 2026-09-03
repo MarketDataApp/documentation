@@ -44,7 +44,8 @@ function page(route, o = {}) {
   }
   if (o.canonical !== null) parts.push(`<link rel="canonical" href="${o.canonical ?? url}">`);
   if (o.extraCanonical) parts.push(`<link rel="canonical" href="${url}?x">`);
-  parts.push(`<meta property="og:url" content="${o.ogUrl ?? o.canonical ?? url}">`);
+  if (o.ogUrl !== null) parts.push(`<meta property="og:url" content="${o.ogUrl ?? o.canonical ?? url}">`);
+  if (o.alternate) parts.push(`<link rel="alternate" href="${url}" hreflang="en">`);
   if (o.ogDescription) parts.push(`<meta property="og:description" content="${o.ogDescription}">`);
   if (o.robots) parts.push(`<meta name="robots" content="${o.robots}">`);
   if (o.jsonLd) parts.push(`<script type="application/ld+json">${o.jsonLd}</script>`);
@@ -273,29 +274,110 @@ test('D3 fails when a page skips a heading level', () => {
   assert.match(r.out, /\/api\/thing\/ \(h1 -> h3\)/);
 });
 
-test('reported rules do not fail the run, and name their pages', () => {
-  // A 404 that carries a canonical is rule L1, which is measured and not gated.
-  // This fixture was duplicate TITLES until they were paid down, then duplicate
-  // DESCRIPTIONS, then a skipped heading level: each time the rule it stood on
-  // went green and got gated. A gated rule cannot demonstrate that a reported
-  // one leaves the exit code alone, so this fixture moves to whatever is still
-  // reported -- and L1 is now the last of them.
-  const r = run({
-    '/api/thing/': page('/api/thing/'),
-    '/404.html': page('/404.html'),
-  }, { sitemap: ['/api/thing/'] });
+// --- L1 and L2, the 404's own head ----------------------------------------
+//
+// Both are about a page that only ever means "not found". L1: it names no URL
+// of its own -- Docusaurus emits four tags that do, all reading
+// /docs/404.html/, which 404s. L2: it says noindex, because Cloudflare Pages
+// strips the .html and serves the same page at /docs/404 with a 200.
+
+/** The 404 as the build now ships it: no URL of its own, and noindex. */
+const CLEAN_404 = () =>
+  page('/404.html', { title: 'Page Not Found', canonical: null, ogUrl: null, robots: 'noindex' });
+
+test('a 404 that names no URL of its own and says noindex passes', () => {
+  const r = run({ '/api/thing/': page('/api/thing/'), '/404.html': CLEAN_404() },
+    { sitemap: ['/api/thing/'] });
   assert.strictEqual(r.code, 0, r.out);
-  assert.match(r.out, /REPORTED, not gated/);
-  assert.match(r.out, /L1 {2}the 404 page emits a canonical/);
-  assert.match(r.out, /\/404\.html -> /);
 });
 
-test('a failing rule lists twelve offenders and counts the rest', () => {
-  // This was `--report prints every offender rather than the first few`, over
-  // the REPORTED printer, which withholds after three. That printer can no
-  // longer be shown truncating: L1 is the only rule still reported and it has
-  // exactly one offender by construction, the single 404. The failure printer
-  // is the same shape at a different threshold, and it is reachable.
+test('L1 fails on each of the four tags that name the 404', () => {
+  // The gate that keeps plugins/not-found-head.js honest. All four are one
+  // defect: gating the canonical alone would leave og:url stating the same
+  // dead URL, and C3 -- which compares the two -- runs over routes, which
+  // excludes this page.
+  const r = run({
+    '/api/thing/': page('/api/thing/'),
+    '/404.html': page('/404.html', { title: 'Page Not Found', robots: 'noindex', alternate: true }),
+  }, { sitemap: ['/api/thing/'] });
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /L1 {2}the 404 page names a URL of its own, and that URL 404s {2}\[3\]/);
+  assert.match(r.out, /404\.html: rel=canonical -> /);
+  assert.match(r.out, /404\.html: og:url -> /);
+  assert.match(r.out, /404\.html: rel=alternate hreflang=en -> /);
+});
+
+test('L2 fails when the 404 does not say noindex', () => {
+  const r = run({
+    '/api/thing/': page('/api/thing/'),
+    '/404.html': page('/404.html', { title: 'Page Not Found', canonical: null, ogUrl: null }),
+  }, { sitemap: ['/api/thing/'] });
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /L2 {2}the 404 page does not say noindex/);
+  assert.match(r.out, /robots=absent/);
+});
+
+test('L2 accepts the staging build, which says noindex, nofollow', () => {
+  const r = run({
+    '/api/thing/': page('/api/thing/', { host: STAGING, robots: 'noindex, nofollow' }),
+    '/404.html': page('/404.html', {
+      title: 'Page Not Found', host: STAGING, canonical: null, ogUrl: null, robots: 'noindex, nofollow',
+    }),
+  });
+  assert.strictEqual(r.code, 0, r.out);
+});
+
+// --- The reporting machinery, with every flag true ------------------------
+//
+// Four self-tests used to stand on whichever rule was still red -- duplicate
+// titles, then duplicate descriptions, then skipped headings, then the 404's
+// canonical -- and each was rewritten when that rule went green. There is no
+// fifth rule to move them to: every flag is true and docs/SEO.md's backlog
+// table is empty.
+//
+// So the condition is CONSTRUCTED. `--ungate <rule>` reports a gated rule
+// instead of failing on it, for one run, and these tests feed it a fixture
+// that violates that rule. Nothing in CI passes the flag; pr-checks.yml runs
+// `node scripts/lint-seo.js` with no arguments.
+
+test('a reported rule does not fail the run, and names its pages', () => {
+  const r = run({
+    '/api/thing/': page('/api/thing/'),
+    '/404.html': page('/404.html', { title: 'Page Not Found', robots: 'noindex' }),
+  }, { sitemap: ['/api/thing/'], args: ['--ungate', 'L1'] });
+  assert.strictEqual(r.code, 0, r.out);
+  assert.match(r.out, /REPORTED, not gated/);
+  assert.match(r.out, /L1 {2}the 404 page names a URL of its own/);
+  assert.match(r.out, /404\.html: rel=canonical -> /);
+});
+
+test('the same fixture fails when the rule is left gated', () => {
+  // The other half, and the one that fails if NOT_FOUND_CANONICAL_ENFORCED is
+  // flipped back: --ungate must be the only thing standing between the two.
+  const r = run({
+    '/api/thing/': page('/api/thing/'),
+    '/404.html': page('/404.html', { title: 'Page Not Found', robots: 'noindex' }),
+  }, { sitemap: ['/api/thing/'] });
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /FAILED/);
+  assert.match(r.out, /L1 {2}the 404 page names a URL of its own/);
+});
+
+test('a run that ungated something says so in its header', () => {
+  const r = run({ ...OK.pages, '/404.html': CLEAN_404() },
+    { sitemap: OK.sitemap, args: ['--ungate', 'L1'] });
+  assert.strictEqual(r.code, 0, r.out);
+  assert.match(r.out, /ungated {8}L1 — reported for this run, not gated/);
+});
+
+test('--ungate refuses a rule that has no flag', () => {
+  const r = run(OK.pages, { sitemap: OK.sitemap, args: ['--ungate', 'C1'] });
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /--ungate names no flagged rule: C1/);
+});
+
+/** Fifteen pages that each skip a heading level, which is rule D3. */
+function fifteenSkips() {
   const pages = {};
   const sitemap = [];
   for (let i = 0; i < 15; i++) {
@@ -309,10 +391,33 @@ test('a failing rule lists twelve offenders and counts the rest', () => {
     });
     sitemap.push(route);
   }
+  return { pages, sitemap };
+}
+
+test('a failing rule lists twelve offenders and counts the rest', () => {
+  const { pages, sitemap } = fifteenSkips();
   const r = run(pages, { sitemap });
   assert.strictEqual(r.code, 1);
   assert.match(r.out, /D3 {2}heading level skipped {2}\[15\]/);
   assert.match(r.out, /… and 3 more/);
+});
+
+test('a reported rule withholds after three, and --report prints them all', () => {
+  // The REPORTED printer, which truncates at a different threshold from the
+  // failure printer above and points at the flag that shows the rest. It had
+  // no test for a while: it needs a reported rule with more than three
+  // offenders, and the last rule still reported had exactly one by
+  // construction -- the single 404. `--ungate D3` constructs it instead.
+  const { pages, sitemap } = fifteenSkips();
+  const r = run(pages, { sitemap, args: ['--ungate', 'D3'] });
+  assert.strictEqual(r.code, 0, r.out);
+  assert.match(r.out, /D3 {2}heading level skipped {2}\[15\]/);
+  assert.match(r.out, /… and 12 more \(--report for all\)/);
+
+  const full = run(pages, { sitemap, args: ['--ungate', 'D3', '--report'] });
+  assert.strictEqual(full.code, 0, full.out);
+  assert.doesNotMatch(full.out, /--report for all/);
+  assert.match(full.out, /\/api\/g14\/ \(h1 -> h3\)/);
 });
 
 // --- I1, and the suffix that is not the same length on both arms ----------
@@ -367,23 +472,61 @@ test('I1 still fails on staging when the AUTHORED title is too long', () => {
 
 const SPEC = path.resolve(__dirname, '..', '..', 'docs', 'SEO.md');
 
-/** Run the checker over the real build with docs/SEO.md temporarily edited. */
-function withSpec(mutate) {
+const BUILD = path.resolve(__dirname, '..', '..', 'build');
+const NOT_FOUND = path.join(BUILD, '404.html');
+
+/**
+ * Run the checker over the real build with docs/SEO.md temporarily edited, and
+ * optionally build/404.html too.
+ *
+ * THE 404 IS HOW A BACKLOG IS CONSTRUCTED. S1 compares the table against what
+ * a run REPORTED, and with every flag true the real corpus reports nothing —
+ * so two of these tests would have nothing to compare and would assert only
+ * that a clean run is clean. Putting the canonical back into build/404.html
+ * and passing `--ungate L1` gives S1 a real reported count of a real rule,
+ * measured off the real artefact, which is the whole point of these running
+ * against the shipped build rather than a fixture.
+ *
+ * Both files are restored in `finally`, and build/ is not tracked anyway.
+ */
+function withSpec(mutate, { notFound = null, args = [] } = {}) {
   const original = fs.readFileSync(SPEC, 'utf8');
-  const build = path.resolve(__dirname, '..', '..', 'build');
+  const originalNotFound = notFound ? fs.readFileSync(NOT_FOUND, 'utf8') : null;
   try {
     fs.writeFileSync(SPEC, mutate(original), 'utf8');
-    execFileSync('node', [SCRIPT, '--dir', build], { encoding: 'utf8' });
+    if (notFound) fs.writeFileSync(NOT_FOUND, notFound(originalNotFound), 'utf8');
+    execFileSync('node', [SCRIPT, '--dir', BUILD, ...args], { encoding: 'utf8' });
     return { code: 0, out: '' };
   } catch (e) {
     return { code: e.status, out: `${e.stdout || ''}${e.stderr || ''}` };
   } finally {
     fs.writeFileSync(SPEC, original, 'utf8');
+    if (originalNotFound !== null) fs.writeFileSync(NOT_FOUND, originalNotFound, 'utf8');
   }
 }
 
+/** Put the canonical the build now strips back into build/404.html. */
+const reCanonicalise = (html) =>
+  html.replace('</head>', `<link rel="canonical" href="${PROD}/docs/404.html/"></head>`);
+
+/** Insert a row into the backlog table, which now ships with none. */
+const addRow = (src, row) => src.replace(
+  /^(\|\s*Rule\s*\|\s*Backlog\s*\|.*\n\|[-\s|]+\|\n)/m, `$1${row}\n`);
+
+/** The reported-backlog tests need a build with a 404 in it to re-break. */
+const REPORTABLE = { notFound: reCanonicalise, args: ['--ungate', 'L1'] };
+
 const hasBuild = fs.existsSync(path.resolve(__dirname, '..', '..', 'build', 'sitemap.xml'))
   || fs.existsSync(path.resolve(__dirname, '..', '..', 'build', 'index.html'));
+
+test('S1 accepts the shipped table, which has a header and no rows', { skip: !hasBuild && 'no build/ to read' }, () => {
+  // Every flag is true and the backlog is empty, so the table is a header and
+  // a separator. That is the correct end state and S1 has to read it as zero
+  // declared rows -- NOT as a missing table, which fails closed, and not as
+  // something to delete, which would fail closed on the next run.
+  const r = withSpec((src) => src);
+  assert.strictEqual(r.code, 0, r.out);
+});
 
 test('S1 fails when the spec understates a backlog', { skip: !hasBuild && 'no build/ to read' }, () => {
   // Someone fixes ten heading orders and does not touch the document. This is
@@ -391,31 +534,33 @@ test('S1 fails when the spec understates a backlog', { skip: !hasBuild && 'no bu
   // Padding-tolerant, because the repo's pre-commit hook re-aligns markdown
   // tables. A spacing-exact pattern silently stops mutating and the test then
   // asserts nothing at all.
-  const r = withSpec((src) => src.replace(/^\|\s*L1\s*\|\s*\d+\s*\|/m, '| L1 | 23 |'));
+  const r = withSpec((src) => addRow(src, '| L1 | 23 | the 404 | `X` |'), REPORTABLE);
   assert.strictEqual(r.code, 1);
   assert.match(r.out, /S1 {2}docs\/SEO\.md disagrees/);
-  assert.match(r.out, /L1: docs\/SEO\.md declares 23/);
+  assert.match(r.out, /L1: docs\/SEO\.md declares 23, this run measured 1/);
 });
 
 test('S1 fails when the spec claims a backlog for a rule that is clean', { skip: !hasBuild && 'no build/ to read' }, () => {
-  const r = withSpec((src) => src.replace(/^\|\s*L1\s*\|\s*\d+\s*\|/m, '| Z9 | 4 |'));
+  const r = withSpec((src) => addRow(src, '| Z9 | 4 | nothing | `X` |'));
   assert.strictEqual(r.code, 1);
   assert.match(r.out, /Z9: docs\/SEO\.md declares 4, this run reports the rule as clean/);
 });
 
 test('S1 fails when a measured rule has no row in the spec', { skip: !hasBuild && 'no build/ to read' }, () => {
-  const r = withSpec((src) => src.replace(/^\|\s*L1\s*\|\s*\d+\s*\|.*$/m, ''));
+  // The empty table against a run that measured something: the direction that
+  // catches a backlog appearing, rather than one being paid down.
+  const r = withSpec((src) => src, REPORTABLE);
   assert.strictEqual(r.code, 1);
-  assert.match(r.out, /L1: measured \d+, and docs\/SEO\.md's table has no row for it/);
+  assert.match(r.out, /L1: measured 1, and docs\/SEO\.md's table has no row for it/);
 });
 
 test('S1 fails closed when the backlog table is deleted', { skip: !hasBuild && 'no build/ to read' }, () => {
   // The failure mode that matters most: a parser that finds no rows and
   // compares them against no expectations passes forever while gating nothing.
-  const r = withSpec((src) => src.replace(/^\|\s*(Rule|-+|[A-Z]\d)\s*\|.*$\n?/gm, ''));
+  const r = withSpec((src) => src.replace(/^\|\s*(Rule|-+|[A-Z]\d)\s*\|.*$\n?/gm, ''), REPORTABLE);
   assert.strictEqual(r.code, 1);
   assert.match(r.out, /S1 {2}docs\/SEO\.md has no backlog table/);
-  // and it must say the table is missing, not that eight rules need rows
+  // and it must say the table is missing, not that a rule needs a row
   assert.doesNotMatch(r.out, /has no row for it/);
 });
 

@@ -3,38 +3,68 @@
 Companion to [SEO.md](./SEO.md). Without this list every gap reads as an
 oversight, and somebody re-derives the same decision every few months.
 
-Two kinds of entry: rules that are **measured but not enforced** (the backlog
-is real and the flag is ready), and ground that is **not checked at all**
-(with the reason).
+Two kinds of entry: rules that were **measured but not enforced** — every one
+of which is now fixed and gated, kept here as the record of how it ended — and
+ground that is **not checked at all**, with the reason.
 
 ---
 
 ## Measured, not enforced
 
-These are listed in SEO.md's [Reported, never gated](./SEO.md#reported-never-gated)
-table with their flags. What follows is why each is not simply fixed.
+**Nothing is, any more.** SEO.md's
+[Reported, never gated](./SEO.md#reported-never-gated) table ships with a
+header and no rows: every rule that was once measured-not-gated has been paid
+down and turned on. The entries below are kept as the record of what each one
+said and how it ended, because a deleted entry is how the same decision gets
+re-derived from scratch every few months.
 
-### The 404's canonical (L1)
+### The 404's canonical (L1) — fixed, no longer a gap
 
-Every 404 response declares:
+**The entry that was here was wrong, and it was wrong about a fact rather than
+about a judgement.** It read:
+
+> The page is served with a real `404` status — verified against production —
+> and a crawler drops a 404 before it processes `rel=canonical`, so the hint is
+> never read. […] **Flip `NOT_FOUND_CANONICAL_ENFORCED` if the 404 ever starts
+> answering 200.** A soft 404 *is* crawled, and then the canonical is read and
+> points at nothing.
+
+The 404 page already answered 200, and had all along. Measured against
+production on 2026-09-03:
 
 ```
-<link rel="canonical" href="https://www.marketdata.app/docs/404.html/">
+/docs/404.html   308 -> /docs/404      Cloudflare Pages strips the .html
+/docs/404        200                   the 404 page, as a success
+/docs/404/       308 -> /docs/404
 ```
 
-That URL 404s. `applyTrailingSlash` appends `/` to `/docs/404.html`, and the
-result is not a route.
+`/docs/404` is a soft 404 — the trigger the entry itself named. What the
+original check verified was that an *unknown* URL 404s, which is true and is a
+different question from whether this page is reachable any other way. **A
+verified fact about one URL was carried as a fact about the page.**
 
-**Measured, not gated, and not fixed.** The page is served with a real `404`
-status — verified against production — and a crawler drops a 404 before it
-processes `rel=canonical`, so the hint is never read. Suppressing it means
-swizzling `@theme/SiteMetadata`, a core Docusaurus internal that also emits
-`og:url`, the `hreflang` alternates and the search metadata, and then carrying
-that copy across every Docusaurus upgrade. That is a standing maintenance cost
-for a tag nothing reads.
+So the exception went, and it took two rules with it. `L1`: the page names no
+URL of its own — the canonical, `og:url` and both `hreflang` alternates all
+read `/docs/404.html/`, which 404s. `L2`: the page says `noindex`, which is the
+half that mattered, because a 200 with no directive is an invitation.
 
-**Flip `NOT_FOUND_CANONICAL_ENFORCED` if the 404 ever starts answering 200.**
-A soft 404 *is* crawled, and then the canonical is read and points at nothing.
+**The swizzle was still the wrong trade, and it was not needed.** The tags do
+come from `@theme/SiteMetadata`, which takes no props from the route and offers
+no hook, and copying a core internal that also emits `og:title`, the alternates
+and the Algolia search metadata into `src/theme/` — then carrying it across
+every Docusaurus upgrade — is a standing cost for one tag on one page. Emitting
+a competing tag from a later `<Head>` does not work either: react-helmet-async
+renders two canonicals rather than letting the second win, which is why rule C1
+counts them.
+
+`plugins/not-found-head.js` changes the artefact instead, in `postBuild`, on
+one file. It cuts an exact byte range rather than re-serialising a parsed DOM,
+so every other byte of the page is untouched by construction, and its scanner
+is quoting- and order-agnostic for the reason recorded in `lint-seo.js`. The
+write is atomic — `markdown-twins` reads the same `404.html` in its own
+`postBuild`, and Docusaurus runs `postBuild` hooks concurrently.
+
+`NOT_FOUND_CANONICAL_ENFORCED` is `true`, and it was the last flag.
 
 ### Heading order (D3) — fixed, no longer a gap
 

@@ -34,6 +34,12 @@ Two things are ours:
 That matters when a rule fails: the fix is usually a config change or a
 swizzle, not an edit to a page.
 
+One page's head is edited after Docusaurus writes it. `@theme/SiteMetadata`
+emits four tags naming the page's own URL, and on the 404 all four name a URL
+that 404s; `plugins/not-found-head.js` cuts them out of `build/404.html` in
+`postBuild` and adds the `noindex` that page needs. See
+[The 404 page](#the-404-page).
+
 ---
 
 ## Environment
@@ -134,6 +140,40 @@ only because two checks happen to overlap, with nothing stating that it holds.
 `MarketDataApp/www-marketdata-app`. See CLAUDE.md for why those rules unset
 before they set.
 
+## The 404 page
+
+**It names no URL of its own, and it says `noindex`.**
+
+Docusaurus emits a page's own URL four times — `rel=canonical`, `og:url` and
+the two `hreflang` alternates — and on this page all four read
+`https://www.marketdata.app/docs/404.html/`. `applyTrailingSlash` adds the
+slash and the result is not a route: it 404s. A page that only ever means "not
+found" has no preferred URL to declare, and the one it declared was nothing.
+
+`noindex` is the half that stops this being cosmetic. **The 404 page is served
+with a `200`.** Cloudflare Pages strips the `.html`, so production answers:
+
+```
+/docs/404.html   308 -> /docs/404
+/docs/404        200                 the same page, as a success
+/docs/404/       308 -> /docs/404
+```
+
+That is a soft 404: crawlable, indexable, under a URL that looks like a real
+page. The production build sets no robots directive of its own — `noIndex` is
+false there — so the page had nothing telling a crawler to leave it alone.
+Staging already emits `noindex, nofollow` on every page, so the tag is only
+ever *added* where it is missing and the two arms end up agreeing.
+
+`plugins/not-found-head.js` makes both true in `postBuild`, by cutting the four
+tags out of `build/404.html` and appending a robots meta. It works on the
+artefact rather than on the theme because the tags come from
+`@theme/SiteMetadata`, which takes no props from the route and offers no hook;
+the alternative was a permanent swizzled copy of a core internal. See
+[SEO-GAPS.md](./SEO-GAPS.md#the-404s-canonical-l1--fixed-no-longer-a-gap).
+
+*Gated by rules L1 (no self-naming URL) and L2 (`noindex`).*
+
 ## `<meta name="robots">` and the sitemap
 
 **These are two halves of one statement and must agree exactly.** A page the
@@ -190,6 +230,9 @@ same date and nothing says so.
 | exactly one `<h1>`                                            | `lint:seo` E1              | against `build/`          |
 | no page skips a heading level                                 | `lint:seo` D3              | against `build/`          |
 | a page promising a large card declares an image               | `lint:seo` F2              | against `build/`          |
+| the 404 names no URL of its own                               | `lint:seo` L1              | against `build/`          |
+| the 404 says `noindex`                                        | `lint:seo` L2              | against `build/`          |
+| the 404's head is rewritten to make L1 and L2 true            | `not-found-head` postBuild | during the build          |
 | every built page's Markdown twin is still in the build        | `lint:seo` G1              | against `build/`          |
 | JSON-LD parses and agrees with the head around it             | `lint:seo` F1              | against `build/`          |
 | the sitemap lists only pages that built                       | `lint:sitemap`             | against `build/`          |
@@ -207,16 +250,27 @@ the linter can see every page. Neither replaces the other.
 
 ## Reported, never gated
 
-Each of these counts and names every offending page on every run. None is a
-count baseline — the list can only be paid down, never quietly grown. Flipping
-the named flag in `scripts/lint-seo.js` is the whole change once clean.
+A rule listed here counts and names every offending page on every run. None is
+a count baseline — the list can only be paid down, never quietly grown.
+Flipping the named flag in `scripts/lint-seo.js` is the whole change once
+clean.
 
 <!-- lint:seo S1 gates the counts in this table. Do not edit them by hand;
      run `node scripts/lint-seo.js` and copy what it reports. -->
 
-| Rule | Backlog | What it is          | Flag                           |
-|------|---------|---------------------|--------------------------------|
-| L1   | 1       | the 404's canonical | `NOT_FOUND_CANONICAL_ENFORCED` |
+| Rule | Backlog | What it is | Flag |
+|------|---------|------------|------|
+
+**The table is empty, and the header stays.** Every rule is gated: `H1`, `H2`,
+`I1`, `I2`, `I3`, `F2`, `D3` and finally `L1` were each measured, paid down and
+turned on. A header with no rows under it is the correct end state and rule S1
+reads it as zero declared rows.
+
+Deleting the header would break the build rather than tidying it. S1 finds the
+table by that header and **fails closed** when it cannot — the alternative is a
+parser that compares an empty table against an empty expectation and passes
+forever while gating nothing. Add a row here the moment a rule goes back to
+being reported.
 
 ### Why those numbers are gated too
 
@@ -296,6 +350,37 @@ every page stated `twitter:card=summary_large_image` and no page declared
 URL. The promise is emitted unconditionally by Docusaurus; the image needed one
 config key that was never set. `themeConfig.image` now supplies a 1200×630 card
 and `CARD_IMAGE_ENFORCED` is `true`, so the two cannot come apart again.
+
+**L1 is fixed and now gated, and it was the last one.** It was carried as
+measured-not-gated on the argument that the page only ever answers 404, so a
+crawler drops the response before it reads `rel=canonical` and nothing sees the
+tag. Measured against production on 2026-09-03, the argument was false:
+Cloudflare Pages strips the `.html`, `/docs/404.html` 308s to `/docs/404`, and
+that answers **200**. A soft 404, crawlable, carrying a canonical to a URL that
+404s — which is exactly the trigger the gap note itself had named for flipping
+the flag.
+
+The fix works on the artefact and not on the theme, because the tags come from
+`@theme/SiteMetadata` and it takes no props from the route: see
+[The 404 page](#the-404-page). `L2` came with it, and is the half that mattered
+most — a page served 200 with no robots directive.
+
+**How the reporting machinery stays proven now that nothing reports.** Four
+self-tests used to stand on whichever rule was still red, and each was
+rewritten when that rule went green — duplicate titles, then duplicate
+descriptions, then skipped headings, then this. There is no fifth rule to move
+them to, and a reporting path nothing exercises is a reporting path that can
+stop working silently.
+
+`scripts/lint-seo.js --ungate <rule>` reports a gated rule instead of failing
+on it, for one run. The self-tests construct the condition with it rather than
+borrowing a real backlog: a fixture that violates `L1` proves the REPORTED
+block prints and leaves the exit code alone, fifteen `D3` offenders prove it
+truncates at three and that `--report` shows them all, and the two S1 tests
+that need a real count put the canonical back into `build/404.html` and read it
+off the shipped artefact. The flag changes no rule's verdict, only whether that
+verdict is fatal; it announces itself in the run header, and nothing in CI
+passes it.
 
 **H2, I2 and I3 are fixed and now gated.** All three had one cause: almost no
 page set a `description:`, so Docusaurus derived one from the first paragraph.
