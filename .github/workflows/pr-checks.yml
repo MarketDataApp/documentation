@@ -83,6 +83,16 @@ jobs:
       - name: Check every code fence language highlights
         run: node scripts/check-highlighting.js
 
+      # Also reuses that build. Nothing else in this repo opens the <head> as a
+      # whole: lint:links resolves URL-bearing elements but never reads
+      # <meta content>, and lint:sitemap never opens a page. So "the sitemap
+      # advertises a page that says noindex" was unobservable until this ran.
+      #
+      # PROD=true above means this sees the production arm -- the indexable one,
+      # with a sitemap to cross-check robots against.
+      - name: Check the SEO surface of every built page
+        run: node scripts/lint-seo.js
+
   # `worker-unit-tests` was here. The worker moved to
   # MarketDataApp/www-marketdata-app, which runs those 38 tests on its own pull
   # requests. Nothing is lost by deleting the job; keeping it would have run
