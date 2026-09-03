@@ -1,5 +1,6 @@
 ---
 title: API Status
+description: Check the current status of Market Data services and historical uptime for the last 30 and 90 days. The status refreshes every five minutes.
 sidebar_position: 1
 sidebar_custom_props:
   badge: n
@@ -11,7 +12,7 @@ import TabItem from "@theme/TabItem";
 Check the current status of Market Data services and historical uptime. The status of the Market Data API is updated every 5 minutes. Historical uptime is available for the last 30 and 90 days.
 
 :::tip
-This endpoint will continue to respond with the current status of the Market Data API, even if the API is offline. This endpoint is public and does not require a token.
+This endpoint will continue to respond with the current status of the Market Data API, even if the API is offline. This endpoint is public and does not require a token. This endpoint is also unversioned: it is served at `/status/`, not under `/v1/` like every other endpoint.
 :::
 
 ## Endpoint
@@ -19,7 +20,7 @@ This endpoint will continue to respond with the current status of the Market Dat
 ```
 https://api.marketdata.app/status/
 ```
-#### Method
+### Method
 ```
 GET
 ```

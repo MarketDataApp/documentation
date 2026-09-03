@@ -1,5 +1,6 @@
 ---
 title: Single IP Address Policy
+description: Exchange agreements limit each Market Data account to one IP address at a time. Learn how the rule is enforced and what multi-device access requires.
 sidebar_position: 3
 ---
 

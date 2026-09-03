@@ -1,5 +1,6 @@
 ---
 title: Excessive Refreshing
+description: Google's urlfetch quota makes unwanted cell refreshes costly. Learn what triggers a background refresh and how add-ons and macros add to it.
 sidebar_position: 6
 ---
 

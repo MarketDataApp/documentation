@@ -118,6 +118,7 @@ const config = {
   plugins: [
     './plugins/theme-cookie-sync',
     './plugins/markdown-twins',
+    './plugins/not-found-head',
     './plugins/redirects-file',
     [
       "@docusaurus/plugin-content-docs",
@@ -132,6 +133,10 @@ const config = {
           const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
           return `https://${host}/docs/api/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
+        // Read from git history, so it needs full history at build time:
+        // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
+        // With a shallow clone every page reports the same date.
+        showLastUpdateTime: true,
       },
     ],
     [
@@ -145,6 +150,10 @@ const config = {
           const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
           return `https://${host}/docs/sdk/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
+        // Read from git history, so it needs full history at build time:
+        // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
+        // With a shallow clone every page reports the same date.
+        showLastUpdateTime: true,
         sidebarPath: require.resolve("./sidebars.js"),
       },
     ],
@@ -159,6 +168,10 @@ const config = {
           const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
           return `https://${host}/docs/sheets/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
+        // Read from git history, so it needs full history at build time:
+        // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
+        // With a shallow clone every page reports the same date.
+        showLastUpdateTime: true,
         sidebarPath: require.resolve("./sidebars.js"),
       },
     ],
@@ -173,6 +186,10 @@ const config = {
           const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
           return `https://${host}/docs/account/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
+        // Read from git history, so it needs full history at build time:
+        // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
+        // With a shallow clone every page reports the same date.
+        showLastUpdateTime: true,
         sidebarPath: require.resolve("./sidebars.js"),
       },
     ],
@@ -181,6 +198,39 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      /**
+       * The social card every page falls back to.
+       *
+       * Docusaurus emits `<meta name="twitter:card" content="summary_large_image">`
+       * UNCONDITIONALLY (theme-classic SiteMetadata), while `og:image` and
+       * `twitter:image` appear only when this key is set. It was not set, so all
+       * 270 pages promised a large-image card and supplied no image, and every
+       * shared docs link rendered as a bare URL. `lint:seo` rule F2 gates the
+       * pair now, so the promise and the image cannot come apart again.
+       *
+       * Cropped to 1200x630 from "Facebook Cover Data" in the brand Social Media
+       * Kit. The source carries a 1px semi-transparent frame (alpha 128, corners
+       * 64) that flattens to a visible hairline, so the crop is inset 2px first.
+       *
+       * A page overrides it with frontmatter `image:`.
+       */
+      image: 'img/social-card.png',
+
+      // Docusaurus emits no alt text for the card, and the two networks read
+      // different names: Open Graph og:image:alt, X twitter:image:alt.
+      metadata: [
+        {
+          property: 'og:image:alt',
+          content:
+            'Market Data — Get Data Anywhere, beside an illustration of charts and dashboards',
+        },
+        {
+          name: 'twitter:image:alt',
+          content:
+            'Market Data — Get Data Anywhere, beside an illustration of charts and dashboards',
+        },
+      ],
+
       algolia: {
         appId: "IUHZFO750H",
         apiKey: "c29b76b827a4fa1a0ac3abe15f69ec5c",
@@ -243,7 +293,13 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ['json', 'http', 'php', 'bash', 'excel-formula', 'java', 'kotlin', 'groovy'],
+        // Every language used in a ``` fence that Prism does not bundle by
+        // default has to be listed here, or the block renders as plain text
+        // with no error -- the page still builds and still looks like a code
+        // block, so nothing catches it but reading one. `csharp` was missing
+        // while 99 fences used it. scripts/check-highlighting.js now fails
+        // the build instead.
+        additionalLanguages: ['json', 'http', 'php', 'bash', 'excel-formula', 'java', 'kotlin', 'groovy', 'csharp', 'powershell', 'batch', 'ini'],
       },
     }),
 };

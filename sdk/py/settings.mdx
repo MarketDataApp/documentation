@@ -1,5 +1,7 @@
 ---
-title: Settings
+title: Settings (Python SDK)
+sidebar_label: Settings
+description: Configure the Python SDK output format, date format and data mode through several methods, and see which priority level wins when they disagree.
 sidebar_position: 4
 ---
 
@@ -328,7 +330,7 @@ quotes = client.stocks.quotes("AAPL", mode=Mode.LIVE)
 ```
 
 :::info Premium Parameter
-The `mode` parameter is available only on paid plans. Free and trial plans cannot change the data mode and will always receive delayed data.
+The `mode` parameter is available only on paid plans. Free and trial plans cannot change the data mode and receive historical data (the last fully-closed session). See [Data Freshness](/account/data-freshness).
 :::
 
 For more details, see the [API Mode documentation](/api/universal-parameters/mode).

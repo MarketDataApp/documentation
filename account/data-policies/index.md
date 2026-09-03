@@ -1,5 +1,6 @@
 ---
 title: Data Policies
+description: Exchange agreements govern how Market Data distributes financial data. Read the policies that set your obligations and shape your access to data.
 sidebar_position: 10
 ---
 

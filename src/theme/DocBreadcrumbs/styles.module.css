@@ -9,7 +9,3 @@
   justify-content: space-between;
   gap: 1rem;
 }
-
-.editThisPageWrapper {
-  flex-shrink: 0;
-}

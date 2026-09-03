@@ -1,5 +1,6 @@
 ---
 title: Billing Portal
+description: Access the third-party Billing Portal to manage your Market Data subscription, update your payment method and download your invoices.
 sidebar_position: 6
 ---
 

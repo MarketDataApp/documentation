@@ -1,5 +1,7 @@
 ---
-title: Headers
+title: Headers (Java SDK)
+sidebar_label: Headers
+description: Echo back the headers the Market Data API received with the Java SDK, to confirm your Authorization header arrived. Sensitive values are redacted.
 sidebar_position: 3
 ---
 
@@ -17,7 +19,7 @@ UtilitiesHeadersResponse headers()
 CompletableFuture<UtilitiesHeadersResponse> headersAsync()
 ```
 
-#### Returns
+### Returns
 
 `UtilitiesHeadersResponse` wrapping `Map<String, String>` — the headers the server received, lower-cased keys to values (sensitive values redacted server-side).
 

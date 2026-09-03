@@ -1,5 +1,6 @@
 ---
-title: Market Status
+title: Market Status (PHP SDK)
+sidebar_label: Market Status
 sidebar_position: 1
 ---
 
@@ -38,7 +39,7 @@ public function status(
 
 Get the past, present, or future status for a stock market. The endpoint will respond with "open" for trading days or "closed" for weekends or market holidays.
 
-#### Parameters
+### Parameters
 
 - `country` (string, optional)
 
@@ -64,7 +65,7 @@ Get the past, present, or future status for a stock market. The endpoint will re
 
   Universal parameters for customizing the output format.
 
-#### Returns
+### Returns
 
 - `Statuses`
 
@@ -89,7 +90,7 @@ foreach ($statuses->statuses as $status) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 Date: 2024-01-15
@@ -116,7 +117,7 @@ foreach ($statuses->statuses as $status) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 January 1, 2024: Market Closed
@@ -153,7 +154,7 @@ foreach ($statuses->statuses as $status) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 Market Calendar: January 2024
@@ -235,7 +236,7 @@ class Status
 
 Represents the market status for a single date.
 
-#### Properties
+### Properties
 
 - `date` (Carbon): The date.
 - `status` (string): The market status (`"open"` or `"closed"`).
@@ -253,12 +254,12 @@ class Statuses extends ResponseBase
 
 Represents a collection of market status entries.
 
-#### Properties
+### Properties
 
 - `status` (string): Response status (`"ok"` or `"no_data"`).
 - `statuses` (Status[]): Array of Status objects.
 
-#### Methods
+### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).

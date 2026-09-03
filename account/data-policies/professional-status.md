@@ -1,5 +1,6 @@
 ---
 title: Professional Status Policy
+description: Market Data self-service plans serve non-professional subscribers only. Learn how you self-certify your status and what a wrong classification costs.
 sidebar_position: 4
 ---
 

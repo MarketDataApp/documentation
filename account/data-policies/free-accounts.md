@@ -1,5 +1,6 @@
 ---
 title: Free and Trial Account Data Policy
+description: Free Forever and trial accounts receive data at least 24 hours old. Learn which exchange rules cause the delay and how to unlock real-time data.
 sidebar_position: 2
 ---
 

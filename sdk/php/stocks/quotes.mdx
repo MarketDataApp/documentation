@@ -1,5 +1,6 @@
 ---
-title: Quotes
+title: Stock Quotes (PHP SDK)
+sidebar_label: Quotes
 sidebar_position: 3
 ---
 
@@ -36,7 +37,7 @@ public function quotes(
 
 Get real-time price quotes for multiple stocks in a single API request.
 
-#### Parameters
+### Parameters
 
 - `symbols` (array)
 
@@ -56,7 +57,7 @@ Get real-time price quotes for multiple stocks in a single API request.
 
   Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
 
-#### Returns
+### Returns
 
 - `Quotes`
 
@@ -90,7 +91,7 @@ foreach ($quotes->quotes as $quote) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 AAPL: $186.19 +1.05 (+0.57%)
@@ -207,7 +208,7 @@ class Quotes extends ResponseBase
 
 Represents a collection of stock quotes.
 
-#### Properties
+### Properties
 
 - `status` (string): Response status (`"ok"` or `"no_data"`).
 - `quotes` (array): Array of quote data for each symbol. Each element contains:
@@ -225,7 +226,7 @@ Represents a collection of stock quotes.
   - `volume` (int|null): Trading volume for the current session.
   - `updated` (Carbon|null): Timestamp of the quote.
 
-#### Methods
+### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).

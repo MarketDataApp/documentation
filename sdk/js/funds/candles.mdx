@@ -1,5 +1,6 @@
 ---
-title: Candles
+title: Fund Candles (JavaScript SDK)
+sidebar_label: Candles
 sidebar_position: 1
 ---
 
@@ -40,7 +41,7 @@ candles<P>(
 
 Fetches historical daily candles for a single fund symbol.
 
-#### Parameters
+### Parameters
 
 - `symbol` (string)
 
@@ -69,7 +70,7 @@ Fetches historical daily candles for a single fund symbol.
 - [`useHumanReadable`](/sdk/js/settings#human-readable) (optional): Use human-readable field names. Alias: `human`.
 - [`mode`](/sdk/js/settings#data-mode) (optional): The data mode to use.
 
-#### Returns
+### Returns
 
 - [`MarketDataPromise<FundsCandle[] | FundsCandleHuman[] | Blob>`](/sdk/js/client#MarketDataPromise)
 
@@ -154,7 +155,7 @@ interface FundsCandle {
 
 `FundsCandle` uses the API's short, machine-readable field names.
 
-#### Properties
+### Properties
 
 - `s` (string, optional): Status indicator.
 - `t` (number): Unix timestamp of the bar.

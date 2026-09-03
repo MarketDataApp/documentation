@@ -1,5 +1,7 @@
 ---
-title: Expirations
+title: Expirations (PHP SDK)
+sidebar_label: Expirations
+description: Get the current or historical option expiration dates for an underlying symbol with the PHP SDK expirations method.
 sidebar_position: 2
 ---
 
@@ -36,7 +38,7 @@ public function expirations(
 
 Get a list of current or historical option expiration dates for an underlying symbol. If no optional parameters are used, the endpoint returns all expiration dates in the option chain.
 
-#### Parameters
+### Parameters
 
 - `symbol` (string)
 
@@ -54,7 +56,7 @@ Get a list of current or historical option expiration dates for an underlying sy
 
   Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
 
-#### Returns
+### Returns
 
 - `Expirations`
 
@@ -81,7 +83,7 @@ foreach ($expirations->expirations as $date) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 AAPL Option Expirations:
@@ -182,12 +184,12 @@ class Expirations extends ResponseBase
 
 Represents a list of option expiration dates.
 
-#### Properties
+### Properties
 
 - `status` (string): Response status (`"ok"` or `"no_data"`).
 - `expirations` (Carbon[]): Array of expiration dates as Carbon datetime objects.
 
-#### Methods
+### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).

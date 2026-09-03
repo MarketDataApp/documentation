@@ -1,5 +1,6 @@
 ---
-title: API Status
+title: API Status (PHP SDK)
+sidebar_label: API Status
 sidebar_position: 1
 ---
 
@@ -21,7 +22,7 @@ public function api_status(): ApiStatus
 
 Check the current status of Market Data services and historical uptime. The status is updated every 5 minutes. Historical uptime is available for the last 30 and 90 days.
 
-#### Smart Caching
+### Smart Caching
 
 The SDK implements intelligent caching for API status to reduce unnecessary requests:
 
@@ -29,12 +30,12 @@ The SDK implements intelligent caching for API status to reduce unnecessary requ
 - **Refresh window (4.5-5 min):** Returns cached data and triggers async refresh
 - **Stale cache (> 5 min):** Blocks and fetches fresh data
 
-#### Notes
+### Notes
 
 - This endpoint is public and does not require authentication.
 - The endpoint continues to respond even if the API is offline.
 
-#### Returns
+### Returns
 
 - `ApiStatus`
 
@@ -66,7 +67,7 @@ echo "30-day: " . number_format($status->uptime_30d, 2) . "%\n";
 echo "90-day: " . number_format($status->uptime_90d, 2) . "%\n";
 ```
 
-#### Output
+**Output**
 
 ```
 Market Data API Status
@@ -152,7 +153,7 @@ class ApiStatus extends ResponseBase
 
 Represents the API status and uptime information.
 
-#### Properties
+### Properties
 
 - `status` (string): Response status (`"ok"`).
 - `services` (array): Array of service status entries, each containing:

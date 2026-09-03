@@ -1,5 +1,6 @@
 ---
-title: Earnings
+title: Earnings (JavaScript SDK)
+sidebar_label: Earnings
 sidebar_position: 4
 ---
 
@@ -36,7 +37,7 @@ earnings<P>(
 
 Fetches earnings data for a single symbol.
 
-#### Parameters
+### Parameters
 
 - `symbol` (string)
 
@@ -51,7 +52,7 @@ Fetches earnings data for a single symbol.
 
 Additional endpoint-specific parameters (e.g. `from`, `to`, `date`) are passed through to the REST API as-is. See the [REST API Earnings documentation](/api/stocks/earnings) for the complete list.
 
-#### Returns
+### Returns
 
 - [`MarketDataPromise<StockEarnings[] | StockEarningsHuman[] | Blob>`](/sdk/js/client#MarketDataPromise)
 
@@ -123,7 +124,7 @@ interface StockEarnings {
 }
 ```
 
-#### Properties
+### Properties
 
 - `symbol` (string): The stock symbol.
 - `fiscalYear` (number): The fiscal year of the earnings report.

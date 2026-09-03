@@ -1,5 +1,6 @@
 ---
 title: Trader Plan
+description: The Trader plan gives high-volume users a large API credit allocation and access to the most comprehensive data sets. See its pricing and features.
 sidebar_position: 4
 ---
 

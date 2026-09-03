@@ -1,5 +1,7 @@
 ---
-title: Quotes
+title: Option Quotes (Python SDK)
+sidebar_label: Quotes
+description: Retrieve quotes for one or more option symbols with the Python SDK quotes method, raw or in human-readable form.
 sidebar_position: 5
 ---
 
@@ -38,7 +40,7 @@ def quotes(
 
 Fetches option quotes for one or more option symbols. Note: `quotes()` takes option symbols (e.g., "AAPL271217C00250000"), not stock symbols. The `symbols` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
 
-#### Parameters
+### Parameters
 
 - `symbols` (str | list[str])
 
@@ -72,13 +74,13 @@ Fetches option quotes for one or more option symbols. Note: `quotes()` takes opt
 
   File path for CSV output (only used with `output_format=OutputFormat.CSV`).
 
-#### Returns
+### Returns
 
 - `OptionsQuotes` | `OptionsQuotesHumanReadable` | `dict` | `str` | `MarketDataClientErrorResult`
 
   The option quotes in the requested format, or a `MarketDataClientErrorResult` if an error occurred.
 
-#### Notes
+### Notes
 
 - Multiple option symbols are fetched concurrently (up to 50 concurrent requests by default).
 - When using `OutputFormat.DATAFRAME`, the DataFrame is indexed by the `optionSymbol` column.
@@ -230,7 +232,7 @@ class OptionsQuotes:
 
 OptionsQuotes represents option quotes data with lists of equal length for each field. All lists have the same length, allowing you to access option data by index.
 
-#### Properties
+### Properties
 
 - `s` (str): Status indicator ("ok" for successful responses).
 - `optionSymbol` (list[str]): List of option symbols.
@@ -259,7 +261,7 @@ OptionsQuotes represents option quotes data with lists of equal length for each 
 - `theta` (list[float]): List of Theta values.
 - `vega` (list[float]): List of Vega values.
 
-#### Notes
+### Notes
 
 - All lists have the same length, allowing you to access option data by index (e.g., `quotes.optionSymbol[0]`, `quotes.bid[0]`, etc.).
 - Timestamp fields (`expiration`, `firstTraded`, `updated`) are automatically converted to `datetime.datetime` objects.
@@ -299,7 +301,7 @@ class OptionsQuotesHumanReadable:
 
 OptionsQuotesHumanReadable represents option quotes in human-readable format with capitalized field names and formatted values.
 
-#### Properties
+### Properties
 
 - `Symbol` (list[str]): List of option symbols.
 - `Underlying` (list[str]): List of underlying symbols.
@@ -327,7 +329,7 @@ OptionsQuotesHumanReadable represents option quotes in human-readable format wit
 - `Theta` (list[float]): List of Theta values.
 - `Vega` (list[float]): List of Vega values.
 
-#### Notes
+### Notes
 
 - All lists have the same length, allowing you to access option data by index (e.g., `quotes.Symbol[0]`, `quotes.Bid[0]`, etc.).
 - Timestamp fields (`Expiration_Date`, `First_Traded`, `Date`) are automatically converted to `datetime.datetime` objects.

@@ -1,5 +1,6 @@
 ---
 title: Date Format
+description: Use the dateformat parameter to receive timestamps as a formatted timestamp, a unix epoch value or a spreadsheet serial number.
 sidebar_position: 3
 ---
 

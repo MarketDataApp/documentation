@@ -1,5 +1,6 @@
 ---
 title: Rate Limits
+description: Market Data enforces two limits, API credits per period and concurrent requests. See the limits by plan and the strategies that avoid them.
 sidebar_position: 5
 ---
 
@@ -43,7 +44,7 @@ Different plans have specific rate limits. Free/Starter/Trader use daily limits,
 | Concurrent Request Limit | 50           | 50       | 50       | 50       | 50       |
 
 
-#### Summary
+### Summary
 
 - **Free Forever Plan:** 100 credits per day.
 - **Starter Plan:** 10,000 credits per day.

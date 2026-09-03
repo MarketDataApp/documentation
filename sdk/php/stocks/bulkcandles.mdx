@@ -1,5 +1,7 @@
 ---
-title: Bulk Candles
+title: Bulk Candles (PHP SDK)
+sidebar_label: Bulk Candles
+description: Retrieve one daily candle for each of many stock symbols in a single PHP SDK request, which suits a whole-market snapshot.
 sidebar_position: 7
 ---
 
@@ -38,7 +40,7 @@ public function bulkCandles(
 
 Get bulk candle data for multiple stocks. Unlike the standard candles endpoint, this endpoint returns a single daily candle for each symbol provided. The typical use-case is to get a complete market snapshot during trading hours, though it can also be used for bulk snapshots of historical daily candles.
 
-#### Parameters
+### Parameters
 
 - `symbols` (array, optional)
 
@@ -65,13 +67,13 @@ Get bulk candle data for multiple stocks. Unlike the standard candles endpoint, 
 
   Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
 
-#### Returns
+### Returns
 
 - `BulkCandles`
 
   A BulkCandles response object containing the candle data for all requested symbols.
 
-#### Notes
+### Notes
 
 - Only daily resolutions are supported for bulk candles.
 - Either `symbols` or `snapshot` must be provided.
@@ -104,7 +106,7 @@ foreach ($bulkCandles->candles as $candle) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 AAPL: Open $185.64, Close $186.19, Volume 48,234,500
@@ -206,12 +208,12 @@ class BulkCandles extends ResponseBase
 
 Represents a collection of bulk candle data for multiple symbols.
 
-#### Properties
+### Properties
 
 - `status` (string): The status of the response (`"ok"` or `"no_data"`).
 - `candles` (Candle[]): Array of Candle objects, one per symbol requested.
 
-#### Methods
+### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).

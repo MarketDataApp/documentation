@@ -25,6 +25,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: yarn
+
+      # This job ran from setup-node straight to the scripts for months, and
+      # passed the whole time, because every checker it runs was dependency
+      # free. scripts/lint-seo.js is not: it parses with @mixmark-io/domino so
+      # that attribute quoting and order cannot be observed at all. Without
+      # this step its 41 self-tests all fail on `Cannot find module`, and they
+      # fail in CI while passing on any machine that has ever built the site.
+      #
+      # sync-sdk-docs.yml carries the same step for the same reason, added
+      # after lib/html-to-md.js brought in turndown. Second time; hence the
+      # comment rather than a bare line.
+      - run: yarn install --frozen-lockfile
 
       # An expired option symbol breaks with the passage of time, not with a
       # diff, so review cannot catch it. Fails on any expired symbol anywhere
@@ -32,13 +45,23 @@ jobs:
       - name: Check for expired option symbols
         run: node scripts/check-option-symbols.js
 
-      - name: Unit-test the checker
+      # The other half of #167: a reader switching language tabs should see
+      # how the language differs, not a different request. A tab added months
+      # after its siblings is not wrong in its own diff, so review misses it.
+      - name: Check every language tab makes the same request
+        run: node scripts/check-example-parity.js
+
+      - name: Unit-test the checkers
         run: node --test scripts/__tests__/*.test.js
 
   broken-links:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # This job builds the site, and `showLastUpdateTime` reads each
+          # page's date out of git history. Matches deploy-docs.yml.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -65,6 +88,23 @@ jobs:
       # else reads. See scripts/lint-sitemap.js for why that gap mattered.
       - name: Check the sitemap lists only pages this build serves
         run: node scripts/lint-sitemap.js
+
+      # Also reuses that build. A fence whose language Prism has no grammar for
+      # renders as grey plain text and reports nothing: the build succeeds and
+      # the block still looks like a code block. `csharp` was unregistered
+      # while 99 fences used it, and a person browsing a page is what found it.
+      - name: Check every code fence language highlights
+        run: node scripts/check-highlighting.js
+
+      # Also reuses that build. Nothing else in this repo opens the <head> as a
+      # whole: lint:links resolves URL-bearing elements but never reads
+      # <meta content>, and lint:sitemap never opens a page. So "the sitemap
+      # advertises a page that says noindex" was unobservable until this ran.
+      #
+      # PROD=true above means this sees the production arm -- the indexable one,
+      # with a sitemap to cross-check robots against.
+      - name: Check the SEO surface of every built page
+        run: node scripts/lint-seo.js
 
   # `worker-unit-tests` was here. The worker moved to
   # MarketDataApp/www-marketdata-app, which runs those 38 tests on its own pull

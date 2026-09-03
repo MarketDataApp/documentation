@@ -1,5 +1,7 @@
 ---
-title: News
+title: News (Python SDK)
+sidebar_label: News
+description: Retrieve news articles for any supported stock symbol with the Python SDK news method, raw or in human-readable form.
 sidebar_position: 6
 ---
 
@@ -42,7 +44,7 @@ def news(
 
 Fetches news articles for a stock symbol. The `symbol` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
 
-#### Parameters
+### Parameters
 
 - `symbol` (str)
 
@@ -92,7 +94,7 @@ Fetches news articles for a stock symbol. The `symbol` parameter can be passed a
 
   File path for CSV output (only used with `output_format=OutputFormat.CSV`).
 
-#### Returns
+### Returns
 
 - `list[StockNews]` | `list[StockNewsHumanReadable]` | `dict` | `str` | `MarketDataClientErrorResult`
 
@@ -215,7 +217,7 @@ class StockNews:
 
 StockNews represents a single news article for a stock, encapsulating headline, content, source, and publication information.
 
-#### Properties
+### Properties
 
 - `symbol` (str): The stock symbol.
 - `headline` (str): The news headline.
@@ -224,7 +226,7 @@ StockNews represents a single news article for a stock, encapsulating headline, 
 - `publicationDate` (datetime.datetime): The publication date (automatically converted from timestamp).
 - `updated` (datetime.datetime): The time when the news was last updated (automatically converted from timestamp).
 
-#### Notes
+### Notes
 
 - The `publicationDate` and `updated` fields are automatically converted to `datetime.datetime` objects from Unix timestamps.
 
@@ -244,7 +246,7 @@ class StockNewsHumanReadable:
 
 StockNewsHumanReadable represents a news article in human-readable format with capitalized field names and formatted values.
 
-#### Properties
+### Properties
 
 - `Symbol` (str): The stock symbol.
 - `headline` (str): The news headline.
@@ -253,7 +255,7 @@ StockNewsHumanReadable represents a news article in human-readable format with c
 - `publicationDate` (datetime.datetime): The publication date (automatically converted from timestamp).
 - `Date` (datetime.datetime): The time when the news was last updated (automatically converted from timestamp).
 
-#### Notes
+### Notes
 
 - The `publicationDate` and `Date` fields are automatically converted to `datetime.datetime` objects from Unix timestamps.
 - Field names use capitalized format with underscores where applicable (e.g., `Symbol` instead of `symbol`, `Date` instead of `updated`).

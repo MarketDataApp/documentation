@@ -1,5 +1,6 @@
 ---
-title: Prices
+title: Prices (PHP SDK)
+sidebar_label: Prices
 sidebar_position: 1
 ---
 
@@ -35,7 +36,7 @@ public function prices(
 
 Get real-time midpoint prices for stocks using the SmartMid model. Supports both single and multiple symbol requests.
 
-#### Parameters
+### Parameters
 
 - `symbols` (string|array)
 
@@ -51,13 +52,13 @@ Get real-time midpoint prices for stocks using the SmartMid model. Supports both
 
   Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
 
-#### Returns
+### Returns
 
 - `Prices`
 
   A Prices response object containing an array of Price objects.
 
-#### Notes
+### Notes
 
 - The SmartMid model calculates the midpoint price between the bid and ask, weighted by size and market conditions.
 - For single symbols, the API uses the path format `prices/{symbol}/`.
@@ -83,7 +84,7 @@ foreach ($prices->prices as $price) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 Prices: 3 symbols (status: ok)
@@ -118,7 +119,7 @@ foreach ($prices->prices as $price) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 Symbol: AAPL
@@ -153,7 +154,7 @@ foreach ($prices->prices as $price) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 Current Prices
@@ -230,12 +231,12 @@ class Prices extends ResponseBase
 
 Represents stock prices for one or more symbols. Contains an array of `Price` objects, each representing a single stock's price data.
 
-#### Properties
+### Properties
 
 - `status` (string): Response status (`"ok"`, `"no_data"`, or `"error"`).
 - `prices` (Price[]): Array of Price objects containing individual stock price data.
 
-#### Methods
+### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
@@ -257,7 +258,7 @@ class Price
 
 Represents a single stock's price data.
 
-#### Properties
+### Properties
 
 - `symbol` (string): The ticker symbol for this price.
 - `mid` (float): The midpoint price as calculated by the SmartMid model.

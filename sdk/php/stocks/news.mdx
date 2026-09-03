@@ -1,5 +1,7 @@
 ---
-title: News
+title: News (PHP SDK)
+sidebar_label: News
+description: Retrieve news articles for a stock symbol with the PHP SDK news method, which returns a collection of Article objects.
 sidebar_position: 6
 ---
 
@@ -42,7 +44,7 @@ public function news(
 
 Retrieve news articles for a given stock symbol.
 
-#### Parameters
+### Parameters
 
 - `symbol` (string)
 
@@ -68,7 +70,7 @@ Retrieve news articles for a given stock symbol.
 
   Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
 
-#### Returns
+### Returns
 
 - `News`
 
@@ -94,7 +96,7 @@ foreach ($news->articles as $article) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 News: 3 articles (status: ok)
@@ -130,7 +132,7 @@ foreach ($news->articles as $article) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 Symbol: AAPL
@@ -234,12 +236,12 @@ class News extends ResponseBase
 
 Represents news articles for a stock. Contains an array of `Article` objects, each representing a single news article.
 
-#### Properties
+### Properties
 
 - `status` (string): Response status (`"ok"` or `"no_data"`).
 - `articles` (Article[]): Array of Article objects containing individual news article data.
 
-#### Methods
+### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).
@@ -261,7 +263,7 @@ class Article
 
 Represents a single news article.
 
-#### Properties
+### Properties
 
 - `symbol` (string): The stock ticker symbol this article relates to.
 - `headline` (string): The article headline/title.

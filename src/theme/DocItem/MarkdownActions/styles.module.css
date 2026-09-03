@@ -1,0 +1,195 @@
+/**
+ * The metadata row under a doc's h1. See index.js for where it came from.
+ *
+ * Colours are Infima variables rather than literals, so the row follows the
+ * site's light and dark palettes instead of carrying a second definition of
+ * them. That is the mistake the http token colours had to fix elsewhere in
+ * this repo: a hard-coded colour that was only ever checked in one theme.
+ *
+ * The two themes take DIFFERENT tokens, because Infima's emphasis scale is not
+ * symmetric. `--ifm-color-emphasis-600` is rgb(141,148,158) in light and
+ * rgb(204,208,213) in dark: fine on a dark ground, far too pale on a white one.
+ * Measured against the page background:
+ *
+ *     light  emphasis-600        #8d949e on #fff   3.06:1   fails WCAG AA
+ *     light  content-secondary   #525860 on #fff   7.19:1   passes AAA
+ *     dark   emphasis-600        #ccd0d5 on #1b1b1d  11.1:1  passes AAA
+ *
+ * `--ifm-color-content-secondary` is white in dark mode, which is why it is not
+ * simply used for both. The light value lands next to the marketing site's own
+ * `text-body-subtle` (#4b5563), which is what this row is ported from.
+ *
+ * The hover colour is `--ifm-color-content` and NOT `--ifm-heading-color`.
+ * Infima does not declare the latter on :root, so `var(--ifm-heading-color)`
+ * is invalid, `color` computes to `unset`, and because `color` inherits, the
+ * control silently keeps the row's resting colour. Nothing reports that: the
+ * rule matches, its `text-decoration` applies, and only the colour is dropped.
+ * Probing the variable is not enough to catch it either — reading it back on
+ * an element inside `.markdown` returns the inherited heading colour and looks
+ * like a successful lookup.
+ */
+
+:root {
+  --md-actions-color: var(--ifm-color-content-secondary);
+}
+
+[data-theme='dark'] {
+  --md-actions-color: var(--ifm-color-emphasis-600);
+}
+
+.row {
+  margin: -0.5rem 0 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  font-size: 0.875rem;
+  color: var(--md-actions-color);
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/**
+ * The separator is a real 1px border rather than a "|" glyph, drawn on the end
+ * of every item but the last.
+ *
+ * It is suppressed below 640px because a wrapped row leaves the item that ends
+ * the first line carrying a rule with nothing to its right. The padding is not
+ * suppressed with it: these are text labels, and flush is
+ * "Copy as MarkdownView as Markdown".
+ */
+.item {
+  display: flex;
+  align-items: center;
+  padding-right: 1rem;
+}
+
+.item:last-child {
+  padding-right: 0;
+}
+
+@media (min-width: 640px) {
+  .item + .item {
+    padding-left: 1rem;
+    border-left: 1px solid var(--ifm-toc-border-color);
+  }
+}
+
+/* Shared by the date and the two controls, so the row reads as one family. */
+.meta,
+.control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.125rem 0;
+  font-weight: 400;
+  line-height: 1.4;
+  color: inherit;
+}
+
+.control {
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  transition: color var(--ifm-transition-fast) ease;
+}
+
+/**
+ * The link must not be underlined at rest, and beating Docusaurus to that takes
+ * three classes:
+ *
+ *     .theme-doc-markdown.markdown li a { text-decoration: underline }   (0,2,2)
+ *     .control                                                           (0,1,0)
+ *     .row .list .control                                                (0,3,0)  wins
+ *
+ * The row sits inside the markdown body and its items are <li>, so that rule
+ * matches the link and not the button — which is exactly how the two controls
+ * end up looking like different things.
+ *
+ * Both get the same treatment, so the affordance does not depend on which
+ * element it happens to be.
+ */
+.row .list .control {
+  text-decoration: none;
+}
+
+.row .list .control:hover,
+.row .list .control:focus-visible {
+  color: var(--ifm-color-content);
+  text-decoration: underline;
+}
+
+.icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+/**
+ * All four button states share one grid cell. The cell is as wide as the
+ * widest state, which is the resting one — "Copy as Markdown" is longer than
+ * "Copying…", "Copied" and "Copy failed" — so the reserved width costs nothing
+ * and the button's box is a constant at every moment of its life.
+ */
+.swap {
+  display: inline-grid;
+  align-items: center;
+}
+
+.state {
+  grid-column: 1;
+  grid-row: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  /* `visibility`, not `display` or `opacity`: it holds the cell's size AND
+     removes the inactive labels from the accessibility tree, so the button's
+     accessible name is the one label a sighted reader can see. `opacity` would
+     leave the name as all four labels concatenated. */
+  visibility: hidden;
+}
+
+.control[data-state='idle'] .state[data-state='idle'],
+.control[data-state='busy'] .state[data-state='busy'],
+.control[data-state='copied'] .state[data-state='copied'],
+.control[data-state='error'] .state[data-state='error'] {
+  visibility: visible;
+}
+
+/* Weight rather than hue for the two outcomes. A green tick and a red warning
+   would be two new colours to prove against WCAG 1.4.3 in both themes, and the
+   state is carried by the icon and the word regardless, which is 1.4.1. */
+.control[data-state='copied'],
+.control[data-state='error'] {
+  color: var(--ifm-color-content);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The row's whole job is to put something on a clipboard or open another file.
+   That is chrome on paper — but the date is not, and it printed before. */
+@media print {
+  .control {
+    display: none;
+  }
+}

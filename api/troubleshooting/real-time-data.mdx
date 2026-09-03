@@ -1,5 +1,6 @@
 ---
 title: Real-Time Data Not Working
+description: The API returns the freshest data you are entitled to and raises no error. Learn how to spot delayed data and fix the account cause.
 sidebar_position: 14
 ---
 
@@ -620,6 +621,9 @@ static boolean testRealtimeData(MarketDataClient client, String symbol) {
     return false;
   }
 }
+
+// Test during market hours for best results
+testRealtimeData(client, "AAPL");
 ```
 
 </TabItem>
@@ -689,6 +693,9 @@ static async Task<bool> TestRealtimeDataAsync(MarketDataClient client, string sy
     Console.WriteLine("❌ Receiving historical data — complete your profile and agreements");
     return false;
 }
+
+// Test during market hours for best results
+await TestRealtimeDataAsync(client, "AAPL");
 ```
 
 </TabItem>

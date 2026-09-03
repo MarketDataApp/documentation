@@ -1,5 +1,7 @@
 ---
-title: User
+title: User (Java SDK)
+sidebar_label: User
+description: Retrieve your Market Data account details with the Java SDK, including how much of the daily request quota is still available.
 sidebar_position: 2
 ---
 
@@ -17,7 +19,7 @@ UtilitiesUserResponse user()
 CompletableFuture<UtilitiesUserResponse> userAsync()
 ```
 
-#### Returns
+### Returns
 
 `UtilitiesUserResponse` wrapping a `User`, which exposes your plan and quota — for example `requestsRemaining()` and `requestsLimit()`.
 

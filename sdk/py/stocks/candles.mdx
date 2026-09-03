@@ -1,5 +1,7 @@
 ---
-title: Candles
+title: Stock Candles (Python SDK)
+sidebar_label: Candles
+description: Retrieve historical price candles for any supported stock symbol with the Python SDK candles method, raw or human-readable.
 sidebar_position: 2
 ---
 
@@ -46,7 +48,7 @@ def candles(
 
 Fetches historical candles (OHLCV) data for a stock symbol. Supports various timeframes (minutely, hourly, daily, weekly, monthly, yearly) and automatically handles large date ranges by splitting them into year-long chunks and fetching them concurrently. The `symbol` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
 
-#### Parameters
+### Parameters
 
 - `symbol` (str)
 
@@ -112,13 +114,13 @@ Fetches historical candles (OHLCV) data for a stock symbol. Supports various tim
 
   File path for CSV output (only used with `output_format=OutputFormat.CSV`).
 
-#### Returns
+### Returns
 
 - `list[StockCandle]` | `list[StockCandlesHumanReadable]` | `dict` | `str` | `MarketDataClientErrorResult`
 
   The candles data in the requested format, or a `MarketDataClientErrorResult` if an error occurred.
 
-#### Notes
+### Notes
 
 - For intraday resolutions (minutely/hourly), large date ranges are automatically split into year-long chunks and fetched concurrently (up to 50 concurrent requests by default).
 - When using `OutputFormat.DATAFRAME`, the DataFrame is indexed by the timestamp column (`t` or `Date`).
@@ -141,7 +143,7 @@ df = client.stocks.candles(symbol="AAPL", resolution="4H", from_date="2023-01-01
 print(df)
 ```
 
-#### Output
+**Output**
 
 ```
                     open    high     low   close      volume
@@ -272,7 +274,7 @@ class StockCandle:
 
 StockCandle represents a single stock candle (OHLCV data), encapsulating price and volume information for a specific time period.
 
-#### Properties
+### Properties
 
 - `t` (datetime.datetime): The timestamp for the candle (automatically converted from Unix timestamp).
 - `o` (float): The opening price.
@@ -281,7 +283,7 @@ StockCandle represents a single stock candle (OHLCV data), encapsulating price a
 - `c` (float): The closing price.
 - `v` (int): The trading volume.
 
-#### Notes
+### Notes
 
 - The `t` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
 
@@ -301,7 +303,7 @@ class StockCandlesHumanReadable:
 
 StockCandlesHumanReadable represents a stock candle in human-readable format with capitalized field names and formatted values.
 
-#### Properties
+### Properties
 
 - `Date` (datetime.datetime): The timestamp for the candle (automatically converted from Unix timestamp).
 - `Open` (float): The opening price.
@@ -310,7 +312,7 @@ StockCandlesHumanReadable represents a stock candle in human-readable format wit
 - `Close` (float): The closing price.
 - `Volume` (int): The trading volume.
 
-#### Notes
+### Notes
 
 - The `Date` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
 - Field names use capitalized format (e.g., `Open` instead of `o`, `Date` instead of `t`).

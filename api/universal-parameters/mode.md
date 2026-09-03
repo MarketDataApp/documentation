@@ -1,5 +1,6 @@
 ---
 title: Data Mode
+description: Use the mode parameter to choose live or cached data, which sets the freshness guarantee and the credits a Market Data request costs.
 sidebar_position: 1
 tags:
   - "API: Premium"
@@ -9,10 +10,10 @@ sidebar_custom_props:
 
 The `mode` parameter allows you to control **how an API request is fulfilled**, including data freshness guarantees and credit usage. The `mode` parameter determines the response behavior used to fulfill each request.
 
-Our API supports three modes: `live`, `cached`, and `delayed`. These options balance immediacy, availability, and cost efficiency. Below is a detailed overview of each mode, including examples and recommended use-cases.
+Our API supports four freshness modes — `live`, `delayed`, `eod`, and `historical` — plus `cached`, which serves recently stored data at a reduced credit cost. These options balance immediacy, availability, and cost efficiency. Below is a detailed overview of each mode, including examples and recommended use-cases.
 
 :::info Premium Parameter
-This parameter is available only on paid plans. Free and trial plans cannot change the data mode and will always receive delayed data.
+This parameter is available only on paid plans. Free and trial plans cannot change the data mode. They receive historical data — the last fully-closed session — and a request for any fresher mode (`mode=live`, `mode=delayed`, or `mode=eod`) returns [402 Payment Required](/api/troubleshooting/payment-required). See [Data Freshness](/docs/account/data-freshness/) for what each plan receives.
 :::
 
 ## Live Mode
@@ -116,7 +117,7 @@ When `mode=cached` is used, successful responses do not return `200 OK`. Instead
 
 ## Delayed Mode
 
-The `delayed` mode returns data delayed by **at least 15 minutes**. This mode is the default for all free and trial accounts. Paid accounts may also request delayed data explicitly.
+The `delayed` mode returns data delayed by **at least 15 minutes**. It is available on paid plans (Starter and up), which may request delayed data explicitly.
 
 For when delayed data crosses into "historical" (a fully-closed prior session) — and why that happens at different times for stocks (4:15 PM ET) vs options (9:30 AM ET the next trading day) — see [Data Freshness](/docs/account/data-freshness).
 
@@ -132,20 +133,41 @@ GET https://api.marketdata.app/v1/options/chain/SPY/?mode=delayed
 
 This request returns market data that is delayed by a minimum of 15 minutes.
 
+## EOD and Historical Modes
+
+Two further modes return a closed session rather than a delay on the current one.
+
+* `mode=eod` returns the most recent session whose 4:15 PM ET cutoff has passed. Requires a paid plan.
+* `mode=historical` returns the most recent fully-closed session — the API waits for the next session to open before it counts a session as closed. This is what free and trial accounts receive, and the only mode they may request explicitly.
+
+### Pricing for EOD and Historical Modes
+
+* Pricing is identical to live mode.
+
+### Requesting EOD or Historical Data
+
+```http
+GET https://api.marketdata.app/v1/options/chain/SPY/?mode=eod
+GET https://api.marketdata.app/v1/options/chain/SPY/?mode=historical
+```
+
 ## Mode Comparison
 
-| Feature                        | Live Mode                            | Cached Mode                | Delayed Mode                    |
-|--------------------------------|--------------------------------------|----------------------------|---------------------------------|
-| **Data Timeliness**            | Real-time                            | Seconds to minutes old     | ≥ 15 minutes delayed            |
-| **Pricing**                    | 1 credit per symbol with quote data  | 1 credit per request       | Same as live                    |
-| **Ideal Use-Case**             | Time-sensitive decisions             | Bulk quote retrieval       | Non-time-sensitive applications |
-| **Default Behavior**           | Paid accounts (if `mode` is omitted) | Must specify `mode=cached` | Free & trial accounts           |
-| **Paid Accounts Access**       | ✅                                   | ✅                         | ✅                              |
-| **Free/Trial Accounts Access** | ❌                                   | ❌                         | ✅                              |
+| Feature                        | Live Mode                            | Cached Mode                | Delayed Mode                    | EOD Mode                     | Historical Mode           |
+|--------------------------------|--------------------------------------|----------------------------|---------------------------------|------------------------------|---------------------------|
+| **Data Timeliness**            | Real-time                            | Seconds to minutes old     | ≥ 15 minutes delayed            | Last session past 4:15 PM ET | Last fully-closed session |
+| **Pricing**                    | 1 credit per symbol with quote data  | 1 credit per request       | Same as live                    | Same as live                 | Same as live              |
+| **Ideal Use-Case**             | Time-sensitive decisions             | Bulk quote retrieval       | Non-time-sensitive applications | End-of-day reporting         | Backtesting and research  |
+| **Default Behavior**           | Paid accounts (if `mode` is omitted) | Must specify `mode=cached` | Must specify `mode=delayed`     | Must specify `mode=eod`      | Free & trial accounts     |
+| **Paid Accounts Access**       | ✅                                   | ✅                         | ✅                              | ✅                           | ✅                        |
+| **Free/Trial Accounts Access** | ❌                                   | ❌                         | ❌                              | ❌                           | ✅                        |
+
+Free and trial accounts receive historical data on every request. See [Data Freshness](/docs/account/data-freshness/) for the freshness of each endpoint on each plan.
 
 * Choose **`mode=live`** when immediate data freshness is required.
 * Use **`mode=cached`** to reduce credit usage when working with large symbol sets.
 * Select **`mode=delayed`** for applications where timing precision is not critical.
+* Select **`mode=eod`** or **`mode=historical`** when a closed session is what you want.
 
 ## Status Codes
 

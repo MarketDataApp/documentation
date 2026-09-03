@@ -1,5 +1,7 @@
 ---
-title: Parameters
+title: Parameters (Go SDK)
+sidebar_label: Parameters
+description: Universal Market Data parameters work on every endpoint. In the Go SDK you set them as client-level functional options that apply to each request.
 sidebar_position: 5
 ---
 
@@ -55,14 +57,14 @@ Only these four universal parameters can be set through the environment. They ar
 Controls how each request is fulfilled, trading data freshness against credit cost.
 
 - **Option:** `WithMode(mode Mode)`
-- **Values:** `marketdata.ModeLive` (real-time; default on paid plans), `marketdata.ModeCached` (recently cached data at reduced credit cost), `marketdata.ModeDelayed` (delayed at least 15 minutes; default on free/trial plans)
+- **Values:** `marketdata.ModeLive` (real-time; default on paid plans), `marketdata.ModeCached` (recently cached data at reduced credit cost), `marketdata.ModeDelayed` (delayed at least 15 minutes; paid plans only)
 
 ```go
 client, err := marketdata.NewClient(marketdata.WithMode(marketdata.ModeLive))
 ```
 
 :::info Premium parameter
-`mode` is available only on paid plans. Free and trial plans always receive delayed data regardless of this setting.
+`mode` is available only on paid plans. Free and trial plans receive historical data (the last fully-closed session) regardless of this setting. See [Data Freshness](/account/data-freshness).
 :::
 
 When `ModeCached` misses the cache, the API returns HTTP `204`, which the SDK surfaces as a no-data response (nil result, `Response.NoData == true`, nil error) rather than an error.

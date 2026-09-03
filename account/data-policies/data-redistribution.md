@@ -1,5 +1,6 @@
 ---
 title: Data Redistribution Policy
+description: Self-service Market Data plans are personal licenses. Learn what counts as redistribution, why it is prohibited, and how commercial licensing works.
 sidebar_position: 5
 ---
 

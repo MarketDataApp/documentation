@@ -1,5 +1,6 @@
 ---
 title: Starter Trial
+description: Try the Starter plan free for 30 days with no credit card. See what the trial includes, what it leaves out, and how it compares to a subscription.
 sidebar_position: 3
 ---
 

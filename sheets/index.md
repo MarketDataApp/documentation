@@ -1,5 +1,6 @@
 ---
 title: Google Sheets Add-on
+description: The Market Data add-on brings stock, option, index and fund data into Google Sheets through custom formulas. Start here to install and use it.
 sidebar_position: 1
 slug: /
 ---

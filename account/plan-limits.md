@@ -1,5 +1,6 @@
 ---
 title: Plan Limits
+description: Every Market Data plan sets limits on credits, devices, historical data age, data type and endpoints. Compare the standard plans and their usage windows.
 sidebar_position: 3
 ---
 
@@ -35,7 +36,7 @@ All plans are subject to a single IP address limit. Each account may only connec
 
 See the [Single IP Address Policy](/docs/account/data-policies/single-ip/) for details.
 
-#### Throttling
+### Throttling
 
 All plans are subject to a maximum of 50 simultaneous requests at any given time.
 

@@ -1,5 +1,6 @@
 ---
-title: Chain
+title: Option Chain (JavaScript SDK)
+sidebar_label: Chain
 sidebar_position: 1
 ---
 
@@ -36,7 +37,7 @@ chain<P>(
 
 Fetches the option chain for a single underlying symbol.
 
-#### Parameters
+### Parameters
 
 - `symbol` (string)
 
@@ -113,7 +114,7 @@ Fetches the option chain for a single underlying symbol.
 - [`useHumanReadable`](/sdk/js/settings#human-readable) (optional): Use human-readable field names. Alias: `human`.
 - [`mode`](/sdk/js/settings#data-mode) (optional): The data mode to use.
 
-#### Returns
+### Returns
 
 - [`MarketDataPromise<OptionsChain[] | OptionsChainHuman[] | Blob>`](/sdk/js/client#MarketDataPromise)
 
@@ -241,7 +242,7 @@ interface OptionsChain {
 }
 ```
 
-#### Properties
+### Properties
 
 - `optionSymbol` (string): OCC-format option symbol (e.g. `"AAPL271217C00250000"`).
 - `underlying` (string): The underlying stock symbol.

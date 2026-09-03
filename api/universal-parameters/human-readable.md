@@ -1,5 +1,6 @@
 ---
 title: Human Readable
+description: Use the human parameter to get human-readable attribute names in JSON or CSV, so the output can go straight into a table for an end user.
 sidebar_position: 8
 ---
 

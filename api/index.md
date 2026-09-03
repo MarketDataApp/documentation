@@ -1,5 +1,6 @@
 ---
 title: Market Data API
+description: The Market Data API is a REST service with standard HTTP methods and status codes, returning JSON for code or CSV for a spreadsheet.
 sidebar_position: 1
 slug: /
 ---
@@ -26,7 +27,7 @@ Our endpoints have **lots of optional parameters** to allow users to sort and fi
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/tOIZi7s6nqQ?si=sFxMcDQGsfnQHhhb" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
-#### Get Started Quick — No Registration Required!
+### Get Started Quick — No Registration Required!
 
 You can try stock, option, and mutual fund endpoints with several different symbols that are unlocked and require no authorization token. That means these symbols can be used throughout our API with no registration required!
 

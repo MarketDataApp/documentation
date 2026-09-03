@@ -1,5 +1,7 @@
 ---
-title: Candles
+title: Fund Candles (Python SDK)
+sidebar_label: Candles
+description: Retrieve historical price candles for any supported fund symbol with the Python SDK candles method, raw or human-readable.
 sidebar_position: 1
 ---
 
@@ -43,7 +45,7 @@ def candles(
 
 Fetches historical candles (OHLC) data for a fund symbol. The `symbol` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
 
-#### Parameters
+### Parameters
 
 - `symbol` (str)
 
@@ -97,7 +99,7 @@ Fetches historical candles (OHLC) data for a fund symbol. The `symbol` parameter
 
   File path for CSV output (only used with `output_format=OutputFormat.CSV`).
 
-#### Returns
+### Returns
 
 - `list[FundsCandle]` | `list[FundsCandlesHumanReadable]` | `dict` | `str` | `MarketDataClientErrorResult`
 
@@ -245,7 +247,7 @@ class FundsCandle:
 
 FundsCandle represents a single fund candle (OHLC data), encapsulating price information for a specific time period.
 
-#### Properties
+### Properties
 
 - `t` (datetime.datetime): The timestamp for the candle (automatically converted from Unix timestamp).
 - `o` (float): The opening price.
@@ -253,7 +255,7 @@ FundsCandle represents a single fund candle (OHLC data), encapsulating price inf
 - `l` (float): The lowest price.
 - `c` (float): The closing price.
 
-#### Notes
+### Notes
 
 - The `t` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
 
@@ -272,7 +274,7 @@ class FundsCandlesHumanReadable:
 
 FundsCandlesHumanReadable represents a fund candle in human-readable format with capitalized field names and formatted values.
 
-#### Properties
+### Properties
 
 - `Date` (datetime.datetime): The timestamp for the candle (automatically converted from Unix timestamp).
 - `Open` (float): The opening price.
@@ -280,7 +282,7 @@ FundsCandlesHumanReadable represents a fund candle in human-readable format with
 - `Low` (float): The lowest price.
 - `Close` (float): The closing price.
 
-#### Notes
+### Notes
 
 - The `Date` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
 - Field names use capitalized format (e.g., `Open` instead of `o`, `Date` instead of `t`).

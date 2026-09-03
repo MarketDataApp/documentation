@@ -29,5 +29,10 @@ export default defineConfig({
       testMatch: ['context7-widget.spec.js'],
       use: { browserName: 'chromium' },
     },
+    {
+      name: 'markdown-actions',
+      testMatch: ['markdown-actions.spec.js'],
+      use: { browserName: 'chromium' },
+    },
   ],
 });

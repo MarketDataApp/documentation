@@ -1,5 +1,7 @@
 ---
-title: Authentication
+title: "Authentication (C# SDK)"
+sidebar_label: Authentication
+description: Set your Market Data Bearer Token for the C# SDK through an environment variable, .NET user secrets, a .env file, or a direct constructor argument.
 sidebar_position: 2
 ---
 
@@ -65,7 +67,7 @@ The SDK reads user secrets automatically when you create a client without explic
 
 The SDK also loads a `.env` file from your working directory at startup. Create a file named `.env` in your project root:
 
-```env title=".env"
+```ini title=".env"
 MARKETDATA_TOKEN=your_api_token
 ```
 

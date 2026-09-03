@@ -20,7 +20,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          # Full history: `showLastUpdateTime` derives each page's date from
+          # git. A shallow clone gives every page the same date, and reports
+          # nothing -- the build succeeds and the dates are quietly wrong.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:

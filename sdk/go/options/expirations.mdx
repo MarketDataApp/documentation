@@ -1,5 +1,6 @@
 ---
-title: Expirations
+title: Expirations (Go SDK)
+sidebar_label: Expirations
 sidebar_position: 2
 ---
 
@@ -31,20 +32,20 @@ contracts. The symbol is required; without any options the endpoint returns
 every expiration in the chain. The dates are normalized to Eastern time (the
 exchange time zone).
 
-#### Parameters
+### Parameters
 
 - `symbol` (`string`) — the underlying stock symbol (for example `"AAPL"`). Required; an empty string is rejected with a `marketdata.ValidationError` before any request is made.
 - Options (independent — may be combined):
   - `options.WithExpirationStrike(strike float64)` — limit the list to expirations that offer a contract at the given strike price. The value must be greater than zero to take effect.
   - `options.WithExpirationDate(d time.Time)` — return the expirations that were available on the given historical date instead of today's list. Only the calendar date is used; a zero time leaves the parameter unset.
 
-#### Returns
+### Returns
 
 - `[]time.Time` — the expiration dates, in Eastern time. Empty when there is no data.
 - `*response.Response` — the raw response plus rate-limit metadata (context method only).
 - `error` — non-nil on a validation failure, transport error, or unexpected API status.
 
-#### Notes
+### Notes
 
 - The two options are independent and combine freely (unlike the chain's strike and expiry selectors).
 - If the API has no data for the request (HTTP 404), `Expirations` returns a `nil` slice, a response whose `NoData` field is `true`, and a `nil` error.
@@ -81,7 +82,7 @@ func main() {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 AAPL option expirations:

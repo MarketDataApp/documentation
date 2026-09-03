@@ -1,5 +1,6 @@
 ---
 title: Trader Trial
+description: Try the Trader plan free for 30 days with no credit card. See the credits it grants, the features it withholds, and how it compares to other plans.
 sidebar_position: 5
 ---
 

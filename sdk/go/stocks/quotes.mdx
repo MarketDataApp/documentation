@@ -1,5 +1,6 @@
 ---
-title: Quotes
+title: Stock Quotes (Go SDK)
+sidebar_label: Quotes
 sidebar_position: 3
 ---
 
@@ -26,7 +27,7 @@ func (s *Service) GetQuotes(symbols ...string) ([]Quote, error)
 
 Fetch real-time quotes for many symbols at once.
 
-#### Parameters
+### Parameters
 
 - `ctx` (`context.Context`) — controls cancellation and deadlines (context method only).
 - `symbols` (`[]string` for `Quotes`, variadic `...string` for `GetQuotes`) — the stock ticker symbols, e.g. `[]string{"AAPL", "MSFT", "GOOG"}`. At least one symbol is required; an empty set returns a validation error without making a request.
@@ -34,13 +35,13 @@ Fetch real-time quotes for many symbols at once.
   - `stocks.WithFiftyTwoWeek(enabled bool)` — request 52-week high/low data for each quote. Defaults to off.
   - `stocks.WithExtended(extended bool)` — control whether quotes include extended-hours data. When omitted, the parameter is not sent and the API default applies.
 
-#### Returns
+### Returns
 
 - `[]Quote` — one `Quote` per symbol returned by the API.
 - `*response.Response` — raw response + rate-limit metadata (context method only).
 - `error` — non-nil on request/validation failure.
 
-#### Notes
+### Notes
 
 - If the API responds with 404 because no data is available, `Quotes` returns a `nil` slice, a `nil` error, and a non-nil `*response.Response` whose `NoData` field is `true`. `GetQuotes` discards that metadata, so a no-data result is simply a `nil` slice with a `nil` error.
 - To pass options and still request multiple symbols, use `Quotes` — `GetQuotes` is options-free by design.
@@ -76,7 +77,7 @@ func main() {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 AAPL: $186.19 (0.57%)
@@ -190,7 +191,7 @@ type Quote struct {
 }
 ```
 
-#### Fields
+### Fields
 
 - `Symbol` — the stock ticker symbol.
 - `Ask` / `AskSize` — the current ask price and the number of shares offered at it.
@@ -203,7 +204,7 @@ type Quote struct {
 - `Updated` — timestamp of the quote (US Eastern).
 - `FiftyTwoWeekHigh` / `FiftyTwoWeekLow` — 52-week high/low, present only with `WithFiftyTwoWeek`.
 
-#### Helper Methods
+### Helper Methods
 
 - `Spread() float64` — the bid-ask spread (`Ask - Bid`).
 - `SpreadPercent() float64` — the spread as a percentage of `Mid`.

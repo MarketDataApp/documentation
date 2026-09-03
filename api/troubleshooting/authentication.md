@@ -1,5 +1,6 @@
 ---
 title: "401: Authentication"
+description: A 401 from the Market Data API almost always means a malformed Authorization header. Check the header and URL parameter forms against these examples.
 sidebar_position: 5
 ---
 
@@ -15,7 +16,7 @@ Troubleshooting authentication issues is crucial for ensuring uninterrupted acce
 Even though it is more complex to set-up, we encourage all users to take the extra time required to configure header-based authentication for our API, as this is the most secure method of authentication.
 :::
 
-### Troubleshooting URL Parameter Authentication
+## Troubleshooting URL Parameter Authentication
 
 Usually URL parameter authentication goes wrong because customers use **invalid characters to separate the query string from the path**. The correct character to use is `?` and the correct character to use to separate query parameters is `&`. If you use the wrong characters, the API will not be able to parse the query string correctly and will be unable to authenticate your request. Learn more about the correct format of URL parameters [here](/api/troubleshooting/url-parameters).
 
@@ -35,7 +36,7 @@ https://api.marketdata.app/v1/stocks/quotes/SPY/?dateformat=timestamp&token=toke
 
 No matter the order of the parameters, the API will be able to parse the query string and authenticate your request **as long as the correct characters are used to separate the query string from the path and the query parameters from each other.**
 
-### Troubleshooting Header Authentication
+## Troubleshooting Header Authentication
 
 The most common issues customers face with header-based authentication are:
 
@@ -44,7 +45,7 @@ The most common issues customers face with header-based authentication are:
 - Invalid header format
 - Incorrect token
 
-#### Steps for Troubleshooting 401 Errors
+### Steps for Troubleshooting 401 Errors
 
 1. **Test the Token with URL Parameter Authentication**
    

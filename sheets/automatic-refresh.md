@@ -1,5 +1,6 @@
 ---
 title: Automatic Refreshing
+description: Google Workspace add-ons cannot use WebSockets, so the Sheets add-on has no streaming quotes. Use the Refresh button or a formula workaround.
 sidebar_position: 5
 ---
 

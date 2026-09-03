@@ -1,5 +1,7 @@
 ---
-title: Client
+title: Client (JavaScript SDK)
+sidebar_label: Client
+description: The JavaScript SDK MarketDataClient handles requests, response parsing, retries, rate-limit tracking and logging for all five resource groups.
 sidebar_position: 3
 ---
 
@@ -8,7 +10,7 @@ import TabItem from "@theme/TabItem";
 
 The Market Data JavaScript Client handles API requests, response parsing, rate-limit tracking, retries, and logging. The SDK supports stocks, options, funds, markets, and utility endpoints.
 
-### Get Started Quickly with the MarketDataClient
+## Get Started Quickly with the MarketDataClient
 
 1. Review the [documentation on authentication](/sdk/js/authentication) to learn how to set your API token.
 2. Create a [`MarketDataClient`](#MarketDataClient) instance and use it to make requests to the Market Data API.
@@ -41,7 +43,7 @@ interface MarketDataConfig {
 
 [MarketDataClient](#MarketDataClient) is the main client class for interacting with the Market Data API. It provides access to all resources (stocks, options, funds, markets, utilities) and handles authentication, rate limiting, and request management.
 
-#### Properties
+### Properties
 
 - `token` (string, optional): The authentication token for API requests. See [authentication documentation](/sdk/js/authentication) for details.
 - `rateLimits` ([UserRateLimits](#RateLimits), optional): Current rate limit information. Populated by the startup `/user/` call (see `ready` below) or by the first successful API request when startup validation is skipped.
@@ -52,7 +54,7 @@ interface MarketDataConfig {
 - `logger` ([Logger](#Logger)): The logger instance used for diagnostic output.
 - `settings` ([MarketDataSettings](/sdk/js/settings)): Resolved configuration including env-var defaults. See [Settings](/sdk/js/settings) for details.
 
-#### Resources
+### Resources
 
 - `stocks` ([StocksResource](/sdk/js/stocks)): Access to stocks endpoints (prices, quotes, candles, earnings, news)
 - `options` ([OptionsResource](/sdk/js/options)): Access to options endpoints (chain, expirations, quotes, lookup)
@@ -287,7 +289,7 @@ if (client.rateLimits) {
 }
 ```
 
-#### UserRateLimits
+### UserRateLimits
 
 ```typescript
 interface UserRateLimits {

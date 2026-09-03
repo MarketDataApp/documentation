@@ -1,5 +1,7 @@
 ---
-title: Settings
+title: "Settings (C# SDK)"
+sidebar_label: Settings
+description: Configure the C# SDK at two levels, client options set once and request options passed per call, and see how universal parameters cascade between them.
 sidebar_position: 4
 ---
 
@@ -11,9 +13,9 @@ When you create a client without explicit options, `MarketDataClientOptions.From
 
 1. .NET user secrets (lowest priority)
 2. An optional `.env` file in the current working directory
-3. Environment variables (highest priority)
+3. `MARKETDATA_*` environment variables (highest priority)
 
-So an environment variable overrides the same key in `.env`, which overrides user secrets. Explicit options — `new MarketDataClientOptions { ... }` — bypass the cascade entirely.
+So a `MARKETDATA_*` environment variable overrides the same key in `.env`, which overrides user secrets. Only the `MARKETDATA_`-prefixed variables are read; every other variable in the environment is ignored. Explicit options — `new MarketDataClientOptions { ... }` — bypass the cascade entirely.
 
 In ASP.NET Core and generic-host apps, `MarketDataClientOptions.FromConfiguration(IConfiguration)` reads the same keys from your app's `IConfiguration` (appsettings, user secrets, environment variables — whatever the host has wired up). `AddMarketDataClient(builder.Configuration)` does this for you.
 

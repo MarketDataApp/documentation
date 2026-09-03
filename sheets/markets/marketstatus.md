@@ -1,5 +1,6 @@
 ---
 title: MARKETSTATUS
+description: The MARKETSTATUS formula answers open or closed for a stock market on one date or many, covering past, present and future trading days.
 sidebar_position: 1
 ---
 

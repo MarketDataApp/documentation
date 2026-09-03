@@ -1,5 +1,6 @@
 ---
 title: Disagree With Your Classification
+description: Market Data classified your account as professional and you disagree. Learn how classification is decided and what to do to have it reviewed.
 sidebar_position: 6
 ---
 

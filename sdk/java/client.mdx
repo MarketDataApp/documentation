@@ -1,5 +1,7 @@
 ---
-title: Client
+title: Client (Java SDK)
+sidebar_label: Client
+description: MarketDataClient is the Java SDK entry point, reaching all five resources and handling parsing, retries with backoff, rate limits and logging.
 sidebar_position: 3
 ---
 
@@ -10,7 +12,7 @@ The `MarketDataClient` is the entry point to the SDK. It handles API requests, r
 
 The client is immutable, thread-safe, and `AutoCloseable`. Create one per application (it holds a shared HTTP client and a 50-request concurrency pool) and close it when you're done.
 
-### Get Started Quickly
+## Get Started Quickly
 
 1. Review the [authentication documentation](/sdk/java/authentication) to learn how to set your API token.
 2. Create a [`MarketDataClient`](#MarketDataClient) and use it to make requests.
