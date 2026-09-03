@@ -24,20 +24,16 @@ yarn build    # Production build
 
 ## Architecture
 
-The site is hosted on **Cloudflare Pages** with a **Cloudflare Worker** reverse proxy. Both production and staging use the same `/docs/` base path — routing is determined by hostname, not path prefix. Deployment is handled by a separate orchestrator repo (`MarketDataApp/www-marketdata-app`) that merges build artifacts from R2 and deploys to unified Pages projects.
+The site is hosted on **Cloudflare Pages**. Both production and staging use the same `/docs/` base path — routing is determined by hostname, not path prefix. Deployment is handled by a separate orchestrator repo (`MarketDataApp/www-marketdata-app`) that merges build artifacts from R2 and deploys to unified Pages projects.
 
 ### Request flow
 
 ```
-Browser → Cloudflare DNS → Worker (hostname lookup) → Cloudflare Pages → Response
+Browser → Cloudflare DNS → Cloudflare Pages → Response
 ```
 
 1. DNS resolves the hostname (both are proxied CNAMEs in Cloudflare)
-2. Cloudflare routes `/docs` and `/docs/*` to the Worker (via `wrangler.toml` route patterns)
-3. Worker looks up the hostname in a `TARGETS` map to find the Pages deployment target
-4. Worker rewrites the hostname and fetches from Pages (e.g. `www-marketdata-app.pages.dev/docs/api/stocks`)
-5. Pages serves the file from its `docs/` directory (built and nested there by CI)
-6. Worker returns the response — the URL path stays the same throughout
+2. Pages serves the file from its `docs/` directory (built and nested there by CI)
 
 ### Environments
 
@@ -46,15 +42,14 @@ Browser → Cloudflare DNS → Worker (hostname lookup) → Cloudflare Pages →
 | Production  | `www.marketdata.app`         | `www-marketdata-app`         | `main`     |
 | Staging     | `www-staging.marketdata.app` | `www-staging-marketdata-app` | `staging`  |
 
-### Worker features
+### The retired edge worker
 
-The Worker (`worker/handler.js`) handles more than just proxying:
-
-- **Markdown serving** — Requests with `.md` extension or `Accept: text/markdown` header return cleaned markdown fetched from the raw GitHub source (frontmatter and JSX stripped)
-- **SDK PHP redirect** — `/docs/sdk-php/*` redirects to GitHub Pages (301)
-- **Edge caching** — Subrequests use `cf.cacheEverything`
-- **404 logging** — Logs pathname and referer for missing pages
-- Non-docs paths pass through to the origin (WordPress)
+There used to be a Worker in front of Pages. It was retired on 2026-09-01
+(MarketData-App/www-marketdata-app#15) and nothing proxies `/docs/*` any more.
+Everything it did is now served by Cloudflare or by the build — including the
+canonical `Link` header on Markdown responses, which `_headers` rules in the
+orchestrator repo took over (#16). See CLAUDE.md for the full mapping and for
+why those rules' order is load-bearing.
 
 ## Deployment
 
@@ -72,18 +67,10 @@ Workflow:
 2. Verify changes at `www-staging.marketdata.app/docs/`
 3. Open a PR from `staging` → `main` and merge — deploys to production
 
-If files in `worker/` changed, the docs CI also runs worker tests and deploys the Worker.
-
 ## Testing
 
 ```bash
-# Worker unit tests
-cd worker && yarn test
-
-# Integration tests (markdown serving against live site)
-cd worker && TEST_ENV=staging yarn test:integration
-
-# E2E tests (Playwright — Context7 widget)
+# E2E tests (Playwright — Context7 widget, Markdown actions row)
 TEST_ENV=staging yarn test:e2e
 
 # Script tests (option-symbol checker, Chromium resolver)
@@ -112,7 +99,9 @@ account/          # Account & billing docs (MDX)
 src/
   theme/          # Swizzled Docusaurus theme components
   css/            # Custom styles
-worker/           # Cloudflare Worker reverse proxy
+lib/              # MDX→Markdown and HTML→Markdown converters (the twin converters)
+plugins/          # markdown-twins, llms.txt, redirects
+scripts/          # Build-time checks — see Testing
 e2e/              # Playwright end-to-end tests
 .github/workflows # CI/CD pipeline
 ```

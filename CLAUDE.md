@@ -2,7 +2,7 @@
 
 ## Hosting & URLs
 
-- Docs site is hosted on **Cloudflare Pages** with a **Cloudflare Worker** reverse proxy
+- Docs site is hosted on **Cloudflare Pages**. There is no longer a Worker in front of it
 - Both environments use the same `/docs/` base path — routing is by hostname, not path prefix
 
 | Environment | URL                                | Pages Project                | Branch    |
@@ -15,38 +15,48 @@
 ### Request flow
 
 1. DNS resolves the hostname (both are proxied CNAMEs in Cloudflare)
-2. Cloudflare routes `/docs` and `/docs/*` to the Worker (via `wrangler.toml` route patterns)
-3. Worker (`worker/handler.js`) looks up the hostname in the `TARGETS` map to find the Pages target
-4. Worker rewrites the hostname and fetches from the Pages project (e.g. `www-marketdata-app.pages.dev/docs/api/stocks`)
-5. Pages serves the file from its `docs/` directory (built and nested there by CI)
-6. Worker returns the response to the client — path stays the same throughout
+2. Cloudflare serves the request from Pages directly
+3. Pages serves the file from its `docs/` directory (built and nested there by CI)
 
-### Worker features
+### The retired edge worker
 
-**The worker lives in `MarketData-App/www-marketdata-app`, not here, and it is
-being retired** (MarketData-App/www-marketdata-app#15). Nothing in this repo
-deploys it. What it still does:
+**The worker is gone.** `marketdata-docusaurus-proxy` was retired on 2026-09-01
+(MarketData-App/www-marketdata-app#15) and nothing proxies `/docs/*` any more.
+The `worker/` directory in this repo holds no tracked files; if you have one
+locally it is a leftover `node_modules`.
 
-- **Hostname-based routing**: `TARGETS` map in `handler.js` maps each hostname to its Cloudflare Pages deployment
-- **Markdown serving**: rewrites `Accept: text/markdown` to the twin's path and proxies it. It does NOT fetch source from GitHub — it stopped on 2026-08-25, for reasons recorded in `handler.js`
-- **SDK PHP redirect**: `/docs/sdk-php/*` → `marketdataapp.github.io/sdk-php/*` (301), with a doubled-directory collapse
-- **cdn-cgi rescue**: `/docs/**/cdn-cgi/**` → `/cdn-cgi/**` (302)
-- **Edge caching**: Passes `cf.cacheEverything` on subrequests
-- **404 logging**: Logs pathname and referer for 404 responses
-
-What has already moved off it, and needs nothing at the edge:
+Every behaviour it had is now served by Cloudflare or by the build:
 
 | Behaviour                           | Now served by                                                     |
 |-------------------------------------|-------------------------------------------------------------------|
+| hostname-based routing              | nothing — Pages answers each hostname directly                    |
 | `Accept: text/markdown` negotiation | a Cloudflare Transform Rule, live on both hostnames               |
+| canonical `Link` on `.md` responses | `_headers` rules in the orchestrator — see below                  |
+| `content-type` on `.md` responses   | nothing — Pages types all three twin names correctly on its own   |
 | the legacy `/docs/sdk-php/*` space  | `_redirects`, generated from `SDK_PHP` in `redirects.js`          |
 | `/docs/robots.txt` returning 404    | nothing — the build writes no `robots.txt`, so it 404s on its own |
 | 404 logging                         | Cloudflare zone analytics, which exposes referer on this plan     |
 
-One behaviour dies with the worker and is **accepted, not replaced**: the
-canonical `Link` header on Markdown responses. See
-MarketData-App/www-marketdata-app#16. Pages types `.md` correctly without help,
-so only the header is lost.
+#### The canonical `Link` header was replaced, not lost
+
+MarketData-App/www-marketdata-app#16 planned to accept the loss and fixed it
+instead, closed 2026-09-01. Markdown responses still carry:
+
+```
+link: <https://www.marketdata.app/docs/api/stocks/candles/>; rel="canonical"
+```
+
+It comes from `_headers` rules that live in **`MarketDataApp/www-marketdata-app`**,
+not here, and they cover both halves of the origin rather than just `/docs/`.
+
+**`_headers` is not first-match-wins.** Every matching rule applies and a
+repeated header name *appends*, so the obvious three rules serve two canonicals
+on the `index` spellings — `/*.md` matches `/docs/x/index.md` with a greedy
+splat and names `/docs/x/index/`, a route that does not exist. The fix is `!
+Link` in each specific rule, unsetting before setting, with the broad rule
+first. **That order is load-bearing**; reversed, the file still parses, still
+deploys, and quietly serves two canonicals again. `headers.test.mjs` in that
+repo has a test named for it.
 
 ### CI/CD pipeline
 
@@ -57,7 +67,10 @@ so only the header is lost.
 3. Generates `_headers` file for asset cache control
 4. Uploads build to R2 (`www-marketdata-app-builds` bucket) at `{env}/sources/docs/`
 5. Triggers orchestrator via `repository_dispatch`
-6. If `worker/` files changed: runs worker tests, then deploys the worker
+
+The "Check if Worker changed" / "Test Worker" / "Deploy Worker" steps were
+removed when the worker retired. `main` still carries them until `staging`
+merges into it — see the note in `deploy-docs.yml`.
 
 **Orchestrator** (`MarketDataApp/www-marketdata-app`, `.github/workflows/deploy-site.yml`):
 
@@ -177,13 +190,12 @@ that have no source for *any* converter to read: the docs root
 tag pages.
 
 **Every built route must have a twin, and `postBuild` fails the build if one
-does not.** It cannot be a warning. The worker answers `Accept: text/markdown`
-today and *falls through* to the HTML proxy for a twin-less route, so the gap is
-invisible from outside — `/docs/` returned HTML rather than 404. Its
-replacement, a Cloudflare Transform Rule that rewrites `<route>` to
-`<route>index.md` (MarketData-App/www-marketdata-app#15), is unconditional and
-cannot fall through, so a route with no twin becomes a 404 on the day the worker
-is switched off, with no deploy and no other cause.
+does not.** It cannot be a warning. The retired worker answered `Accept:
+text/markdown` by *falling through* to the HTML proxy for a twin-less route, so
+the gap was invisible from outside — `/docs/` returned HTML rather than 404.
+The Cloudflare Transform Rule that replaced it rewrites `<route>` to
+`<route>index.md` unconditionally and cannot fall through, so a route with no
+twin is a 404 today, with no deploy and no other cause.
 
 Two routes get a name set that is not `<stem>` three ways:
 
@@ -198,12 +210,43 @@ Two routes get a name set that is not `<stem>` three ways:
 halves of the origin answer in one Markdown dialect. That repo is private with
 no `exports`, so it is vendored rather than imported.
 
+## The Markdown Actions Row
+
+`src/theme/DocItem/MarkdownActions/` renders under every doc's h1:
+
+    🕐 Last updated Sep 2, 2026 │ ⧉ Copy as Markdown │ M↓ View as Markdown
+
+Ported from `MarkdownActions.astro` in `MarketDataApp/website`, so both halves
+of the origin present the same control. It also emits the only structured data
+on these pages: `<time datetime>`, `article:modified_time`, and a JSON-LD
+`TechArticle` whose `url` must equal `<link rel="canonical">` — the site sets
+`trailingSlash: true` and `metadata.permalink` does not carry one.
+
+**The date needs full git history at build time.** `showLastUpdateTime` reads
+each file's last commit, so `deploy-docs.yml` and the building job in
+`pr-checks.yml` check out with `fetch-depth: 0`. Under a shallow clone every
+page reports the same date and **nothing reports it** — the row renders and
+looks correct either way. `e2e/markdown-actions.spec.js` asserts two pages
+carry different dates, which is the only way to see that from outside.
+
+Two more traps that stylesheets do not report:
+
+- Infima does not declare `--ifm-heading-color` on `:root`. `var()` on it is
+  invalid, `color` computes to `unset`, and because colour inherits, the rule
+  appears to apply while the colour never moves. Reading the variable back on
+  an element inside `.markdown` returns the inherited heading colour and looks
+  like a successful lookup.
+- Infima's emphasis scale is not symmetric. `--ifm-color-emphasis-600` is
+  3.06:1 on white and 11.1:1 on the dark ground, so a single token cannot serve
+  both themes. Light uses `--ifm-color-content-secondary` (7.18:1).
+
 ## Testing
 
-- **Unit tests**: `cd worker && yarn test` — tests worker routing, markdown serving, robots.txt, 404 logging
 - **Converter tests**: `yarn test:lib` — `cleanMdx` (MDX→Markdown) and `cleanHtml` (built HTML→Markdown), the two twin converters
 - **Redirect tests**: `TEST_ENV=staging yarn test:redirects` — verifies every rule in `redirects.js` answers 301 for GET and HEAD, in both slash forms
 - **Sitemap tests**: `TEST_ENV=production yarn test:sitemap` — fetches the deployed sitemap and requires every URL to answer 200. On staging it asserts the opposite: a `noIndex` build must publish no sitemap
+- **Example parity**: `yarn lint:examples` — every language tab on an API page must make the same request with the same inputs (#167). Compares a normalised fixture set, so `2024-01-01`, `LocalDate.of(2024, 1, 1)` and `new DateOnly(2024, 1, 1)` are one token
+- **Highlighting**: `yarn lint:highlighting` — run after a build; fails when a ``` fence language produces no highlighting anywhere, which is what a missing Prism grammar looks like. Per language, not per block: a one-word shell command legitimately has nothing to colour. Add new languages to `additionalLanguages` in `docusaurus.config.js`, and use the id Prism knows (`ini` not `env`, `batch` not `cmd`)
 - **Sitemap lint**: `yarn lint:sitemap` — builds with `PROD=true` and fails if the sitemap lists a URL with no page in `build/`
-- **E2E tests**: `TEST_ENV=staging yarn test:e2e` — Playwright tests for Context7 widget rendering
+- **E2E tests**: `TEST_ENV=staging yarn test:e2e` — Playwright tests for Context7 widget rendering and the Markdown actions row (`TEST_BASE_URL=http://…/docs` points them at a local build instead)
 - **Browser for e2e**: the machine's own Chromium, not a build this repo pins. `scripts/resolve-chromium.js` resolves it (`CHROMIUM_PATH` override → system browser → Playwright's bundled build) and `playwright.config.js` feeds it to `launchOptions`. Do not reintroduce a bare `browserName: 'chromium'` with no `executablePath` — that re-pins the browser to the installed `@playwright/test`. CI installs Playwright's build only when the runner has no browser. See README.md "Which browser the e2e tests run".
