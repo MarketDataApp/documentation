@@ -1,6 +1,7 @@
 ---
 title: Account Deletion
 sidebar_position: 8
+description: Request permanent deletion of your Market Data account and all associated personal data, and learn what the 30-day process removes.
 ---
 
 ## Overview
