@@ -27,20 +27,20 @@ func (s *Service) GetPrices(symbols ...string) ([]Price, error)
 
 Fetch SmartMid midpoint prices for one or many symbols.
 
-#### Parameters
+### Parameters
 
 - `ctx` (`context.Context`) — controls cancellation and deadlines (context method only).
 - `symbols` (`[]string` for `Prices`, variadic `...string` for `GetPrices`) — the stock ticker symbols, e.g. `[]string{"AAPL", "MSFT", "GOOG"}`. At least one symbol is required; an empty set returns a validation error without making a request.
 - Options (`stocks.PriceOption`, `Prices` only — `GetPrices` accepts no options):
   - `stocks.WithPriceExtended(extended bool)` — control whether prices include extended-hours data. When omitted, the parameter is not sent and the API default applies.
 
-#### Returns
+### Returns
 
 - `[]Price` — one `Price` per symbol.
 - `*response.Response` — raw response + rate-limit metadata (context method only).
 - `error` — non-nil on request/validation failure.
 
-#### Notes
+### Notes
 
 - The SmartMid model is Market Data's derived midpoint between bid and ask.
 - For a single symbol the SDK uses the path form `stocks/prices/{symbol}/`; for multiple symbols it uses the query form `stocks/prices/?symbols=...`.
@@ -78,7 +78,7 @@ func main() {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 AAPL: $186.19 (0.71%)
@@ -182,7 +182,7 @@ type Price struct {
 
 Represents a SmartMid midpoint price for a stock. It is a lightweight alternative to [`Quote`](/sdk/go/stocks/quote) when only a single price per symbol is needed. Timestamps are normalized to US Eastern time.
 
-#### Fields
+### Fields
 
 - `Symbol` — the stock ticker symbol.
 - `Mid` — the SmartMid midpoint price.
@@ -190,6 +190,6 @@ Represents a SmartMid midpoint price for a stock. It is a lightweight alternativ
 - `ChangePercent` — the change from the previous close (JSON alias `changepct`).
 - `Updated` — timestamp of the price.
 
-#### Helper Methods
+### Helper Methods
 
 - `String() string` — a one-line summary of the price.

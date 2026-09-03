@@ -36,7 +36,7 @@ expirations<P>(
 
 Fetches the list of expirations for a single underlying symbol.
 
-#### Parameters
+### Parameters
 
 - `symbol` (string)
 
@@ -55,7 +55,7 @@ Fetches the list of expirations for a single underlying symbol.
 - [`columns`](/sdk/js/settings#columns) (optional): Columns to include.
 - [`useHumanReadable`](/sdk/js/settings#human-readable) (optional): Use human-readable field names. Alias: `human`.
 
-#### Returns
+### Returns
 
 - [`MarketDataPromise<OptionsExpirationsResponse | OptionsExpirationsHumanResponse>`](/sdk/js/client#MarketDataPromise)
 
@@ -127,7 +127,7 @@ interface OptionsExpirationsResponse {
 }
 ```
 
-#### Properties
+### Properties
 
 - `s` (string): Status indicator.
 - `expirations` (string[]): List of expiration dates in `YYYY-MM-DD` format.

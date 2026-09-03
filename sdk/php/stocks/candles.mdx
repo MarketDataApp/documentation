@@ -41,7 +41,7 @@ public function candles(
 
 Fetches historical candles (OHLCV) data for a stock symbol. Supports various timeframes (minutely, hourly, daily, weekly, monthly, yearly) and automatically handles large date ranges by splitting them into year-long chunks and fetching them concurrently.
 
-#### Parameters
+### Parameters
 
 - `symbol` (string)
 
@@ -81,13 +81,13 @@ Fetches historical candles (OHLCV) data for a stock symbol. Supports various tim
 
   Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
 
-#### Returns
+### Returns
 
 - `Candles`
 
   A Candles response object containing the candle data, or an error status if no data is available.
 
-#### Notes
+### Notes
 
 - For intraday resolutions (minutely/hourly), large date ranges spanning more than 1 year are automatically split into year-long chunks and fetched concurrently (up to 50 concurrent requests).
 - The `from` date is inclusive (leftmost candle on a chart).
@@ -122,7 +122,7 @@ foreach ($candles->candles as $candle) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 Date: 2024-01-02
@@ -195,7 +195,7 @@ $csv = $candles->getCsv();
 echo $csv;
 ```
 
-#### Output
+**Output**
 
 ```
 t,o,h,l,c,v
@@ -272,7 +272,7 @@ class Candle
 
 Represents a single stock candle (OHLCV data), encapsulating price and volume information for a specific time period.
 
-#### Properties
+### Properties
 
 - `open` (float): The opening price.
 - `high` (float): The highest price during the period.
@@ -296,13 +296,13 @@ class Candles extends ResponseBase
 
 Represents a collection of stock candles data.
 
-#### Properties
+### Properties
 
 - `status` (string): The status of the response (`"ok"` or `"no_data"`).
 - `next_time` (int|null): Unix timestamp of the next available quote if no data in the requested period.
 - `candles` (Candle[]): Array of Candle objects.
 
-#### Methods
+### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).

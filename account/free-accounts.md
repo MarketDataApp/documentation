@@ -6,7 +6,7 @@ sidebar_position: 4
 
 Market Data offers two ways for users to use our service for free. We offer the "Free Forever" plan, which allows for 100 API requests per day. We also offer a free 30 day trial (no credit card required) so that users can test our services and determine which plan best meets their needs. Trial accounts work almost exactly the same as paid accounts and have the same [plan limits](/account/plan-limits). There are a few differences, however.
 
-#### Comparison Table
+## Comparison Table
 | Feature                | Free Forever | Trial Plans | Paid Plans  |
 |------------------------|--------------|-------------|-------------|
 | 24 Hour Delayed Data   | ✅           | ✅          | ❌          |

@@ -38,7 +38,7 @@ public function quote(
 
 Get a real-time price quote for a stock symbol, including bid/ask prices, last trade, change, and volume.
 
-#### Parameters
+### Parameters
 
 - `symbol` (string)
 
@@ -58,7 +58,7 @@ Get a real-time price quote for a stock symbol, including bid/ask prices, last t
 
   Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
 
-#### Returns
+### Returns
 
 - `Quote`
 
@@ -86,7 +86,7 @@ echo "Volume: " . number_format($quote->volume) . "\n";
 echo "Updated: " . $quote->updated->format('Y-m-d H:i:s') . "\n";
 ```
 
-#### Output
+**Output**
 
 ```
 Symbol: AAPL
@@ -226,7 +226,7 @@ class Quote extends ResponseBase
 
 Represents a stock quote with real-time price information.
 
-#### Properties
+### Properties
 
 - `status` (string): Response status (`"ok"` or `"no_data"`).
 - `symbol` (string): The stock ticker symbol.
@@ -243,7 +243,7 @@ Represents a stock quote with real-time price information.
 - `volume` (int|null): Trading volume for the current session.
 - `updated` (Carbon|null): Timestamp of the quote.
 
-#### Methods
+### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).

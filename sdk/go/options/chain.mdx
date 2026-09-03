@@ -37,11 +37,11 @@ collapsed into a single sealed-union option ([`WithStrike`](#strike-filters)
 and [`WithExpiry`](#expiration-filters)), so the API's silently-conflicting
 combinations cannot be written.
 
-#### Parameters
+### Parameters
 
 - `symbol` (`string`) — the underlying stock or index symbol (for example `"AAPL"`, `"SPY"`, `"SPX"`). Required; an empty string is rejected with a `marketdata.ValidationError` before any request is made.
 
-##### Expiration filters
+#### Expiration filters
 
 - `options.WithExpiry(f ExpiryFilter)` — sets the expiration selector from a single `ExpiryFilter`. Replaces the API's mutually-exclusive `expiration`, `dte`, `month`, and `year` parameters with one value so they can never conflict. Build the filter with exactly one of:
   - `options.OnExpiration(t time.Time)` — a single expiration date (`expiration=YYYY-MM-DD`). Only the calendar date is used; must not be zero.
@@ -52,7 +52,7 @@ combinations cannot be written.
   - `options.ExpirationBetween(from, to time.Time)` — contracts expiring within an inclusive date range (`from=YYYY-MM-DD&to=YYYY-MM-DD`). Both dates are required and `from` must not be after `to`. This filters which expirations are returned, so it is an expiry mode, not a historical snapshot.
 - `options.WithChainDate(t time.Time)` — request the chain as it stood on a single historical trading day (`date=YYYY-MM-DD`). Only the calendar date is used; a zero time returns the current chain. Independent of the expiration selector, so a historical chain can still be narrowed by expiration or strike.
 
-##### Strike filters
+#### Strike filters
 
 - `options.WithStrike(f StrikeFilter)` — sets the contract selector from a single `StrikeFilter`. Replaces the API's mutually-exclusive `strike` and `delta` parameters with one value. Build the filter with exactly one of:
   - `options.Strike(x float64)` — an exact strike (`strike=x`); `x` must be greater than zero.
@@ -63,7 +63,7 @@ combinations cannot be written.
   - `options.ByDelta(d float64)` — the strikes nearest delta `d` (`delta=d`). The API filters on the **absolute value** of delta and always returns **both sides** (calls and puts), so `ByDelta` does not choose a side — combine it with `WithSide` to keep only calls or puts. `d` must be non-zero and within `[-1, 1]` (puts have negative delta; a negative value behaves the same as its positive counterpart).
 - `options.WithStrikeLimit(limit int)` — cap the number of strikes returned, excluding the strikes furthest from the money. Values less than or equal to zero leave the limit unset.
 
-##### Side, moneyness, and contract type
+#### Side, moneyness, and contract type
 
 - `options.WithSide(side OptionSide)` — limit the chain to one side: `options.SideCall` (calls only) or `options.SidePut` (puts only). `options.SideBoth` (the default) leaves the parameter unset and returns both sides.
 - `options.WithRange(r string)` — filter by moneyness using the API's range keywords, such as `"itm"` (in the money), `"otm"` (out of the money), or `"all"`. An empty string leaves the filter unset.
@@ -74,12 +74,12 @@ combinations cannot be written.
 
   The cadence constants are `options.Weekly`, `options.Monthly`, and `options.Quarterly`. The API forbids mixing inclusion and exclusion in one request; because the choice is a single value, that illegal mix cannot be expressed.
 
-##### Settlement (index options only)
+#### Settlement (index options only)
 
 - `options.WithAM(am bool)` — limit the chain to AM-settled contracts (`true`) or exclude them (`false`). Settlement style is meaningful only for **index options** (for example SPX, NDX); on single-stock and ETF options the API tolerates the parameter but it has no effect. When the option is not used, settlement is not filtered.
 - `options.WithPM(pm bool)` — the PM-settled counterpart of `WithAM`, with the same index-only semantics.
 
-##### Price and liquidity filters
+#### Price and liquidity filters
 
 - `options.WithMinBid(min float64)` / `options.WithMaxBid(max float64)` — limit the chain to contracts whose bid price is at least `min` / at most `max`.
 - `options.WithMinAsk(min float64)` / `options.WithMaxAsk(max float64)` — limit the chain to contracts whose ask price is at least `min` / at most `max`.
@@ -88,13 +88,13 @@ combinations cannot be written.
 - `options.WithMinOpenInterest(min int)` — minimum open interest, filtering out thinly held contracts.
 - `options.WithMinVolume(min int)` — minimum trading volume, filtering out thinly traded contracts.
 
-#### Returns
+### Returns
 
 - `*OptionsChain` — the chain and its contracts. `nil` when there is no data (see Notes).
 - `*response.Response` — the raw response plus rate-limit metadata (context method only).
 - `error` — non-nil on a validation failure, transport error, or unexpected API status.
 
-#### Notes
+### Notes
 
 - **Mutually-exclusive selectors are compile-time exclusive by design.** `WithStrike` and `WithExpiry` each take a single sealed-union value, so the API's silently-conflicting combinations (strike vs. delta; expiration vs. dte/month/year) cannot be written. Delta is a **mode of the strike filter** (`options.ByDelta`), not a separate option, because the API silently honors strike over delta when both are sent.
 - **Include vs. exclude expiration types is also compile-time exclusive.** A single `ExpirationTypeFilter` is either an include set or an exclude set, so the API's forbidden `weekly=true&monthly=false` mix cannot be produced.
@@ -146,7 +146,7 @@ func main() {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 AAPL: 3 contracts
@@ -315,7 +315,7 @@ the entries of an `OptionsChain` and for the responses of
 [`Quote` and `Quotes`](/sdk/go/options/quotes). Timestamps are normalized to
 Eastern time.
 
-#### Methods
+### Methods
 
 - `String() string` — a one-line summary of the contract.
 - `Spread() float64` — the bid-ask spread (`Ask` minus `Bid`).

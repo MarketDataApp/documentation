@@ -42,7 +42,7 @@ Fetches stock prices for one or more symbols. The return type is narrowed automa
 - If `outputFormat: "csv"` → payload is `Blob`
 - Otherwise → payload is `StockPrice[]`
 
-#### Parameters
+### Parameters
 
 - `symbols` (string | string[])
 
@@ -72,7 +72,7 @@ Fetches stock prices for one or more symbols. The return type is narrowed automa
 
   The data mode to use (`"live"`, `"cached"`, `"delayed"`). See [Settings](/sdk/js/settings#data-mode) for details.
 
-#### Returns
+### Returns
 
 - [`MarketDataPromise<StockPrice[] | StockPriceHuman[] | Blob>`](/sdk/js/client#MarketDataPromise)
 
@@ -188,7 +188,7 @@ interface StockPrice {
 
 `StockPrice` represents a single stock price, with short machine-readable field names.
 
-#### Properties
+### Properties
 
 - `s` (string, optional): Status indicator (`"ok"` for successful responses).
 - `symbol` (string): The stock symbol.
@@ -213,7 +213,7 @@ interface StockPriceHuman {
 
 `StockPriceHuman` represents a stock price in human-readable format with capitalized, snake-case field names. Returned when `human: true` (or `useHumanReadable: true`) is set.
 
-#### Properties
+### Properties
 
 - `Symbol` (string): The stock symbol.
 - `Mid` (number): The mid price.

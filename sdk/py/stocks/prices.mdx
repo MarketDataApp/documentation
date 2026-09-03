@@ -40,7 +40,7 @@ def prices(
 
 Fetches stock prices for one or more symbols. The `symbols` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
 
-#### Parameters
+### Parameters
 
 - `symbols` (list[str] | str)
 
@@ -74,7 +74,7 @@ Fetches stock prices for one or more symbols. The `symbols` parameter can be pas
 
   File path for CSV output (only used with `output_format=OutputFormat.CSV`).
 
-#### Returns
+### Returns
 
 - `list[StockPrice]` | `list[StockPricesHumanReadable]` | `dict` | `str` | `MarketDataClientErrorResult`
 
@@ -199,7 +199,7 @@ class StockPrice:
 
 StockPrice represents a single stock price, encapsulating various details such as prices and timestamps.
 
-#### Properties
+### Properties
 
 - `s` (str): Status indicator ("ok" for successful responses).
 - `symbol` (str): The stock symbol.
@@ -208,7 +208,7 @@ StockPrice represents a single stock price, encapsulating various details such a
 - `changepct` (float): The percentage change in price.
 - `updated` (datetime.datetime): The time when the price was last updated (automatically converted from timestamp).
 
-#### Notes
+### Notes
 
 - The `updated` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
 
@@ -227,7 +227,7 @@ class StockPricesHumanReadable:
 
 StockPricesHumanReadable represents a stock price in human-readable format with capitalized field names and formatted values.
 
-#### Properties
+### Properties
 
 - `Symbol` (str): The stock symbol.
 - `Mid` (float): The mid price calculated between the ask and bid prices.
@@ -235,7 +235,7 @@ StockPricesHumanReadable represents a stock price in human-readable format with 
 - `Change_Percent` (float): The percentage change in price.
 - `Date` (datetime.datetime): The time when the price was last updated (automatically converted from timestamp).
 
-#### Notes
+### Notes
 
 - The `Date` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
 - Field names use capitalized format with underscores (e.g., `Change_Price` instead of `change`).

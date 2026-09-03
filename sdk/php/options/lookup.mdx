@@ -35,7 +35,7 @@ public function lookup(
 
 Generate a properly formatted OCC option symbol based on a human-readable description of an option. This endpoint converts text such as "AAPL 12/17/27 $250 Call" to OCC option symbol format: `AAPL271217C00250000`.
 
-#### Parameters
+### Parameters
 
 - `input` (string)
 
@@ -51,13 +51,13 @@ Generate a properly formatted OCC option symbol based on a human-readable descri
 
   Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
 
-#### Returns
+### Returns
 
 - `Lookup`
 
   A Lookup response object containing the OCC-formatted option symbol.
 
-#### Notes
+### Notes
 
 - The OCC (Options Clearing Corporation) symbol format is: `SYMBOL + YYMMDD + C/P + STRIKE(8 digits)`
 - Example: `AAPL271217C00250000` = AAPL July 28, 2023 $200 Call
@@ -80,7 +80,7 @@ echo "Input: AAPL 12/17/27 $250 Call\n";
 echo "OCC Symbol: " . $lookup->option_symbol . "\n";
 ```
 
-#### Output
+**Output**
 
 ```
 Input: AAPL 12/17/27 $250 Call
@@ -112,7 +112,7 @@ foreach ($inputs as $input) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 AAPL Jan 17, 2025 $180 Call         → AAPL271217C00280000
@@ -185,12 +185,12 @@ class Lookup extends ResponseBase
 
 Represents the result of an option symbol lookup.
 
-#### Properties
+### Properties
 
 - `status` (string): Response status (`"ok"` or `"error"`).
 - `option_symbol` (string): The OCC-formatted option symbol.
 
-#### Methods
+### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).

@@ -14,7 +14,7 @@ The following recommendations are only for users who want to experiment with Mar
 
 To use Market Data on a mobile device, you need to disable the sidebar check. The add-on authenticates automatically using your Google account, but since there is no way to open the sidebar on a mobile device, you must disable the sidebar requirement first from a computer.
 
-#### Disable the Sidebar Check
+### Disable the Sidebar Check
 
 The system currently validates that the sidebar has been opened before allowing you to execute Market Data formulas. Disable this in your sheet by using the following command (type it into any cell):
 

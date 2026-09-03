@@ -40,7 +40,7 @@ public function candles(
 
 Get historical price candles for a mutual fund. Supports various timeframes from minutely to yearly resolutions.
 
-#### Parameters
+### Parameters
 
 - `symbol` (string)
 
@@ -72,13 +72,13 @@ Get historical price candles for a mutual fund. Supports various timeframes from
 
   Universal parameters for customizing the output format.
 
-#### Returns
+### Returns
 
 - `Candles`
 
   A Candles response object containing the candle data.
 
-#### Notes
+### Notes
 
 - Mutual funds typically only trade once per day at market close, so daily resolution is most common.
 - The `from` date is inclusive (leftmost candle on a chart).
@@ -116,7 +116,7 @@ foreach ($candles->candles as $candle) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 VFINX Daily Prices:
@@ -255,7 +255,7 @@ class Candle
 
 Represents a single mutual fund candle (OHLCV data).
 
-#### Properties
+### Properties
 
 - `open` (float): The opening price (NAV).
 - `high` (float): The highest price during the period.
@@ -278,13 +278,13 @@ class Candles extends ResponseBase
 
 Represents a collection of mutual fund candles data.
 
-#### Properties
+### Properties
 
 - `status` (string): The status of the response (`"ok"` or `"no_data"`).
 - `next_time` (int|null): Unix timestamp of the next available quote if no data in the requested period.
 - `candles` (Candle[]): Array of Candle objects.
 
-#### Methods
+### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).

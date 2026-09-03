@@ -153,7 +153,10 @@ page nothing keeps true.
 Exactly one `<h1>` per page. Docusaurus renders it from frontmatter `title`
 when the body has no top-level heading.
 
-*Gated by rule E1.* Heading-level skips are reported.
+Every page's outline descends one level at a time: no `<h2>` is followed by
+an `<h4>`, and nothing under the `<h1>` starts at `<h3>`.
+
+*Gated by rules E1 and D3.*
 
 ## Structured data
 
@@ -185,6 +188,7 @@ same date and nothing says so.
 | every staging page is `noindex`                               | `lint:seo` D1              | against `build/`          |
 | robots and the sitemap agree, in both directions              | `lint:seo` D2              | against `build/`          |
 | exactly one `<h1>`                                            | `lint:seo` E1              | against `build/`          |
+| no page skips a heading level                                 | `lint:seo` D3              | against `build/`          |
 | a page promising a large card declares an image               | `lint:seo` F2              | against `build/`          |
 | every built page's Markdown twin is still in the build        | `lint:seo` G1              | against `build/`          |
 | JSON-LD parses and agrees with the head around it             | `lint:seo` F1              | against `build/`          |
@@ -210,10 +214,9 @@ the named flag in `scripts/lint-seo.js` is the whole change once clean.
 <!-- lint:seo S1 gates the counts in this table. Do not edit them by hand;
      run `node scripts/lint-seo.js` and copy what it reports. -->
 
-| Rule | Backlog | What it is                     | Flag                           |
-|------|---------|--------------------------------|--------------------------------|
-| D3   | 89      | pages skipping a heading level | `HEADING_ORDER_ENFORCED`       |
-| L1   | 1       | the 404's canonical            | `NOT_FOUND_CANONICAL_ENFORCED` |
+| Rule | Backlog | What it is          | Flag                           |
+|------|---------|---------------------|--------------------------------|
+| L1   | 1       | the 404's canonical | `NOT_FOUND_CANONICAL_ENFORCED` |
 
 ### Why those numbers are gated too
 
@@ -225,10 +228,11 @@ is supposed to be the statement of intent the check gates against. Its
 to say about a number beside one.
 
 So rule **S1** parses the table above and asserts every row equals what this
-run measured. Fix ten pages that skip a heading level and the check fails until
-the table says 79 — the backlog can only be paid down on purpose. It also
+run measured. Pay ten offenders off a row and the check fails until that row
+says ten fewer — the backlog can only be paid down on purpose. It also
 fails when a rule goes clean and its row survives, which is how the H2, I2 and
-I3 rows were caught the moment the descriptions landed.
+I3 rows were caught the moment the descriptions landed, and the D3 row the
+moment the outlines were fixed.
 
 S1 finds the table by its header row, not by matching a rule-shaped line
 anywhere in the file, and **fails closed when it cannot find it**: delete or

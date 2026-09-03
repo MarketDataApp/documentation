@@ -65,7 +65,7 @@ def chain(
 
 Fetches the options chain for a given symbol with extensive filtering options. The `symbol` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
 
-#### Parameters
+### Parameters
 
 - `symbol` (str)
 
@@ -203,13 +203,13 @@ Fetches the options chain for a given symbol with extensive filtering options. T
 
   File path for CSV output (only used with `output_format=OutputFormat.CSV`).
 
-#### Returns
+### Returns
 
 - `OptionsChain` | `OptionsChainHumanReadable` | `dict` | `str` | `MarketDataClientErrorResult`
 
   The options chain data in the requested format, or a `MarketDataClientErrorResult` if an error occurred.
 
-#### Notes
+### Notes
 
 - When using `OutputFormat.DATAFRAME`, the DataFrame is indexed by the `optionSymbol` column.
 - When using `OutputFormat.INTERNAL`, timestamps are automatically converted to `datetime.datetime` objects.
@@ -242,7 +242,7 @@ chain = client.options.chain(
 print(chain)
 ```
 
-#### Output
+**Output**
 
 ```
                     underlying  expiration        side  strike  ...  volume  openInterest  inTheMoney  underlyingPrice
@@ -281,7 +281,7 @@ print(f"First option ask: {chain.ask[0]}")
 print(f"First option mid: {chain.mid[0]}")
 ```
 
-#### Output
+**Output**
 
 ```
 Number of options: 2
@@ -313,7 +313,7 @@ chain = client.options.chain(
 print(chain)
 ```
 
-#### Output
+**Output**
 
 ```json
 {
@@ -444,7 +444,7 @@ class OptionsChain:
 
 OptionsChain represents the options chain data with lists of equal length for each field. All lists have the same length, allowing you to access option data by index.
 
-#### Properties
+### Properties
 
 - `s` (str): Status indicator ("ok" for successful responses).
 - `optionSymbol` (list[str]): List of option symbols.
@@ -473,7 +473,7 @@ OptionsChain represents the options chain data with lists of equal length for ea
 - `theta` (list[float]): List of Theta values.
 - `vega` (list[float]): List of Vega values.
 
-#### Notes
+### Notes
 
 - All lists have the same length, allowing you to access option data by index (e.g., `chain.optionSymbol[0]`, `chain.strike[0]`, etc.).
 - Timestamp fields (`expiration`, `firstTraded`, `updated`) are automatically converted to `datetime.datetime` objects.
@@ -514,7 +514,7 @@ class OptionsChainHumanReadable:
 
 OptionsChainHumanReadable represents the options chain data in human-readable format with capitalized field names and formatted values. All lists have the same length, allowing you to access option data by index.
 
-#### Properties
+### Properties
 
 - `Symbol` (list[str]): List of option symbols.
 - `Underlying` (list[str]): List of underlying symbols.
@@ -542,7 +542,7 @@ OptionsChainHumanReadable represents the options chain data in human-readable fo
 - `Theta` (list[float]): List of Theta values.
 - `Vega` (list[float]): List of Vega values.
 
-#### Notes
+### Notes
 
 - All lists have the same length, allowing you to access option data by index (e.g., `chain.Symbol[0]`, `chain.Strike[0]`, etc.).
 - Timestamp fields (`Expiration_Date`, `First_Traded`, `Date`) are automatically converted to `datetime.datetime` objects.

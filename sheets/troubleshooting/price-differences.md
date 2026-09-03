@@ -16,7 +16,7 @@ When you run `STOCKDATA` after hours you will be shown the midpoint price betwee
 
 To get more detailed information, use the "all" parameter with STOCKDATA like this: `=STOCKDATA("TICKER","ALL")`. This will provide you with a more detailed quote with column names and help you understand where the price is coming from. 
 
-#### Example From 3 AM
+### Example From 3 AM
 
 ![price differences](/img/price-differences.png)
 

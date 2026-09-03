@@ -29,20 +29,20 @@ func (s *Service) GetStatus(opts ...markets.StatusOption) (*markets.MarketStatus
 
 Get the market status for a single day from the `/v1/markets/status/` endpoint. With no options it reports today's status for the United States. The date is sent to the API in `YYYY-MM-DD` form, so any time-of-day component is ignored.
 
-#### Parameters
+### Parameters
 
 - `ctx` (`context.Context`) — request context for cancellation and deadlines (context method only).
 - Options:
   - `markets.WithDate(d time.Time)` — the day whose status is requested. A zero time leaves the parameter unset and the API reports today's status. This is a `Status`-only option; it cannot be passed to `StatusHistory`.
   - `markets.WithCountry(country string)` — the market to query, as a two-letter ISO 3166-1 alpha-2 code such as `"US"`. An empty string defaults to the United States. `WithCountry` applies to both `Status` and `StatusHistory`.
 
-#### Returns
+### Returns
 
 - `*markets.MarketStatus` — the [`MarketStatus`](#marketstatus) for the requested day.
 - `*response.Response` — raw response plus rate-limit metadata (context method only).
 - `error` — non-nil on request or decoding failure.
 
-#### Notes
+### Notes
 
 - When the API responds `404` because no status exists for the requested date, both call styles return a `nil` `MarketStatus` and a `nil` error. With the context method, the returned `*response.Response` has its `NoData` field set to `true` — always guard against a `nil` result before dereferencing it.
 - `Status` accepts only single-day options. Its date parameter is a single `time.Time`, so the range parameters used by `StatusHistory` cannot be passed here by mistake.
@@ -84,7 +84,7 @@ func main() {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 2024-07-04 closed Open: false
@@ -129,7 +129,7 @@ func main() {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 The market is open.
@@ -168,13 +168,13 @@ type MarketStatus struct {
 
 `MarketStatus` represents the status of the market on a given day. `Status` is the raw string from the API (`"open"`, `"closed"`, or `"early-close"`), and `Open` is derived from it.
 
-#### Fields
+### Fields
 
 - `Date` (`time.Time`) — the date of this status, normalized to US Eastern.
 - `Open` (`bool`) — `true` when the market was or is open on this date.
 - `Status` (`string`) — a description: `"open"`, `"closed"`, or `"early-close"`.
 
-#### Methods
+### Methods
 
 - `String() string` — a one-line summary, e.g. `2024-07-04 closed Open: false`.
 - `IsOpen() bool` — reports whether the market is open.

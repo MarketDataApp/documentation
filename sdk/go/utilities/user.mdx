@@ -27,19 +27,19 @@ func (s *Service) GetUser() (*utilities.UserInfo, error)
 
 Get information about the authenticated user and their account from the unversioned `/user/` endpoint. The returned [`UserInfo`](#userinfo) carries the account's API credit state for the current window — taken from the `x-api-ratelimit-*` response headers — and the account's options data entitlement, taken from the response body.
 
-#### Parameters
+### Parameters
 
 - `ctx` (`context.Context`) — request context for cancellation and deadlines (context method only).
 
 This endpoint takes no functional options, but it requires a valid API token.
 
-#### Returns
+### Returns
 
 - `*utilities.UserInfo` — the account's [`UserInfo`](#userinfo).
 - `*response.Response` — raw response plus rate-limit metadata (context method only).
 - `error` — non-nil on request or decoding failure.
 
-#### Notes
+### Notes
 
 - Rate limits track **credits**. Most requests consume 1 credit, but bulk or options requests may consume several.
 - In the unlikely event the endpoint responds `404`, both call styles return a `nil` result and a `nil` error; with the context method the returned `*response.Response` has its `NoData` field set to `true`.
@@ -72,7 +72,7 @@ func main() {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 User{Credits: 99847/100000, Resets: 2026-07-13 00:00:00, Options: OPRA data delayed 15 minutes}
@@ -114,7 +114,7 @@ func main() {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 Credits: 99847/100000
@@ -140,7 +140,7 @@ type UserInfo struct {
 
 `UserInfo` describes the authenticated account: the API credit state for the current window (taken from the `x-api-ratelimit-*` response headers) and the account's options data entitlement (taken from the response body).
 
-#### Fields
+### Fields
 
 - `CreditLimit` (`int`) — the account's total API credit allowance for the current window.
 - `CreditsRemaining` (`int`) — the number of API credits left in the current window.
@@ -148,6 +148,6 @@ type UserInfo struct {
 - `ResetAt` (`time.Time`) — when the current credit window resets.
 - `OptionsDataPermissions` (`string`) — the account's options data entitlement, e.g. `"OPRA data delayed 15 minutes"`.
 
-#### Methods
+### Methods
 
 - `String() string` — a one-line summary, e.g. `User{Credits: 99847/100000, Resets: 2026-07-13 00:00:00, Options: OPRA data delayed 15 minutes}`.

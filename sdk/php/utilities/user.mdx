@@ -23,14 +23,14 @@ public function user(): User
 
 Retrieve rate limit information for the current user, including credit usage and limits.
 
-#### Notes
+### Notes
 
 - Rate limits track **credits**, not requests. Most requests consume 1 credit, but bulk requests or options requests may consume multiple credits.
 - Free/Starter/Trader plans have daily limits.
 - Prime users have per-minute limits.
 - The `reset` timestamp indicates when the current rate limit window resets (UTC).
 
-#### Returns
+### Returns
 
 - `User`
 
@@ -61,7 +61,7 @@ $usagePercent = (($user->limit - $user->remaining) / $user->limit) * 100;
 echo "Usage: " . number_format($usagePercent, 1) . "%\n";
 ```
 
-#### Output
+**Output**
 
 ```
 Rate Limit Status
@@ -140,7 +140,7 @@ class User
 
 Represents rate limit information for the current user.
 
-#### Properties
+### Properties
 
 - `limit` (int): Maximum number of credits permitted per rate period.
 - `remaining` (int): Credits remaining in the current rate period.

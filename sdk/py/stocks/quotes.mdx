@@ -42,7 +42,7 @@ def quotes(
 
 Fetches stock quotes for one or more symbols. The `symbols` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
 
-#### Parameters
+### Parameters
 
 - `symbols` (list[str] | str)
 
@@ -84,13 +84,13 @@ Fetches stock quotes for one or more symbols. The `symbols` parameter can be pas
 
   File path for CSV output (only used with `output_format=OutputFormat.CSV`). Must end with `.csv`. Directory must exist. File must not already exist. If not provided, a timestamped file is created in `output/` directory.
 
-#### Returns
+### Returns
 
 - `list[StockQuote]` | `list[StockQuotesHumanReadable]` | `dict` | `str` | `MarketDataClientErrorResult`
 
   The quotes data in the requested format, or a `MarketDataClientErrorResult` if an error occurred.
 
-#### Notes
+### Notes
 
 - When using `OutputFormat.DATAFRAME`, the DataFrame is indexed by the `symbol` column.
 - When using `OutputFormat.INTERNAL`, timestamps are automatically converted to `datetime.datetime` objects.
@@ -116,7 +116,7 @@ df = client.stocks.quotes(["AAPL", "MSFT"])
 print(df)
 ```
 
-#### Output
+**Output**
 
 ```
        ask  askSize    bid  bidSize      mid      last   change  changepct    volume      updated
@@ -149,7 +149,7 @@ for quote in quotes:
     print(f"Updated: {quote.updated}")
 ```
 
-#### Output
+**Output**
 
 ```
 Symbol: AAPL
@@ -178,7 +178,7 @@ quotes = client.stocks.quotes(["AAPL", "MSFT"], output_format=OutputFormat.JSON)
 print(quotes)
 ```
 
-#### Output
+**Output**
 
 ```json
 {
@@ -217,7 +217,7 @@ csv_file = client.stocks.quotes(
 print(f"CSV file saved to: {csv_file}")
 ```
 
-#### Output
+**Output**
 
 ```
 CSV file saved to: quotes.csv
@@ -247,7 +247,7 @@ for quote in quotes:
     print(f"Change Percent: {quote.Change_Percent}")
 ```
 
-#### Output
+**Output**
 
 ```
 Symbol: AAPL
@@ -281,7 +281,7 @@ class StockQuote:
 
 StockQuote represents a single stock quote, encapsulating various details such as prices, volumes, and timestamps.
 
-#### Properties
+### Properties
 
 - `symbol` (str): The stock symbol.
 - `ask` (float): The asking price for the stock.
@@ -296,7 +296,7 @@ StockQuote represents a single stock quote, encapsulating various details such a
 - `volume` (int): The trading volume for the stock.
 - `updated` (datetime.datetime): The time when the quote was last updated (automatically converted from timestamp).
 
-#### Notes
+### Notes
 
 - The `updated` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
 - The `change_percent` property provides convenient access to the `changepct` field.
@@ -322,7 +322,7 @@ class StockQuotesHumanReadable:
 
 StockQuotesHumanReadable represents a stock quote in human-readable format with capitalized field names and formatted values.
 
-#### Properties
+### Properties
 
 - `Symbol` (str): The stock symbol.
 - `Ask` (float): The asking price for the stock.
@@ -336,7 +336,7 @@ StockQuotesHumanReadable represents a stock quote in human-readable format with 
 - `Volume` (int): The trading volume for the stock.
 - `Date` (datetime.datetime): The time when the quote was last updated (automatically converted from timestamp).
 
-#### Notes
+### Notes
 
 - The `Date` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
 - Field names use capitalized format with underscores (e.g., `Ask_Size` instead of `askSize`).

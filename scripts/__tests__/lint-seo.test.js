@@ -264,28 +264,44 @@ test('F1 fails when JSON-LD does not parse', () => {
 /** An h3 with no h2 above it, which is rule D3. */
 const SKIPPED_HEADING = '<h3>Straight to level three</h3>';
 
-test('reported rules do not fail the run, and name their pages', () => {
-  // A page that jumps h1 -> h3 is rule D3, which is measured and not gated.
-  // This fixture was duplicate TITLES until they were paid down and
-  // TITLE_UNIQUE_ENFORCED went true, then duplicate DESCRIPTIONS until those
-  // were paid down and DESC_UNIQUE_ENFORCED went true: a gated rule cannot
-  // demonstrate that a reported one leaves the exit code alone.
+test('D3 fails when a page skips a heading level', () => {
   const r = run({
-    '/api/a/': page('/api/a/', { title: 'A', body: SKIPPED_HEADING }),
-  }, { sitemap: ['/api/a/'] });
-  assert.strictEqual(r.code, 0, r.out);
-  assert.match(r.out, /REPORTED, not gated/);
+    '/api/thing/': page('/api/thing/', { body: SKIPPED_HEADING }),
+  }, { sitemap: ['/api/thing/'] });
+  assert.strictEqual(r.code, 1);
   assert.match(r.out, /D3 {2}heading level skipped/);
-  assert.match(r.out, /\/api\/a\//);
+  assert.match(r.out, /\/api\/thing\/ \(h1 -> h3\)/);
 });
 
-test('--report prints every offender rather than the first few', () => {
+test('reported rules do not fail the run, and name their pages', () => {
+  // A 404 that carries a canonical is rule L1, which is measured and not gated.
+  // This fixture was duplicate TITLES until they were paid down, then duplicate
+  // DESCRIPTIONS, then a skipped heading level: each time the rule it stood on
+  // went green and got gated. A gated rule cannot demonstrate that a reported
+  // one leaves the exit code alone, so this fixture moves to whatever is still
+  // reported -- and L1 is now the last of them.
+  const r = run({
+    '/api/thing/': page('/api/thing/'),
+    '/404.html': page('/404.html'),
+  }, { sitemap: ['/api/thing/'] });
+  assert.strictEqual(r.code, 0, r.out);
+  assert.match(r.out, /REPORTED, not gated/);
+  assert.match(r.out, /L1 {2}the 404 page emits a canonical/);
+  assert.match(r.out, /\/404\.html -> /);
+});
+
+test('a failing rule lists twelve offenders and counts the rest', () => {
+  // This was `--report prints every offender rather than the first few`, over
+  // the REPORTED printer, which withholds after three. That printer can no
+  // longer be shown truncating: L1 is the only rule still reported and it has
+  // exactly one offender by construction, the single 404. The failure printer
+  // is the same shape at a different threshold, and it is reachable.
   const pages = {};
   const sitemap = [];
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 15; i++) {
     const route = `/api/g${i}/`;
-    // Distinct titles and distinct descriptions: H1 and H2 are gated now, so a
-    // fixture that repeats either fails the run before D3 can be counted.
+    // Distinct titles and distinct descriptions: H1 and H2 are gated too, so a
+    // fixture that repeats either fails on those instead of on D3.
     pages[route] = page(route, {
       title: `Page ${i}`,
       description: `Description number ${i}, written long enough to clear the minimum length.`,
@@ -293,11 +309,10 @@ test('--report prints every offender rather than the first few', () => {
     });
     sitemap.push(route);
   }
-  const brief = run(pages, { sitemap });
-  const full = run(pages, { sitemap, args: ['--report'] });
-  assert.strictEqual(full.code, 0);
-  assert.match(brief.out, /--report for all/);
-  assert.doesNotMatch(full.out, /--report for all/);
+  const r = run(pages, { sitemap });
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /D3 {2}heading level skipped {2}\[15\]/);
+  assert.match(r.out, /… and 3 more/);
 });
 
 // --- I1, and the suffix that is not the same length on both arms ----------
@@ -376,10 +391,10 @@ test('S1 fails when the spec understates a backlog', { skip: !hasBuild && 'no bu
   // Padding-tolerant, because the repo's pre-commit hook re-aligns markdown
   // tables. A spacing-exact pattern silently stops mutating and the test then
   // asserts nothing at all.
-  const r = withSpec((src) => src.replace(/^\|\s*D3\s*\|\s*\d+\s*\|/m, '| D3 | 23 |'));
+  const r = withSpec((src) => src.replace(/^\|\s*L1\s*\|\s*\d+\s*\|/m, '| L1 | 23 |'));
   assert.strictEqual(r.code, 1);
   assert.match(r.out, /S1 {2}docs\/SEO\.md disagrees/);
-  assert.match(r.out, /D3: docs\/SEO\.md declares 23/);
+  assert.match(r.out, /L1: docs\/SEO\.md declares 23/);
 });
 
 test('S1 fails when the spec claims a backlog for a rule that is clean', { skip: !hasBuild && 'no build/ to read' }, () => {
@@ -389,9 +404,9 @@ test('S1 fails when the spec claims a backlog for a rule that is clean', { skip:
 });
 
 test('S1 fails when a measured rule has no row in the spec', { skip: !hasBuild && 'no build/ to read' }, () => {
-  const r = withSpec((src) => src.replace(/^\|\s*D3\s*\|\s*\d+\s*\|.*$/m, ''));
+  const r = withSpec((src) => src.replace(/^\|\s*L1\s*\|\s*\d+\s*\|.*$/m, ''));
   assert.strictEqual(r.code, 1);
-  assert.match(r.out, /D3: measured \d+, and docs\/SEO\.md's table has no row for it/);
+  assert.match(r.out, /L1: measured \d+, and docs\/SEO\.md's table has no row for it/);
 });
 
 test('S1 fails closed when the backlog table is deleted', { skip: !hasBuild && 'no build/ to read' }, () => {

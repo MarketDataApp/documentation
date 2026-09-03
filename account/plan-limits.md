@@ -36,7 +36,7 @@ All plans are subject to a single IP address limit. Each account may only connec
 
 See the [Single IP Address Policy](/docs/account/data-policies/single-ip/) for details.
 
-#### Throttling
+### Throttling
 
 All plans are subject to a maximum of 50 simultaneous requests at any given time.
 

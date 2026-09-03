@@ -38,7 +38,7 @@ public function quotes(
 
 Get current or historical end-of-day quotes for one or more options contracts. When multiple symbols are provided, requests are made concurrently using a sliding window of up to 50 concurrent requests.
 
-#### Parameters
+### Parameters
 
 - `option_symbols` (string|array)
 
@@ -60,13 +60,13 @@ Get current or historical end-of-day quotes for one or more options contracts. W
 
   Universal parameters for customizing the output format.
 
-#### Returns
+### Returns
 
 - `Quotes`
 
   A Quotes response object containing the option quote data.
 
-#### Notes
+### Notes
 
 - For multiple symbols, the SDK uses concurrent requests for optimal throughput.
 - Failed requests for individual symbols are tolerated - the response includes data from successful requests.
@@ -97,7 +97,7 @@ foreach ($quotes->quotes as $quote) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 Symbol: AAPL271217C00300000
@@ -245,7 +245,7 @@ class Quotes extends ResponseBase
 
 Represents option quote data for one or more contracts.
 
-#### Properties
+### Properties
 
 - `status` (string): Response status (`"ok"` or `"no_data"`).
 - `quotes` (array): Array of option quotes, each containing:
@@ -272,7 +272,7 @@ Represents option quote data for one or more contracts.
 - `prev_time` (Carbon|null): Previous available data time (when status is `no_data`).
 - `errors` (array): Map of symbol => error message for failed requests (multi-symbol only).
 
-#### Methods
+### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).

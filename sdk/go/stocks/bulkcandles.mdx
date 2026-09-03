@@ -25,7 +25,7 @@ func (s *Service) BulkCandles(ctx context.Context, symbols []string, opts ...Bul
 
 Fetch one daily candle per symbol. Unlike [Candles](/sdk/go/stocks/candles), this endpoint returns a single candle for each symbol, not a time series.
 
-#### Parameters
+### Parameters
 
 - `ctx` (`context.Context`) — controls cancellation and deadlines.
 - `symbols` (`[]string`) — the stock ticker symbols, e.g. `[]string{"AAPL", "MSFT", "GOOG"}`. At least one symbol is required; an empty slice returns a validation error without making a request.
@@ -36,13 +36,13 @@ Fetch one daily candle per symbol. Unlike [Candles](/sdk/go/stocks/candles), thi
   - `stocks.WithAdjustSplits(adjust bool)` — adjust for stock splits. When omitted, the parameter is not sent and the API default applies.
   - `stocks.WithAdjustDividends(adjust bool)` — adjust for dividends. The API adjusts for dividends by default; pass `false` for raw, unadjusted prices. When omitted, the parameter is not sent.
 
-#### Returns
+### Returns
 
 - `[]BulkCandle` — one candle per symbol.
 - `*response.Response` — raw response + rate-limit metadata.
 - `error` — non-nil on request/validation failure.
 
-#### Notes
+### Notes
 
 - Only `ResolutionDaily` is supported; `WithBulkResolution` exists for symmetry with the other candle endpoints.
 - The bulk candles endpoint accepts a single date only (no range or countback mode), so `WithBulkDate` is a plain option rather than a `DateWindow`.
@@ -86,7 +86,7 @@ func main() {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 AAPL: O:185.64 C:186.19 V:48234500
@@ -156,13 +156,13 @@ type BulkCandle struct {
 
 Represents a single daily candle for one symbol. It carries the same OHLCV fields as [`Candle`](/sdk/go/stocks/candles) plus the `Symbol` the candle belongs to, since bulk requests cover multiple symbols. Timestamps are normalized to US Eastern time.
 
-#### Fields
+### Fields
 
 - `Symbol` — the stock ticker symbol.
 - `Time` — the candle timestamp.
 - `Open` / `High` / `Low` / `Close` — the OHLC prices for the day.
 - `Volume` — trading volume for the day.
 
-#### Helper Methods
+### Helper Methods
 
 - `String() string` — a concise one-line summary of the candle.

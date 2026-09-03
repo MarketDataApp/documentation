@@ -45,7 +45,7 @@ def earnings(
 
 Fetches earnings data for a stock symbol. The `symbol` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
 
-#### Parameters
+### Parameters
 
 - `symbol` (str)
 
@@ -99,7 +99,7 @@ Fetches earnings data for a stock symbol. The `symbol` parameter can be passed a
 
   File path for CSV output (only used with `output_format=OutputFormat.CSV`).
 
-#### Returns
+### Returns
 
 - `StockEarnings` | `StockEarningsHumanReadable` | `dict` | `str` | `MarketDataClientErrorResult`
 
@@ -228,7 +228,7 @@ class StockEarnings:
 
 StockEarnings represents earnings data for a stock, encapsulating fiscal year, quarter, and EPS information. All lists have the same length, allowing you to access earnings data by index.
 
-#### Properties
+### Properties
 
 - `s` (str): Status indicator ("ok" for successful responses).
 - `symbol` (list[str]): List of stock symbols.
@@ -266,7 +266,7 @@ class StockEarningsHumanReadable:
 
 StockEarningsHumanReadable represents earnings data in human-readable format with capitalized field names and formatted values. All lists have the same length, allowing you to access earnings data by index.
 
-#### Properties
+### Properties
 
 - `Symbol` (list[str]): List of stock symbols.
 - `Fiscal_Year` (list[int]): List of fiscal years.
@@ -281,6 +281,6 @@ StockEarningsHumanReadable represents earnings data in human-readable format wit
 - `Surprise_EPS_Percent` (list[float]): List of surprise EPS percentages.
 - `Updated` (list[datetime.datetime]): List of last update timestamps (automatically converted from timestamps).
 
-#### Notes
+### Notes
 
 - Field names use capitalized format with underscores (e.g., `Fiscal_Year` instead of `fiscalYear`, `Reported_EPS` instead of `reportedEPS`).

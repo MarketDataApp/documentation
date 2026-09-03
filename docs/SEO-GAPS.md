@@ -36,6 +36,24 @@ for a tag nothing reads.
 **Flip `NOT_FOUND_CANONICAL_ENFORCED` if the 404 ever starts answering 200.**
 A soft 404 *is* crawled, and then the canonical is read and points at nothing.
 
+### Heading order (D3) — fixed, no longer a gap
+
+89 pages skipped a level. The shape was almost always the same: an `<h2>`
+followed straight by an `<h4>`, because `#### Parameters`, `#### Returns` and
+`#### Properties` were written as a visual size under a `## methodName` that had
+no `###` in between. A handful of pages opened with `### Get Started Quickly`
+directly under the frontmatter `<h1>`.
+
+Every one of those was a mis-levelled heading rather than a missing section, so
+each subtree moved up one level and nothing was added or deleted. The single
+judgement call: `#### Output`, 55 of them, sat inside `<TabItem>` panels
+labelling the console output of an example, up to five times on one page.
+Promoting those would have put five identical `Output` entries in one
+right-hand table of contents and five duplicate anchors on one page. They are
+`**Output**` now, so they leave the outline entirely.
+
+`HEADING_ORDER_ENFORCED` is `true`.
+
 ### Title and description length (I1–I3) — fixed, no longer a gap
 
 Kept here as the record of what the entry said and how it ended. It read:

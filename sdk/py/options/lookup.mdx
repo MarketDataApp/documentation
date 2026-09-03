@@ -40,7 +40,7 @@ def lookup(
 
 Fetches option lookup data for a given lookup string. The lookup string should contain the underlying symbol, expiration date, strike price, and option side in the format: "SYMBOL DD-MM-YYYY STRIKE SIDE" (e.g., "AAPL 20-12-2024 150.0 call"). The `lookup` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
 
-#### Parameters
+### Parameters
 
 - `lookup` (str)
 
@@ -74,13 +74,13 @@ Fetches option lookup data for a given lookup string. The lookup string should c
 
   File path for CSV output (only used with `output_format=OutputFormat.CSV`).
 
-#### Returns
+### Returns
 
 - `OptionsLookup` | `OptionsLookupHumanReadable` | `dict` | `str` | `MarketDataClientErrorResult`
 
   The option lookup data in the requested format, or a `MarketDataClientErrorResult` if an error occurred.
 
-#### Notes
+### Notes
 
 - The lookup string format is: "SYMBOL DD-MM-YYYY STRIKE SIDE"
 - Example: "AAPL 20-12-2024 150.0 call" or "AAPL 20-12-2024 150.0 put"
@@ -195,7 +195,7 @@ class OptionsLookup:
 
 OptionsLookup represents the result of an option symbol lookup, containing the resolved option symbol.
 
-#### Properties
+### Properties
 
 - `s` (str): Status indicator ("ok" for successful responses).
 - `optionSymbol` (str): The resolved option symbol.
@@ -211,10 +211,10 @@ class OptionsLookupHumanReadable:
 
 OptionsLookupHumanReadable represents an option symbol lookup result in human-readable format with capitalized field names.
 
-#### Properties
+### Properties
 
 - `Symbol` (str): The resolved option symbol.
 
-#### Notes
+### Notes
 
 - Field names use capitalized format (e.g., `Symbol` instead of `optionSymbol`).

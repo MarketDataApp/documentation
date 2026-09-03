@@ -36,20 +36,20 @@ price, and the option type are all required. The resolved symbol can then be
 passed to [`Quote`](/sdk/go/options/quotes) or
 [`Quotes`](/sdk/go/options/quotes).
 
-#### Parameters
+### Parameters
 
 - `underlying` (`string`) — the underlying stock symbol (for example `"AAPL"`). Required; an empty string is rejected with a `marketdata.ValidationError` before any request is made.
 - `expiration` (`time.Time`) — the contract's expiration date. Only the calendar date is used (formatted as `2006-01-02`).
 - `strike` (`float64`) — the strike price (for example `150.0`).
 - `optionType` (`options.OptionType`) — the contract type: `options.Call` or `options.Put`.
 
-#### Returns
+### Returns
 
 - `string` — the OCC option symbol. Empty when the contract cannot be resolved (see Notes).
 - `*response.Response` — the raw response plus rate-limit metadata (context method only).
 - `error` — non-nil on a validation failure, transport error, or unexpected API status.
 
-#### Notes
+### Notes
 
 - The OCC symbol format is `SYMBOL + YYMMDD + C/P + STRIKE (8 digits)`. For example, `AAPL271217C00250000` is an AAPL January 17, 2025 $150 call.
 - If the API cannot resolve the contract (HTTP 404), `Lookup` returns an empty string, a response whose `NoData` field is `true`, and a `nil` error. Check for an empty string before using the result.
@@ -92,7 +92,7 @@ func main() {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 OCC symbol: AAPL271217C00250000

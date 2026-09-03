@@ -61,7 +61,7 @@ public function option_chain(
 
 Get a current or historical end-of-day options chain for an underlying ticker symbol. Use the `optionSymbol` returned from this endpoint to get quotes, greeks, or other information using other endpoints.
 
-#### Parameters
+### Parameters
 
 - `symbol` (string)
 
@@ -171,7 +171,7 @@ Get a current or historical end-of-day options chain for an underlying ticker sy
 
   Universal parameters for customizing the output format.
 
-#### Returns
+### Returns
 
 - `OptionChains`
 
@@ -351,7 +351,7 @@ class OptionChains extends ResponseBase
 
 Represents an options chain with all matching contracts.
 
-#### Properties
+### Properties
 
 - `status` (string): Response status (`"ok"` or `"no_data"`).
 - `options` (array): Array of option contracts, each containing:
@@ -375,7 +375,7 @@ Represents an options chain with all matching contracts.
   - `iv` (float|null): Implied volatility
   - `updated` (Carbon): Last update timestamp
 
-#### Methods
+### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).

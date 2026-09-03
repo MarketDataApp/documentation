@@ -87,7 +87,7 @@ const TITLE_UNIQUE_ENFORCED = true; // 270 distinct titles across 270 pages
 const DESC_UNIQUE_ENFORCED = true; // 262 distinct descriptions across 262 content pages
 const LENGTH_ENFORCED = true; // 0 titles > 60, and every description is 70-160
 const CARD_IMAGE_ENFORCED = true; // themeConfig.image landed; 271 of 271 declare one
-const HEADING_ORDER_ENFORCED = false; // 89 pages skip a heading level
+const HEADING_ORDER_ENFORCED = true; // 0 pages skip a heading level
 // The 404 emits a canonical naming /docs/404.html/, a URL that 404s. Measured
 // not gated, and the reason is in docs/SEO-GAPS.md rather than here: the page
 // is served with a real 404 status, so a crawler drops the URL before it reads

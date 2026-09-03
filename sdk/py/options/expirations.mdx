@@ -42,7 +42,7 @@ def expirations(
 
 Fetches available expiration dates for a given symbol. The `symbol` parameter can be passed as the first positional argument or as a keyword argument. All other parameters must be keyword-only.
 
-#### Parameters
+### Parameters
 
 - `symbol` (str)
 
@@ -84,7 +84,7 @@ Fetches available expiration dates for a given symbol. The `symbol` parameter ca
 
   File path for CSV output (only used with `output_format=OutputFormat.CSV`).
 
-#### Returns
+### Returns
 
 - `OptionsExpirations` | `OptionsExpirationsHumanReadable` | `dict` | `str` | `MarketDataClientErrorResult`
 
@@ -195,13 +195,13 @@ class OptionsExpirations:
 
 OptionsExpirations represents expiration dates for options, encapsulating a list of expiration dates and an update timestamp.
 
-#### Properties
+### Properties
 
 - `s` (str): Status indicator ("ok" for successful responses).
 - `expirations` (list[datetime.datetime]): List of expiration dates (automatically converted from timestamps).
 - `updated` (datetime.datetime): The time when the data was last updated (automatically converted from timestamp).
 
-#### Notes
+### Notes
 
 - The `expirations` list contains `datetime.datetime` objects automatically converted from Unix timestamps.
 - The `updated` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.
@@ -218,12 +218,12 @@ class OptionsExpirationsHumanReadable:
 
 OptionsExpirationsHumanReadable represents expiration dates in human-readable format with capitalized field names and formatted values.
 
-#### Properties
+### Properties
 
 - `Expirations` (list[datetime.datetime]): List of expiration dates (automatically converted from timestamps).
 - `Date` (datetime.datetime): The time when the data was last updated (automatically converted from timestamp).
 
-#### Notes
+### Notes
 
 - The `Expirations` list contains `datetime.datetime` objects automatically converted from Unix timestamps.
 - The `Date` field is automatically converted to a `datetime.datetime` object from a Unix timestamp.

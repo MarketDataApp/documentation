@@ -44,7 +44,7 @@ public function earnings(
 
 Get historical earnings per share data or a future earnings calendar for a stock.
 
-#### Parameters
+### Parameters
 
 - `symbol` (string)
 
@@ -70,7 +70,7 @@ Get historical earnings per share data or a future earnings calendar for a stock
 
   Universal parameters for customizing the output format. See [Parameters](/sdk/php/parameters) for details.
 
-#### Returns
+### Returns
 
 - `Earnings`
 
@@ -98,7 +98,7 @@ foreach ($earnings->earnings as $report) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 Date: 2024-01-25
@@ -230,7 +230,7 @@ class Earning
 
 Represents a single earnings report.
 
-#### Properties
+### Properties
 
 - `symbol` (string): The stock ticker symbol.
 - `fiscal_year` (int): The fiscal year of the earnings report.
@@ -258,12 +258,12 @@ class Earnings extends ResponseBase
 
 Represents a collection of earnings reports.
 
-#### Properties
+### Properties
 
 - `status` (string): Response status (`"ok"` or `"no_data"`).
 - `earnings` (Earning[]): Array of Earning objects.
 
-#### Methods
+### Methods
 
 - `getCsv()`: Returns the raw CSV data (when using `Format::CSV`).
 - `getHtml()`: Returns the raw HTML data (when using `Format::HTML`).

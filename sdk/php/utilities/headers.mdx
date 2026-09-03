@@ -22,12 +22,12 @@ public function headers(): Headers
 
 Retrieve the headers sent by your application. This endpoint aids in troubleshooting authentication issues, particularly with the Authorization header.
 
-#### Notes
+### Notes
 
 - Sensitive header values (like Authorization) are partially redacted for security.
 - This is useful for debugging API authentication problems.
 
-#### Returns
+### Returns
 
 - `Headers`
 
@@ -54,7 +54,7 @@ foreach ($headers->headers as $name => $value) {
 }
 ```
 
-#### Output
+**Output**
 
 ```
 Request Headers:
@@ -105,7 +105,7 @@ class Headers extends ResponseBase
 
 Represents the request headers sent to the API.
 
-#### Properties
+### Properties
 
 - `status` (string): Response status (`"ok"`).
 - `headers` (array): Associative array of header name => value pairs.
