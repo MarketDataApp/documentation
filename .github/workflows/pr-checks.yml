@@ -7,6 +7,12 @@ on:
 jobs:
   table-alignment:
     runs-on: ubuntu-latest
+    # Bounded so a hang reports rather than burning the runner. With no
+    # `timeout-minutes` a job inherits GitHub's 360-minute default, and a
+    # step that wedges on a network call takes six hours to say nothing.
+    # Sized well above the observed maximum (11 seconds), because a cap that trips
+    # on a slow-but-working run gets raised and then removed.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -19,6 +25,12 @@ jobs:
 
   option-symbols:
     runs-on: ubuntu-latest
+    # Bounded so a hang reports rather than burning the runner. With no
+    # `timeout-minutes` a job inherits GitHub's 360-minute default, and a
+    # step that wedges on a network call takes six hours to say nothing.
+    # Sized well above the observed maximum (25 seconds), because a cap that trips
+    # on a slow-but-working run gets raised and then removed.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -56,6 +68,12 @@ jobs:
 
   broken-links:
     runs-on: ubuntu-latest
+    # Bounded so a hang reports rather than burning the runner. With no
+    # `timeout-minutes` a job inherits GitHub's 360-minute default, and a
+    # step that wedges on a network call takes six hours to say nothing.
+    # Sized well above the observed maximum (about 90 seconds, including a full PROD build), because a cap that trips
+    # on a slow-but-working run gets raised and then removed.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -116,6 +134,12 @@ jobs:
   # old name would go on waiting for a job that no longer reports.
   staging-integration-tests:
     runs-on: ubuntu-latest
+    # Bounded so a hang reports rather than burning the runner. With no
+    # `timeout-minutes` a job inherits GitHub's 360-minute default, and a
+    # step that wedges on a network call takes six hours to say nothing.
+    # Sized well above the observed maximum (about 25 seconds, after a 5-minute deploy wait), because a cap that trips
+    # on a slow-but-working run gets raised and then removed.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -173,6 +197,12 @@ jobs:
 
   staging-e2e-tests:
     runs-on: ubuntu-latest
+    # Bounded so a hang reports rather than burning the runner. With no
+    # `timeout-minutes` a job inherits GitHub's 360-minute default, and a
+    # step that wedges on a network call takes six hours to say nothing.
+    # Sized well above the observed maximum (about 1 minute, after a 5-minute deploy wait), because a cap that trips
+    # on a slow-but-working run gets raised and then removed.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
