@@ -555,6 +555,29 @@ function main() {
       [`/404.html robots=${notFound.robots ?? 'absent'}`]);
   }
 
+  // --- L3. The 404 must not be advertised in the sitemap -------------------
+  //
+  // True today, and asserted by nothing until now: @docusaurus/plugin-sitemap
+  // excludes the 404 on its own, so the property held because of how a plugin
+  // happens to behave. That is the shape this file keeps closing -- a guarantee
+  // that is real, that nothing states, and that would drop silently if the
+  // plugin's exclusion list ever changed.
+  //
+  // It matters more here than the count suggests. L2 exists because Pages
+  // serves this page at /docs/404 with a 200, so a sitemap entry would be an
+  // instruction to crawl a soft 404 rather than a harmless stray line.
+  //
+  // Every spelling is checked, because the entry could only ever appear by
+  // some other route than the one we expect: Pages strips the .html, and the
+  // site sets trailingSlash: true.
+  if (sitemap) {
+    const spellings = ['/docs/404', '/docs/404/', '/docs/404.html', '/docs/404.html/'];
+    const listed = spellings.filter((p) => sitemap.has(p));
+    if (listed.length) {
+      fail('L3', 'the sitemap advertises the 404 page', listed);
+    }
+  }
+
   // --- D1. Robots and the sitemap are two halves of one statement ----------
   // An absence assertion matters as much as a presence one. A page the sitemap
   // advertises must not also say noindex, and a page that says noindex must not

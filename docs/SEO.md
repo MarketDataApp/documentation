@@ -172,7 +172,16 @@ artefact rather than on the theme because the tags come from
 the alternative was a permanent swizzled copy of a core internal. See
 [SEO-GAPS.md](./SEO-GAPS.md#the-404s-canonical-l1--fixed-no-longer-a-gap).
 
-*Gated by rules L1 (no self-naming URL) and L2 (`noindex`).*
+*Gated by rules L1 (no self-naming URL), L2 (`noindex`) and L3 (absent from the
+sitemap).*
+
+L3 was true before it was asserted: `@docusaurus/plugin-sitemap` excludes the
+404 on its own, so the property held because of how a plugin happens to behave
+and nothing stated it. That is the shape this file keeps closing. It matters
+more than a stray line would, because L2 exists precisely for the fact that
+Pages serves this page at `/docs/404` with a `200` — a sitemap entry would be
+an instruction to crawl a soft 404. All four spellings are checked, since an
+entry could only ever appear by a route other than the expected one.
 
 ## `<meta name="robots">` and the sitemap
 
@@ -232,6 +241,7 @@ same date and nothing says so.
 | a page promising a large card declares an image               | `lint:seo` F2              | against `build/`          |
 | the 404 names no URL of its own                               | `lint:seo` L1              | against `build/`          |
 | the 404 says `noindex`                                        | `lint:seo` L2              | against `build/`          |
+| the sitemap does not advertise the 404                        | `lint:seo` L3              | against `build/`          |
 | the 404's head is rewritten to make L1 and L2 true            | `not-found-head` postBuild | during the build          |
 | every built page's Markdown twin is still in the build        | `lint:seo` G1              | against `build/`          |
 | JSON-LD parses and agrees with the head around it             | `lint:seo` F1              | against `build/`          |

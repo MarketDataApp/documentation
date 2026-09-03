@@ -598,6 +598,19 @@ test('G1 fails when a built page has no Markdown twin', () => {
   assert.match(r.out, /api\/thing\/index\.md missing/);
 });
 
+test('L3 fails when the sitemap advertises the 404, in any spelling', () => {
+  // True today only because @docusaurus/plugin-sitemap excludes the 404 on its
+  // own. Nothing stated it until L3, so it would have dropped silently if that
+  // exclusion ever changed -- and L2 exists precisely because Pages serves this
+  // page at /docs/404 with a 200, so an entry would be an instruction to crawl
+  // a soft 404 rather than a stray line.
+  for (const spelling of ['/404', '/404/', '/404.html', '/404.html/']) {
+    const r = run(OK.pages, { sitemap: [...OK.sitemap, spelling] });
+    assert.strictEqual(r.code, 1, `not caught: ${spelling}`);
+    assert.match(r.out, /L3 {2}the sitemap advertises the 404 page/);
+  }
+});
+
 test('the tripwire fires when the walk finds almost nothing', () => {
   // Not a count baseline. Content changes a baseline constantly and it rots;
   // this asks only whether the walk found anything, which the mechanism owns.
