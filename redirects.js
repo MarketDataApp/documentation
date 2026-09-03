@@ -19,7 +19,45 @@
  * plugins/redirects-file.js, which is the only place that has to care.
  */
 
+/**
+ * WHAT THE 2026-09-03 404-STORE SWEEP DELIBERATELY DID NOT PRODUCE A RULE FOR.
+ *
+ * Most of the store's top /docs/ rows were already handled -- /api/rate-limits,
+ * /api/credits, /api/troubleshooting/credits, /api/options/option-chain/,
+ * /api/options/chains, /api/getting-started and /api/troubleshooting/status-codes
+ * all 301 on production today. Their rows are historical: the store's earliest
+ * day is a backfill of Cloudflare's whole window, so `firstSeen 2026-08-21`
+ * says nothing about when a URL last 404ed. Probing production is the only way
+ * to tell a live 404 from a fixed one, and it moved most of the list off it.
+ *
+ * Two families are live 404s with NO rule, on purpose:
+ *
+ *   /api/indices, /api/indices/candles, /api/indices/quotes   (~114 hits)
+ *   /api/options/candles                                      (16 hits)
+ *
+ * Neither has a destination, for the same reason: the API does not serve them
+ * either. `https://api.marketdata.app/status/` lists no indices endpoint at
+ * all, and its options endpoints are chain, expirations, lookup, quotes and
+ * strikes -- no candles. These are not dead links to moved pages; they are
+ * readers guessing a product from the naming convention, the shape
+ * MarketData-App/website#84 measured on /documentation/*.
+ *
+ * A rule pointing them at /api/ would answer 200 and teach nothing, which is
+ * worse than the 404: it would look handled and bury the signal that people
+ * keep asking for indices documentation. They stay 404 until there is
+ * something true to say.
+ *
+ * One genuine gap the same probe surfaced, left for its own issue:
+ * `/v1/options/strikes/` is a live API endpoint with no documentation page.
+ */
 const REDIRECTS = [
+  // Still 404ing on production with steady traffic, both with a real
+  // destination. Measured over the store's full 13-day window:
+  //   /api/earnings                      36 hits, 11 days, last seen 09-01
+  //   /api/troubleshooting/rate-limits   42 hits across three spellings
+  { from: "/api/earnings", to: "/api/stocks/earnings" },
+  { from: "/api/troubleshooting/rate-limits", to: "/api/rate-limiting" },
+
   { from: "/account/troubleshooting/linkedin-missing", to: "/account/troubleshooting/linkedin-issues" },
   { from: "/api/troubleshooting/http-status-codes", to: "/api/troubleshooting" },
   { from: "/sheets/troubleshooting/common-error-messages", to: "/sheets/troubleshooting" },
