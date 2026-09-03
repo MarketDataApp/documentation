@@ -25,6 +25,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: yarn
+
+      # This job ran from setup-node straight to the scripts for months, and
+      # passed the whole time, because every checker it runs was dependency
+      # free. scripts/lint-seo.js is not: it parses with @mixmark-io/domino so
+      # that attribute quoting and order cannot be observed at all. Without
+      # this step its 41 self-tests all fail on `Cannot find module`, and they
+      # fail in CI while passing on any machine that has ever built the site.
+      #
+      # sync-sdk-docs.yml carries the same step for the same reason, added
+      # after lib/html-to-md.js brought in turndown. Second time; hence the
+      # comment rather than a bare line.
+      - run: yarn install --frozen-lockfile
 
       # An expired option symbol breaks with the passage of time, not with a
       # diff, so review cannot catch it. Fails on any expired symbol anywhere
