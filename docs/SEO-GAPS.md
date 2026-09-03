@@ -44,11 +44,22 @@ that default, not because their authors were careless — enforcing it means
 writing a frontmatter description for every one of them. SEO.md's gated table
 holds the current count; this sentence deliberately does not restate it.
 
-### The card image (F2)
+### The card image (F2) — fixed, no longer a gap
 
-Not fixed here because both fixes are product decisions: a default `og:image`
-needs a designed asset, and dropping `summary_large_image` changes how every
-shared link looks. Named on every run so it cannot be forgotten.
+Kept here as the record of what the entry said and how it ended. It read: "not
+fixed because both fixes are product decisions — a default `og:image` needs a
+designed asset, and dropping `summary_large_image` changes how every shared
+link looks."
+
+The asset was the blocker and the owner supplied it: a 1200×630 crop of the
+brand Social Media Kit's Facebook cover. `themeConfig.image` covers all 270
+pages, per-page `image:` frontmatter overrides it, and F2 is gated.
+
+The reason it is worth a paragraph rather than a deletion: it is the clearest
+case so far of "reported, never gated" working as intended. The rule could not
+be green for weeks, so it counted and named 270 pages on every run instead of
+being dropped — and when the one missing input arrived, the fix was one config
+key and a flag.
 
 ---
 

@@ -183,6 +183,7 @@ same date and nothing says so.
 | every staging page is `noindex`                               | `lint:seo` D1              | against `build/`          |
 | robots and the sitemap agree, in both directions              | `lint:seo` D2              | against `build/`          |
 | exactly one `<h1>`                                            | `lint:seo` E1              | against `build/`          |
+| a page promising a large card declares an image               | `lint:seo` F2              | against `build/`          |
 | every built page's Markdown twin is still in the build        | `lint:seo` G1              | against `build/`          |
 | JSON-LD parses and agrees with the head around it             | `lint:seo` F1              | against `build/`          |
 | the sitemap lists only pages that built                       | `lint:sitemap`             | against `build/`          |
@@ -207,16 +208,15 @@ the named flag in `scripts/lint-seo.js` is the whole change once clean.
 <!-- lint:seo S1 gates the counts in this table. Do not edit them by hand;
      run `node scripts/lint-seo.js` and copy what it reports. -->
 
-| Rule | Backlog | What it is                                 | Flag                           |
-|------|---------|--------------------------------------------|--------------------------------|
-| H1   | 33      | titles used by more than one page          | `TITLE_UNIQUE_ENFORCED`        |
-| H2   | 12      | descriptions used by more than one page    | `DESC_UNIQUE_ENFORCED`         |
-| I1   | 1       | titles over 60 characters                  | `LENGTH_ENFORCED`              |
-| I2   | 107     | descriptions over 160 characters           | `LENGTH_ENFORCED`              |
-| I3   | 45      | descriptions under 70 characters           | `LENGTH_ENFORCED`              |
-| F2   | 270     | pages promising a large card with no image | `CARD_IMAGE_ENFORCED`          |
-| D3   | 89      | pages skipping a heading level             | `HEADING_ORDER_ENFORCED`       |
-| L1   | 1       | the 404's canonical                        | `NOT_FOUND_CANONICAL_ENFORCED` |
+| Rule | Backlog | What it is                              | Flag                           |
+|------|---------|-----------------------------------------|--------------------------------|
+| H1   | 33      | titles used by more than one page       | `TITLE_UNIQUE_ENFORCED`        |
+| H2   | 12      | descriptions used by more than one page | `DESC_UNIQUE_ENFORCED`         |
+| I1   | 1       | titles over 60 characters               | `LENGTH_ENFORCED`              |
+| I2   | 107     | descriptions over 160 characters        | `LENGTH_ENFORCED`              |
+| I3   | 45      | descriptions under 70 characters        | `LENGTH_ENFORCED`              |
+| D3   | 89      | pages skipping a heading level          | `HEADING_ORDER_ENFORCED`       |
+| L1   | 1       | the 404's canonical                     | `NOT_FOUND_CANONICAL_ENFORCED` |
 
 ### Why those numbers are gated too
 
@@ -255,10 +255,11 @@ is a title convention that names the section (`Candles (Python SDK) | Market
 Data`), which is a content decision rather than a lint fix. Run the check for
 the current spread; it prints distinct titles against page count on every run.
 
-**F2 is a real defect, not a nicety.** Every page states
-`twitter:card=summary_large_image` and no page declares `og:image`, so a link
-shared anywhere that reads Open Graph renders as a bare URL. One template
-change covers the whole corpus. Two ways out: declare a default `og:image`, or
-stop promising a large card. Both are product decisions.
+**F2 is fixed and now gated.** It was the sharpest finding of the first run:
+every page stated `twitter:card=summary_large_image` and no page declared
+`og:image`, so a link shared anywhere that reads Open Graph rendered as a bare
+URL. The promise is emitted unconditionally by Docusaurus; the image needed one
+config key that was never set. `themeConfig.image` now supplies a 1200×630 card
+and `CARD_IMAGE_ENFORCED` is `true`, so the two cannot come apart again.
 
 See [SEO-GAPS.md](./SEO-GAPS.md) for what is deliberately not checked at all.

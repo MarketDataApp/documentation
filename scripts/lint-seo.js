@@ -86,7 +86,7 @@ const ROOT = path.resolve(__dirname, '..');
 const TITLE_UNIQUE_ENFORCED = false; // 33 duplicate title groups
 const DESC_UNIQUE_ENFORCED = false; // 12 duplicate description groups
 const LENGTH_ENFORCED = false; // 1 title > 60, 107 descriptions > 160
-const CARD_IMAGE_ENFORCED = false; // no page declares og:image
+const CARD_IMAGE_ENFORCED = true; // themeConfig.image landed; 271 of 271 declare one
 const HEADING_ORDER_ENFORCED = false; // 89 pages skip a heading level
 // The 404 emits a canonical naming /docs/404.html/, a URL that 404s. Measured
 // not gated, and the reason is in docs/SEO-GAPS.md rather than here: the page
