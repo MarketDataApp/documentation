@@ -39,9 +39,10 @@ A soft 404 *is* crawled, and then the canonical is read and points at nothing.
 ### Title and description length (I1–I3)
 
 Docusaurus derives a description from the page's first paragraph when the
-frontmatter sets none. 107 pages exceed 160 characters and 45 fall under 70
-because of that default, not because 152 authors were careless. Enforcing the
-budget means writing 152 frontmatter descriptions.
+frontmatter sets none. The pages outside the budget are outside it because of
+that default, not because their authors were careless — enforcing it means
+writing a frontmatter description for every one of them. SEO.md's gated table
+holds the current count; this sentence deliberately does not restate it.
 
 ### The card image (F2)
 
@@ -52,6 +53,22 @@ shared link looks. Named on every run so it cannot be forgotten.
 ---
 
 ## Not checked at all
+
+### The narrative counts outside the backlog table
+
+Rule S1 gates the backlog table in SEO.md, and only that table. Sentences
+elsewhere in these two documents that quote a number are not parsed, so they
+can still rot.
+
+That is a real gap and it is bounded on purpose: parsing arbitrary prose for
+integers would fail on "160 characters" and "one h1" and every other number
+that is a threshold rather than a measurement. The mitigation is editorial —
+counts that change live in the gated table, and the prose points at it rather
+than restating it.
+
+The environment totals (`sitemap` URLs, `noindex` pages) are deliberately
+absent from both documents: they differ between production and staging, so
+every run prints them and nothing writes them down.
 
 ### Anything about ranking
 

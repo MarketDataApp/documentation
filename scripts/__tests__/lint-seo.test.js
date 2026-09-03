@@ -277,6 +277,65 @@ test('--report prints every offender rather than the first few', () => {
   assert.doesNotMatch(full.out, /--report for all/);
 });
 
+// --- S1 -------------------------------------------------------------------
+// S1 reads this repository's own docs/SEO.md, not the build under test, so
+// these run the real checker against the real spec. That is the point: the
+// assertion is about whether the shipped document agrees with the shipped
+// corpus, which a synthetic fixture cannot tell us.
+
+const SPEC = path.resolve(__dirname, '..', '..', 'docs', 'SEO.md');
+
+/** Run the checker over the real build with docs/SEO.md temporarily edited. */
+function withSpec(mutate) {
+  const original = fs.readFileSync(SPEC, 'utf8');
+  const build = path.resolve(__dirname, '..', '..', 'build');
+  try {
+    fs.writeFileSync(SPEC, mutate(original), 'utf8');
+    execFileSync('node', [SCRIPT, '--dir', build], { encoding: 'utf8' });
+    return { code: 0, out: '' };
+  } catch (e) {
+    return { code: e.status, out: `${e.stdout || ''}${e.stderr || ''}` };
+  } finally {
+    fs.writeFileSync(SPEC, original, 'utf8');
+  }
+}
+
+const hasBuild = fs.existsSync(path.resolve(__dirname, '..', '..', 'build', 'sitemap.xml'))
+  || fs.existsSync(path.resolve(__dirname, '..', '..', 'build', 'index.html'));
+
+test('S1 fails when the spec understates a backlog', { skip: !hasBuild && 'no build/ to read' }, () => {
+  // Someone pays ten titles down and does not touch the document. This is the
+  // rot that happened in the sibling repo: "101 of 101" against a real 127.
+  // Padding-tolerant, because the repo's pre-commit hook re-aligns markdown
+  // tables. A spacing-exact pattern silently stops mutating and the test then
+  // asserts nothing at all.
+  const r = withSpec((src) => src.replace(/^\|\s*H1\s*\|\s*\d+\s*\|/m, '| H1 | 23 |'));
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /S1 {2}docs\/SEO\.md disagrees/);
+  assert.match(r.out, /H1: docs\/SEO\.md declares 23/);
+});
+
+test('S1 fails when the spec claims a backlog for a rule that is clean', { skip: !hasBuild && 'no build/ to read' }, () => {
+  const r = withSpec((src) => src.replace(/^\|\s*L1\s*\|\s*\d+\s*\|/m, '| Z9 | 4 |'));
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /Z9: docs\/SEO\.md declares 4, this run reports the rule as clean/);
+});
+
+test('S1 fails when a measured rule has no row in the spec', { skip: !hasBuild && 'no build/ to read' }, () => {
+  const r = withSpec((src) => src.replace(/^\|\s*D3\s*\|\s*\d+\s*\|.*$/m, ''));
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /D3: measured \d+, and docs\/SEO\.md's table has no row for it/);
+});
+
+test('S1 is skipped rather than failed when no spec sits beside the build', () => {
+  // Every other test in this file runs against a throwaway build with no
+  // docs/ beside it, so this is really an assertion that they are not all
+  // silently failing S1.
+  const r = run(OK.pages, { sitemap: OK.sitemap });
+  assert.strictEqual(r.code, 0, r.out);
+  assert.doesNotMatch(r.out, /S1/);
+});
+
 test('a missing build directory is an error, not a pass', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'seo-'));
   fs.rmSync(dir, { recursive: true, force: true });

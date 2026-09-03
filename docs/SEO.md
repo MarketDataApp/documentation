@@ -77,8 +77,9 @@ and the two would drift.
 
 Docusaurus derives the description from the page's first paragraph when the
 frontmatter does not set one. That is why some are a bare heading
-(`"Problem Overview"`) and why 107 exceed 160 characters: it is a systemic
-default, not per-page carelessness.
+(`"Problem Overview"`) and why so many exceed 160 characters — see rules I2 and
+I3 below for the current count. It is a systemic default, not per-page
+carelessness.
 
 *Gated by rule B1 (presence). Uniqueness and length are reported.*
 
@@ -117,9 +118,10 @@ sitemap advertises must not say `noindex`; a page that says `noindex` must not
 be advertised. Checked in both directions, because neither half can see the
 other and each is separately editable.
 
-An absence assertion is as load-bearing as a presence one. Today production
-emits 270 pages, two of them `noindex` by frontmatter, and the sitemap holds
-exactly the other 268.
+An absence assertion is as load-bearing as a presence one. Every run prints
+both totals; they are deliberately not written down here, because they differ
+between the two environments and a number in prose is the one thing on this
+page nothing keeps true.
 
 *Gated by rule D2.*
 
@@ -180,29 +182,54 @@ Each of these counts and names every offending page on every run. None is a
 count baseline — the list can only be paid down, never quietly grown. Flipping
 the named flag in `scripts/lint-seo.js` is the whole change once clean.
 
-| Rule                      | Backlog today                                       | Flag                           |
-|---------------------------|-----------------------------------------------------|--------------------------------|
-| H1 title uniqueness       | 33 titles used by more than one page                | `TITLE_UNIQUE_ENFORCED`        |
-| H2 description uniqueness | 12 descriptions used by more than one page          | `DESC_UNIQUE_ENFORCED`         |
-| I1 title ≤ 60             | 1 page                                              | `LENGTH_ENFORCED`              |
-| I2 description ≤ 160      | 107 pages                                           | `LENGTH_ENFORCED`              |
-| I3 description ≥ 70       | 45 pages                                            | `LENGTH_ENFORCED`              |
-| F2 card image             | 270 pages promise a large card and declare no image | `CARD_IMAGE_ENFORCED`          |
-| D3 heading order          | 89 pages skip a level                               | `HEADING_ORDER_ENFORCED`       |
-| L1 the 404's canonical    | 1 page                                              | `NOT_FOUND_CANONICAL_ENFORCED` |
+<!-- lint:seo S1 gates the counts in this table. Do not edit them by hand;
+     run `node scripts/lint-seo.js` and copy what it reports. -->
 
-**H1 is the one worth acting on first.** 270 pages share 137 titles because the
-SDK sections repeat the API section's page names — `Candles | Market Data`
-appears 12 times, `Authentication | Market Data` 8 times. Google treats
-duplicate titles as a signal that pages are duplicates, and this is the classic
-Docusaurus failure. The fix is a title convention that names the section
-(`Candles (Python SDK) | Market Data`), which is a content decision rather than
-a lint fix.
+| Rule | Backlog | What it is                                 | Flag                           |
+|------|---------|--------------------------------------------|--------------------------------|
+| H1   | 33      | titles used by more than one page          | `TITLE_UNIQUE_ENFORCED`        |
+| H2   | 12      | descriptions used by more than one page    | `DESC_UNIQUE_ENFORCED`         |
+| I1   | 1       | titles over 60 characters                  | `LENGTH_ENFORCED`              |
+| I2   | 107     | descriptions over 160 characters           | `LENGTH_ENFORCED`              |
+| I3   | 45      | descriptions under 70 characters           | `LENGTH_ENFORCED`              |
+| F2   | 270     | pages promising a large card with no image | `CARD_IMAGE_ENFORCED`          |
+| D3   | 89      | pages skipping a heading level             | `HEADING_ORDER_ENFORCED`       |
+| L1   | 1       | the 404's canonical                        | `NOT_FOUND_CANONICAL_ENFORCED` |
+
+### Why those numbers are gated too
+
+**A count in prose is the one thing on the page nothing keeps true.** The
+sibling spec in `MarketDataApp/website` said "101 of 101" in six places while
+its own check reported 127 pages — wrong by 26 for weeks, in the document that
+is supposed to be the statement of intent the check gates against. Its
+`lint:doc-refs` gates every `path:line` citation in that file and has nothing
+to say about a number beside one.
+
+So rule **S1** parses the table above and asserts every row equals what this
+run measured. Fix ten titles and the check fails until the table says 23 — the
+backlog can only be paid down on purpose.
+
+**These counts describe the PRODUCTION build**, which is the one crawlers are
+served, and S1 only runs against that arm. Two things differ on staging and
+would make a single table wrong for one of them: the `sitemap` and `robots`
+totals by design, and — less obviously — `I1`, because `siteConfig.title` is
+`Market Data Docs (staging)` there, so the suffix Docusaurus appends to every
+title is 15 characters longer and ten more titles cross 60. The first version
+of S1 assumed every count was environment-independent and its own staging run
+proved otherwise.
+
+**H1 is the one worth acting on first.** Far fewer distinct titles than pages,
+because the SDK sections repeat the API section's page names — `Candles |
+Market Data` is the worst offender. Google treats duplicate titles as a signal
+that pages are duplicates, and this is the classic Docusaurus failure. The fix
+is a title convention that names the section (`Candles (Python SDK) | Market
+Data`), which is a content decision rather than a lint fix. Run the check for
+the current spread; it prints distinct titles against page count on every run.
 
 **F2 is a real defect, not a nicety.** Every page states
 `twitter:card=summary_large_image` and no page declares `og:image`, so a link
-shared anywhere that reads Open Graph renders as a bare URL. Two ways out:
-declare a default `og:image`, or stop promising a large card. Both are product
-decisions.
+shared anywhere that reads Open Graph renders as a bare URL. One template
+change covers the whole corpus. Two ways out: declare a default `og:image`, or
+stop promising a large card. Both are product decisions.
 
 See [SEO-GAPS.md](./SEO-GAPS.md) for what is deliberately not checked at all.

@@ -110,6 +110,42 @@ const HOSTS = {
 
 const SKIP_DIRS = new Set(['assets', 'img', 'fonts', 'node_modules']);
 
+/**
+ * The spec whose backlog table rule S1 gates. See the S1 block in main().
+ *
+ * S1's subject is THIS repository's PRODUCTION corpus, so it runs only when the
+ * build being read is this repository's own and resolves to production.
+ *
+ * `--dir` pointing at a throwaway build -- which is how the self-tests exercise
+ * every other rule -- skips it, because "docs/SEO.md says 33" is not a claim
+ * about a synthetic three-page fixture.
+ *
+ * The environment half is not tidiness. Two counts genuinely differ between the
+ * arms, and the first version of this rule asserted otherwise and was caught by
+ * its own staging run: siteConfig.title is "Market Data Docs (staging)" there
+ * against "Market Data" in production, so the suffix Docusaurus appends to every
+ * title is 15 characters longer and I1 measures 10 titles over 60 rather than 1.
+ * The document describes what crawlers are served, which is production.
+ */
+const SPEC = path.join(ROOT, 'docs', 'SEO.md');
+const OWN_BUILD = path.join(ROOT, 'build');
+
+/**
+ * Parse the backlog table out of docs/SEO.md.
+ *
+ * Rows look like:  | H1 | 33 | titles used by more than one page | `FLAG` |
+ * Returns Map<ruleId, count>.
+ */
+function declaredBacklog(file) {
+  if (!fs.existsSync(file)) return null;
+  const out = new Map();
+  for (const line of fs.readFileSync(file, 'utf8').split('\n')) {
+    const m = /^\|\s*([A-Z]\d)\s*\|\s*(\d+)\s*\|/.exec(line);
+    if (m) out.set(m[1], Number(m[2]));
+  }
+  return out;
+}
+
 function parseArgs(argv) {
   const out = { dir: path.join(ROOT, 'build'), report: false };
   for (let i = 0; i < argv.length; i++) {
@@ -450,6 +486,41 @@ function main() {
   }
   if (skips.length) {
     (HEADING_ORDER_ENFORCED ? fail : report)('D3', 'heading level skipped', skips);
+  }
+
+  // --- S1. The numbers in the prose are gated too --------------------------
+  //
+  // A count in a document is the one thing on the page nothing keeps true.
+  // The sibling spec in MarketDataApp/website said "101 of 101" in six places
+  // while its own check reported 127 pages -- wrong by 26 for weeks, in the
+  // document that is supposed to be the statement of intent the check gates
+  // against. Its lint:doc-refs gates every path:line citation in that file and
+  // has nothing to say about a number beside one.
+  //
+  // So every reported rule's backlog is declared in docs/SEO.md and asserted
+  // here. Pay ten titles down and this fails until the table agrees.
+  const declared = args.dir === OWN_BUILD && env.name === 'production'
+    ? declaredBacklog(SPEC)
+    : null;
+  if (declared) {
+    const measured = new Map(reports.filter((r) => r.message).map((r) => [r.rule, r.offenders.length]));
+    const drift = [];
+    for (const [rule, count] of declared) {
+      const actual = measured.get(rule);
+      if (actual === undefined) {
+        drift.push(`${rule}: docs/SEO.md declares ${count}, this run reports the rule as clean`);
+      } else if (actual !== count) {
+        drift.push(`${rule}: docs/SEO.md declares ${count}, this run measured ${actual}`);
+      }
+    }
+    for (const [rule, actual] of measured) {
+      if (!declared.has(rule)) {
+        drift.push(`${rule}: measured ${actual}, and docs/SEO.md's table has no row for it`);
+      }
+    }
+    if (drift.length) {
+      fail('S1', 'docs/SEO.md disagrees with what this run measured', drift);
+    }
   }
 
   // --- Output --------------------------------------------------------------
