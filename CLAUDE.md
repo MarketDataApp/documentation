@@ -403,6 +403,18 @@ ever needed it. Measured across two real commits afterwards:
 resolved inside the plugin. An option is a value published to every reader and
 charged to the bundle hash, and neither of those is visible at the call site.
 
+`plugins/build-info.js` now enforces that on itself: its `postBuild` fails when
+`main.<hash>.js` contains a 40-hex git sha or an ISO timestamp. **It is a
+property check, not a measurement, and the difference is the point.** "Rebuild
+twice and diff the assets" is a sample — true of the two commits you tried, and
+needing repeating forever. "No build-varying value is in the bundle" is checked
+once and settles every commit after it. Reach for that shape whenever the claim
+is about what *cannot* happen; it is cheaper and stronger at the same time.
+
+It fails on a missing bundle rather than passing, for the reason in "a count in
+a log is not a check" above, and it looks for 40 hex rather than 32 because the
+public Algolia search key is 32 hex, stable, and legitimately in the bundle.
+
 What that instrument found, none of which was visible any other way:
 
 | Defect                                                  | What the build said |

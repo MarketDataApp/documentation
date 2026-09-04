@@ -39,6 +39,81 @@ const { resolveGit, environmentOf, buildInfo } = require('../lib/build-info');
 
 const FILE = 'build-info.json';
 
+
+/**
+ * The client bundle must carry NO value that varies per build.
+ *
+ * ---------------------------------------------------------------------------
+ * WHY THIS IS A PROPERTY CHECK AND NOT A MEASUREMENT
+ * ---------------------------------------------------------------------------
+ *
+ * This defect has been introduced twice, both times through this plugin, both
+ * times invisibly. Docusaurus serialises the site config -- PLUGIN OPTIONS
+ * INCLUDED -- into `main.<hash>.js`, so any value handed here as an option
+ * ships to every reader and moves the bundle's content hash:
+ *
+ *   1. `builtAt` was passed as an option. A clock in the bundle rehashed it on
+ *      every build, so two builds of one tree differed in all 265 pages.
+ *   2. The commit sha was then LEFT as an option deliberately, reasoning that
+ *      "a sha is stable for a given tree, so it costs no bundle churn". True
+ *      per tree, and beside the point: every deploy is a new commit. A
+ *      documentation-only change still rehashed the bundle and rewrote every
+ *      page, against a `max-age=31536000, immutable` header.
+ *
+ * Both cost every visitor a ~635 KB re-download for no content change, and
+ * stranded every mid-session reader -- the reader
+ * `src/clientModules/chunkReload.js` exists to recover.
+ *
+ * The obvious guard is to rebuild twice and diff. That is a SAMPLE, and it
+ * needs repeating for every future commit. This asserts the PROPERTY instead:
+ * the bundle cannot vary with the build if it contains no build-varying value.
+ * Checked once, settles every commit afterwards. Framing borrowed from
+ * MarketDataApp/www-marketdata-app, which verified the sha fix this way and
+ * was right that it is the stronger form.
+ *
+ * A MISSING BUNDLE FAILS. A check that cannot tell "nothing was wrong" from
+ * "nothing was examined" is not a check, and this one reads exactly one file.
+ */
+async function assertBundleCarriesNoBuildVaryingValue(outDir) {
+  const jsDir = path.join(outDir, 'assets', 'js');
+  let entries = [];
+  try {
+    entries = (await fs.readdir(jsDir)).filter((f) => /^main\.[^.]+\.js$/.test(f));
+  } catch {
+    /* handled below */
+  }
+  if (entries.length !== 1) {
+    throw new Error(
+      `[build-info] expected exactly one assets/js/main.<hash>.js, found ${entries.length}.\n` +
+        'This check reads that one file, so it cannot pass by reading nothing.\n' +
+        'If the bundler stopped emitting that name, teach this check the new one.'
+    );
+  }
+
+  const bundle = await fs.readFile(path.join(jsDir, entries[0]), 'utf8');
+
+  // A 40-hex run is a git sha. Deliberately not 32: the Algolia SEARCH key in
+  // themeConfig is 32 hex, is public, and is stable across builds, so it is
+  // not what this is looking for.
+  const sha = bundle.match(/\b[0-9a-f]{40}\b/);
+  const clock = bundle.match(/\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+  const found = sha ? `a 40-hex git sha (${sha[0].slice(0, 12)}...)` : clock ? `a timestamp (${clock[0]})` : null;
+
+  if (found) {
+    throw new Error(
+      `[build-info] ${entries[0]} contains ${found}.\n\n` +
+        'A build-varying value has reached the client bundle, which rehashes it\n' +
+        'on every build and re-downloads ~635 KB for every visitor with no\n' +
+        'content change, against an immutable one-year header.\n\n' +
+        'The usual cause is a value passed to a plugin as an OPTION: Docusaurus\n' +
+        'serialises the config, options included, into this file. Resolve it\n' +
+        'inside the plugin instead -- an option is a value published to every\n' +
+        'reader and charged to the bundle hash, and neither is visible at the\n' +
+        'call site.'
+    );
+  }
+}
+
 module.exports = function buildInfoPlugin() {
   // ---------------------------------------------------------------------
   // RESOLVED HERE, NOT IN docusaurus.config.js, AND THAT IS THE WHOLE POINT
@@ -103,6 +178,8 @@ module.exports = function buildInfoPlugin() {
       const temporary = `${target}.tmp`;
       await fs.writeFile(temporary, `${JSON.stringify(doc, null, 2)}\n`, 'utf8');
       await fs.rename(temporary, target);
+
+      await assertBundleCarriesNoBuildVaryingValue(outDir);
 
       // Every value, every build. A sentinel that prints nothing cannot be told
       // apart from one that wrote `unknown`, and `unknown` is what a build with
