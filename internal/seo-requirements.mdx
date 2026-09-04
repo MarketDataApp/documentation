@@ -179,17 +179,39 @@ written for the reader who arrives; a title is written for a 60-character
 result. Where a page sets an explicit SEO title, `<h1>` keeps the published
 headline and `<title>` carries the short form.
 
-### The suffix asymmetry
+### The brand appears once on a card
 
-**`<title>` ends in `| Market Data`. `og:title` must not.**
+**The rule is not "`og:title` must never carry the suffix".** It is that the
+company name appears **once** on a shared link. Two configurations satisfy it,
+and both are correct:
 
-`og:site_name` is already `Market Data`, and every social client renders it
-beside the title as its own element — so the suffix makes each card say the
-company name twice. Google has no equivalent of `og:site_name`, so `<title>` is
-the only place the brand can appear in a search result.
+| `og:title`       | `og:site_name` | Card reads                   |                          |
+|------------------|----------------|------------------------------|--------------------------|
+| `Stock Candles \ | Market Data`   | absent                       | brand once, in the title |
+| `Stock Candles`  | `Market Data`  | brand once, beside the title |                          |
 
-It looks like an inconsistency and is not. **Do not "fix" one to match the
-other.** A check must assert the two groups separately.
+`<title>` always keeps the suffix, in both configurations. Google has no
+equivalent of `og:site_name`, so `<title>` is the only place the brand can
+appear in a search result.
+
+**Do not add `og:site_name` on its own.** Every social client renders it beside
+the title as its own element, so adding it to a page whose `og:title` already
+carries the suffix moves that page from correct to saying the company name
+twice. If you add it, strip the suffix from `og:title` in the same change or
+not at all.
+
+**This paragraph was wrong until 2026-09-04 and the history is worth keeping.**
+It read "`<title>` ends in `| Market Data`. `og:title` must not", copied from a
+source comment in `MarketDataApp/website` that states a conditional rule as a
+site-wide prohibition. That repo's own check says otherwise in terms the comment
+does not: the prohibition holds on the 47 pages with a headline of their own,
+while 54 echo `<title>` and 40 of those legitimately carry the suffix — pending
+a copy decision, deliberately not gated, because a gate that fails
+correct-as-authored pages is one somebody switches off.
+
+So a Must in this document was manufactured by reading a comment rather than the
+check beside it. **A rule copied from another repository must be verified
+against that repository's gate, not its prose.**
 
 ---
 
@@ -300,7 +322,8 @@ Required on every page:
 
 ```
 og:type            website, or article for a post
-og:site_name       Market Data
+og:site_name       Market Data -- ONLY when og:title drops the suffix. See
+                   "The brand appears once on a card" in section 2.
 og:title           the page's own title, WITHOUT the brand suffix
 og:description     verbatim from meta description
 og:url             equal to this page's canonical
