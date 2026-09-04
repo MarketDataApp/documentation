@@ -8,6 +8,19 @@ const darkCodeTheme = require("prism-react-renderer").themes.dracula;
 
 require("dotenv").config();
 
+// Resolved ONCE, here, and handed to plugins/build-info.js. Both halves of the
+// sentinel -- /docs/build-info.json and the <meta name="build-commit"> on every
+// page -- read this one value. Two call sites resolving the commit separately
+// would be two ways to answer one question, and they would disagree the day
+// somebody changed one of them.
+//
+// `builtAt` is in the JSON only. It must never reach the head: two builds of one
+// tree have to differ only where they are already known to, or a head-only
+// change cannot be verified by diffing built HTML. That was the other repo's
+// condition on the shared format and it is worth as much here.
+const { resolveGit } = require("./lib/build-info");
+const BUILD_INFO = { resolved: resolveGit(), builtAt: new Date().toISOString() };
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title:
@@ -143,6 +156,7 @@ const config = {
   ],
 
   plugins: [
+    ['./plugins/build-info', BUILD_INFO],
     './plugins/theme-cookie-sync',
     './plugins/markdown-twins',
     './plugins/not-found-head',

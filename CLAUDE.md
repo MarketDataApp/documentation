@@ -186,9 +186,20 @@ section name.** `Stock Candles (Python SDK)` matches both words of `stock
 candles`, adjacent and exact; `/api/stocks/candles` is titled `Candles` and
 matches one. The API page loses on `words` and never reaches the tie-break.
 
-That is a content problem, not a ranking one. It is fixed by titling the API
-pages for the concept (`Stock Candles`, not `Candles`), not by any crawler
-setting. Raising `pageRank` further would change nothing.
+That is a content problem, not a ranking one. Nine API pages were retitled for
+their asset class on 2026-09-04 — `Historical Candles` → `Stock Candles` — each
+keeping a `sidebar_label` so the navigation did not move. Four queries flipped.
+
+**Two got worse, and the mechanism is worth knowing before writing a title.**
+`proximity` and the position of a match are both evaluated BEFORE `custom`:
+
+- `bulk candles` — `Bulk Candles (PHP SDK)` holds the two words adjacent.
+  `Bulk Stock Candles` separates them, so the SDK page wins on proximity.
+- `earnings` — `Earnings (Go SDK)` matches at position 0, `Stock Earnings` at
+  position 1.
+
+So a qualifier helps when it adds a word the reader typed, and hurts when it
+lands *between* two words they typed. Raising `pageRank` reaches neither case.
 
 ### Watching it
 
@@ -351,6 +362,62 @@ sees 200s and concludes it works.
 `tests/sitemap.integration.test.js` is deliberately cache-warm: it is the only
 check that reads what the public reads. A green run there proves delivery, not
 completeness.
+
+## The build sentinel
+
+**Which commit is deployed, in one request with an exact answer.**
+
+The orchestrator merges `MarketDataApp/website` and this repo into ONE
+Cloudflare Pages deployment, so "what is live?" is two questions and neither
+source could answer either. The format is agreed with that repo (2026-09-04) so
+both halves answer identically, each under its own prefix so nothing collides
+in the merge:
+
+|                                                   |         |
+|---------------------------------------------------|---------|
+| `https://www.marketdata.app/build-info.json`      | website |
+| `https://www.marketdata.app/docs/build-info.json` | here    |
+
+```json
+{ "source": "documentation", "commit": "<40 hex>", "ref": "main",
+  "environment": "production", "builtAt": "2026-09-04T16:08:31.369Z" }
+```
+
+The sha is **full length** by agreement: an abbreviation is ambiguous across
+two repositories and cannot be handed back to `git`.
+
+Written by `plugins/build-info.js` in postBuild, from `lib/build-info.js`. The
+commit is resolved **once**, in `docusaurus.config.js`, and handed to the
+plugin — two call sites resolving it separately would be two ways to answer one
+question, and they would disagree the day somebody changed one.
+
+### Three traps, each of which defeats the whole thing
+
+**A cached sentinel is worse than none** — it answers about a previous deploy
+while looking authoritative. `deploy-docs.yml` sets `no-store` on it. Remember
+`_headers` is not first-match-wins: every matching rule applies and a repeated
+header name *appends*. None of the three cache rules above it matches
+(`/*.js` needs a literal `.js`, this is `.json`), so it stands alone — but a
+broad rule added here, or in the website half the orchestrator concatenates
+with, would break that.
+
+**A dirty tree must not publish a clean sha.** `git rev-parse HEAD` answers
+happily with uncommitted changes, so a hand-run build would publish a commit
+whose content is not what was built. `dirty: true` appears then, and only then,
+so a deployed sentinel is exactly the five agreed fields.
+
+**The page and the endpoint can legitimately disagree.** Pages are edge-cached
+and the sentinel is not, so the document in front of a reader may come from an
+older build than `/docs/build-info.json` reports. That is two cache states, not
+a defect — and it is precisely the reader `src/clientModules/chunkReload.js`
+exists for. Every page therefore carries `<meta name="build-commit">` with its
+own provenance.
+
+**That tag is the commit and nothing else.** No timestamp, no other
+per-build-varying value: two builds of one tree must differ only where they are
+already known to, or a head-only change cannot be verified by diffing built
+HTML. It was the other repo's condition on the shared format and it is worth as
+much here, where `lib/build-freshness.js` and several checks read built HTML.
 
 ## Markdown Twins
 

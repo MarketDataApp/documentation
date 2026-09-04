@@ -67,6 +67,21 @@ jobs:
           rm -rf build-raw
           cp "build/${BASE_URL}/404.html" build/404.html
 
+      # The last rule is the build sentinel, and it is the reason to read this
+      # step carefully before adding a fourth.
+      #
+      # A CACHED SENTINEL IS WORSE THAN NO SENTINEL: it answers about a previous
+      # deploy while looking authoritative. Hence `no-store`.
+      #
+      # `_headers` is NOT first-match-wins. Every matching rule applies and a
+      # repeated header name APPENDS, so two rules matching build-info.json
+      # would serve two Cache-Control values and `no-store` is not obviously the
+      # winner. None of the three rules above matches it -- `/*.js` requires a
+      # literal `.js` ending, and this is `.json` -- so it stands alone today.
+      # A broad rule added here, or in the website half the orchestrator
+      # concatenates with, would break that. The fix if it ever happens is the
+      # one that repo already worked out for the canonical `Link`: `! Cache-Control`
+      # in the specific rule, unsetting before setting, broad rule first.
       - name: Generate cache headers
         env:
           BASE_URL: ${{ steps.env.outputs.base_url }}
@@ -80,6 +95,9 @@ jobs:
             "" \
             "/${BASE_URL}/*.js" \
             "  Cache-Control: public, max-age=31536000, immutable" \
+            "" \
+            "/${BASE_URL}/build-info.json" \
+            "  Cache-Control: no-store" \
             > build/_headers
 
       # UPLOAD, THEN PRUNE, THEN PROVE IT. Not `aws s3 sync --delete`.
