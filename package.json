@@ -31,6 +31,7 @@
     "lint:examples": "node scripts/check-example-parity.js",
     "lint:highlighting": "node scripts/check-highlighting.js",
     "lint:seo": "node scripts/lint-seo.js",
+    "lint:algolia": "node scripts/lint-algolia.js",
     "test:scripts": "node --test scripts/__tests__/*.test.js"
   },
   "dependencies": {

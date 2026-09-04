@@ -1,0 +1,53 @@
+---
+title: Internal
+description: Market Data engineering reference material, kept out of the public index
+hide_table_of_contents: false
+---
+
+Reference material we write for ourselves. It is public in the sense that
+nothing here is secret, and private in the sense that no search engine and no
+LLM index carries it.
+
+This section is absent from the navbar. You reach it by typing the URL, and the
+sidebar appears once you land.
+
+## How a page stays out of the index
+
+**Write the page. Add nothing.** `plugins/internal-head.js` stamps
+`noindex, nofollow` onto every built page under this section, and `lint:seo`
+M1 fails the build if one arrives without it.
+
+| Consumer                      | Behaviour                                                          |
+|-------------------------------|--------------------------------------------------------------------|
+| Google and other crawlers     | obey the directive                                                 |
+| the Algolia DocSearch crawler | skips the page — `ignoreNoIndex` is unset, so the default holds    |
+| the sitemap                   | `ignorePatterns` in `docusaurus.config.js` excludes `/internal/**` |
+| `lint:seo` D2                 | fails the build if a noindex route reaches the sitemap anyway      |
+| `/docs/llms.txt`              | excludes the section **by stem**, in `lib/llms-txt.js`             |
+
+### Two spellings that look right and are not
+
+**`unlisted: true`** marks a page noindex and *also* drops it from the sidebar
+in a production build. That removes the one thing this section exists to give:
+land on a page by URL and get the section's menu. `sdk-requirements` carried it
+before moving here, together with `displayed_sidebar: null`, and both came off
+in the move — this section supplies what they were working around.
+
+**A `<head>` block in the MDX** is documented to work and does not work in this
+build. Written into a page, it renders as literal text: it reaches the Markdown
+twin verbatim and produces no tag at all. That is worse than doing nothing —
+the source looks annotated while the built page is fully indexable.
+
+### Why llms.txt is excluded separately
+
+Every other consumer reads the rendered tag. `llms.txt` cannot: Docusaurus runs
+postBuild hooks concurrently with `Promise.all`, so whether the llms.txt pass
+reads a stamped page is a race. Excluding the section by stem is decided before
+any hook runs and cannot lose that race.
+
+## Pages
+
+- [On-page SEO requirements](/internal/seo-requirements) — what every Market
+  Data website must implement, and what gates each rule.
+- [SDK requirements](/internal/sdk-requirements) — acceptance criteria for an
+  official Market Data SDK, in any language.

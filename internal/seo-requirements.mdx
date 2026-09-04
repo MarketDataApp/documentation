@@ -1,0 +1,545 @@
+---
+title: On-Page SEO Requirements
+description: Internal technical SEO requirements that every Market Data website must implement
+hide_table_of_contents: false
+---
+
+This document defines what every Market Data website must emit. Use it as
+acceptance criteria when building a new property, rebuilding an old one, or
+reviewing work from a contractor.
+
+**It binds every public property we run**, whatever the stack: the Astro
+marketing site (`MarketDataApp/website`), this Docusaurus documentation site
+(`MarketDataApp/documentation`), any new site, free tool or content property,
+and the logged-in and tool surfaces — those mostly answer `noindex`, and §5 is
+where that is written down rather than assumed.
+
+## How to read this document
+
+**This document is prescriptive. The per-repository specs are descriptive.**
+
+| Document                                                     | Says                                                 |
+|--------------------------------------------------------------|------------------------------------------------------|
+| this page                                                    | what a site MUST do, whatever it is built with       |
+| `website/docs/SEO.md`                                        | what the Astro site emits today, measured in `dist/` |
+| `documentation/docs/SEO.md`                                  | what the docs site emits today, measured in `build/` |
+| `website/docs/SEO-DECISIONS.md`                              | why we chose against a common practice               |
+| `website/docs/SEO-GAPS.md`, `documentation/docs/SEO-GAPS.md` | what is deliberately not gated, and why              |
+
+A requirement here without a check named beside it is a requirement that will
+be broken and nobody will know. §18 is the map.
+
+**Must** is a release blocker. **Should** is required unless the site records a
+written reason against it. **Optional** is a judgement call.
+
+---
+
+## Core Principles
+
+### Measure the built output, never the source
+
+**Every rule below is asserted against the built artefact — `dist/`, `build/`,
+or the deployed URL — and never against a component or template.**
+
+A rule that is true of a component and false of one built page is not a rule.
+This is not hypothetical. Three pages on the marketing site shipped an
+`og:image:width` of 1200 for a file 1024 pixels wide, while the component that
+emitted it read correctly. Thirty-five pages advertised an `og:image` that
+404ed, because a path string was used where an import was needed — an import
+fails the build, a string does not.
+
+### Every requirement needs a check that names the offender
+
+**A number written into prose is the one thing nothing can keep true.**
+
+Checks must print what they measured on every run, name every offending route,
+and never freeze a count as a baseline. The marketing site's spec carried
+"101 / 97 / 4" in thirty-three places for weeks while the build stood at
+127 / 115 / 12, and nothing failed, because a citation gate has nothing to say
+about a number standing beside one.
+
+State a floor far below any plausible content state, so it is a tripwire on the
+walk and never a second inventory somebody has to keep in step.
+
+### No silent caps
+
+If a check bounds its own coverage — top-N, no-retry, sampling, an API
+pagination limit — it must **say so on every run**. Silent truncation reads as
+"covered everything" when it did not.
+
+`lint:algolia` is the worked example: one Algolia facet cell exceeds the
+1,000-hit pagination cap, so the check reports the cap and confirms every
+apparent miss with a second targeted query before calling it a miss.
+
+### A page that produces no result has nothing to show
+
+Several rules below apply to **indexable** pages only. That is consistent, not
+an exemption. A description length budget is a rule about what a search result
+can display, so it does not bind a page that produces no result.
+
+---
+
+## Quick Reference
+
+| Requirement                                                 | Priority          |
+|-------------------------------------------------------------|-------------------|
+| One `<title>`, unique, naming the company                   | Must              |
+| `<meta name="description">`, unique, 70–160 characters      | Must              |
+| Self-referential absolute canonical on every indexable page | Must              |
+| **No canonical at all on a `noindex` page**                 | Must              |
+| Environment-derived `robots` directive, failing closed      | Must              |
+| Exactly one `<h1>`, no skipped heading levels               | Must              |
+| `alt` on every `<img>`, never a filename or placeholder     | Must              |
+| Open Graph and Twitter card sets, echoes agreeing           | Must              |
+| `og:image` that resolves, at the size the head claims       | Must              |
+| JSON-LD that parses, is typed, and is connected             | Must              |
+| Sitemap listing every indexable route, and nothing else     | Must              |
+| `robots.txt` naming a sitemap the build emits               | Must              |
+| Analytics on production only                                | Must              |
+| Every built route reachable by the search index             | Must              |
+| Markdown twin per route                                     | Should            |
+| `llms.txt`, withholding `noindex` routes                    | Should            |
+| Breadcrumb trail matching its `BreadcrumbList`              | Should            |
+| Web app manifest with an `id` and a maskable icon           | Should            |
+| Core Web Vitals inside Google's "good" thresholds           | Should            |
+| `hreflang`                                                  | Optional — see §1 |
+
+---
+
+## 1. Document Basics
+
+Every page **must** carry, once each:
+
+| Tag                                      | Value                                |
+|------------------------------------------|--------------------------------------|
+| `<html lang>`                            | `en`                                 |
+| `<meta charset>`                         | `UTF-8`                              |
+| `<meta name="viewport">`                 | `width=device-width,initial-scale=1` |
+| `<meta name="google-site-verification">` | the property's own token             |
+
+These are singletons. A check **must** count them rather than merely require
+one: `react-helmet-async` and several other head managers render a second tag
+rather than letting a later one win, so "at least one" passes on a page serving
+two contradictory values.
+
+`hreflang` is **optional** and currently unused. We publish one locale. A
+self-referencing `hreflang` on a single-language site adds a tag and changes
+nothing.
+
+---
+
+## 2. `<title>`
+
+- **Must** be present, non-empty, and more than the site name alone.
+- **Must** contain `Market Data`. Use *contains*, not *ends-with* — the home
+  page leads with the brand, and the legal pages read `Market Data Terms of
+  Service`.
+- **Must** be unique across indexable pages.
+- **Must** be 60 characters or fewer. Google truncates a result past roughly
+  that width.
+
+**A page's `<title>` and its `<h1>` may differ, deliberately.** A headline is
+written for the reader who arrives; a title is written for a 60-character
+result. Where a page sets an explicit SEO title, `<h1>` keeps the published
+headline and `<title>` carries the short form.
+
+### The suffix asymmetry
+
+**`<title>` ends in `| Market Data`. `og:title` must not.**
+
+`og:site_name` is already `Market Data`, and every social client renders it
+beside the title as its own element — so the suffix makes each card say the
+company name twice. Google has no equivalent of `og:site_name`, so `<title>` is
+the only place the brand can appear in a search result.
+
+It looks like an inconsistency and is not. **Do not "fix" one to match the
+other.** A check must assert the two groups separately.
+
+---
+
+## 3. `<meta name="description">`
+
+- **Must** be present and non-empty on every page.
+- **Must** be unique across indexable pages.
+- **Must** be between **70 and 160 characters** on indexable pages.
+- **Must** be echoed verbatim into `og:description`, `twitter:description`, and
+  the `description` field of the page's JSON-LD node. All four agree.
+
+Generated descriptions are acceptable for archive-shaped pages, and **should**
+name the parent topic. `Options Education` alone says nothing in a result.
+
+---
+
+## 4. Canonical URLs
+
+- Every indexable page **must** emit exactly one `<link rel="canonical">`.
+- It **must** be absolute, and **must** name the production host — never the
+  staging host, never the Pages host, never a relative path.
+- It **must** be self-referential, except a declared archive variant, which
+  names its archive's base rather than itself.
+
+### A `noindex` page emits no canonical
+
+**Must.** A canonical on a `noindex` page is a contradiction: it asks a crawler
+to consolidate signals onto a URL that also asks not to be indexed. The 404
+page is the clearest case — it has no URL of its own, so it names none.
+
+Note the interaction with §5: a staging build marks every page `noindex`, so a
+staging build emits **no canonical on any page**. A check must assert the
+absence, not only the presence.
+
+### The canonical and the structured data must agree
+
+Where a page emits a JSON-LD node with a `url` or `@id`, that value **must**
+equal the canonical exactly, trailing slash included. A site with
+`trailingSlash: true` whose framework hands out permalinks without one will
+produce two spellings of the same page and nothing will report it.
+
+---
+
+## 5. `<meta name="robots">` and Environment
+
+Every page **must** carry exactly one robots directive, and it **must** be
+derived from the build environment rather than hard-coded.
+
+| Environment                | Every page gets                                                                                                                     |
+|----------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| production                 | `index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1` for content; `noindex, nofollow` for the noindex set |
+| staging                    | `noindex, nofollow` on **every** page, and no canonical on any page                                                                 |
+| environment unset, in CI   | **a thrown error, not a default**                                                                                                   |
+| environment unset, locally | a printed warning, and the safe direction                                                                                           |
+
+`max-image-preview:large` is the directive that costs something if omitted:
+without it Google falls back to a thumbnail in results, so banner images are
+not used at full size.
+
+A `noindex` directive **should** omit the three preview directives. They cap
+what a result may show, and a page producing no result has nothing to cap.
+
+**The environment must be derived from the branch by one expression that the
+deploy workflow and the check both read.** Two strings that must agree will
+eventually disagree. Failing closed on an unset value is the requirement that
+matters: a default is how a staging build ships `index, follow`.
+
+### Tool and app surfaces
+
+Logged-in surfaces, dashboards, admin tools and internal reference material
+**must** answer `noindex, nofollow`, **must** be excluded from the sitemap, and
+**must not** appear in `llms.txt` or any search index.
+
+An internal page must not rely on obscurity. `/docs/internal/` is the pattern:
+absent from the navbar, reachable by URL, and `noindex` by a tag that six
+downstream consumers read.
+
+---
+
+## 6. Heading Structure
+
+- **Must** have exactly one `<h1>` per page.
+- **Must not** skip a heading level.
+- The `<h1>` **should** equal `og:title` and `twitter:title`.
+
+Check this against the built page. A heading that arrives through a component
+prop is invisible to a grep over sources.
+
+---
+
+## 7. Images and `alt`
+
+- Every `<img>` **must** have an `alt` attribute.
+- `alt` **must not** be a filename, a placeholder, or a repeat of the page
+  title.
+- A decorative image **must** carry `alt=""`, deliberately empty.
+
+**An `alt` that repeats the title is worse than an absent one.** It reads as a
+description to every automated check and to nothing else. The same judgement
+applies to `og:image:alt`: describe the picture, or omit the pair entirely.
+Empty and absent must behave identically.
+
+---
+
+## 8. Open Graph and Twitter Cards
+
+Required on every page:
+
+```
+og:type            website, or article for a post
+og:site_name       Market Data
+og:title           the page's own title, WITHOUT the brand suffix
+og:description     verbatim from meta description
+og:url             equal to this page's canonical
+og:image           absolute, resolving, and the size the head claims
+og:image:width     the file's real pixel width
+og:image:height    the file's real pixel height
+og:image:alt       what the picture shows, or omitted
+twitter:card       summary_large_image
+twitter:title      == og:title
+twitter:description == og:description
+twitter:image      == og:image
+twitter:image:alt  == og:image:alt
+```
+
+An `article` **must** also emit `article:published_time` and
+`article:modified_time` as ISO dates.
+
+**`og:image` and `twitter:image` live in a `<meta content>` attribute, so no
+link checker has ever resolved them.** A dedicated rule must open them. This is
+not theoretical: thirty-five pages once advertised a 404ing `og:image` while
+also declaring `summary_large_image`, and every one of those shared links
+rendered an empty card.
+
+The declared width and height **must** be read from the file, not written by
+hand.
+
+---
+
+## 9. The Card Image
+
+- Every page **must** resolve to a card image. A fallback to the brand mark is
+  correct, not a defect.
+- The image **must** be an asset the build emitted, referenced by **import**
+  and never by path string. An import fails the build; a path string ships.
+- The image **must** be flattened and opaque. Transparency renders as black on
+  several clients.
+
+Where a framework emits modern formats through a `<Picture>`-style component,
+the source file may never be emitted at all. Derive the card explicitly rather
+than pointing at the source asset's presumed URL.
+
+---
+
+## 10. Structured Data (JSON-LD)
+
+- **Must** parse.
+- **Must** be typed — every node carries an `@type`.
+- **Must** be connected — no node floats unreferenced, and no `@id` points at
+  a node that does not exist.
+- **Must** contain exactly one page node, whose `@id` is the canonical URL.
+- **Should** include an `Organization` node with `sameAs`.
+
+A page node's `breadcrumb` field is an `@id` reference. **Do not emit it on a
+page that emits no `BreadcrumbList`** — a pointer to nothing is worse than an
+absent field.
+
+Choose the type that describes the page. `/pricing/` emits `WebAPI`, not
+`Product`, because we sell API access rather than an object.
+
+---
+
+## 11. Internal Linking and Breadcrumbs
+
+- A rendered breadcrumb trail and its `BreadcrumbList` **must** be the same
+  trail. A check that reads only the JSON-LD cannot see a disagreement.
+- Anchor text **should not** be a bare URL. Exceptions, recorded rather than
+  assumed: API documentation where the URL is the content, legal copy citing a
+  third party, and a URL inside a code block.
+- Internal links **must** be relative or name the production host. An absolute
+  self-link resolves and renders, and moves a reader from staging onto
+  production without a symptom.
+
+---
+
+## 12. Sitemap and `robots.txt`
+
+- The sitemap **must** list every indexable route and nothing else.
+- Every URL in it **must** answer 200 on the deployed site.
+- Every URL **must** use the production host and the site's own slash form.
+- A `noindex` route **must never** appear.
+- `robots.txt` **must** name a sitemap the build actually emits.
+
+**A `noIndex` build must publish no sitemap at all.** Assert the absence on
+staging, not merely the contents on production.
+
+### Cache-warm and cache-busted probes
+
+**When a page count matters, cache-bust.**
+
+| Probe        | Request                          | Answers                                |
+|--------------|----------------------------------|----------------------------------------|
+| Cache-warm   | `curl <url>`                     | what a visitor is served **right now** |
+| Cache-busted | `curl "<url>?cb=$RANDOM$RANDOM"` | what the **deployment** contains       |
+
+Run both and compare. **A disagreement is a delayed failure, already queued** —
+the page looks correct today and starts 404ing when the cache expires, with no
+new deploy and no new cause. A dead URL served 200 from a warm edge cache never
+enters a 404 report at all, so those counts are a floor rather than a total.
+
+---
+
+## 13. Markdown Twins and `llms.txt`
+
+- Every built route **should** have a Markdown twin, and a missing twin
+  **must** fail the build rather than warn.
+- Twins **should** be advertised on the page, at the URL that actually serves
+  them.
+- `llms.txt` **must** withhold every `noindex` route.
+- A truncated index **must** fail rather than pass. An empty file satisfies
+  "contains no noindex route" while telling a reader nothing.
+
+Twin generation must fail the build because the failure is invisible from
+outside. Where a rewrite rule maps `<route>` to `<route>index.md`
+unconditionally, a route with no twin is a 404 with no deploy and no other
+cause.
+
+---
+
+## 14. Analytics
+
+- The analytics loader **must** be present on every production page, including
+  the 404.
+- It **must** be absent from every staging page.
+- The environment decision **must** come from the same resolver §5 uses.
+
+---
+
+## 15. Web App Manifest
+
+Where a site ships a manifest, it **should**:
+
+- name the site rather than the scaffold's default,
+- declare an `id`, so a future `start_url` change cannot orphan an installed
+  app,
+- ship every icon it promises,
+- include a `maskable` icon whose mark stays inside the 80% safe zone, and
+- offer at least one unmasked icon.
+
+---
+
+## 16. Core Web Vitals
+
+Each **should** sit inside Google's "good" threshold on mobile: LCP under 2.5s,
+INP under 200ms, CLS under 0.1.
+
+**Measure the property, not the metric.** A CLS number read from a local server
+is 0.00000 on a page that scores 0.486 at 375px with images delayed, because
+the server answers before the shift can happen. Assert instead that an image
+occupies the same box before and after it loads — that is a property, and it
+holds regardless of how fast the network was on the morning of the run.
+
+---
+
+## 17. Search Indexing
+
+Site search is a first-class SEO surface and **must** be watched.
+
+- The index **must** be no older than the crawl schedule plus slack.
+- Every route in the sitemap **must** be reachable by a search against the
+  index.
+- No `noindex` route **may** appear in it.
+- Index settings **must** be asserted, not assumed.
+- The crawler **must** have a schedule. A null schedule is a stalled crawler
+  that reports itself healthy.
+
+**A search index fails silently by construction.** A stale index and a fresh
+one are the same shape, answer in the same time and render identically, and a
+visitor cannot miss a page they do not know exists. The docs index sat six
+months stale — the entire C# SDK returning zero hits — while every other
+surface stayed green.
+
+Where the crawler owns the index settings, a settings change **must** be made
+in the crawler's config, not on the index. Otherwise the next reindex reverts
+it, and under a DocSearch-style provisioning there is no admin key to put it
+back.
+
+---
+
+## 18. What Must Gate What
+
+**A requirement with no check is a requirement that will be broken silently.**
+Each site owns its own check names; what this section fixes is that every row
+has an owner.
+
+| Requirement                                                   | Must be gated                 | Runs against      |
+|---------------------------------------------------------------|-------------------------------|-------------------|
+| §1 head singletons, `lang`, charset, viewport                 | static check                  | the build         |
+| §2 title presence, brand, length, uniqueness                  | static check                  | the build         |
+| §3 description presence, length, uniqueness, echoes           | static check                  | the build         |
+| §4 canonical present, absolute, self-referential              | static check                  | the build         |
+| §4 canonical **absent** on `noindex` pages                    | static check                  | the build         |
+| §5 robots directive, and the environment resolver's own table | static check                  | the build         |
+| §5 the branch-to-environment map matching the deploy workflow | static check                  | the workflow file |
+| §6 one `h1`, heading order                                    | static check                  | the build         |
+| §7 `alt` present, and not a filename or placeholder           | static check + a11y           | the build         |
+| §8 the OG and Twitter sets, and their echoes                  | static check                  | the build         |
+| §8 `og:image` resolving, and its declared size                | static check                  | the build         |
+| §9 one card image per page, resolving                         | static check                  | the build         |
+| §10 JSON-LD parses, typed, connected, one page node           | static check                  | the build         |
+| §11 rendered trail equals `BreadcrumbList`                    | static check                  | the build         |
+| §12 sitemap coverage, hosts, slashes                          | static check                  | the build         |
+| §12 every sitemap URL answers 200                             | post-deploy test              | the deployed site |
+| §13 every route has a twin                                    | build step, failing the build | the build         |
+| §13 `llms.txt` withholds `noindex`                            | static check                  | the build         |
+| §14 analytics per environment                                 | static check                  | the build         |
+| §15 manifest, icons, safe zone                                | static check                  | the build         |
+| §16 image box stability                                       | browser check                 | a served build    |
+| §17 index freshness, coverage, settings                       | scheduled check               | the live index    |
+
+**Placement rule.** A check whose subject is the commit belongs in PR checks. A
+check whose subject lives on a third party's servers belongs on a schedule: no
+pull request can move it, and a check people cannot act on is one they learn to
+skip.
+
+**Coverage-floor rule.** Every check that walks a discovered population must
+assert a floor on what it found. A sweep over an empty directory otherwise
+reports a clean pass, and that is the failure mode most likely to survive
+review.
+
+---
+
+## Acceptance Checklist
+
+Before accepting a new site, or a rebuild of an existing one:
+
+### Head
+
+- [ ] One `<title>`, unique, contains `Market Data`, 60 characters or fewer
+- [ ] One `<meta name="description">`, unique, 70–160 characters
+- [ ] `<html lang>`, charset, viewport, verification token — one each
+- [ ] `<title>` carries the brand suffix and `og:title` does not
+
+### Indexability
+
+- [ ] Every page carries exactly one robots directive
+- [ ] Staging is `noindex, nofollow` on every page
+- [ ] An unset environment throws in CI rather than defaulting
+- [ ] Every indexable page has a self-referential absolute canonical
+- [ ] No `noindex` page emits a canonical
+- [ ] Tool, admin and internal surfaces are `noindex` and out of the sitemap
+
+### Content signals
+
+- [ ] Exactly one `<h1>`, no skipped levels
+- [ ] Every `<img>` has `alt`; none is a filename or placeholder
+- [ ] Every page renders more than 500 characters of body text
+
+### Sharing
+
+- [ ] The Open Graph and Twitter sets are complete
+- [ ] `og:url` equals the canonical
+- [ ] `og:image` resolves, is opaque, and matches its declared dimensions
+- [ ] `og:image:alt` describes the picture, or is absent
+
+### Structured data
+
+- [ ] JSON-LD parses, is typed, and is connected
+- [ ] Exactly one page node, `@id` equal to the canonical
+- [ ] No `@id` reference points at a node that does not exist
+- [ ] The rendered breadcrumb trail equals its `BreadcrumbList`
+
+### Discovery
+
+- [ ] The sitemap lists every indexable route and nothing else
+- [ ] Every sitemap URL answers 200 on the deployed site, cache-busted
+- [ ] A `noIndex` build publishes no sitemap
+- [ ] `robots.txt` names a sitemap the build emits
+- [ ] Every built route has a Markdown twin
+- [ ] `llms.txt` withholds every `noindex` route
+
+### Operations
+
+- [ ] Analytics loads on production and on no staging page
+- [ ] The search index is fresh, covers the sitemap, and excludes `noindex`
+- [ ] The search crawler has a schedule
+- [ ] Every row in §18 has a named check that fails when the rule is broken
+- [ ] Every walking check asserts a floor on the population it found
+- [ ] No check bounds its coverage without saying so on every run

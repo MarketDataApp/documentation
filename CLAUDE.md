@@ -101,9 +101,196 @@ merges into it — see the note in `deploy-docs.yml`.
 
 ## Search
 
-- Algolia DocSearch (App ID: IUHZFO750H, Index: "Market Data Documentation")
-- Crawler config is managed in the Algolia dashboard, not in the codebase
-- `hierarchy.lvl1` is ranked above `hierarchy.lvl0` in searchable attributes (custom tweak from Docusaurus default)
+Algolia DocSearch. App `IUHZFO750H`, index `Market Data Documentation`,
+crawler `f42f78d6-acf4-4160-80e8-c69558fa87a5` on `crawler.algolia.com`.
+
+**The index went six months stale and nothing said so.** The crawler was
+created 2026-02-24 with `schedule: null`. It ran once for three minutes and was
+never told to run again. On 2026-09-04 the index still held that crawl: the
+entire C# SDK returned zero hits, so did every Go page added since, and 418
+searches in 90 days had run against it. The crawler read `running: true`,
+`blocked: false`, no errors and no failed run — there was nothing to find,
+because a stale index and a fresh one are the same shape, answer in the same
+time, and render identically. **A visitor cannot miss a page they do not know
+exists**, so the only instrument that can see this is one that asks the index
+how old it is. That is `lint:algolia`, and its A2 rule is the whole reason the
+file exists.
+
+Repaired 2026-09-04: schedule set to `every 1 week on monday at 6:00 am`,
+reindexed (102s), 4,983 → 5,161 records, 267 of 268 sitemap routes covered.
+The gap is `/docs/search/`, the search UI, which has no content to index.
+
+### There is no admin key, and that decides the order of every repair
+
+Algolia keeps the admin key for a DocSearch-provisioned application. The
+dashboard exposes four: Search (public, in `docusaurus.config.js`), Analytics,
+Usage, and Monitoring. **Monitoring is a paid feature and answers 401/403 for
+this application** — the key is in `.env` only so nobody rediscovers that.
+
+So nothing here can write index settings. A ranking change must go into the
+crawler's `initialIndexSettings` **before** a reindex, never after, because
+afterwards there is no way to put it back.
+
+That trap was live on 2026-09-04. `hierarchy.lvl1` ranks above
+`hierarchy.lvl0` — a deliberate departure from the Docusaurus default — and it
+existed **only on the index**, while the crawler config still listed `lvl0`
+first. The config was corrected before the reindex ran, so the tweak survived.
+`lint:algolia` A7 is what keeps the two from drifting apart again.
+
+### Ranking: the `pageRank` tiers
+
+`weight.pageRank` was **0 on every record** until 2026-09-04, and it is the
+first term in `customRanking`:
+
+```
+customRanking: [desc(weight.pageRank), desc(weight.level), asc(weight.position)]
+```
+
+Flat at zero it decided nothing, so a tie fell through to insertion order — and
+the SDK section outnumbers the API reference **3,323 records to 928**. A search
+for `rate limit` returned `/sdk/php/utilities/user/` over `/api/rate-limiting/`
+with the two records identical on every ranking signal.
+
+The crawler's single action is now five, each setting a `pageRank` on the
+records it produces. **`pageRank` is not an action property** — the schema
+rejects it there; it goes inside the DocSearch helper's `recordProps`.
+
+| Action    | Paths                        | pageRank |
+|-----------|------------------------------|----------|
+| `api`     | `/docs/api/**`               | 100      |
+| `sheets`  | `/docs/sheets/**`            | 100      |
+| `account` | `/docs/account/**`           | 100      |
+| `rest`    | everything else, by negation | 50       |
+| `sdk`     | `/docs/sdk/**`               | 30       |
+
+**The actions must stay mutually exclusive.** Every matching action runs, so an
+overlapping pattern duplicates every record on the page. `rest` excludes the
+other four by `!` negation, and the crawler's `/test` endpoint reports the
+action groups a URL matches — it read `action_groups=1` for one URL per tier
+before the reindex.
+
+**Only the SDK is demoted, and that is deliberate.** A first pass also demoted
+Sheets to 70. It fixed `troubleshooting` and broke `optionchain`, which stopped
+returning the Sheets function literally named `OPTIONCHAIN`. Sheets and account
+pages are function references whose name IS the query; the measured problem was
+API versus SDK and nothing else.
+
+### What pageRank cannot fix, and must not
+
+`custom` is the **last** ranking criterion. A page that matches the query text
+better wins before `pageRank` is ever consulted, which is correct and is why
+this lever is safe.
+
+It is also why the score stopped at 8 of 20. **The SDK page titles embed the
+section name.** `Stock Candles (Python SDK)` matches both words of `stock
+candles`, adjacent and exact; `/api/stocks/candles` is titled `Candles` and
+matches one. The API page loses on `words` and never reaches the tie-break.
+
+That is a content problem, not a ranking one. It is fixed by titling the API
+pages for the concept (`Stock Candles`, not `Candles`), not by any crawler
+setting. Raising `pageRank` further would change nothing.
+
+### Watching it
+
+`yarn lint:algolia` (`scripts/lint-algolia.js`, logic in `lib/algolia.js`).
+Runs daily in `.github/workflows/algolia-watch.yml`, **not** in PR checks: no
+pull request can make the index stale or fresh, and a check people cannot act
+on is one they learn to skip.
+
+**C1, C2 and B3 ask whether a search returns the RIGHT page**, which no other
+rule here can. A2 proves the index is fresh, A5 proves every route is in it,
+and both were green while five of twenty asserted queries answered badly. The
+table is `lib/algolia-relevance.js`.
+
+| Rule | Asks                                                      | Verdict  |
+|------|-----------------------------------------------------------|----------|
+| C1   | a query that used to return the right page no longer does | gated    |
+| C2   | a **known gap has started passing** — the table is stale  | gated    |
+| B3   | the known gaps themselves                                 | reported |
+
+C2 is the one that keeps the list honest. Without it a gap list becomes a
+graveyard of things fixed long ago that nobody removed, and stops describing
+the index. It names the line to delete.
+
+**The passing rows are the point, not the failing ones.** Ranking is a single
+global lever, so a change made for one query moves others. The first `pageRank`
+tier fixed `troubleshooting` and silently broke `optionchain`; the score was
+8/20 before and after, so only the individual rows could see it. **Take the
+baseline before touching ranking, never after.**
+
+Rules A1–A3 and A5–A7 need no secret — they use the public search key, so the
+check cannot be silenced by a missing environment variable. A4, B1 and B2 need
+`ALGOLIA_USAGE_API_KEY`, `ALGOLIA_ANALYTICS_API_KEY` and the crawler pair, and
+they report themselves SKIPPED by name rather than passing quietly.
+
+**A2 and A4 measure the same event through different instruments on purpose.**
+`updatedAt` moves for any write, including a settings edit that indexes no
+content; the log names the operation. A settings-only touch refreshes A2 and
+leaves A4 red, which is a state worth seeing rather than one to average away.
+
+Two limits the check states on every run rather than hiding:
+
+- The public key cannot `browse` (403) and pagination stops at 1,000 hits, so
+  the index is swept one `docusaurus_tag` × `type` facet cell at a time. One
+  cell (`docs-sdk-current/content`) exceeds that cap. A capped cell is **not** a
+  missing page, so every apparent miss is confirmed with a second, targeted
+  query before anything is reported.
+- `url` is not a searchable attribute on this index. Asking for
+  `restrictSearchableAttributes: ['url']` fails with an error that does not say
+  why.
+
+## The `/internal/` section
+
+`/docs/internal/` holds our own reference material — today the on-page SEO
+requirements every Market Data site must meet. Its own docs plugin instance,
+absent from `themeConfig.navbar.items`, so it is reachable by URL and shows the
+section's sidebar once you land.
+
+**Every page in it is `noindex`, stamped by `plugins/internal-head.js`.** Not
+front matter: `unlisted: true` would also drop the page from the sidebar in a
+production build, and a `<head>` block in MDX renders as literal text here and
+produces no tag at all. The full reasoning is in `lib/internal-head.js` and in
+`docs/SEO.md`.
+
+`lint:seo` M1 fails the build when a page there arrives without the tag. The
+sitemap excludes the section by route; `llms.txt` excludes it by **stem**, in
+`lib/llms-txt.js`, because postBuild hooks run concurrently and reading a
+stamped page would be a race.
+
+A page here needs no special front matter, and must not use `unlisted: true`:
+that also drops the page from the sidebar in a production build. Give it a
+`title` and let the frontmatter render the `<h1>` — a `#` heading in the body
+suppresses the theme's own header, which puts the Markdown actions row **above**
+the title instead of below it.
+
+### A noindex page emits no canonical
+
+`plugins/noindex-head.js` also strips the canonical from every page that says
+`noindex`, which is Google's guidance and `MarketDataApp/website`'s ruling
+(`SEO-DECISIONS.md` #15). This site did not follow it, and the gap was not the
+four production pages — **`noIndex: process.env.PROD !== "true"` marks the whole
+staging build noindex, and every page there also carried a canonical naming
+`www-staging.marketdata.app`.** 265 canonicals per staging build. Gated by C1,
+in both directions.
+
+`og:url` and the JSON-LD `@id` are untouched, which is the same line the
+website's ruling draws. That matters beyond tidiness: **`lint:seo` resolves the
+build's environment from `og:url`**, because the canonical it used to read is
+gone from staging.
+
+### The tag pages are gone
+
+`ignorePatterns` is matched against the path including `baseUrl`, which is why
+the sitemap's `/internal/` rules name `/docs/`. The old `/tags/**` rule did not,
+and had never matched anything — tag routes are `/docs/api/tags/…`, nested per
+docs instance — so seven tag pages sat in the production sitemap.
+
+They were retired on 2026-09-04 rather than corrected, with the `tags:` front
+matter that generated them. Nothing was lost: every tagged page also carried an
+equivalent `sidebar_custom_props: { badge }`, which is what renders the Premium
+/ Beta / High Usage chip. The tags produced only those pages and a footer link
+row pointing at them. All seven redirect to their section root, because they
+were in the sitemap and so may be indexed.
 
 ## Sidebar Badges
 

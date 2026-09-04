@@ -15,6 +15,12 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Bounded so a hang reports rather than burning the runner. With no
+    # `timeout-minutes` a job inherits GitHub's 360-minute default, and a
+    # step that wedges on a network call takes six hours to say nothing.
+    # Sized well above the observed maximum (about 7 minutes: full clone, build, R2 upload), because a cap that trips
+    # on a slow-but-working run gets raised and then removed.
+    timeout-minutes: 30
     permissions:
       contents: read
     steps:

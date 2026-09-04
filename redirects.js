@@ -19,7 +19,92 @@
  * plugins/redirects-file.js, which is the only place that has to care.
  */
 
+/**
+ * WHAT THE 2026-09-03 404-STORE SWEEP DELIBERATELY DID NOT PRODUCE A RULE FOR.
+ *
+ * Most of the store's top /docs/ rows were already handled -- /api/rate-limits,
+ * /api/credits, /api/troubleshooting/credits, /api/options/option-chain/,
+ * /api/options/chains, /api/getting-started and /api/troubleshooting/status-codes
+ * all 301 on production today. Their rows are historical: the store's earliest
+ * day is a backfill of Cloudflare's whole window, so `firstSeen 2026-08-21`
+ * says nothing about when a URL last 404ed. Probing production is the only way
+ * to tell a live 404 from a fixed one, and it moved most of the list off it.
+ *
+ * Two families are live 404s with NO rule, on purpose:
+ *
+ *   /api/indices, /api/indices/candles, /api/indices/quotes   (~114 hits)
+ *   /api/options/candles                                      (16 hits)
+ *
+ * Neither has a destination, for the same reason: the API does not serve them
+ * either. `https://api.marketdata.app/status/` lists no indices endpoint at
+ * all, and its options endpoints are chain, expirations, lookup, quotes and
+ * strikes -- no candles. These are not dead links to moved pages; they are
+ * readers guessing a product from the naming convention, the shape
+ * MarketData-App/website#84 measured on /documentation/*.
+ *
+ * A rule pointing them at /api/ would answer 200 and teach nothing, which is
+ * worse than the 404: it would look handled and bury the signal that people
+ * keep asking for indices documentation. They stay 404 until there is
+ * something true to say.
+ *
+ * One genuine gap the same probe surfaced, left for its own issue:
+ * `/v1/options/strikes/` is a live API endpoint with no documentation page.
+ */
 const REDIRECTS = [
+  // Still 404ing on production with steady traffic, both with a real
+  // destination. Measured over the store's full 13-day window:
+  //   /api/earnings                      36 hits, 11 days, last seen 09-01
+  //   /api/troubleshooting/rate-limits   42 hits across three spellings
+  { from: "/api/earnings", to: "/api/stocks/earnings" },
+  { from: "/api/troubleshooting/rate-limits", to: "/api/rate-limiting" },
+
+  // The seven tag routes, retired 2026-09-04 with the `tags:` front matter
+  // that generated them.
+  //
+  // They are redirected rather than simply dropped because they were in the
+  // PRODUCTION sitemap -- `ignorePatterns: ["/tags/**"]` never matched them,
+  // since sitemap patterns include `baseUrl` and tag routes are nested per
+  // docs instance (`/docs/api/tags/...`). So Google was invited to index all
+  // seven, and deleting them with no rule turns an advertised URL into a 404.
+  //
+  // Nothing was lost with them. Every tagged page also carried an equivalent
+  // `sidebar_custom_props: { badge }`, which is what actually renders the
+  // Premium / Beta / High Usage chip; the tags produced only these pages and a
+  // footer link row pointing at them.
+  // /api/sdk was a SECOND copy of the SDK index, and it had gone stale exactly
+  // the way a duplicate does: it listed four SDKs (Postman, Python, PHP, Go)
+  // while /sdk listed seven. JavaScript, Java and C# were missing, the C# SDK
+  // having shipped on 2026-08-17 and never reached the copy.
+  //
+  // Deleted rather than updated on 2026-09-04. Updating it would have restored
+  // the duplication rather than removed it, and the next SDK would go missing
+  // from whichever copy somebody forgot. /sdk is the one source now, and the
+  // navbar already points at it.
+  //
+  // It also carried the only "Unofficial Client Libraries" list in the repo --
+  // five community repositories we no longer wish to advertise. That list is
+  // gone with the page, deliberately.
+  //
+  // Redirected rather than dropped: it was in the production sitemap, so it may
+  // be indexed, and nothing internal links to it -- which is how it went unread
+  // and unmaintained in the first place.
+  { from: "/api/sdk", to: "/sdk" },
+
+  // sdk-requirements moved into /internal/ on 2026-09-04, where the section
+  // supplies the noindex and the sidebar it was faking with `unlisted: true`
+  // and `displayed_sidebar: null`. It was `unlisted`, so it was never in the
+  // sitemap and never in llms.txt -- but the URL has been shared internally,
+  // and an unlisted page is still a page somebody bookmarked.
+  { from: "/sdk/sdk-requirements", to: "/internal/sdk-requirements" },
+
+  { from: "/api/tags", to: "/api" },
+  { from: "/api/tags/api-beta", to: "/api" },
+  { from: "/api/tags/api-high-usage", to: "/api" },
+  { from: "/api/tags/api-premium", to: "/api" },
+  { from: "/sheets/tags", to: "/sheets" },
+  { from: "/sheets/tags/sheets-high-usage", to: "/sheets" },
+  { from: "/sheets/tags/sheets-premium", to: "/sheets" },
+
   { from: "/account/troubleshooting/linkedin-missing", to: "/account/troubleshooting/linkedin-issues" },
   { from: "/api/troubleshooting/http-status-codes", to: "/api/troubleshooting" },
   { from: "/sheets/troubleshooting/common-error-messages", to: "/sheets/troubleshooting" },
@@ -185,6 +270,11 @@ const REDIRECTS = [
   // this array already redirects. The plural was fixed and the hyphen was
   // missed.
   { from: "/api/troubleshooting/status-codes", to: "/api/troubleshooting" },
+  // The same page, reached by the same reasoning, from a path one segment
+  // shorter. MarketData-App/website#100: /api/status-codes 404s while the
+  // troubleshooting/ spelling above already 301s, so the destination was
+  // settled and only this form was uncovered.
+  { from: "/api/status-codes", to: "/api/troubleshooting" },
   { from: "/api/troubleshooting/rate-limiting", to: "/api/rate-limiting" },
   { from: "/api/troubleshooting/api-credits", to: "/api/rate-limiting" },
   { from: "/api/troubleshooting/data-freshness", to: "/account/data-freshness" },

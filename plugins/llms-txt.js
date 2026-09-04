@@ -89,7 +89,7 @@ async function writeAtomic(target, contents) {
   await fs.rename(temporary, target);
 }
 
-async function emitLlmsTxt({ entries, outDir, routeCount, unclassified = [] }) {
+async function emitLlmsTxt({ entries, outDir, routeCount, unclassified = [], noindexCount = 0 }) {
   // A route that is neither content nor a known navigation artifact means a
   // section nobody taught lib/llms-txt.js about. It would vanish from the index
   // silently, and the old log line would have called it a navigation artifact.
@@ -131,8 +131,9 @@ async function emitLlmsTxt({ entries, outDir, routeCount, unclassified = [] }) {
     `[llms-txt] ${entries.length} of ${routeCount} route(s) indexed in llms.txt ` +
       `(${Math.round(index.length / 1024)} KB); llms-full.txt is ` +
       `${Math.round(full.length / 1024)} KB. ` +
-      `${routeCount - entries.length} navigation artifact(s) skipped ` +
-      `(all classified), ` +
+      `${routeCount - entries.length - noindexCount} navigation artifact(s) ` +
+      `skipped (all classified), ` +
+      `${noindexCount} withheld for noindex, ` +
       `${withoutDescription} without a description.`
   );
 }

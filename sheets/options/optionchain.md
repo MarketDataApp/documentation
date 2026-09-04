@@ -2,8 +2,6 @@
 title: OPTIONCHAIN
 description: The OPTIONCHAIN formula fetches a current option chain into your spreadsheet. See the syntax, sample usage and data availability.
 sidebar_position: 3
-tags:
-  - "Sheets: High Usage"
 sidebar_custom_props:
   badge: h
 ---

@@ -325,19 +325,38 @@ function readPage(file, dir) {
 /**
  * Which environment produced this build.
  *
- * Derived from the canonical host rather than from an env var, because the env
- * var is an input to the build and this check reads its OUTPUT — the two can
+ * Derived from the built pages rather than from an env var, because the env var
+ * is an input to the build and this check reads its OUTPUT — the two can
  * disagree, and when they do it is the artefact that ships. Cross-checked
  * against the robots directive and the sitemap below (rule D1).
+ *
+ * **The signal is `og:url`, and it used to be the canonical.** It had to move
+ * on 2026-09-04, when `plugins/noindex-head.js` started stripping the canonical
+ * from every page that says `noindex` — which on a staging build is every page
+ * in it. The old resolver then found zero canonical hosts, returned
+ * UNRESOLVED, and took I1 down with it: the title budget is widened on staging
+ * by the length of its longer site-title suffix, so six titles failed on
+ * characters nobody can delete.
+ *
+ * `og:url` is the right replacement rather than a convenient one. It names the
+ * same origin, it is emitted on every page in BOTH environments, and it stays
+ * that way by ruling — SEO-DECISIONS #15 removes the canonical and leaves
+ * Open Graph alone, because og:url is not a search directive. C3 gates the two
+ * against each other wherever both exist, so this cannot quietly read a host
+ * the canonical disagrees with.
+ *
+ * The 404 contributes nothing: `not-found-head` strips its og:url too, and a
+ * page with no signal is skipped rather than counted as a second host.
  */
 function resolveEnvironment(pages) {
   const hosts = new Set();
   for (const p of pages) {
-    if (!p.canonical) continue;
+    const naming = p.ogUrl || p.canonical;
+    if (!naming) continue;
     try {
-      hosts.add(new URL(p.canonical).origin);
+      hosts.add(new URL(naming).origin);
     } catch {
-      /* rule C1 reports an unparseable canonical */
+      /* rule C1 reports an unparseable canonical; C3 an og:url that disagrees */
     }
   }
   if (hosts.size !== 1) {
@@ -480,7 +499,23 @@ function main() {
   const canonMany = [];
   const canonRelative = [];
   const canonNotSelf = [];
+  // A page that says `noindex` must emit NO canonical, and an indexable page
+  // exactly one. Both halves are gated, because each is separately editable and
+  // neither can see the other.
+  //
+  // Google's guidance is that `rel=canonical` and `noindex` must not be
+  // combined: one page would be indexable while the other is explicitly
+  // blocked. MarketDataApp/website ruled on it (SEO-DECISIONS #15) and this
+  // site did not follow, which was not a four-page gap -- `noIndex:
+  // process.env.PROD !== "true"` marks the WHOLE staging build noindex, and
+  // every page there was also emitting a canonical naming
+  // www-staging.marketdata.app. `plugins/noindex-head.js` strips them now.
+  const canonOnNoindex = [];
   for (const p of routes) {
+    if (/noindex/i.test(p.robots ?? '')) {
+      if (p.canonicals.length) canonOnNoindex.push(`${p.route} (${p.canonicals.length})`);
+      continue;
+    }
     if (p.canonicals.length === 0) {
       canonMissing.push(p.route);
       continue;
@@ -497,7 +532,8 @@ function main() {
     const expected = `/docs${p.route}`;
     if (u.pathname !== expected) canonNotSelf.push(`${p.route} -> ${u.pathname} (expected ${expected})`);
   }
-  if (canonMissing.length) fail('C1', 'pages with no canonical', canonMissing);
+  if (canonMissing.length) fail('C1', 'indexable pages with no canonical', canonMissing);
+  if (canonOnNoindex.length) fail('C1', 'noindex pages that still emit a canonical', canonOnNoindex);
   if (canonMany.length) fail('C1', 'pages with more than one canonical', canonMany);
   if (canonRelative.length) fail('C2', 'canonical is not an absolute URL', canonRelative);
   if (canonNotSelf.length) fail('C2', 'canonical does not name this page', canonNotSelf);
@@ -606,6 +642,35 @@ function main() {
         .filter((p) => !sitemap.has(`/docs${p.route}`))
         .map((p) => p.route);
       if (missing.length) fail('D2', 'indexable pages absent from the sitemap', missing);
+    }
+  }
+
+  // --- M1. /internal/ is noindex, by its own tag ---------------------------
+  // The section is absent from the navbar, which is presentation and not a
+  // directive: the routes build, deploy and answer 200, so anything that finds
+  // a URL indexes it. What keeps them out is the `<head>` block each page
+  // writes, and six consumers read that tag rather than any front matter --
+  // Google, the Algolia crawler, markdown-twins, llms.txt G2, the sitemap's
+  // ignorePatterns and D2 above.
+  //
+  // `unlisted: true` is NOT the mechanism here and must not be reintroduced.
+  // It marks a page noindex and ALSO drops it from the sidebar in a production
+  // build, which removes the one thing the section exists to give: land on a
+  // page by URL and get the section's menu.
+  //
+  // So the tag is a hand-written line in every file, and a hand-written line
+  // is one somebody forgets. This rule is the only thing that would say so --
+  // the page would render, deploy, look right, and quietly be indexable.
+  //
+  // Staging is exempt because D1 already requires noindex on EVERY page there,
+  // so this rule would restate it and would fail for a different reason.
+  if (env.name !== 'staging') {
+    const bare = routes
+      .filter((p) => /^\/internal(\/|$)/.test(p.route))
+      .filter((p) => !/noindex/i.test(p.robots ?? ''))
+      .map((p) => p.route);
+    if (bare.length) {
+      fail('M1', 'internal pages without a noindex directive', bare);
     }
   }
 
@@ -735,6 +800,66 @@ function main() {
     fail('G1', 'built pages whose Markdown twin is not in the build', twinless);
   }
 
+  // --- G2. Nothing noindex is advertised to an LLM consumer -----------------
+  //
+  // Owner's ruling, 2026-09-03. Telling a crawler "do not index this" and an
+  // LLM consumer "here is the page and here is its Markdown" is the site
+  // contradicting itself, and the two halves are written by different code
+  // that never consults the other.
+  //
+  // The generator derives the exclusion from the rendered <meta>, so this
+  // gate and that generator start from the same artefact -- G1's argument
+  // again. What it catches is the generator's list and the pages drifting,
+  // which is exactly how MarketDataApp/website#95 happened: two route lists
+  // were equal once, a ruling moved one, and eight noindex archives kept
+  // being advertised with nothing red.
+  //
+  // The floor is not decoration. An assertion that passes because it examined
+  // nothing is the shape this file has spent a week removing, and an empty or
+  // truncated llms.txt would satisfy "no noindex route appears in it"
+  // perfectly.
+  if (env.name === 'production') {
+    const llms = ['llms.txt', 'llms-full.txt']
+      .map((name) => ({ name, file: path.join(args.dir, name) }))
+      .filter((f) => fs.existsSync(f.file))
+      .map((f) => ({ ...f, text: fs.readFileSync(f.file, 'utf8') }));
+
+    // Their ABSENCE is only a defect in this repo's own build. A throwaway
+    // fixture has no llms files and is not claiming to -- failing it there
+    // would be asserting something about a corpus nobody generated.
+    if (llms.length !== 2) {
+      if (args.dir === OWN_BUILD) {
+        fail('G2', 'the llms files are missing from the build', [
+          `found ${llms.length} of 2 (llms.txt, llms-full.txt)`,
+        ]);
+      }
+    } else {
+      // The floor is scoped the same way, and for the same reason a fixture
+      // is small on purpose. `--floor` drives it against one.
+      const LLMS_FLOOR = args.floor === null ? 100 : args.floor; // real: 260 indexed
+      const floored = args.dir === OWN_BUILD || args.floor !== null;
+      const listed = (llms[0].text.match(/^- \[/gm) ?? []).length;
+      if (floored && listed < LLMS_FLOOR) {
+        fail('G2', `llms.txt lists only ${listed} route(s), below the floor of ${LLMS_FLOOR}`, [
+          'a truncated index would satisfy the noindex rule below by containing nothing',
+        ]);
+      }
+
+      const advertised = [];
+      for (const p of routes.filter((p) => /noindex/i.test(p.robots ?? ''))) {
+        const stem = p.route.replace(/^\/|\/$/g, '');
+        for (const f of llms) {
+          if (f.text.includes(`/${stem}/`) || f.text.includes(`/${stem}.md`)) {
+            advertised.push(`${p.route} appears in ${f.name}`);
+          }
+        }
+      }
+      if (advertised.length) {
+        fail('G2', 'noindex routes advertised in the llms files', advertised);
+      }
+    }
+  }
+
   // --- S1. The numbers in the prose are gated too --------------------------
   //
   // A count in a document is the one thing on the page nothing keeps true.
@@ -790,7 +915,18 @@ function main() {
   const distinctTitles = new Set(routes.map((p) => p.title)).size;
   const distinctDescs = new Set(contentPages.map((p) => p.description?.trim()).filter(Boolean)).size;
   const selfNamed = notFound ? notFound.canonicals.length + notFound.alternates.length + (notFound.ogUrl ? 1 : 0) : 0;
-  console.log(`canonical      ${routes.filter((p) => p.canonicals.length === 1).length} of ${routes.length} emit exactly one`);
+  // Stated as two populations, not one ratio. `0 of 265` was the line a staging
+  // build printed on a PASSING run once the canonical was stripped from every
+  // noindex page, and a correct result that reads like a catastrophe is a line
+  // somebody "fixes".
+  const indexableRoutes = routes.filter((p) => !/noindex/i.test(p.robots ?? ''));
+  const noindexRoutes = routes.length - indexableRoutes.length;
+  console.log(
+    `canonical      ${indexableRoutes.filter((p) => p.canonicals.length === 1).length} of ` +
+      `${indexableRoutes.length} indexable page(s) emit one; ` +
+      `${routes.filter((p) => /noindex/i.test(p.robots ?? '') && p.canonicals.length === 0).length} of ` +
+      `${noindexRoutes} noindex page(s) correctly emit none`
+  );
   console.log(`404            names ${notFound ? selfNamed : 'n/a'} URL(s) of its own; robots ${notFound ? (notFound.robots ?? 'absent') : 'n/a'}`);
   console.log(`sitemap        ${sitemap ? `${sitemap.size} URLs` : 'none (correct for a noIndex build)'}`);
   console.log(`robots         ${routes.filter((p) => /noindex/i.test(p.robots ?? '')).length} page(s) noindex`);

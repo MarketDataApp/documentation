@@ -72,6 +72,10 @@ function run(pages, opts = {}) {
       fs.writeFileSync(path.join(dir, route.replace(/^\//, ''), 'index.md'), '# Twin\n', 'utf8');
     }
   }
+  if (opts.llms) {
+    fs.writeFileSync(path.join(dir, 'llms.txt'), opts.llms, 'utf8');
+    fs.writeFileSync(path.join(dir, 'llms-full.txt'), opts.llms, 'utf8');
+  }
   if (sitemap) {
     const locs = sitemap.map((p) => `<url><loc>${PROD}/docs${p}</loc></url>`).join('');
     fs.writeFileSync(path.join(dir, 'sitemap.xml'), `<urlset>${locs}</urlset>`, 'utf8');
@@ -104,7 +108,10 @@ test('unquoted, reordered, minified attributes are read correctly', () => {
     '<meta charset=utf-8><meta content=width=device-width name=viewport>' +
     '<title>A Page | Market Data</title>' +
     '<meta content="A description long enough to be a real one for this fixture and then some." name=description>' +
-    `<link href=${PROD}/docs/api/thing/ rel=canonical>` +
+    // No canonical: this page says noindex, and C1 forbids the pair. The
+    // unquoted-attribute coverage this fixture exists for is carried by the
+    // robots, viewport and description tags around it, and by the sibling test
+    // below, which puts an unquoted canonical back and requires C1 to see it.
     `<meta content=${PROD}/docs/api/thing/ property=og:url>` +
     '<meta content=noindex,nofollow name=robots>' +
     '</head><body><article><h1>A Page</h1></article></body></html>';
@@ -155,6 +162,36 @@ test('C1 fails when a page has no canonical', () => {
   const r = run({ '/api/thing/': page('/api/thing/', { canonical: null }) }, { sitemap: ['/api/thing/'] });
   assert.strictEqual(r.code, 1);
   assert.match(r.out, /C1.*no canonical/);
+});
+
+test('C1 fails when a noindex page still emits a canonical', () => {
+  // Google's guidance is that the two must not be combined, and the site did
+  // combine them: every page of a staging build carried a canonical naming
+  // www-staging while also saying noindex. plugins/noindex-head.js strips them;
+  // this is the gate that says so.
+  const r = run({
+    '/api/thing/': page('/api/thing/', { robots: 'noindex, nofollow' }),
+  }, { sitemap: [] });
+  assert.strictEqual(r.code, 1, r.out);
+  assert.match(r.out, /C1.*noindex pages that still emit a canonical/);
+});
+
+test('C1 reads an UNQUOTED canonical on a noindex page', () => {
+  // The half the minified fixture above gave up when its canonical came out.
+  // A matcher that misses this reports a clean page, which is the silent
+  // direction.
+  const minified =
+    '<!DOCTYPE html><html lang=en><head>' +
+    '<meta charset=utf-8><meta content=width=device-width name=viewport>' +
+    '<title>A Page | Market Data</title>' +
+    '<meta content="A description long enough to be a real one for this fixture and then some." name=description>' +
+    `<link href=${PROD}/docs/api/thing/ rel=canonical>` +
+    `<meta content=${PROD}/docs/api/thing/ property=og:url>` +
+    '<meta content=noindex,nofollow name=robots>' +
+    '</head><body><article><h1>A Page</h1></article></body></html>';
+  const r = run({ '/api/thing/': minified }, { sitemap: [] });
+  assert.strictEqual(r.code, 1, r.out);
+  assert.match(r.out, /C1.*noindex pages that still emit a canonical/);
 });
 
 test('C1 fails on two canonicals', () => {
@@ -319,7 +356,7 @@ test('L2 fails when the 404 does not say noindex', () => {
 
 test('L2 accepts the staging build, which says noindex, nofollow', () => {
   const r = run({
-    '/api/thing/': page('/api/thing/', { host: STAGING, robots: 'noindex, nofollow' }),
+    '/api/thing/': page('/api/thing/', { host: STAGING, canonical: null, robots: 'noindex, nofollow' }),
     '/404.html': page('/404.html', {
       title: 'Page Not Found', host: STAGING, canonical: null, ogUrl: null, robots: 'noindex, nofollow',
     }),
@@ -446,7 +483,7 @@ test('I1 widens its budget on staging, where the suffix is 15 characters longer'
   // followed the suffix.
   const r = run({
     '/api/thing/': page('/api/thing/', {
-      title: AUTHORED_46, suffix: STAGING_SUFFIX, host: STAGING, robots: 'noindex, nofollow',
+      title: AUTHORED_46, suffix: STAGING_SUFFIX, host: STAGING, canonical: null, robots: 'noindex, nofollow',
     }),
   });
   assert.strictEqual(r.code, 0, r.out);
@@ -609,6 +646,67 @@ test('L3 fails when the sitemap advertises the 404, in any spelling', () => {
     assert.strictEqual(r.code, 1, `not caught: ${spelling}`);
     assert.match(r.out, /L3 {2}the sitemap advertises the 404 page/);
   }
+});
+
+test('G2 fails when a noindex route is advertised in the llms files', () => {
+  // Owner's ruling: telling a crawler "do not index this" and an LLM consumer
+  // "here is the page and its Markdown" is the site contradicting itself.
+  // website#95 is how it happens -- two lists equal once, then a ruling moves
+  // one of them and nothing goes red.
+  const r = run({
+    '/api/thing/': page('/api/thing/'),
+    '/api/secret/': page('/api/secret/', {
+      robots: 'noindex, nofollow',
+      canonical: null,
+      title: 'Secret',
+      description: 'A second description, distinct from its sibling so H1 and H2 stay out of the way.',
+    }),
+  }, {
+    sitemap: ['/api/thing/'],
+    llms: '- [Thing](https://x/docs/api/thing/index.md): a\n'
+        + '- [Secret](https://x/docs/api/secret/index.md): b\n',
+  });
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /G2 {2}noindex routes advertised in the llms files/);
+  assert.match(r.out, /\/api\/secret\/ appears in llms\.txt/);
+});
+
+test('G2 passes when the noindex route is withheld', () => {
+  const r = run({
+    '/api/thing/': page('/api/thing/'),
+    '/api/secret/': page('/api/secret/', {
+      robots: 'noindex, nofollow',
+      canonical: null,
+      title: 'Secret',
+      description: 'A second description, distinct from its sibling so H1 and H2 stay out of the way.',
+    }),
+  }, {
+    sitemap: ['/api/thing/'],
+    llms: '- [Thing](https://x/docs/api/thing/index.md): a\n',
+  });
+  assert.strictEqual(r.code, 0, r.out);
+});
+
+test('G2 floor fires on a truncated index', () => {
+  // An assertion that passes because it examined nothing: an empty llms.txt
+  // satisfies "no noindex route appears in it" perfectly.
+  //
+  // `--floor` drives the page tripwire and this one from one number, so the
+  // fixture is sized to clear the first and trip the second: two pages against
+  // a floor of two passes the walk check, and one llms entry does not.
+  const r = run({
+    '/api/thing/': page('/api/thing/'),
+    '/api/other/': page('/api/other/', {
+      title: 'Other',
+      description: 'A second description, distinct from its sibling so H1 and H2 stay out of the way.',
+    }),
+  }, {
+    sitemap: ['/api/thing/', '/api/other/'],
+    llms: '- [Thing](https://x/docs/api/thing/index.md): a\n',
+    args: ['--floor', '2'],
+  });
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /llms\.txt lists only 1 route\(s\), below the floor of 2/);
 });
 
 test('the tripwire fires when the walk finds almost nothing', () => {
