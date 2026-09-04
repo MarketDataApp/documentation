@@ -14,12 +14,29 @@ require("dotenv").config();
 // would be two ways to answer one question, and they would disagree the day
 // somebody changed one of them.
 //
-// `builtAt` is in the JSON only. It must never reach the head: two builds of one
-// tree have to differ only where they are already known to, or a head-only
-// change cannot be verified by diffing built HTML. That was the other repo's
-// condition on the shared format and it is worth as much here.
+// `builtAt` is NOT here, and the reason is sharper than "keep it out of the
+// head". Docusaurus serialises this whole config -- plugin options included --
+// into the client bundle, so anything placed here ships to every reader inside
+// `main.<hash>.js` AND moves that hash. A clock here therefore gave every build
+// a new bundle name, so:
+//
+//   * every deploy re-downloaded the ~635 KB primary bundle for every visitor,
+//     for no content change, against a `max-age=31536000, immutable` header;
+//   * every deploy stranded whoever was mid-session, which is the exact reader
+//     `src/clientModules/chunkReload.js` exists to recover;
+//   * two builds of one tree differed in all 265 pages, which destroys the
+//     "diff the built HTML" property this file was written to protect.
+//
+// Measured 2026-09-04 by building the same commit twice: identical but for
+// `builtAt`, and every page repainted. The plugin stamps the timestamp in its
+// own `postBuild` instead, which is both the moment the value describes and
+// the only place it is read.
+//
+// The COMMIT stays here on purpose -- one resolver feeding both the endpoint
+// and the per-page tag. It is stable for a given tree, so it costs no bundle
+// churn; a clock is not stable and that is the whole difference.
 const { resolveGit } = require("./lib/build-info");
-const BUILD_INFO = { resolved: resolveGit(), builtAt: new Date().toISOString() };
+const BUILD_INFO = { resolved: resolveGit() };
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {

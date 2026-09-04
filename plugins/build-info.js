@@ -65,7 +65,11 @@ module.exports = function buildInfoPlugin(_context, options = {}) {
         ref,
         dirty,
         environment: environmentOf(),
-        builtAt: options.builtAt,
+        // Stamped HERE, not in docusaurus.config.js. Plugin options are
+        // serialised into the client bundle, so a timestamp passed in as an
+        // option ships to every reader and changes `main.<hash>.js` on every
+        // build. See the note above BUILD_INFO in docusaurus.config.js.
+        builtAt: new Date().toISOString(),
       });
 
       const target = path.join(outDir, FILE);
