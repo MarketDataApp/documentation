@@ -38,6 +38,34 @@
  * orchestrator sees it -- except `404.html`, which CI also lifts to the build
  * root.
  *
+ * ---------------------------------------------------------------------------
+ * EVERY RULE HERE HAS BEEN SEEN TO FAIL
+ * ---------------------------------------------------------------------------
+ *
+ * A pass from a detector nobody has tested is worth nothing -- the same reason
+ * the twins rule treats zero `.md` as a failure rather than a vacuous success.
+ * So each rule was run against a deliberately broken build and confirmed to
+ * fire, on 2026-09-04:
+ *
+ *   404.html deleted                      -> fails
+ *   sitemap.xml deleted (PROD)            -> fails
+ *   sitemap.xml present (staging)         -> fails, the inverted case
+ *   llms.txt deleted                      -> fails
+ *   llms-full.txt truncated to zero bytes -> fails
+ *   _redirects deleted                    -> fails
+ *   a stray .md with no backing HTML      -> fails
+ *   every .md deleted                     -> fails
+ *   HTML moved to <route>.html            -> fails
+ *
+ * That last one is the important one and it was named by the orchestrator as
+ * the most likely way this check passes while its deploy stops: its rule is
+ * exactly `existsSync(join(route, "index.html"))`, directory-style, and a
+ * looser derivation here would agree with a build it would reject. Moving one
+ * page's `index.html` to `<route>.html` fails all three of that route's twins,
+ * so the derivation matches.
+ *
+ * If you add a rule, break its input and watch it fail before trusting it.
+ *
  * Usage:  node scripts/check-build-contract.js [--dir build] [--staging]
  */
 
