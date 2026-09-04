@@ -363,6 +363,14 @@ to be fixed to get here:
 1. `builtAt` was passed to `plugins/build-info.js` as a plugin OPTION, and
    Docusaurus serialises the config — options included — into `main.js`. A
    clock in the client bundle moved its content hash every build.
+
+   **What is serialised is the plugin's PATH and its OPTIONS, never its
+   source.** The bundle holds `"./plugins/build-info"` and, if you pass any,
+   the options object beside it. So editing a plugin's code has never moved
+   the bundle and still does not; only the VALUES you hand it do. Worth being
+   exact about, because the opposite model — "the plugin is bundled" — predicts
+   the same symptom for the wrong reason and would send the next person editing
+   the wrong thing.
 2. Docusaurus 3.0.1 wrote plugin `globalData` in the order the five
    content-docs instances happened to finish, which is not stable. So even
    after removing the clock, `main.js` was still a permutation of itself
