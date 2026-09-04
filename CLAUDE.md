@@ -183,15 +183,40 @@ sitemap excludes the section by route; `llms.txt` excludes it by **stem**, in
 `lib/llms-txt.js`, because postBuild hooks run concurrently and reading a
 stamped page would be a race.
 
-### `ignorePatterns` is matched against the path including `baseUrl`
+A page here needs no special front matter, and must not use `unlisted: true`:
+that also drops the page from the sidebar in a production build. Give it a
+`title` and let the frontmatter render the `<h1>` — a `#` heading in the body
+suppresses the theme's own header, which puts the Markdown actions row **above**
+the title instead of below it.
 
-Which is why the sitemap's `/internal/` rules name `/docs/`. The neighbouring
-`/tags/**` rule does not, and **has never matched anything** — tag routes are
-`/docs/api/tags/…`, nested per docs instance. Seven tag pages sit in the
-production sitemap as a result. It is left alone deliberately: correcting the
-pattern alone turns the build red, because those pages are indexable and D2
-fails an indexable page the sitemap omits. Excluding them means first ruling
-that they should be `noindex`.
+### A noindex page emits no canonical
+
+`plugins/noindex-head.js` also strips the canonical from every page that says
+`noindex`, which is Google's guidance and `MarketDataApp/website`'s ruling
+(`SEO-DECISIONS.md` #15). This site did not follow it, and the gap was not the
+four production pages — **`noIndex: process.env.PROD !== "true"` marks the whole
+staging build noindex, and every page there also carried a canonical naming
+`www-staging.marketdata.app`.** 265 canonicals per staging build. Gated by C1,
+in both directions.
+
+`og:url` and the JSON-LD `@id` are untouched, which is the same line the
+website's ruling draws. That matters beyond tidiness: **`lint:seo` resolves the
+build's environment from `og:url`**, because the canonical it used to read is
+gone from staging.
+
+### The tag pages are gone
+
+`ignorePatterns` is matched against the path including `baseUrl`, which is why
+the sitemap's `/internal/` rules name `/docs/`. The old `/tags/**` rule did not,
+and had never matched anything — tag routes are `/docs/api/tags/…`, nested per
+docs instance — so seven tag pages sat in the production sitemap.
+
+They were retired on 2026-09-04 rather than corrected, with the `tags:` front
+matter that generated them. Nothing was lost: every tagged page also carried an
+equivalent `sidebar_custom_props: { badge }`, which is what renders the Premium
+/ Beta / High Usage chip. The tags produced only those pages and a footer link
+row pointing at them. All seven redirect to their section root, because they
+were in the sitemap and so may be indexed.
 
 ## Sidebar Badges
 

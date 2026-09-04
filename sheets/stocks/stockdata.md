@@ -1,8 +1,6 @@
 ---
 title: STOCKDATA
 sidebar_position: 1
-tags:
-  - "Sheets: High Usage"
 sidebar_custom_props:
   badge: h
 ---

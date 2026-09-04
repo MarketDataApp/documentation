@@ -58,6 +58,34 @@ const REDIRECTS = [
   { from: "/api/earnings", to: "/api/stocks/earnings" },
   { from: "/api/troubleshooting/rate-limits", to: "/api/rate-limiting" },
 
+  // The seven tag routes, retired 2026-09-04 with the `tags:` front matter
+  // that generated them.
+  //
+  // They are redirected rather than simply dropped because they were in the
+  // PRODUCTION sitemap -- `ignorePatterns: ["/tags/**"]` never matched them,
+  // since sitemap patterns include `baseUrl` and tag routes are nested per
+  // docs instance (`/docs/api/tags/...`). So Google was invited to index all
+  // seven, and deleting them with no rule turns an advertised URL into a 404.
+  //
+  // Nothing was lost with them. Every tagged page also carried an equivalent
+  // `sidebar_custom_props: { badge }`, which is what actually renders the
+  // Premium / Beta / High Usage chip; the tags produced only these pages and a
+  // footer link row pointing at them.
+  // sdk-requirements moved into /internal/ on 2026-09-04, where the section
+  // supplies the noindex and the sidebar it was faking with `unlisted: true`
+  // and `displayed_sidebar: null`. It was `unlisted`, so it was never in the
+  // sitemap and never in llms.txt -- but the URL has been shared internally,
+  // and an unlisted page is still a page somebody bookmarked.
+  { from: "/sdk/sdk-requirements", to: "/internal/sdk-requirements" },
+
+  { from: "/api/tags", to: "/api" },
+  { from: "/api/tags/api-beta", to: "/api" },
+  { from: "/api/tags/api-high-usage", to: "/api" },
+  { from: "/api/tags/api-premium", to: "/api" },
+  { from: "/sheets/tags", to: "/sheets" },
+  { from: "/sheets/tags/sheets-high-usage", to: "/sheets" },
+  { from: "/sheets/tags/sheets-premium", to: "/sheets" },
+
   { from: "/account/troubleshooting/linkedin-missing", to: "/account/troubleshooting/linkedin-issues" },
   { from: "/api/troubleshooting/http-status-codes", to: "/api/troubleshooting" },
   { from: "/sheets/troubleshooting/common-error-messages", to: "/sheets/troubleshooting" },

@@ -325,19 +325,38 @@ function readPage(file, dir) {
 /**
  * Which environment produced this build.
  *
- * Derived from the canonical host rather than from an env var, because the env
- * var is an input to the build and this check reads its OUTPUT — the two can
+ * Derived from the built pages rather than from an env var, because the env var
+ * is an input to the build and this check reads its OUTPUT — the two can
  * disagree, and when they do it is the artefact that ships. Cross-checked
  * against the robots directive and the sitemap below (rule D1).
+ *
+ * **The signal is `og:url`, and it used to be the canonical.** It had to move
+ * on 2026-09-04, when `plugins/noindex-head.js` started stripping the canonical
+ * from every page that says `noindex` — which on a staging build is every page
+ * in it. The old resolver then found zero canonical hosts, returned
+ * UNRESOLVED, and took I1 down with it: the title budget is widened on staging
+ * by the length of its longer site-title suffix, so six titles failed on
+ * characters nobody can delete.
+ *
+ * `og:url` is the right replacement rather than a convenient one. It names the
+ * same origin, it is emitted on every page in BOTH environments, and it stays
+ * that way by ruling — SEO-DECISIONS #15 removes the canonical and leaves
+ * Open Graph alone, because og:url is not a search directive. C3 gates the two
+ * against each other wherever both exist, so this cannot quietly read a host
+ * the canonical disagrees with.
+ *
+ * The 404 contributes nothing: `not-found-head` strips its og:url too, and a
+ * page with no signal is skipped rather than counted as a second host.
  */
 function resolveEnvironment(pages) {
   const hosts = new Set();
   for (const p of pages) {
-    if (!p.canonical) continue;
+    const naming = p.ogUrl || p.canonical;
+    if (!naming) continue;
     try {
-      hosts.add(new URL(p.canonical).origin);
+      hosts.add(new URL(naming).origin);
     } catch {
-      /* rule C1 reports an unparseable canonical */
+      /* rule C1 reports an unparseable canonical; C3 an og:url that disagrees */
     }
   }
   if (hosts.size !== 1) {
@@ -480,7 +499,23 @@ function main() {
   const canonMany = [];
   const canonRelative = [];
   const canonNotSelf = [];
+  // A page that says `noindex` must emit NO canonical, and an indexable page
+  // exactly one. Both halves are gated, because each is separately editable and
+  // neither can see the other.
+  //
+  // Google's guidance is that `rel=canonical` and `noindex` must not be
+  // combined: one page would be indexable while the other is explicitly
+  // blocked. MarketDataApp/website ruled on it (SEO-DECISIONS #15) and this
+  // site did not follow, which was not a four-page gap -- `noIndex:
+  // process.env.PROD !== "true"` marks the WHOLE staging build noindex, and
+  // every page there was also emitting a canonical naming
+  // www-staging.marketdata.app. `plugins/noindex-head.js` strips them now.
+  const canonOnNoindex = [];
   for (const p of routes) {
+    if (/noindex/i.test(p.robots ?? '')) {
+      if (p.canonicals.length) canonOnNoindex.push(`${p.route} (${p.canonicals.length})`);
+      continue;
+    }
     if (p.canonicals.length === 0) {
       canonMissing.push(p.route);
       continue;
@@ -497,7 +532,8 @@ function main() {
     const expected = `/docs${p.route}`;
     if (u.pathname !== expected) canonNotSelf.push(`${p.route} -> ${u.pathname} (expected ${expected})`);
   }
-  if (canonMissing.length) fail('C1', 'pages with no canonical', canonMissing);
+  if (canonMissing.length) fail('C1', 'indexable pages with no canonical', canonMissing);
+  if (canonOnNoindex.length) fail('C1', 'noindex pages that still emit a canonical', canonOnNoindex);
   if (canonMany.length) fail('C1', 'pages with more than one canonical', canonMany);
   if (canonRelative.length) fail('C2', 'canonical is not an absolute URL', canonRelative);
   if (canonNotSelf.length) fail('C2', 'canonical does not name this page', canonNotSelf);
@@ -879,7 +915,18 @@ function main() {
   const distinctTitles = new Set(routes.map((p) => p.title)).size;
   const distinctDescs = new Set(contentPages.map((p) => p.description?.trim()).filter(Boolean)).size;
   const selfNamed = notFound ? notFound.canonicals.length + notFound.alternates.length + (notFound.ogUrl ? 1 : 0) : 0;
-  console.log(`canonical      ${routes.filter((p) => p.canonicals.length === 1).length} of ${routes.length} emit exactly one`);
+  // Stated as two populations, not one ratio. `0 of 265` was the line a staging
+  // build printed on a PASSING run once the canonical was stripped from every
+  // noindex page, and a correct result that reads like a catastrophe is a line
+  // somebody "fixes".
+  const indexableRoutes = routes.filter((p) => !/noindex/i.test(p.robots ?? ''));
+  const noindexRoutes = routes.length - indexableRoutes.length;
+  console.log(
+    `canonical      ${indexableRoutes.filter((p) => p.canonicals.length === 1).length} of ` +
+      `${indexableRoutes.length} indexable page(s) emit one; ` +
+      `${routes.filter((p) => /noindex/i.test(p.robots ?? '') && p.canonicals.length === 0).length} of ` +
+      `${noindexRoutes} noindex page(s) correctly emit none`
+  );
   console.log(`404            names ${notFound ? selfNamed : 'n/a'} URL(s) of its own; robots ${notFound ? (notFound.robots ?? 'absent') : 'n/a'}`);
   console.log(`sitemap        ${sitemap ? `${sitemap.size} URLs` : 'none (correct for a noIndex build)'}`);
   console.log(`robots         ${routes.filter((p) => /noindex/i.test(p.robots ?? '')).length} page(s) noindex`);

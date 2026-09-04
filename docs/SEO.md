@@ -207,8 +207,8 @@ the built pages, because the two obvious spellings are both wrong here:
 
 - `unlisted: true` marks a page `noindex` **and** drops it from the sidebar in
   a production build, which removes the one thing the section exists to give.
-  It stays correct for `sdk/sdk-requirements`, a lone page that shows no
-  sidebar on purpose.
+  It was how `sdk-requirements` hid before it moved into this section;
+  that page dropped it, and `displayed_sidebar: null` with it.
 - a `<head>` block in the MDX is documented to work and **does not work in this
   build**. It renders as literal text, reaches the Markdown twin verbatim, and
   produces no tag — so the source looks annotated while the page is fully

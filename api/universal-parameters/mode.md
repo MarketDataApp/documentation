@@ -2,8 +2,6 @@
 title: Data Mode
 description: Use the mode parameter to choose live or cached data, which sets the freshness guarantee and the credits a Market Data request costs.
 sidebar_position: 1
-tags:
-  - "API: Premium"
 sidebar_custom_props:
   badge: p
 ---
