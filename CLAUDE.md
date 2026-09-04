@@ -456,6 +456,17 @@ the one dependency here whose install script does real work, since it resolves
 a native binding. It is `true` in `pnpm-workspace.yaml` for that reason, unlike
 `core-js`, which is declined.
 
+### React 19
+
+**v4 drops React 18**, so `future.v4` without React 19 is only half ready. The
+bump was measured the same way as everything else: every built page identical
+in text content, all 794 Markdown twins byte-identical, llms.txt, sitemap.xml
+and `_redirects` byte-identical, 229 lib tests, 103 script tests and 14 e2e
+tests green.
+
+3.10 accepts `^18.0.0 || ^19.0.0`, so this is separable from the rest of the
+migration if it ever needs to come out.
+
 ### Strict MDX: `{#id}` is JavaScript now
 
 With MDX v1 compatibility off, `## Title {#my-id}` is parsed as a JS
