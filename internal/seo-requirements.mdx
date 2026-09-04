@@ -34,6 +34,37 @@ written reason against it. **Optional** is a judgement call.
 
 ---
 
+## Origin-level and page-level requirements
+
+**Some of what follows is owed once per origin, not once per site.** Getting
+this wrong in either direction costs something real, and the two directions
+fail differently: a missing page-level tag is absent from one page, while a
+duplicated origin-level declaration is a *second* competing statement about the
+whole property.
+
+`www.marketdata.app` is one origin serving two properties. The marketing site
+(`MarketDataApp/website`) is the root; the documentation
+(`MarketDataApp/documentation`) is a subfolder at `/docs/`. **A subfolder
+property must not restate what the root already declares.**
+
+| Requirement                       | Scope                                               | Owner on this origin                                                                                                                                                                         |
+|-----------------------------------|-----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `robots.txt`                      | **origin** — crawlers read only the root file       | the root. A `/docs/robots.txt` is ignored entirely, so emitting one is worse than useless: it looks like a control and is not.                                                               |
+| Web app manifest                  | **origin** — one installable app per origin         | the root (`/site.webmanifest`). A second manifest declares a second app with its own scope and `start_url`.                                                                                  |
+| `Organization` node with `sameAs` | **origin** — it describes the company, not the page | the root's home page. Emitting it on every page of a subfolder publishes hundreds of copies of one entity.                                                                                   |
+| Site-verification token           | **property** — per Search Console property          | the root, when the property is a domain or an origin-prefix one, which covers everything beneath it. A subfolder needs its own token only if somebody registered a separate property for it. |
+| Sitemap                           | **either** — an origin may publish several          | each property publishes its own, and the root's sitemap **index** must name them. An unreferenced sitemap is a correct file nothing advertises.                                              |
+| Everything else below             | **page**                                            | whoever built the page.                                                                                                                                                                      |
+
+Open Graph is page-level in full, including `og:type` and `og:site_name`. They
+look like site-wide constants and are not: both are properties of the document,
+and every page carrying Open Graph carries them.
+
+**When in doubt, ask what a second copy would mean.** A second `<title>` is a
+defect. A second `robots.txt` is ignored. A second manifest is a second app. A
+second `Organization` is a second claim about who you are. If the answer is
+"nothing good", the requirement is origin-level and it belongs to the root.
+
 ## Core Principles
 
 ### Measure the built output, never the source
@@ -94,13 +125,13 @@ can display, so it does not bind a page that produces no result.
 | `og:image` that resolves, at the size the head claims       | Must              |
 | JSON-LD that parses, is typed, and is connected             | Must              |
 | Sitemap listing every indexable route, and nothing else     | Must              |
-| `robots.txt` naming a sitemap the build emits               | Must              |
+| `robots.txt` naming a sitemap the build emits (origin)      | Must              |
 | Analytics on production only                                | Must              |
 | Every built route reachable by the search index             | Must              |
 | Markdown twin per route                                     | Should            |
 | `llms.txt`, withholding `noindex` routes                    | Should            |
 | Breadcrumb trail matching its `BreadcrumbList`              | Should            |
-| Web app manifest with an `id` and a maskable icon           | Should            |
+| Web app manifest with an `id` and a maskable icon (origin)  | Should            |
 | Core Web Vitals inside Google's "good" thresholds           | Should            |
 | `hreflang`                                                  | Optional — see §1 |
 
@@ -117,7 +148,12 @@ Every page **must** carry, once each:
 | `<meta name="viewport">`                 | `width=device-width,initial-scale=1` |
 | `<meta name="google-site-verification">` | the property's own token             |
 
-These are singletons. A check **must** count them rather than merely require
+**The verification token is origin-level.** A subfolder inherits the root's when
+the Search Console property is a domain or origin-prefix one, and needs its own
+only if somebody registered a separate property for the subfolder. Check which
+before adding a second token.
+
+The other three are singletons. A check **must** count them rather than merely require
 one: `react-helmet-async` and several other head managers render a second tag
 rather than letting a later one win, so "at least one" passes on a page serving
 two contradictory values.
@@ -315,7 +351,10 @@ than pointing at the source asset's presumed URL.
 - **Must** be connected — no node floats unreferenced, and no `@id` points at
   a node that does not exist.
 - **Must** contain exactly one page node, whose `@id` is the canonical URL.
-- **Should** include an `Organization` node with `sameAs`.
+- **Should** include an `Organization` node with `sameAs` — **once per origin,
+  on the root's home page.** A subfolder property must not restate it: emitting
+  it on every page publishes hundreds of copies of one entity, and the entity
+  is the company rather than the page.
 
 A page node's `breadcrumb` field is an `@id` reference. **Do not emit it on a
 page that emits no `BreadcrumbList`** — a pointer to nothing is worse than an
@@ -345,7 +384,14 @@ Choose the type that describes the page. `/pricing/` emits `WebAPI`, not
 - Every URL in it **must** answer 200 on the deployed site.
 - Every URL **must** use the production host and the site's own slash form.
 - A `noindex` route **must never** appear.
-- `robots.txt` **must** name a sitemap the build actually emits.
+- `robots.txt` **must** name a sitemap the build actually emits. **It is
+  origin-level**: crawlers read only the root file, so a subfolder's
+  `robots.txt` is ignored entirely and emitting one is worse than useless — it
+  looks like a control and is not.
+- A subfolder's sitemap **must** be named in the root's sitemap index, or as a
+  second `Sitemap:` line in the root `robots.txt`. **An unreferenced sitemap is
+  a correct file that nothing advertises**, which is indistinguishable from
+  having none.
 
 **A `noIndex` build must publish no sitemap at all.** Assert the absence on
 staging, not merely the contents on production.
@@ -393,6 +439,10 @@ cause.
 ---
 
 ## 15. Web App Manifest
+
+**Origin-level: one per origin, and it belongs to the root.** A subfolder
+property must not ship a second — that declares a second installable app with
+its own scope and `start_url`, which is a defect rather than a gap.
 
 Where a site ships a manifest, it **should**:
 
@@ -531,7 +581,8 @@ Before accepting a new site, or a rebuild of an existing one:
 - [ ] The sitemap lists every indexable route and nothing else
 - [ ] Every sitemap URL answers 200 on the deployed site, cache-busted
 - [ ] A `noIndex` build publishes no sitemap
-- [ ] `robots.txt` names a sitemap the build emits
+- [ ] `robots.txt` names a sitemap the build emits (origin-level; a subfolder emits none)
+- [ ] A subfolder's sitemap is named in the root's index, or in the root `robots.txt`
 - [ ] Every built route has a Markdown twin
 - [ ] `llms.txt` withholds every `noindex` route
 
