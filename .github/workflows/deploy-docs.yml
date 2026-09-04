@@ -69,10 +69,13 @@ jobs:
 
       # THERE WAS A `/${BASE_URL}/*.js` RULE HERE AND IT IS DELETED. 2026-09-04.
       #
-      # It doubled the header it set. `/docs/assets/js/main.<hash>.js` matches
-      # BOTH it and `/docs/assets/*`, and because `_headers` is not
-      # first-match-wins -- every matching rule applies and a repeated header
-      # name APPENDS -- staging served:
+      # It overlapped BOTH of the rules that remain, and the second overlap is
+      # the one worth remembering.
+      #
+      # Against `/docs/assets/*` it doubled a value that agreed with itself:
+      # `/docs/assets/js/main.<hash>.js` matched both, and because `_headers` is
+      # not first-match-wins -- every matching rule applies and a repeated
+      # header name APPENDS -- staging served:
       #
       #   cache-control: public, max-age=31536000, immutable, public, max-age=31536000, immutable
       #
@@ -80,6 +83,12 @@ jobs:
       # never showed it, because the orchestrator's scripts/cache-headers.mjs
       # rewrites Cache-Control there and that rewrite is production-only. So it
       # was invisible from this repository in the environment we look at least.
+      #
+      # Against `/docs/img/*` it overlapped on any `.js` under `/docs/img/`,
+      # where the two values DISAGREED -- a month against an immutable year.
+      # No such file exists, so nothing was ever doubled there; the first one
+      # to appear would have been served both, and which wins is undefined.
+      # Found by `www-marketdata-app` after the deletion had already removed it.
       #
       # DELETED RATHER THAN FIXED WITH `! Cache-Control`, which was the proposed
       # fix and would also have worked. Two reasons it is the weaker one:
@@ -106,12 +115,18 @@ jobs:
       # `_headers` is NOT first-match-wins. Every matching rule applies and a
       # repeated header name APPENDS, so two rules matching build-info.json
       # would serve two Cache-Control values and `no-store` is not obviously the
-      # winner. None of the three rules above matches it -- `/*.js` requires a
-      # literal `.js` ending, and this is `.json` -- so it stands alone today.
+      # winner. Neither rule above it matches: `/assets/*` and `/img/*` are
+      # different prefixes. So it stands alone.
+      #
       # A broad rule added here, or in the website half the orchestrator
       # concatenates with, would break that. The fix if it ever happens is the
       # one that repo already worked out for the canonical `Link`: `! Cache-Control`
-      # in the specific rule, unsetting before setting, broad rule first.
+      # in the specific rule, unsetting before setting, broad rule first --
+      # which is also the shape `www-marketdata-app`'s merge-time gate (#25,
+      # 85e5841) asks for by name. That gate now fails a deploy, in both
+      # environments, when any path would take one header name from two rules.
+      # So a fourth rule that overlaps one of these three is a loud deploy
+      # failure naming both paths, rather than a doubled header nobody sees.
       - name: Generate cache headers
         env:
           BASE_URL: ${{ steps.env.outputs.base_url }}
