@@ -71,6 +71,25 @@ const REDIRECTS = [
   // `sidebar_custom_props: { badge }`, which is what actually renders the
   // Premium / Beta / High Usage chip; the tags produced only these pages and a
   // footer link row pointing at them.
+  // /api/sdk was a SECOND copy of the SDK index, and it had gone stale exactly
+  // the way a duplicate does: it listed four SDKs (Postman, Python, PHP, Go)
+  // while /sdk listed seven. JavaScript, Java and C# were missing, the C# SDK
+  // having shipped on 2026-08-17 and never reached the copy.
+  //
+  // Deleted rather than updated on 2026-09-04. Updating it would have restored
+  // the duplication rather than removed it, and the next SDK would go missing
+  // from whichever copy somebody forgot. /sdk is the one source now, and the
+  // navbar already points at it.
+  //
+  // It also carried the only "Unofficial Client Libraries" list in the repo --
+  // five community repositories we no longer wish to advertise. That list is
+  // gone with the page, deliberately.
+  //
+  // Redirected rather than dropped: it was in the production sitemap, so it may
+  // be indexed, and nothing internal links to it -- which is how it went unread
+  // and unmaintained in the first place.
+  { from: "/api/sdk", to: "/sdk" },
+
   // sdk-requirements moved into /internal/ on 2026-09-04, where the section
   // supplies the noindex and the sidebar it was faking with `unlisted: true`
   // and `displayed_sidebar: null`. It was `unlisted`, so it was never in the
