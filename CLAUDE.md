@@ -383,6 +383,46 @@ accepts all three HTML5 forms: `"x"`, `'x'`, and bare. Copy that, or parse with
 `@mixmark-io/domino`, which is why `lint:seo` uses it and why `lint:seo` was
 the check that did not care.
 
+### A count in a log is not a check
+
+The llms.txt collapse **printed both of its own symptoms** — `23 KB` where it
+had been 55, and `259 without a description` where it had been 0 — on the line
+the build writes every time. Nothing gated on either, so the build was green
+and the file shipped gutted.
+
+Reporting a number is not the same as asserting one. `plugins/llms-txt.js` now
+throws when a MAJORITY of entries have no description, and there is a
+deliberate asymmetry in that threshold: the failure is all-or-nothing, because
+the pattern either matches the build's spelling or it does not. One page
+without a description is ordinary content; half of them cannot be.
+
+`scripts/check-highlighting.js` has the older version of the same idea, and its
+wording is the one to copy: *"a tripwire for a walk that stopped matching, not
+a content baseline. Do not lower the floor to make it pass."*
+
+**A structural gate reports success over gutted substance.** `llms.txt` with
+every description stripped still had one H1 first, no H6, and 260 lines
+reaching `/docs/` — so this repo's `lint:contract` passed it, and so did the
+orchestrator's splice preconditions, which demote its headings and require
+exactly those properties. Both gates asked *can this be spliced*. Neither asked
+*is it still worth splicing*.
+
+### The thin twins are expected
+
+16 routes produce a Markdown twin under 200 bytes, and `sheets/stocks.md` is 17
+bytes against an 18 KB HTML page. **This is correct, and it is worth writing
+down because it is byte-indistinguishable from the defect above.**
+
+Those pages are hubs whose entire body is `<DocCardList items={...} />`. That is
+navigation, not prose, and `cleanMdx` drops JSX — so the twin is the title and
+nothing else. Where such a page also has prose, the prose is there:
+`api/stocks.md` is 181 bytes and carries every sentence its source has.
+
+They have sources; they are not generated category indexes. Do not "fix" them,
+and do not add a twin size floor — a legitimately thin hub and a twin gutted by
+a parser regression are the same size, and only the description floor above can
+tell those apart.
+
 ### Six built pages contain a NUL byte, and grep skips them silently
 
 A stray `\x00` lands immediately before certain U+20xx characters (em dash,

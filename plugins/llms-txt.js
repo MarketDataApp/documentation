@@ -127,6 +127,47 @@ async function emitLlmsTxt({ entries, outDir, routeCount, unclassified = [], noi
   await writeAtomic(path.join(outDir, 'llms-full.txt'), full);
 
   const withoutDescription = entries.filter((entry) => !entry.description).length;
+
+  // ---------------------------------------------------------------------
+  // A TRIPWIRE FOR AN EXTRACTOR THAT STOPPED MATCHING, NOT A CONTENT RULE
+  // ---------------------------------------------------------------------
+  //
+  // `future.v4` put Docusaurus's Faster pipeline in charge of minification,
+  // and it emits UNQUOTED attributes -- `name=description` where the previous
+  // pipeline wrote `name="description"`. lib/llms-txt.js read that meta with
+  // the quotes written into its regex, so it matched nothing on EVERY page.
+  // llms.txt fell from 55 KB to 23 KB with all 259 entries reduced to bare
+  // links.
+  //
+  // NOTHING FAILED. The file was still a valid index -- one H1 first, no H6,
+  // every line reaching /docs/ -- so this repo's build-contract check passed,
+  // and so did the orchestrator's splice preconditions in
+  // MarketDataApp/www-marketdata-app, which demote its headings and require
+  // exactly those properties. It was found by diffing the file against the
+  // previous build, and by nothing else.
+  //
+  // Both numbers below were PRINTED at the time -- "23 KB" and "259 without a
+  // description" -- and neither was a gate. That is the actual lesson: a count
+  // in a log is not a check. So this one throws.
+  //
+  // A MAJORITY, deliberately, because the failure is all-or-nothing: the
+  // pattern either matches the build's spelling or it does not. One page
+  // lacking a description is ordinary content and must not fail a build;
+  // half of them lacking one cannot be content. Do not tighten this into a
+  // content rule, and do not raise it to make a build pass.
+  if (entries.length > 0 && withoutDescription > entries.length / 2) {
+    throw new Error(
+      `[llms-txt] ${withoutDescription} of ${entries.length} entries have no ` +
+        'description.\n\n' +
+        'That is not a content problem at this scale -- it is descriptionFromHtml\n' +
+        'no longer matching what the build writes. It last happened when the\n' +
+        'minifier began emitting unquoted attributes. Check how <meta\n' +
+        'name="description"> is actually spelled in build/, not the source.\n\n' +
+        'llms.txt would still be structurally valid, so no other check here or\n' +
+        'in the orchestrator would notice.'
+    );
+  }
+
   console.log(
     `[llms-txt] ${entries.length} of ${routeCount} route(s) indexed in llms.txt ` +
       `(${Math.round(index.length / 1024)} KB); llms-full.txt is ` +
