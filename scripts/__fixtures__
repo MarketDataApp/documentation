@@ -1,0 +1,82 @@
+[
+ [
+  "option chain",
+  "/api/options/chain"
+ ],
+ [
+  "stock candles",
+  "/api/stocks/candles"
+ ],
+ [
+  "rate limit",
+  "/api/rate-limiting"
+ ],
+ [
+  "earnings",
+  "/api/stocks/earnings"
+ ],
+ [
+  "authentication",
+  "/api/authentication"
+ ],
+ [
+  "option expirations",
+  "/api/options/expirations"
+ ],
+ [
+  "option quotes",
+  "/api/options/quotes"
+ ],
+ [
+  "market status",
+  "/api/markets/status"
+ ],
+ [
+  "bulk candles",
+  "/api/stocks/bulkcandles"
+ ],
+ [
+  "troubleshooting",
+  "/api/troubleshooting"
+ ],
+ [
+  "universal parameters",
+  "/api/universal-parameters"
+ ],
+ [
+  "python sdk",
+  "/sdk/py"
+ ],
+ [
+  "php sdk",
+  "/sdk/php"
+ ],
+ [
+  "go sdk",
+  "/sdk/go"
+ ],
+ [
+  "postman",
+  "/sdk/postman"
+ ],
+ [
+  "google sheets",
+  "/sheets"
+ ],
+ [
+  "stockdata",
+  "/sheets/stocks/stockdata"
+ ],
+ [
+  "optionchain",
+  "/sheets/options/optionchain"
+ ],
+ [
+  "billing portal",
+  "/account/billing-portal"
+ ],
+ [
+  "api credits",
+  "/api/rate-limiting"
+ ]
+]

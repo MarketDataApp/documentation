@@ -137,6 +137,59 @@ existed **only on the index**, while the crawler config still listed `lvl0`
 first. The config was corrected before the reindex ran, so the tweak survived.
 `lint:algolia` A7 is what keeps the two from drifting apart again.
 
+### Ranking: the `pageRank` tiers
+
+`weight.pageRank` was **0 on every record** until 2026-09-04, and it is the
+first term in `customRanking`:
+
+```
+customRanking: [desc(weight.pageRank), desc(weight.level), asc(weight.position)]
+```
+
+Flat at zero it decided nothing, so a tie fell through to insertion order — and
+the SDK section outnumbers the API reference **3,323 records to 928**. A search
+for `rate limit` returned `/sdk/php/utilities/user/` over `/api/rate-limiting/`
+with the two records identical on every ranking signal.
+
+The crawler's single action is now five, each setting a `pageRank` on the
+records it produces. **`pageRank` is not an action property** — the schema
+rejects it there; it goes inside the DocSearch helper's `recordProps`.
+
+| Action    | Paths                        | pageRank |
+|-----------|------------------------------|----------|
+| `api`     | `/docs/api/**`               | 100      |
+| `sheets`  | `/docs/sheets/**`            | 100      |
+| `account` | `/docs/account/**`           | 100      |
+| `rest`    | everything else, by negation | 50       |
+| `sdk`     | `/docs/sdk/**`               | 30       |
+
+**The actions must stay mutually exclusive.** Every matching action runs, so an
+overlapping pattern duplicates every record on the page. `rest` excludes the
+other four by `!` negation, and the crawler's `/test` endpoint reports the
+action groups a URL matches — it read `action_groups=1` for one URL per tier
+before the reindex.
+
+**Only the SDK is demoted, and that is deliberate.** A first pass also demoted
+Sheets to 70. It fixed `troubleshooting` and broke `optionchain`, which stopped
+returning the Sheets function literally named `OPTIONCHAIN`. Sheets and account
+pages are function references whose name IS the query; the measured problem was
+API versus SDK and nothing else.
+
+### What pageRank cannot fix, and must not
+
+`custom` is the **last** ranking criterion. A page that matches the query text
+better wins before `pageRank` is ever consulted, which is correct and is why
+this lever is safe.
+
+It is also why the score stopped at 8 of 20. **The SDK page titles embed the
+section name.** `Stock Candles (Python SDK)` matches both words of `stock
+candles`, adjacent and exact; `/api/stocks/candles` is titled `Candles` and
+matches one. The API page loses on `words` and never reaches the tie-break.
+
+That is a content problem, not a ranking one. It is fixed by titling the API
+pages for the concept (`Stock Candles`, not `Candles`), not by any crawler
+setting. Raising `pageRank` further would change nothing.
+
 ### Watching it
 
 `yarn lint:algolia` (`scripts/lint-algolia.js`, logic in `lib/algolia.js`).
