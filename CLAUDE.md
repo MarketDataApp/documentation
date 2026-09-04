@@ -344,15 +344,42 @@ Every defect in the 3.10 / pnpm / `future.v4` migration was found this way, and
 **not one of them failed a build.** The pattern is always the same: something
 that renders, deploys and passes every gate, while being wrong.
 
-Take a snapshot of `build/`, change one thing, take another, and compare. Two
-rules make the comparison mean anything:
+Take a snapshot of `build/`, change one thing, take another, and compare.
 
-1. **Measure the noise floor first.** Build the same tree twice and diff those.
-   Anything that differs there is noise you must normalise before you can read
-   a real diff. That control is what found the `builtAt` bug below.
-2. **Normalise only what is designed to vary.** Content hashes in asset names,
-   and the CSS-module class suffixes derived from them. Nothing else in this
-   build is allowed to move between two builds of one tree.
+**Measure the noise floor first** — build the same tree twice and diff those.
+Anything that differs there is noise you must normalise before you can read a
+real diff. That control is what found the `builtAt` bug below, and it is the
+step to repeat rather than trust.
+
+### The build is now byte-for-byte reproducible, and it was not before
+
+Two builds of one tree differ in **nothing**. Measured across 1401 files, with
+only `builtAt` normalised — and that field lives solely in `build-info.json`,
+which is served `no-store` and whose whole purpose is to vary.
+
+**This was false until the 3.10 upgrade**, in two separate ways, and both had
+to be fixed to get here:
+
+1. `builtAt` was passed to `plugins/build-info.js` as a plugin OPTION, and
+   Docusaurus serialises the config — options included — into `main.js`. A
+   clock in the client bundle moved its content hash every build.
+2. Docusaurus 3.0.1 wrote plugin `globalData` in the order the five
+   content-docs instances happened to finish, which is not stable. So even
+   after removing the clock, `main.js` was still a permutation of itself
+   between builds. **3.10's Rspack pipeline made that ordering deterministic**,
+   which is what closed the gap.
+
+Two things follow, and the second is why it is worth a section:
+
+- **A deploy no longer invalidates the primary bundle for no reason.** It used
+  to publish a new `main.<hash>.js` on every build against a
+  `max-age=31536000, immutable` header, and strand every mid-session reader —
+  the exact reader `src/clientModules/chunkReload.js` exists to recover.
+- **Diffing built HTML now proves something.** A head-only change can be
+  verified by diffing the build directly, which is what this file has always
+  claimed and could not actually deliver. If a future change reintroduces
+  per-build variance, that claim quietly becomes false again — so if two builds
+  of one tree ever start differing, fix that before trusting any other diff.
 
 What that instrument found, none of which was visible any other way:
 
