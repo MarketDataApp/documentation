@@ -143,12 +143,12 @@ Do not duplicate REST paths, payload schemas, or parameter contracts in this doc
 ### 2.1 Canonical API Documentation
 
 - [API Overview](/api)
-- [Stocks API](/api/stocks/index)
-- [Options API](/api/options/index)
-- [Funds API](/api/funds/index)
-- [Markets API](/api/markets/index)
-- [Utilities API](/api/utilities/index)
-- [Universal Parameters](/api/universal-parameters/index)
+- [Stocks API](/api/stocks/)
+- [Options API](/api/options/)
+- [Funds API](/api/funds/)
+- [Markets API](/api/markets/)
+- [Utilities API](/api/utilities/)
+- [Universal Parameters](/api/universal-parameters/)
 
 ### 2.2 Required SDK Method Coverage
 
