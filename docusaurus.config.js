@@ -102,7 +102,39 @@ const config = {
             ? {
                 changefreq: "weekly",
                 priority: 0.5,
-                ignorePatterns: ["/tags/**"],
+                // EVERY PATTERN HERE IS MATCHED AGAINST THE PATH INCLUDING
+                // `baseUrl`. That is why the `/internal/` rules below name
+                // `/docs/`, and it is why the `/tags/**` rule above them does
+                // not work.
+                //
+                // `/tags/**` HAS NEVER MATCHED ANYTHING. Tag routes are
+                // generated per docs instance, so they are `/docs/api/tags/…`
+                // and `/docs/sheets/tags/…` — neither the `/docs/` prefix nor
+                // the middle segment is optional. Seven tag pages were in the
+                // production sitemap on 2026-09-04 as a result. It is the same
+                // defect, on the same seven pages, that `categoryOf()` in
+                // lib/llms-txt.js records having let into llms.txt once.
+                //
+                // **It is left in place deliberately, pending a ruling.**
+                // Correcting the pattern alone makes the build RED rather than
+                // better: those pages are indexable, and `lint:seo` D2 fails an
+                // indexable page the sitemap does not advertise. Excluding them
+                // therefore means deciding they should be `noindex` — a real
+                // SEO decision about seven live URLs, and the owner's to make.
+                // Until then the site is self-consistent and this line is
+                // merely inert.
+                //
+                // A pattern that matches nothing is indistinguishable from one
+                // that matches everything it should, because both build clean.
+                // Count the locs; do not read the config.
+                //
+                // `/internal/` is our own reference material.
+                // `plugins/internal-head.js` stamps every page there noindex,
+                // and D2 fails when the sitemap advertises a noindex route — so
+                // without these two lines the build goes red rather than
+                // shipping a contradiction. Two patterns because `**` does not
+                // match the section root's own empty remainder.
+                ignorePatterns: ["/tags/**", "/docs/internal/**", "/docs/internal/"],
                 filename: "sitemap.xml",
               }
             : {},
@@ -119,6 +151,7 @@ const config = {
     './plugins/theme-cookie-sync',
     './plugins/markdown-twins',
     './plugins/not-found-head',
+    './plugins/internal-head',
     './plugins/redirects-file',
     [
       "@docusaurus/plugin-content-docs",
@@ -185,6 +218,40 @@ const config = {
         editUrl: ({ docPath }) => {
           const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
           return `https://${host}/docs/account/${docPath.replace(/\.mdx?$/, '.md')}`;
+        },
+        // Read from git history, so it needs full history at build time:
+        // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
+        // With a shallow clone every page reports the same date.
+        showLastUpdateTime: true,
+        sidebarPath: require.resolve("./sidebars.js"),
+      },
+    ],
+    [
+      "@docusaurus/plugin-content-docs",
+      /** @type {import('@docusaurus/plugin-content-docs').Options} */
+      {
+        // Our own reference material. Reachable by typing the URL, absent from
+        // the navbar because nothing in `themeConfig.navbar.items` names it.
+        //
+        // NOT `unlisted: true`. That front matter hides a page from the SIDEBAR
+        // in a production build, which is the opposite of what this section is
+        // for: the whole point is that landing on /docs/internal/<page> gives
+        // you the section's menu.
+        //
+        // `noindex` is stamped onto the built pages by `plugins/internal-head.js`
+        // instead, and `lint:seo` M1 fails the build if a page arrives without
+        // it. A `<head>` block in the MDX was tried first and does not work --
+        // it renders as literal text and produces no tag. See lib/internal-head.js.
+        //
+        // llms.txt does not read that tag. `internal` is excluded by stem in
+        // lib/llms-txt.js, because postBuild hooks run concurrently and reading
+        // a stamped page would be a race.
+        id: "internal",
+        path: "internal",
+        routeBasePath: "internal",
+        editUrl: ({ docPath }) => {
+          const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
+          return `https://${host}/docs/internal/${docPath.replace(/\.mdx?$/, '.md')}`;
         },
         // Read from git history, so it needs full history at build time:
         // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.

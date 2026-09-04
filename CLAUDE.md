@@ -165,6 +165,34 @@ Two limits the check states on every run rather than hiding:
   `restrictSearchableAttributes: ['url']` fails with an error that does not say
   why.
 
+## The `/internal/` section
+
+`/docs/internal/` holds our own reference material — today the on-page SEO
+requirements every Market Data site must meet. Its own docs plugin instance,
+absent from `themeConfig.navbar.items`, so it is reachable by URL and shows the
+section's sidebar once you land.
+
+**Every page in it is `noindex`, stamped by `plugins/internal-head.js`.** Not
+front matter: `unlisted: true` would also drop the page from the sidebar in a
+production build, and a `<head>` block in MDX renders as literal text here and
+produces no tag at all. The full reasoning is in `lib/internal-head.js` and in
+`docs/SEO.md`.
+
+`lint:seo` M1 fails the build when a page there arrives without the tag. The
+sitemap excludes the section by route; `llms.txt` excludes it by **stem**, in
+`lib/llms-txt.js`, because postBuild hooks run concurrently and reading a
+stamped page would be a race.
+
+### `ignorePatterns` is matched against the path including `baseUrl`
+
+Which is why the sitemap's `/internal/` rules name `/docs/`. The neighbouring
+`/tags/**` rule does not, and **has never matched anything** — tag routes are
+`/docs/api/tags/…`, nested per docs instance. Seven tag pages sit in the
+production sitemap as a result. It is left alone deliberately: correcting the
+pattern alone turns the build red, because those pages are indexable and D2
+fails an indexable page the sitemap omits. Excluding them means first ruling
+that they should be `noindex`.
+
 ## Sidebar Badges
 
 - Badges (New, Premium, Beta, High Usage) are configured via `sidebar_custom_props: { badge: n/p/b/h }` in page frontmatter

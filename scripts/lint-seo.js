@@ -609,6 +609,35 @@ function main() {
     }
   }
 
+  // --- M1. /internal/ is noindex, by its own tag ---------------------------
+  // The section is absent from the navbar, which is presentation and not a
+  // directive: the routes build, deploy and answer 200, so anything that finds
+  // a URL indexes it. What keeps them out is the `<head>` block each page
+  // writes, and six consumers read that tag rather than any front matter --
+  // Google, the Algolia crawler, markdown-twins, llms.txt G2, the sitemap's
+  // ignorePatterns and D2 above.
+  //
+  // `unlisted: true` is NOT the mechanism here and must not be reintroduced.
+  // It marks a page noindex and ALSO drops it from the sidebar in a production
+  // build, which removes the one thing the section exists to give: land on a
+  // page by URL and get the section's menu.
+  //
+  // So the tag is a hand-written line in every file, and a hand-written line
+  // is one somebody forgets. This rule is the only thing that would say so --
+  // the page would render, deploy, look right, and quietly be indexable.
+  //
+  // Staging is exempt because D1 already requires noindex on EVERY page there,
+  // so this rule would restate it and would fail for a different reason.
+  if (env.name !== 'staging') {
+    const bare = routes
+      .filter((p) => /^\/internal(\/|$)/.test(p.route))
+      .filter((p) => !/noindex/i.test(p.robots ?? ''))
+      .map((p) => p.route);
+    if (bare.length) {
+      fail('M1', 'internal pages without a noindex directive', bare);
+    }
+  }
+
   // --- E1. One h1 ----------------------------------------------------------
   const h1Wrong = pages.filter((p) => p.h1s.length !== 1).map((p) => `${p.route} (${p.h1s.length})`);
   if (h1Wrong.length) fail('E1', 'pages without exactly one <h1>', h1Wrong);

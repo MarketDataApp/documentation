@@ -197,6 +197,41 @@ page nothing keeps true.
 
 *Gated by rule D2.*
 
+### The `/internal/` section
+
+`/docs/internal/` holds our own reference material. It is absent from the
+navbar and reachable by typing the URL, and **every page in it is `noindex`.**
+
+The directive is not front matter. `plugins/internal-head.js` stamps it onto
+the built pages, because the two obvious spellings are both wrong here:
+
+- `unlisted: true` marks a page `noindex` **and** drops it from the sidebar in
+  a production build, which removes the one thing the section exists to give.
+  It stays correct for `sdk/sdk-requirements`, a lone page that shows no
+  sidebar on purpose.
+- a `<head>` block in the MDX is documented to work and **does not work in this
+  build**. It renders as literal text, reaches the Markdown twin verbatim, and
+  produces no tag — so the source looks annotated while the page is fully
+  indexable.
+
+Three things then follow from that one tag, and one deliberately does not:
+
+| Consumer                      | Reads                                                |
+|-------------------------------|------------------------------------------------------|
+| crawlers, including Algolia's | the rendered tag                                     |
+| `lint:seo` M1                 | the rendered tag                                     |
+| the sitemap                   | `ignorePatterns` in `docusaurus.config.js`, by route |
+| `llms.txt`                    | **the stem**, in `lib/llms-txt.js` — not the tag     |
+
+`llms.txt` is the exception because Docusaurus runs postBuild hooks with
+`Promise.all`. Whether the llms.txt pass reads a stamped page is a race, so the
+section is excluded by stem, which is decided before any hook runs.
+
+*Gated by rules M1 and D2.* M1 fails a page under `/internal/` that carries no
+`noindex`; D2 then fails the same page from the other direction, because an
+indexable route the sitemap does not advertise is itself a contradiction. Both
+were confirmed to fire by deleting the tag from a built page.
+
 ## Headings
 
 Exactly one `<h1>` per page. Docusaurus renders it from frontmatter `title`
@@ -235,6 +270,8 @@ same date and nothing says so.
 | `og:url` and `og:description` agree with their sources        | `lint:seo` C3              | against `build/`          |
 | the build resolves to one known environment                   | `lint:seo` D0              | against `build/`          |
 | every staging page is `noindex`                               | `lint:seo` D1              | against `build/`          |
+| every `/internal/` page is `noindex`                          | `lint:seo` M1              | against `build/`          |
+| the `/internal/` pages are stamped so M1 is true              | `internal-head` postBuild  | during the build          |
 | robots and the sitemap agree, in both directions              | `lint:seo` D2              | against `build/`          |
 | exactly one `<h1>`                                            | `lint:seo` E1              | against `build/`          |
 | no page skips a heading level                                 | `lint:seo` D3              | against `build/`          |
