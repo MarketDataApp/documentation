@@ -67,8 +67,38 @@ jobs:
           rm -rf build-raw
           cp "build/${BASE_URL}/404.html" build/404.html
 
+      # THERE WAS A `/${BASE_URL}/*.js` RULE HERE AND IT IS DELETED. 2026-09-04.
+      #
+      # It doubled the header it set. `/docs/assets/js/main.<hash>.js` matches
+      # BOTH it and `/docs/assets/*`, and because `_headers` is not
+      # first-match-wins -- every matching rule applies and a repeated header
+      # name APPENDS -- staging served:
+      #
+      #   cache-control: public, max-age=31536000, immutable, public, max-age=31536000, immutable
+      #
+      # Measured by MarketData-App/www-marketdata-app on staging. Production
+      # never showed it, because the orchestrator's scripts/cache-headers.mjs
+      # rewrites Cache-Control there and that rewrite is production-only. So it
+      # was invisible from this repository in the environment we look at least.
+      #
+      # DELETED RATHER THAN FIXED WITH `! Cache-Control`, which was the proposed
+      # fix and would also have worked. Two reasons it is the weaker one:
+      #
+      #   1. The rule matched NOTHING the assets rule did not already cover.
+      #      Every .js in the build is under `assets/js` -- verified, and
+      #      `static/` holds none. An unset-then-set rule would exist only to
+      #      undo and redo what the line above it had just done.
+      #   2. It was a latent hazard, not merely redundant. Assets are safe to
+      #      mark `immutable` for a year because their filenames are
+      #      content-hashed. A file dropped into `static/` is NOT: it would ship
+      #      as `/docs/foo.js`, match this rule, and be pinned in every
+      #      browser's cache for a year with no way to publish a correction.
+      #
+      # So a .js outside `assets/` now inherits the default rather than an
+      # immutable year, which is the safe direction for an unhashed name.
+      #
       # The last rule is the build sentinel, and it is the reason to read this
-      # step carefully before adding a fourth.
+      # step carefully before adding another.
       #
       # A CACHED SENTINEL IS WORSE THAN NO SENTINEL: it answers about a previous
       # deploy while looking authoritative. Hence `no-store`.
@@ -92,9 +122,6 @@ jobs:
             "" \
             "/${BASE_URL}/img/*" \
             "  Cache-Control: public, max-age=2592000" \
-            "" \
-            "/${BASE_URL}/*.js" \
-            "  Cache-Control: public, max-age=31536000, immutable" \
             "" \
             "/${BASE_URL}/build-info.json" \
             "  Cache-Control: no-store" \
