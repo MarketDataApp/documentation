@@ -37,6 +37,19 @@
 #   3. paste that key here, having satisfied yourself the new commit is ours
 #
 # ---------------------------------------------------------------------------
+# @swc/core: TRUE, AND UNLIKE THE TWO BELOW IT ITS SCRIPT DOES REAL WORK
+# ---------------------------------------------------------------------------
+#
+# Docusaurus Faster compiles with SWC, which ships a NATIVE binding. Its
+# install script resolves the right binary for the platform; without it the
+# build fails at require time rather than running slower. Approved because it
+# is load-bearing, not because it is harmless.
+#
+# It arrived with `future.v4.fasterByDefault`, which shows why this gate earns
+# its keep: enabling one config flag pulled in a dependency that executes code
+# at install time, and pnpm stopped and named it rather than just running it.
+#
+# ---------------------------------------------------------------------------
 # core-js, core-js-pure: FALSE
 # ---------------------------------------------------------------------------
 #
@@ -45,5 +58,6 @@
 # executions from every install.
 allowBuilds:
   "@marketdataapp/ui@https://codeload.github.com/MarketDataApp/ui/tar.gz/8dcef9b511aec51724e6b2d57f82f94f6730449f": true
+  "@swc/core": true
   core-js: false
   core-js-pure: false

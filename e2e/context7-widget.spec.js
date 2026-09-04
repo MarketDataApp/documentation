@@ -5,7 +5,7 @@
  * Catches breaking changes from Context7 (renamed classes, removed
  * shadow DOM, changed container IDs, script load failures, etc.).
  *
- * Run with: yarn test:e2e
+ * Run with: pnpm run test:e2e
  */
 import { test, expect } from '@playwright/test';
 

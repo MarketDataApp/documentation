@@ -24,11 +24,11 @@
  *   - The DATE METADATA is invisible by definition. Three spellings have to
  *     agree with each other and with the page's canonical URL.
  *
- * Run with: TEST_ENV=staging yarn test:e2e
+ * Run with: TEST_ENV=staging pnpm run test:e2e
  */
 import { test, expect } from '@playwright/test';
 
-// TEST_BASE_URL points the suite at a local `yarn build` served under /docs/,
+// TEST_BASE_URL points the suite at a local `pnpm run build` served under /docs/,
 // so the row can be proved before it is deployed rather than after. Without it
 // the suite behaves like context7-widget.spec.js: staging or production.
 const BASE_URL = process.env.TEST_BASE_URL

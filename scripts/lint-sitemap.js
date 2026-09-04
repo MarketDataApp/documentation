@@ -49,7 +49,7 @@
  * no sitemap to check, by design, and running this against one is a mistake
  * rather than a pass. It says so instead of exiting 0.
  *
- * Run with: yarn lint:sitemap   (which builds with PROD=true first)
+ * Run with: pnpm run lint:sitemap   (which builds with PROD=true first)
  */
 
 const { promises: fs } = require('node:fs');
@@ -92,7 +92,7 @@ async function main() {
       `no sitemap at ${path.relative(process.cwd(), SITEMAP)}.\n` +
         '  @docusaurus/plugin-sitemap skips the sitemap when noIndex is set, and\n' +
         '  every non-production build sets it. Build with PROD=true, or run\n' +
-        '  `yarn lint:sitemap`, which does.'
+        '  `pnpm run lint:sitemap`, which does.'
     );
   }
 

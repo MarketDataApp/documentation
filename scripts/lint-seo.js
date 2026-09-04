@@ -69,7 +69,7 @@
  * move. See `gate` in main().
  *
  * Usage:
- *   yarn build && node scripts/lint-seo.js
+ *   pnpm run build && node scripts/lint-seo.js
  *   node scripts/lint-seo.js --dir some/other/build
  *   node scripts/lint-seo.js --report   # print the reported-rule backlogs in full
  *   node scripts/lint-seo.js --ungate L1  # report one gated rule instead of failing
@@ -149,7 +149,7 @@ const SITE_SUFFIX = 'Market Data';
  * there by exactly the difference between the two suffixes -- which measures
  * the authored title against the same 60 on both arms.
  *
- * Found by gating LENGTH_ENFORCED and then running an ordinary `yarn build`:
+ * Found by gating LENGTH_ENFORCED and then running an ordinary `pnpm run build`:
  * CI always passes PROD=true, so the trap would have sprung first on a
  * developer's machine, on a rule they had not touched.
  */
@@ -387,14 +387,14 @@ function sitemapPaths(dir) {
 function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!fs.existsSync(args.dir)) {
-    console.error(`No build at ${path.relative(ROOT, args.dir)} — run \`yarn build\` first.`);
+    console.error(`No build at ${path.relative(ROOT, args.dir)} — run \`pnpm run build\` first.`);
     process.exit(1);
   }
 
   // Only for this repo's own build: `--dir` is a throwaway fixture with no
   // sources to be older than.
   if (args.dir === OWN_BUILD) {
-    assertFreshBuild(ROOT, args.dir, 'PROD=true yarn build && node scripts/lint-seo.js');
+    assertFreshBuild(ROOT, args.dir, 'PROD=true pnpm run build && node scripts/lint-seo.js');
   }
 
   const files = walk(args.dir);

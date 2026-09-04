@@ -131,8 +131,8 @@ it the same way.
 
 The selector is `.tabs-container [role="tabpanel"]` now: `tabs-container` is a
 plain unhashed theme class and `role="tabpanel"` is the ARIA role. Neither is
-generated. **Only a diff of two builds could see this**, which is why the
-migration harness in `.migration/` existed -- see "Diffing two builds" below.
+generated. **Only a diff of two builds could see this** -- see "Diff two builds
+before believing an upgrade" below.
 
 ## Search
 
@@ -338,6 +338,137 @@ equivalent `sidebar_custom_props: { badge }`, which is what renders the Premium
 row pointing at them. All seven redirect to their section root, because they
 were in the sitemap and so may be indexed.
 
+## Diff two builds before believing an upgrade
+
+Every defect in the 3.10 / pnpm / `future.v4` migration was found this way, and
+**not one of them failed a build.** The pattern is always the same: something
+that renders, deploys and passes every gate, while being wrong.
+
+Take a snapshot of `build/`, change one thing, take another, and compare. Two
+rules make the comparison mean anything:
+
+1. **Measure the noise floor first.** Build the same tree twice and diff those.
+   Anything that differs there is noise you must normalise before you can read
+   a real diff. That control is what found the `builtAt` bug below.
+2. **Normalise only what is designed to vary.** Content hashes in asset names,
+   and the CSS-module class suffixes derived from them. Nothing else in this
+   build is allowed to move between two builds of one tree.
+
+What that instrument found, none of which was visible any other way:
+
+| Defect                                                  | What the build said |
+|---------------------------------------------------------|---------------------|
+| a clock in the client bundle, busting it every deploy   | success             |
+| a CSS rule naming a class no element carries            | success             |
+| `article:modified_time` set to the year 58,641          | success             |
+| llms.txt losing all 259 descriptions                    | success             |
+| a swizzle so stale it reported 234 false broken anchors | success (warnings)  |
+
+### Never hardcode a generated name, and never regex a quoted attribute
+
+Two habits produce most of that table.
+
+**A hashed CSS-module class is not a name you may write down.** `.tabItem_Ymn6`
+moved when the package manager changed, because the hash follows the module's
+resolved path. The rule stayed valid and matched nothing.
+
+**Built HTML does not promise how it spells an attribute.** `future.v4`'s
+Faster pipeline emits `name=description` where 3.10 emitted `name="description"`.
+`lib/llms-txt.js` required the quotes, so every description vanished and
+llms.txt fell from 55 KB to 23 KB -- a structurally valid index, so nothing
+failed.
+
+`lib/not-found-head.js`'s `attributesOf` came through untouched because it
+accepts all three HTML5 forms: `"x"`, `'x'`, and bare. Copy that, or parse with
+`@mixmark-io/domino`, which is why `lint:seo` uses it and why `lint:seo` was
+the check that did not care.
+
+### Six built pages contain a NUL byte, and grep skips them silently
+
+A stray `\x00` lands immediately before certain U+20xx characters (em dash,
+zero-width space, curly apostrophe). It predates all of this -- the 3.0.1
+baseline has it -- and the count and the pages move between builds.
+
+It matters because **grep treats a file containing NUL as binary and skips it
+with no message.** A robots-meta count came up six pages short during this work
+and the tag was present all along. Use `grep -a` on built HTML, and prefer a
+parser. `scripts/check-build-contract.js` does not report it; the migration
+harness did.
+
+## Swizzles: a fork you do not maintain is a fork that lies
+
+`src/theme/` was 27 components. **Eleven had no local changes at all** -- ten
+already matched upstream 3.10, one was a stale copy of 3.0.1. They were deleted
+in the 3.10 upgrade, because a swizzle with no customisation can only fall
+behind upstream, and one of them proved what that costs.
+
+`src/theme/Heading` was a byte-for-byte fork of the 3.0.1 file. Upstream had
+since added `brokenLinks.collectAnchor(id)` -- the call by which a page
+registers the anchors it defines. Ours never made it, so every page declared
+none, and when 3.10 began checking anchors it reported **254 broken, of which
+234 were not broken at all.** Deleting the swizzle fixed all 234.
+
+**Before upgrading Docusaurus, classify every swizzle against upstream.**
+Normalise away comments, quote style, trailing commas and whitespace, then
+compare each file in `src/theme/` with the same path in
+`node_modules/.pnpm/@docusaurus+theme-classic@<version>/.../lib/theme/`. Delete
+anything that matches. Reconcile the rest by hand -- and check the sibling
+`styles.module.css` separately, because a component and its stylesheet drift
+independently.
+
+Twelve customised swizzles and four of our own remain.
+
+## `future.v4` is on, and one flag needed a counterweight
+
+`future: { v4: true }` in `docusaurus.config.js` turns on all five v4 flags
+early, so the major is a version bump rather than a migration. Four were free.
+
+**`siteStorageNamespacing` was not, and it would have failed silently.** It
+namespaces browser storage: `theme` becomes `theme-f3b`, a hash of the site's
+url and baseUrl. That exists so two Docusaurus sites on one domain cannot read
+each other's preferences -- and **we want them to.** `theme` is a contract
+across the whole origin: `plugins/theme-cookie-sync.js` seeds it from the
+`.marketdata.app` cookie, and `@marketdataapp/ui`'s `theme.js`, used by every
+other property, reads the same unprefixed key. With the flag on, the built
+bootstrap read `theme-f3b` while our bridge still wrote `theme`, so a reader
+who chose dark mode on the marketing site arrived here in light mode.
+
+`storage: { namespace: false }` pins it. Namespacing it "properly" is not
+available: the hash comes from the url, so staging and production would
+disagree with each other and with the marketing half, which cannot know either
+value.
+
+The other four, for the record: `removeLegacyPostBuildHeadAttribute` is free
+because no plugin here takes `head` in `postBuild`; `useCssCascadeLayers`
+changed no rule we own; `mdx1CompatDisabledByDefault` needed content work,
+below.
+
+**`fasterByDefault` is the one with a number attached.** Same tree, same
+machine, only that flag moved:
+
+| Bundler                         | Full `pnpm run build` |
+|---------------------------------|-----------------------|
+| webpack (`fasterByDefault` off) | 56s                   |
+| Rspack + SWC (on)               | **8s**                |
+
+It needs the `@docusaurus/faster` dependency, and that pulls in `@swc/core` --
+the one dependency here whose install script does real work, since it resolves
+a native binding. It is `true` in `pnpm-workspace.yaml` for that reason, unlike
+`core-js`, which is declined.
+
+### Strict MDX: `{#id}` is JavaScript now
+
+With MDX v1 compatibility off, `## Title {#my-id}` is parsed as a JS
+expression and fails the build. The supported spelling is `{/* #my-id */}`, and
+it also stops the id leaking into the page's Markdown twin.
+
+**`<!-- -->` inside a code fence is not affected and must not be converted.**
+Only prose comments were ever compat-handled. A blanket rewrite here corrupted
+an XML sample in `sdk/csharp/installation.mdx` before the build diff caught it.
+
+Admonition titles (`:::note Some Title`) are unaffected -- 75 of them build
+identically with the flag on.
+
 ## Sidebar Badges
 
 - Badges (New, Premium, Beta, High Usage) are configured via `sidebar_custom_props: { badge: n/p/b/h }` in page frontmatter
@@ -537,5 +668,6 @@ Two more traps that stylesheets do not report:
 - **Example parity**: `pnpm run lint:examples` — every language tab on an API page must make the same request with the same inputs (#167). Compares a normalised fixture set, so `2024-01-01`, `LocalDate.of(2024, 1, 1)` and `new DateOnly(2024, 1, 1)` are one token
 - **Highlighting**: `pnpm run lint:highlighting` — run after a build; fails when a ``` fence language produces no highlighting anywhere, which is what a missing Prism grammar looks like. Per language, not per block: a one-word shell command legitimately has nothing to colour. Add new languages to `additionalLanguages` in `docusaurus.config.js`, and use the id Prism knows (`ini` not `env`, `batch` not `cmd`)
 - **Sitemap lint**: `pnpm run lint:sitemap` — builds with `PROD=true` and fails if the sitemap lists a URL with no page in `build/`
+- **Orchestrator contract**: `pnpm run lint:contract` — reads a built `build/` and asserts what `MarketDataApp/www-marketdata-app` requires of it. Not a duplicate of that repo's gates: it is the part we can answer before pushing. **The rule that exists nowhere else is `404.html`** — Cloudflare Pages serves the nearest one by walking up the tree, and ours terminates that walk for `/docs/*`; lose it and `/docs/*` quietly serves the marketing 404 with every gate in both repositories green. That repo asked us to assert it here because it cannot. Also covers the llms.txt demotion preconditions (one H1, first, no H6), the twins each resolving to `<route>/index.html`, the sitemap (required on production, forbidden under `noIndex`), and the two `_redirects` budgets shared with the website half
 - **E2E tests**: `TEST_ENV=staging pnpm run test:e2e` — Playwright tests for Context7 widget rendering and the Markdown actions row (`TEST_BASE_URL=http://…/docs` points them at a local build instead)
 - **Browser for e2e**: the machine's own Chromium, not a build this repo pins. `scripts/resolve-chromium.js` resolves it (`CHROMIUM_PATH` override → system browser → Playwright's bundled build) and `playwright.config.js` feeds it to `launchOptions`. Do not reintroduce a bare `browserName: 'chromium'` with no `executablePath` — that re-pins the browser to the installed `@playwright/test`. CI installs Playwright's build only when the runner has no browser. See README.md "Which browser the e2e tests run".

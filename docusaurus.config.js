@@ -81,6 +81,40 @@ const config = {
   // PR check fails on a new one.
   onBrokenAnchors: "warn",
 
+  // Opting into v4 behaviour while still on 3.10, so the major is a version
+  // bump rather than a migration. Each flag is enabled deliberately; see the
+  // notes on `storage` below for the one that needed a counterweight.
+  future: {
+    v4: true,
+  },
+
+  // THE COUNTERWEIGHT TO `future.v4.siteStorageNamespacing`, AND IT IS
+  // DELIBERATE RATHER THAN A CLIMBDOWN.
+  //
+  // That flag namespaces browser-storage keys -- `theme` becomes `theme-f3b`,
+  // a hash of the site's url and baseUrl. It exists so that two Docusaurus
+  // sites sharing one domain cannot read each other's preferences.
+  //
+  // WE WANT THEM TO. `theme` is a contract across the whole origin: the
+  // marketing half at www.marketdata.app/ and the docs at /docs/ are one site
+  // to a reader, and the theme has to follow them across the seam.
+  // `plugins/theme-cookie-sync.js` seeds it from the .marketdata.app cookie
+  // before Docusaurus reads it, and @marketdataapp/ui's theme.js -- used by
+  // every other property -- reads and writes the same unprefixed key.
+  //
+  // Turning v4 on without this was measured, not assumed: the built bootstrap
+  // script read `localStorage.getItem("theme-f3b")` while our bridge still
+  // wrote `theme`, so a reader who chose dark mode on the marketing site would
+  // have arrived here in light mode. Nothing would have failed; the theme
+  // would just have stopped following them.
+  //
+  // Namespacing it properly is not an option: the hash is derived from the
+  // url, so staging and production would disagree with each other AND with the
+  // marketing half, which cannot know either value.
+  storage: {
+    namespace: false,
+  },
+
   markdown: {
     hooks: {
       // Moved out of the top level in 3.10, where `siteConfig.onBrokenMarkdownLinks`

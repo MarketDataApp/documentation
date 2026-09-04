@@ -190,8 +190,7 @@ func main() {
 </TabItem>
 </Tabs>
 
-## Resolution {#resolution}
-
+## Resolution {/* #resolution */}
 `Resolution` is a string type selecting the candle timeframe. Pass a constant to `stocks.WithResolution`.
 
 ```go
@@ -216,8 +215,7 @@ const (
 
 Resolutions `Resolution1Min` through `Resolution4Hour` are intraday; these are the resolutions eligible for automatic year-chunk splitting on large ranges.
 
-## Date Windows {#date-windows}
-
+## Date Windows {/* #date-windows */}
 `DateWindow` is a sealed union describing the date range for `Candles` (and shared by [Earnings](/sdk/go/stocks/earnings) and [News](/sdk/go/stocks/news)). Build one with exactly one of the constructors below and pass it to `stocks.WithCandleWindow`. Because a window is a single value, illegal combinations such as "from plus countback" are not expressible.
 
 | Constructor                | Selects                              | API parameters      |

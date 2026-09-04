@@ -24,7 +24,7 @@
  * Run it after a build — it reads build/, not the sources.
  *
  * Usage:
- *   yarn build && node scripts/check-highlighting.js
+ *   pnpm run build && node scripts/check-highlighting.js
  *   node scripts/check-highlighting.js --dir some/other/build
  *   node scripts/check-highlighting.js --list   # per-language counts, always
  *
@@ -141,12 +141,12 @@ function scan(dir, files) {
 function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!fs.existsSync(args.dir)) {
-    console.error(`No build at ${path.relative(ROOT, args.dir)} — run \`yarn build\` first.`);
+    console.error(`No build at ${path.relative(ROOT, args.dir)} — run \`pnpm run build\` first.`);
     process.exit(1);
   }
 
   if (args.dir === path.join(ROOT, 'build')) {
-    assertFreshBuild(ROOT, args.dir, 'yarn build && node scripts/check-highlighting.js');
+    assertFreshBuild(ROOT, args.dir, 'pnpm run build && node scripts/check-highlighting.js');
   }
 
   const files = walk(args.dir, []);

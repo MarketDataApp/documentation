@@ -58,7 +58,7 @@
  * whole point: it turns the diagnosis #185 describes as expensive into one a
  * reader gets for free.
  *
- * Run with: TEST_ENV=staging yarn wait:deploy
+ * Run with: TEST_ENV=staging pnpm run wait:deploy
  */
 
 const { REDIRECTS } = require('../redirects');

@@ -81,7 +81,7 @@
  *
  * Set TEST_ENV=staging or TEST_ENV=production for one host. Unset tests both.
  *
- * Run with: yarn test:sitemap
+ * Run with: pnpm run test:sitemap
  * Requires network access to www.marketdata.app and www-staging.marketdata.app.
  */
 
