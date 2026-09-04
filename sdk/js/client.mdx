@@ -13,7 +13,7 @@ The Market Data JavaScript Client handles API requests, response parsing, rate-l
 ## Get Started Quickly with the MarketDataClient
 
 1. Review the [documentation on authentication](/sdk/js/authentication) to learn how to set your API token.
-2. Create a [`MarketDataClient`](#MarketDataClient) instance and use it to make requests to the Market Data API.
+2. Create a [`MarketDataClient`](#marketdataclient) instance and use it to make requests to the Market Data API.
 3. Make a test request and review the console output. The SDK includes logging capabilities to help you debug requests.
 4. Check the [rate limit](#RateLimits) in the client to track credit usage and how many API credits remain.
 5. Configure [Settings](/sdk/js/settings) to customize output format, date format, and other universal parameters.
@@ -41,7 +41,7 @@ interface MarketDataConfig {
 }
 ```
 
-[MarketDataClient](#MarketDataClient) is the main client class for interacting with the Market Data API. It provides access to all resources (stocks, options, funds, markets, utilities) and handles authentication, rate limiting, and request management.
+[MarketDataClient](#marketdataclient) is the main client class for interacting with the Market Data API. It provides access to all resources (stocks, options, funds, markets, utilities) and handles authentication, rate limiting, and request management.
 
 ### Properties
 
@@ -73,7 +73,7 @@ Creates and configures a new `MarketDataClient` instance. This initializes the c
 
 #### Parameters
 
-- `config` ([MarketDataConfig](#MarketDataClient), optional)
+- `config` ([MarketDataConfig](#marketdataclient), optional)
 
   Configuration object. All properties are optional:
 

@@ -113,6 +113,26 @@ jobs:
       - name: Check the sitemap lists only pages this build serves
         run: node scripts/lint-sitemap.js
 
+      # Also reuses that build. Everything above asks whether the SITE is
+      # right. This asks whether the ORCHESTRATOR can still consume it --
+      # MarketDataApp/www-marketdata-app reads seven artefacts out of
+      # build/docs/ and rewrites five of them, and each of its gates fails a
+      # DEPLOY rather than degrading.
+      #
+      # The rule that cannot be checked anywhere else is 404.html. Cloudflare
+      # Pages serves the nearest one by walking up the tree, and ours is what
+      # terminates that walk for /docs/*. Lose it and /docs/* quietly starts
+      # serving the marketing 404 with every gate in both repositories green.
+      # That repo asked us to assert it here because it cannot see it.
+      #
+      # PROD=true matches the build above, so the sitemap rule checks for
+      # presence. On a noIndex build the same rule inverts: plugin-sitemap
+      # emits nothing and presence would be the failure.
+      - name: Check the build still satisfies the orchestrator's contract
+        run: pnpm run lint:contract
+        env:
+          PROD: "true"
+
       # Also reuses that build. A fence whose language Prism has no grammar for
       # renders as grey plain text and reports nothing: the build succeeds and
       # the block still looks like a code block. `csharp` was unregistered

@@ -11,7 +11,7 @@ Retrieve stock quotes (bid, ask, mid, last, volume, etc.) for one or more suppor
 
 ## Making Requests
 
-Use the `quotes()` method on the `stocks` resource to fetch stock quotes. The method returns a [`MarketDataPromise`](/sdk/js/client#MarketDataPromise) that resolves to decoded records by default, or rejects with a `MarketDataClientError` subclass on failure.
+Use the `quotes()` method on the `stocks` resource to fetch stock quotes. The method returns a [`MarketDataPromise`](/sdk/js/client#marketdatapromise) that resolves to decoded records by default, or rejects with a `MarketDataClientError` subclass on failure.
 
 | Output Format          | Result Payload                        | Description                                     |
 |------------------------|---------------------------------------|-------------------------------------------------|
@@ -60,7 +60,7 @@ Fetches stock quotes for one or more symbols.
 
 ### Returns
 
-- [`MarketDataPromise<StockQuote[] | StockQuoteHuman[] | Blob>`](/sdk/js/client#MarketDataPromise)
+- [`MarketDataPromise<StockQuote[] | StockQuoteHuman[] | Blob>`](/sdk/js/client#marketdatapromise)
 
 <Tabs>
 <TabItem value="Single Symbol" label="Single Symbol">

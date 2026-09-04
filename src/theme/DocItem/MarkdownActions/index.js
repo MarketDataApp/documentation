@@ -43,7 +43,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Head from '@docusaurus/Head';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import { useDoc } from '@docusaurus/theme-common/internal';
+import {useDoc} from '@docusaurus/plugin-content-docs/client';
+import {useDateTimeFormat} from '@docusaurus/theme-common/internal';
 import styles from './styles.module.css';
 
 /** How long an outcome stays on the button before it returns to rest. */
@@ -204,14 +205,44 @@ function CopyAsMarkdown({ href }) {
 export default function MarkdownActions() {
   const { metadata } = useDoc();
   const { siteConfig } = useDocusaurusContext();
-  const { permalink, title, formattedLastUpdatedAt, lastUpdatedAt } = metadata;
+  const { permalink, title, lastUpdatedAt } = metadata;
+
+  // ---------------------------------------------------------------------
+  // TWO THINGS CHANGED UNDER DOCUSAURUS 3.10, AND ONE OF THEM WAS SILENT
+  // ---------------------------------------------------------------------
+  //
+  // 1. `lastUpdatedAt` IS NOW MILLISECONDS. It was unix SECONDS, and this
+  //    file multiplied it by 1000. Feeding milliseconds through that gave
+  //    `article:modified_time` of "+058641-07-20T15:30:00.000Z" -- the year
+  //    58,641 -- in the structured data Google reads for `dateModified`. The
+  //    build was green, the page looked right, and only diffing the built
+  //    HTML against the previous version showed it. Upstream's own
+  //    LastUpdated now does `new Date(lastUpdatedAt)`, and so do we.
+  //
+  // 2. `formattedLastUpdatedAt` IS GONE from metadata. The theme formats the
+  //    date itself with `useDateTimeFormat`. Destructuring a field that no
+  //    longer exists yields undefined, so the whole row's date silently
+  //    stopped rendering -- caught by e2e/markdown-actions.spec.js, which is
+  //    the only check that looks at the rendered row.
+  //
+  // The format options match upstream's LastUpdated exactly, so this row and
+  // the theme's own footer date cannot drift apart.
+  const dateTimeFormat = useDateTimeFormat({
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
 
   if (!permalink) return null;
   const href = `${permalink.replace(/\/$/, '')}/index.md`;
 
-  // `lastUpdatedAt` is unix SECONDS. The visible string stays Docusaurus's own
-  // locale-aware rendering; this is the machine-readable twin of it.
-  const modifiedIso = lastUpdatedAt ? new Date(lastUpdatedAt * 1000).toISOString() : null;
+  const lastUpdatedDate = lastUpdatedAt ? new Date(lastUpdatedAt) : null;
+  const formattedLastUpdatedAt = lastUpdatedDate
+    ? dateTimeFormat.format(lastUpdatedDate)
+    : null;
+  // The machine-readable twin of the visible string above.
+  const modifiedIso = lastUpdatedDate ? lastUpdatedDate.toISOString() : null;
   // Must match the <link rel="canonical"> Docusaurus emits, or the JSON-LD
   // names a second URL for the same page. The site sets trailingSlash: true,
   // so the canonical ends in "/" and `permalink` does not.

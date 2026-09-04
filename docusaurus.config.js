@@ -57,7 +57,38 @@ const config = {
   // of letting broken links reach the site. This was "ignore" and silently
   // accumulated 14 broken links.
   onBrokenLinks: process.env.STRICT_LINKS === "true" ? "throw" : "warn",
-  onBrokenMarkdownLinks: process.env.STRICT_LINKS === "true" ? "throw" : "warn",
+
+  // 3.10 CHECKS ANCHORS, AND 3.0.1 NEVER DID. The first build after the
+  // upgrade reported 254 broken anchors. 234 were OUR OWN FAULT and not
+  // broken at all: `src/theme/Heading` was a stale fork of the 3.0.1 file,
+  // and upstream had since added `brokenLinks.collectAnchor(id)` -- the call
+  // by which a page registers the anchors it defines. Without it every page
+  // declared none, so every table-of-contents self-link looked broken.
+  // Deleting that swizzle fixed all 234; see the note on swizzles in
+  // CLAUDE.md.
+  //
+  // Of the 20 that remained, 18 were real and are fixed: SDK pages linking to
+  // `#MarketDataClient` and friends, where the generated id is lowercase.
+  // They had been broken since they were written and nothing could see them.
+  //
+  // "warn" RATHER THAN THE STRICT_LINKS TREATMENT THE LINKS ABOVE GET,
+  // because 8 known-broken anchors are left and they are content questions,
+  // not mechanical ones -- `#Logger`, `#RateLimits`, `#datewindow`,
+  // `#optionquote` name headings that do not exist under any spelling. Each
+  // needs an author to say what was meant; guessing would produce a link that
+  // goes somewhere plausible and wrong, which is worse than one that visibly
+  // fails. Once those 8 are settled, make this match `onBrokenLinks` so the
+  // PR check fails on a new one.
+  onBrokenAnchors: "warn",
+
+  markdown: {
+    hooks: {
+      // Moved out of the top level in 3.10, where `siteConfig.onBrokenMarkdownLinks`
+      // is deprecated and warns on every build. It is removed in v4.
+      onBrokenMarkdownLinks:
+        process.env.STRICT_LINKS === "true" ? "throw" : "warn",
+    },
+  },
   favicon: "img/favicon.ico",
 
   organizationName: "marketdata",
