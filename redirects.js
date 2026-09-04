@@ -223,6 +223,11 @@ const REDIRECTS = [
   // this array already redirects. The plural was fixed and the hyphen was
   // missed.
   { from: "/api/troubleshooting/status-codes", to: "/api/troubleshooting" },
+  // The same page, reached by the same reasoning, from a path one segment
+  // shorter. MarketData-App/website#100: /api/status-codes 404s while the
+  // troubleshooting/ spelling above already 301s, so the destination was
+  // settled and only this form was uncovered.
+  { from: "/api/status-codes", to: "/api/troubleshooting" },
   { from: "/api/troubleshooting/rate-limiting", to: "/api/rate-limiting" },
   { from: "/api/troubleshooting/api-credits", to: "/api/rate-limiting" },
   { from: "/api/troubleshooting/data-freshness", to: "/account/data-freshness" },
