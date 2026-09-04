@@ -8,35 +8,16 @@ const darkCodeTheme = require("prism-react-renderer").themes.dracula;
 
 require("dotenv").config();
 
-// Resolved ONCE, here, and handed to plugins/build-info.js. Both halves of the
-// sentinel -- /docs/build-info.json and the <meta name="build-commit"> on every
-// page -- read this one value. Two call sites resolving the commit separately
-// would be two ways to answer one question, and they would disagree the day
-// somebody changed one of them.
+// The build sentinel resolves its own commit, inside plugins/build-info.js.
+// It is NOT resolved here and handed over as a plugin option, because
+// Docusaurus serialises this config -- options included -- into `main.js`.
 //
-// `builtAt` is NOT here, and the reason is sharper than "keep it out of the
-// head". Docusaurus serialises this whole config -- plugin options included --
-// into the client bundle, so anything placed here ships to every reader inside
-// `main.<hash>.js` AND moves that hash. A clock here therefore gave every build
-// a new bundle name, so:
+// That is how a clock got into the client bundle and moved its content hash on
+// every build. Removing the clock was not enough: the commit sha stayed, and
+// every deploy is a new commit, so a documentation-only change still rehashed
+// the bundle and rewrote all 265 pages against a one-year immutable header.
 //
-//   * every deploy re-downloaded the ~635 KB primary bundle for every visitor,
-//     for no content change, against a `max-age=31536000, immutable` header;
-//   * every deploy stranded whoever was mid-session, which is the exact reader
-//     `src/clientModules/chunkReload.js` exists to recover;
-//   * two builds of one tree differed in all 265 pages, which destroys the
-//     "diff the built HTML" property this file was written to protect.
-//
-// Measured 2026-09-04 by building the same commit twice: identical but for
-// `builtAt`, and every page repainted. The plugin stamps the timestamp in its
-// own `postBuild` instead, which is both the moment the value describes and
-// the only place it is read.
-//
-// The COMMIT stays here on purpose -- one resolver feeding both the endpoint
-// and the per-page tag. It is stable for a given tree, so it costs no bundle
-// churn; a clock is not stable and that is the whole difference.
-const { resolveGit } = require("./lib/build-info");
-const BUILD_INFO = { resolved: resolveGit() };
+// Nothing here needs the commit. Both consumers are inside that plugin.
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -238,7 +219,7 @@ const config = {
   ],
 
   plugins: [
-    ['./plugins/build-info', BUILD_INFO],
+    './plugins/build-info',
     './plugins/theme-cookie-sync',
     './plugins/markdown-twins',
     './plugins/not-found-head',

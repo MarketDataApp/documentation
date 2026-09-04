@@ -39,7 +39,34 @@ const { resolveGit, environmentOf, buildInfo } = require('../lib/build-info');
 
 const FILE = 'build-info.json';
 
-module.exports = function buildInfoPlugin(_context, options = {}) {
+module.exports = function buildInfoPlugin() {
+  // ---------------------------------------------------------------------
+  // RESOLVED HERE, NOT IN docusaurus.config.js, AND THAT IS THE WHOLE POINT
+  // ---------------------------------------------------------------------
+  //
+  // Docusaurus serialises the config -- PLUGIN OPTIONS INCLUDED -- into
+  // `main.js`. Anything handed to this plugin as an option therefore ships to
+  // every reader AND moves the bundle's content hash.
+  //
+  // `builtAt` was removed from the options for that reason. The COMMIT was
+  // left behind on the reasoning that "a sha is stable for a given tree, so it
+  // costs no bundle churn". That is true per tree and irrelevant in practice:
+  // EVERY DEPLOY IS A NEW COMMIT. A documentation-only change rehashed
+  // `main.js` and rewrote all 265 pages, against a
+  // `max-age=31536000, immutable` header, with no content difference at all.
+  // Measured by the orchestrator on a CLAUDE.md-only commit: 269 files
+  // differed, and every one of them was identical once the sha was tokenised.
+  //
+  // Nothing in the browser needs the sha. Both consumers are build-time -- the
+  // `<meta name="build-commit">` below and `build-info.json` in postBuild -- so
+  // resolving it inside the plugin keeps it out of the serialised config
+  // entirely.
+  //
+  // The "one resolver" property the config comment used to protect is
+  // preserved and, if anything, tightened: this is still resolved ONCE, and it
+  // now lives with its only two consumers instead of being handed to them.
+  const resolved = resolveGit();
+
   return {
     name: 'build-info',
 
@@ -49,7 +76,7 @@ module.exports = function buildInfoPlugin(_context, options = {}) {
     // is two ways to answer the same question, and they would disagree the day
     // somebody changed one.
     injectHtmlTags() {
-      const { sha } = options.resolved;
+      const { sha } = resolved;
       const { buildCommitTag } = require('../lib/build-info');
       const commit = buildCommitTag(sha);
       if (!commit) return {};
@@ -59,7 +86,7 @@ module.exports = function buildInfoPlugin(_context, options = {}) {
     },
 
     async postBuild({ outDir }) {
-      const { sha, ref, dirty } = options.resolved;
+      const { sha, ref, dirty } = resolved;
       const doc = buildInfo({
         sha,
         ref,

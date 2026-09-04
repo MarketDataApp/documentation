@@ -381,6 +381,28 @@ Two things follow, and the second is why it is worth a section:
   per-build variance, that claim quietly becomes false again — so if two builds
   of one tree ever start differing, fix that before trusting any other diff.
 
+**Removing the clock was not enough, and the reasoning that stopped there is
+worth reading.** `builtAt` came out of the plugin options; the commit sha was
+deliberately left in, on the grounds that "a sha is stable for a given tree, so
+it costs no bundle churn". True per tree, and beside the point: **every deploy
+is a new commit.** A CLAUDE.md-only commit therefore still rehashed `main.js`
+and rewrote all 265 pages, and the orchestrator measured it — 269 files
+differing, every one identical once the sha was tokenised.
+
+`plugins/build-info.js` resolves the commit itself now, so it never enters the
+serialised config. Both consumers are build-time, and nothing in the browser
+ever needed it. Measured across two real commits afterwards:
+
+|                        |                                                        |
+|------------------------|--------------------------------------------------------|
+| asset files changed    | **0** — `main.js` keeps its hash                       |
+| non-HTML files changed | 1 — `build-info.json`, which exists to vary            |
+| per page               | one attribute, `<meta name="build-commit">`, by design |
+
+**The rule this yields:** anything a plugin needs at build time should be
+resolved inside the plugin. An option is a value published to every reader and
+charged to the bundle hash, and neither of those is visible at the call site.
+
 What that instrument found, none of which was visible any other way:
 
 | Defect                                                  | What the build said |
