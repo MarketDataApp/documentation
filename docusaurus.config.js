@@ -135,6 +135,11 @@ const config = {
   clientModules: [
     './src/clientModules/themeCookieSync.js',
     './src/clientModules/navbarOverflow.js',
+    // Recovers a reader whose session outlived the build it started in. Every
+    // deploy strands whoever is mid-session: their HTML names chunk hashes the
+    // new deployment no longer contains. MarketData-App/website#98 measured it
+    // twice in one day. See lib/chunk-reload.js.
+    './src/clientModules/chunkReload.js',
   ],
 
   plugins: [
