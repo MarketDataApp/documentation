@@ -171,7 +171,7 @@ const config = {
         docs: false,
         blog: false,
         theme: {
-          customCss: [require.resolve("./src/css/custom.css")],
+          customCss: ["./src/css/custom.css"],
         },
         sitemap:
           process.env.PROD == "true"
@@ -232,7 +232,7 @@ const config = {
         id: "api",
         path: "api",
         routeBasePath: "api",
-        sidebarPath: require.resolve("./sidebars.js"),
+        sidebarPath: "./sidebars.js",
 
         editUrl: ({ docPath }) => {
           const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
@@ -259,7 +259,7 @@ const config = {
         // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
         // With a shallow clone every page reports the same date.
         showLastUpdateTime: true,
-        sidebarPath: require.resolve("./sidebars.js"),
+        sidebarPath: "./sidebars.js",
       },
     ],
     [
@@ -277,7 +277,7 @@ const config = {
         // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
         // With a shallow clone every page reports the same date.
         showLastUpdateTime: true,
-        sidebarPath: require.resolve("./sidebars.js"),
+        sidebarPath: "./sidebars.js",
       },
     ],
     [
@@ -295,7 +295,7 @@ const config = {
         // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
         // With a shallow clone every page reports the same date.
         showLastUpdateTime: true,
-        sidebarPath: require.resolve("./sidebars.js"),
+        sidebarPath: "./sidebars.js",
       },
     ],
     [
@@ -329,7 +329,7 @@ const config = {
         // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
         // With a shallow clone every page reports the same date.
         showLastUpdateTime: true,
-        sidebarPath: require.resolve("./sidebars.js"),
+        sidebarPath: "./sidebars.js",
       },
     ],
   ],
