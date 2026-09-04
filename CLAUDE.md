@@ -421,11 +421,31 @@ Two habits produce most of that table.
 moved when the package manager changed, because the hash follows the module's
 resolved path. The rule stayed valid and matched nothing.
 
-**Built HTML does not promise how it spells an attribute.** `future.v4`'s
-Faster pipeline emits `name=description` where 3.10 emitted `name="description"`.
+**Built HTML does not promise how it spells an attribute.** This is what
+`build/` actually contains today — copy it before writing any pattern against a
+built page:
+
+```html
+<meta name=build-commit content=a99b8391e31620b55ce53b9b325856d4a4331494>
+<h2 class="anchor anchorTargetStickyNavbar_WZc3" id=headers-type>
+```
+
+**Unquoted wherever the value needs no quote**, and quoted where it does — in
+the same tag. `future.v4`'s Faster pipeline minifies harder than 3.10 did.
 `lib/llms-txt.js` required the quotes, so every description vanished and
-llms.txt fell from 55 KB to 23 KB -- a structurally valid index, so nothing
+llms.txt fell from 55 KB to 23 KB — a structurally valid index, so nothing
 failed.
+
+**Knowing this does not protect you.** On the day it was found, the
+orchestrator's agent read the defect report, quoted the example back, and then
+wrote `grep -o 'name="build-commit"[^>]*'` against this build ten minutes
+later. It reported the tag missing from all 265 pages. It was caught only
+because "missing" contradicted a measurement made minutes earlier — not because
+the rule had been read. Two other greps here were fooled the same way, and one
+of them was in this file's own checker.
+
+So: use `grep -a` with a quote-agnostic pattern, or parse. Do not rely on
+remembering.
 
 `lib/not-found-head.js`'s `attributesOf` came through untouched because it
 accepts all three HTML5 forms: `"x"`, `'x'`, and bare. Copy that, or parse with
