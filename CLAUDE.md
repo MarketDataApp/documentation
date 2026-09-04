@@ -702,6 +702,46 @@ sees 200s and concludes it works.
 check that reads what the public reads. A green run there proves delivery, not
 completeness.
 
+## Reading the orchestrator's log after a deploy
+
+Our deploy ends at a `repository_dispatch` into
+`MarketData-App/www-marketdata-app`. What happens next is in THAT repo's run
+log, and this is how to read it.
+
+```bash
+gh run list --repo MarketData-App/www-marketdata-app \
+  --workflow "Orchestrator: Merge Sources & Deploy to CF Pages"
+gh run view <id> --repo MarketData-App/www-marketdata-app --log | grep -a "sitemap"
+```
+
+**Read the log body, not the run metadata.** `gh run list` shows every
+orchestrator run as branch `main`, trigger `repository_dispatch`, with an
+identical display name — **whether it deployed staging or production.** The only
+reliable marker is `(environment: staging)` inside the step output. Verified on
+two real runs 25 minutes apart:
+
+| Run         | Metadata says | Actually was | Sitemaps    |
+|-------------|---------------|--------------|-------------|
+| 33922876619 | `main`        | staging      | 110 URLs, 1 |
+| 33924580277 | `main`        | production   | 370 URLs, 2 |
+
+A correct **staging** run prints, and this is success rather than a problem:
+
+```
+build/docs/sitemap.xml is absent, and staging does not require it.
+Nothing spliced; the index is unchanged.
+110 URL(s) declared in total, across 1 sitemap(s).
+```
+
+Our `noIndex` build publishes no sitemap, so there is nothing to splice. **If
+staging ever reports 2 sitemaps and 370 URLs, this repo emitted a sitemap under
+`noIndex`** — not a failure there, but a change here worth finding.
+
+**The sitemap requirement is production-only and was added 2026-09-04**, which
+makes it the youngest gate in the chain and the first place to look if a
+production deploy surprises you. Every other production-only behaviour has run
+many times. Its error text names its own suspects.
+
 ## The build sentinel
 
 **Which commit is deployed, in one request with an exact answer.**
