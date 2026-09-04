@@ -381,16 +381,29 @@ to be fixed to get here:
    A plugin given options publishes them to every reader. A plugin given none
    costs nothing.
 
-   **`require.resolve()` in this config is how your home directory ships to
-   every visitor.** It returns an ABSOLUTE path, and an absolute path handed to
-   a plugin as an option is serialised like any other value.
-   `sidebarPath: require.resolve("./sidebars.js")` put
-   `/home/<user>/MarketDataApp/documentation/sidebars.js` into `main.js` five
-   times over, once per docs instance, plus one for `customCss`. It reads as a
-   robustness idiom and is nothing of the kind. Docusaurus resolves a relative
-   string against `siteDir`, so `"./sidebars.js"` is both correct and silent —
-   and it makes the bundle independent of where the repo is checked out, which
-   an absolute path never was.
+   **`require.resolve()` in this config is how the build machine's paths ship
+   to every visitor.** It returns an ABSOLUTE path, and an absolute path handed
+   to a plugin as an option is serialised like any other value.
+   `sidebarPath: require.resolve("./sidebars.js")` put the checkout's full path
+   into `main.js` five times over, once per docs instance, plus one for
+   `customCss`. It reads as a robustness idiom and is nothing of the kind.
+   Docusaurus resolves a relative string against `siteDir`, so `"./sidebars.js"`
+   is both correct and silent.
+
+   **It predated the upgrade and it is still live.** The production bundle
+   built from 3.0.1 carries NINE of them —
+   `/home/runner/work/documentation/documentation/…` — which is a GitHub
+   runner's fixed layout and an already-public repository name. So the live
+   disclosure is mild. The severity is in the shape, not today's value: the
+   same config produces `/home/<user>/…` the day anyone builds production from
+   a workstation or a self-hosted runner, which is exactly what it did here.
+
+   Six came from this config. The other three name `.docusaurus/` internals, a
+   source we do not control — and all nine are absent from the current build,
+   so the upgrade plus the relative paths closed more than the six we set out
+   to close. Verify with a strict pattern; a loose `/home/` match hits
+   `https://script.google.com/home/all` in the Sheets docs and reports two
+   false positives.
 2. Docusaurus 3.0.1 wrote plugin `globalData` in the order the five
    content-docs instances happened to finish, which is not stable. So even
    after removing the clock, `main.js` was still a permutation of itself
