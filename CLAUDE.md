@@ -62,7 +62,7 @@ repo has a test named for it.
 
 **Docs repo** (`.github/workflows/deploy-docs.yml`):
 
-1. Builds Docusaurus (`yarn build`)
+1. Builds Docusaurus (`pnpm run build`)
 2. Restructures build output to nest under `build/docs/`
 3. Generates `_headers` file for asset cache control
 4. Uploads build to R2 (`www-marketdata-app-builds` bucket) at `{env}/sources/docs/`
@@ -97,7 +97,42 @@ merges into it — see the note in `deploy-docs.yml`.
 
 ## Package Manager
 
-- Use **yarn**, not npm (project uses `yarn.lock`)
+**pnpm**, pinned by `packageManager` in `package.json`. Not yarn, not npm.
+`MarketDataApp/website` was already on pnpm, so the origin is no longer mixed.
+
+`pnpm-workspace.yaml` exists even though there is no workspace: pnpm 11 reads
+its non-npm settings from that file. Two of its behaviours will stop an install
+until you answer them, and both are deliberate.
+
+**`allowBuilds` is a supply-chain gate.** pnpm runs no dependency install or
+`prepare` script unless it is named there, and it FAILS rather than skipping
+quietly, so an undeclared script cannot slip past. `@marketdataapp/ui` is a git
+dependency, so pnpm wants to run its `prepare` on fetch; the key pnpm accepts is
+the resolved tarball URL **including the commit sha**, and no shorter form
+works. That is the useful part -- the approval covers one commit's code, not the
+dependency in perpetuity. **Bumping the ui version therefore breaks the install
+on purpose**: run `pnpm install`, read the new key it prints, satisfy yourself
+the commit is ours, paste it in.
+
+**pnpm does not hoist, so a phantom dependency fails loudly.** This found one
+immediately: ten swizzled components in `src/theme/` import
+`@docusaurus/theme-common`, which had never been in `package.json`. Under yarn
+it resolved off the flat tree at whatever version `preset-classic` dragged in.
+It is declared now.
+
+### Never hardcode a generated class name
+
+`src/css/custom.css` targeted `.tabItem_Ymn6`, a hashed CSS-module class from
+`@docusaurus/theme-classic`. The hash follows the module's resolved path, so the
+package-manager change moved it to `tabItem_VFbg` and **the rule silently
+matched nothing** -- valid CSS naming a class no element carries, so no build
+error, no warning, and tab backgrounds simply gone. A Docusaurus upgrade moves
+it the same way.
+
+The selector is `.tabs-container [role="tabpanel"]` now: `tabs-container` is a
+plain unhashed theme class and `role="tabpanel"` is the ARIA role. Neither is
+generated. **Only a diff of two builds could see this**, which is why the
+migration harness in `.migration/` existed -- see "Diffing two builds" below.
 
 ## Search
 
@@ -203,7 +238,7 @@ lands *between* two words they typed. Raising `pageRank` reaches neither case.
 
 ### Watching it
 
-`yarn lint:algolia` (`scripts/lint-algolia.js`, logic in `lib/algolia.js`).
+`pnpm run lint:algolia` (`scripts/lint-algolia.js`, logic in `lib/algolia.js`).
 Runs daily in `.github/workflows/algolia-watch.yml`, **not** in PR checks: no
 pull request can make the index stale or fresh, and a check people cannot act
 on is one they learn to skip.
@@ -496,11 +531,11 @@ Two more traps that stylesheets do not report:
 
 ## Testing
 
-- **Converter tests**: `yarn test:lib` — `cleanMdx` (MDX→Markdown) and `cleanHtml` (built HTML→Markdown), the two twin converters
-- **Redirect tests**: `TEST_ENV=staging yarn test:redirects` — verifies every rule in `redirects.js` answers 301 for GET and HEAD, in both slash forms
-- **Sitemap tests**: `TEST_ENV=production yarn test:sitemap` — fetches the deployed sitemap and requires every URL to answer 200. On staging it asserts the opposite: a `noIndex` build must publish no sitemap
-- **Example parity**: `yarn lint:examples` — every language tab on an API page must make the same request with the same inputs (#167). Compares a normalised fixture set, so `2024-01-01`, `LocalDate.of(2024, 1, 1)` and `new DateOnly(2024, 1, 1)` are one token
-- **Highlighting**: `yarn lint:highlighting` — run after a build; fails when a ``` fence language produces no highlighting anywhere, which is what a missing Prism grammar looks like. Per language, not per block: a one-word shell command legitimately has nothing to colour. Add new languages to `additionalLanguages` in `docusaurus.config.js`, and use the id Prism knows (`ini` not `env`, `batch` not `cmd`)
-- **Sitemap lint**: `yarn lint:sitemap` — builds with `PROD=true` and fails if the sitemap lists a URL with no page in `build/`
-- **E2E tests**: `TEST_ENV=staging yarn test:e2e` — Playwright tests for Context7 widget rendering and the Markdown actions row (`TEST_BASE_URL=http://…/docs` points them at a local build instead)
+- **Converter tests**: `pnpm run test:lib` — `cleanMdx` (MDX→Markdown) and `cleanHtml` (built HTML→Markdown), the two twin converters
+- **Redirect tests**: `TEST_ENV=staging pnpm run test:redirects` — verifies every rule in `redirects.js` answers 301 for GET and HEAD, in both slash forms
+- **Sitemap tests**: `TEST_ENV=production pnpm run test:sitemap` — fetches the deployed sitemap and requires every URL to answer 200. On staging it asserts the opposite: a `noIndex` build must publish no sitemap
+- **Example parity**: `pnpm run lint:examples` — every language tab on an API page must make the same request with the same inputs (#167). Compares a normalised fixture set, so `2024-01-01`, `LocalDate.of(2024, 1, 1)` and `new DateOnly(2024, 1, 1)` are one token
+- **Highlighting**: `pnpm run lint:highlighting` — run after a build; fails when a ``` fence language produces no highlighting anywhere, which is what a missing Prism grammar looks like. Per language, not per block: a one-word shell command legitimately has nothing to colour. Add new languages to `additionalLanguages` in `docusaurus.config.js`, and use the id Prism knows (`ini` not `env`, `batch` not `cmd`)
+- **Sitemap lint**: `pnpm run lint:sitemap` — builds with `PROD=true` and fails if the sitemap lists a URL with no page in `build/`
+- **E2E tests**: `TEST_ENV=staging pnpm run test:e2e` — Playwright tests for Context7 widget rendering and the Markdown actions row (`TEST_BASE_URL=http://…/docs` points them at a local build instead)
 - **Browser for e2e**: the machine's own Chromium, not a build this repo pins. `scripts/resolve-chromium.js` resolves it (`CHROMIUM_PATH` override → system browser → Playwright's bundled build) and `playwright.config.js` feeds it to `launchOptions`. Do not reintroduce a bare `browserName: 'chromium'` with no `executablePath` — that re-pins the browser to the installed `@playwright/test`. CI installs Playwright's build only when the runner has no browser. See README.md "Which browser the e2e tests run".

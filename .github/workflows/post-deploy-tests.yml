@@ -19,12 +19,16 @@ jobs:
         with:
           ref: ${{ github.event.client_payload.commit_sha }}
 
+      # pnpm/action-setup MUST come before setup-node: `cache: pnpm` makes
+      # setup-node run `pnpm store path`, which needs pnpm on PATH already.
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
+          cache: pnpm
 
-      - run: yarn install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
       # This used to install worker/'s dependencies and run its integration
       # suite. The worker moved to MarketDataApp/www-marketdata-app, which runs
@@ -33,7 +37,7 @@ jobs:
       # declared in docusaurus.config.js.
       #
       # No install step -- `node --test` against the standard library and
-      # global fetch. The root `yarn install` above stays for the e2e run.
+      # global fetch. The root `pnpm install` above stays for the e2e run.
       # #185. This job fires on `deploy-complete`, but the orchestrator reports
       # success before Cloudflare has finished propagating -- measured at ~47s
       # once, upper bound unknown. Every suite below probes the live site, so
@@ -47,12 +51,12 @@ jobs:
       - name: Wait for the deploy to propagate
         env:
           TEST_ENV: ${{ github.event.client_payload.environment }}
-        run: yarn wait:deploy
+        run: pnpm run wait:deploy
 
       - name: Run redirect tests
         env:
           TEST_ENV: ${{ github.event.client_payload.environment }}
-        run: yarn test:redirects
+        run: pnpm run test:redirects
 
       # The check #188 did not have. On production it fetches the deployed
       # sitemap and requires all ~258 URLs to answer 200; on staging, where a
@@ -66,7 +70,7 @@ jobs:
       - name: Run sitemap tests
         env:
           TEST_ENV: ${{ github.event.client_payload.environment }}
-        run: yarn test:sitemap
+        run: pnpm run test:sitemap
 
       # Safety net only. The suite prefers the browser already on the runner
       # (see scripts/resolve-chromium.js), so Chromium updates never wait on a
@@ -78,7 +82,7 @@ jobs:
       - name: Run e2e tests
         env:
           TEST_ENV: ${{ github.event.client_payload.environment }}
-        run: yarn test:e2e
+        run: pnpm run test:e2e
 
       - name: Notify Slack on failure
         if: failure()

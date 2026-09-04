@@ -17,10 +17,28 @@ The official documentation for [Market Data](https://www.marketdata.app/) — co
 ## Local Development
 
 ```bash
-yarn          # Install dependencies
-yarn start    # Start dev server at localhost:3000
-yarn build    # Production build
+pnpm install    # Install dependencies
+pnpm start      # Start dev server at localhost:3000
+pnpm build      # Production build
 ```
+
+This project uses **pnpm**, pinned by the `packageManager` field in
+`package.json` so CI and every machine provision the same version. Both halves
+of the origin are now on pnpm: `MarketDataApp/website` has been since before
+this repo moved.
+
+Two pnpm behaviours are worth knowing before your first install, both recorded
+in `pnpm-workspace.yaml`:
+
+- **pnpm refuses to run a dependency's install scripts until you say so**, and
+  fails the install rather than skipping them quietly. `allowBuilds` there is
+  the list of decisions. When pnpm meets a new one it writes a placeholder line
+  for you to fill in; set it to `true` or `false` rather than deleting it.
+- **pnpm does not hoist**, so a package you import must be one you declared.
+  That is a feature: it caught `@docusaurus/theme-common`, which ten swizzled
+  components in `src/theme/` had imported for as long as they have existed
+  without it ever appearing in `package.json`. Under yarn it resolved by
+  accident, at whatever version `preset-classic` happened to pull in.
 
 ## Architecture
 
@@ -71,10 +89,10 @@ Workflow:
 
 ```bash
 # E2E tests (Playwright — Context7 widget, Markdown actions row)
-TEST_ENV=staging yarn test:e2e
+TEST_ENV=staging pnpm run test:e2e
 
 # Script tests (option-symbol checker, Chromium resolver)
-yarn test:scripts
+pnpm run test:scripts
 ```
 
 ### Which browser the e2e tests run

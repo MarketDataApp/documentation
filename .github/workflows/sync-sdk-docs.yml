@@ -85,11 +85,22 @@ jobs:
         with:
           path: docs-source
 
+      # `package_json_file` is REQUIRED here and nowhere else in this repo.
+      # pnpm/action-setup takes its version from the `packageManager` field,
+      # and by default looks for ./package.json -- which does not exist in this
+      # job, because the checkout above puts the repository in `docs-source/`.
+      # Without this the step fails with "No pnpm version is specified".
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: docs-source/package.json
+
+      # pnpm/action-setup MUST come first: `cache: pnpm` makes setup-node run
+      # `pnpm store path`, which needs pnpm on PATH already.
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
-          cache-dependency-path: docs-source/yarn.lock
+          cache: pnpm
+          cache-dependency-path: docs-source/pnpm-lock.yaml
 
       - name: Install the conversion lib's dependencies
         working-directory: docs-source
@@ -99,9 +110,9 @@ jobs:
         # which passed only while the lib was dependency-free. PR #199 added
         # lib/html-to-md.js (turndown) on 2026-08-31, and every sync run
         # failed on `Cannot find module 'turndown'` until this step existed.
-        # Uses yarn against the committed lockfile, matching deploy-docs.yml,
+        # Uses pnpm against the committed lockfile, matching deploy-docs.yml,
         # pr-checks.yml and post-deploy-tests.yml.
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Run unit tests for the conversion lib
         working-directory: docs-source

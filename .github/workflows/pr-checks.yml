@@ -34,10 +34,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # pnpm/action-setup MUST come before setup-node: `cache: pnpm` makes
+      # setup-node run `pnpm store path`, which needs pnpm on PATH already.
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
+          cache: pnpm
 
       # This job ran from setup-node straight to the scripts for months, and
       # passed the whole time, because every checker it runs was dependency
@@ -49,7 +53,7 @@ jobs:
       # sync-sdk-docs.yml carries the same step for the same reason, added
       # after lib/html-to-md.js brought in turndown. Second time; hence the
       # comment rather than a bare line.
-      - run: yarn install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
       # An expired option symbol breaks with the passage of time, not with a
       # diff, so review cannot catch it. Fails on any expired symbol anywhere
@@ -81,12 +85,14 @@ jobs:
           # page's date out of git history. Matches deploy-docs.yml.
           fetch-depth: 0
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
+          cache: pnpm
 
-      - run: yarn install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
       # Builds with onBrokenLinks/onBrokenMarkdownLinks set to "throw". Deploys
       # build with "warn" so a bad link cannot block a release, which means this
@@ -97,7 +103,7 @@ jobs:
       # noIndex is set on every non-production build -- so a staging build has
       # nothing to check. Nothing about broken-link detection changes.
       - name: Check for broken links
-        run: yarn lint:links
+        run: pnpm run lint:links
         env:
           PROD: "true"
 
@@ -150,7 +156,7 @@ jobs:
       # No install step. This suite is `node --test` against the standard
       # library and global fetch, so it needs no dependencies -- it used to
       # borrow worker/'s vitest, and worker/ has gone. Same reason there is no
-      # `cache: yarn` here any more: there is no lockfile to key it on.
+      # `cache: pnpm` here any more: there is no lockfile to key it on.
       # #185: this job probes the LIVE staging site, which a merge to `staging`
       # takes through a ~5 minute deploy chain. A run landing inside that window
       # fails on pages that are mid-deploy, with a message identical to a broken
@@ -165,12 +171,12 @@ jobs:
       - name: Wait for staging to finish deploying
         env:
           TEST_ENV: staging
-        run: yarn wait:deploy
+        run: pnpm run wait:deploy
 
       - name: Run redirect tests against staging
         env:
           TEST_ENV: staging
-        run: yarn test:redirects
+        run: pnpm run test:redirects
 
       # On staging this asserts there is NO sitemap, which is the correct state
       # for a noIndex build and the thing that quietly changes if someone drops
@@ -179,7 +185,7 @@ jobs:
       - name: Run sitemap tests against staging
         env:
           TEST_ENV: staging
-        run: yarn test:sitemap
+        run: pnpm run test:sitemap
 
       - name: Notify Slack on failure
         if: failure()
@@ -206,12 +212,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
+          cache: pnpm
 
-      - run: yarn install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
       # Safety net only. The suite prefers the browser already on the runner
       # (see scripts/resolve-chromium.js), so Chromium updates never wait on a
@@ -226,12 +234,12 @@ jobs:
       - name: Wait for staging to finish deploying
         env:
           TEST_ENV: staging
-        run: yarn wait:deploy
+        run: pnpm run wait:deploy
 
       - name: Run e2e tests against staging
         env:
           TEST_ENV: staging
-        run: yarn test:e2e
+        run: pnpm run test:e2e
 
       - name: Notify Slack on failure
         if: failure()

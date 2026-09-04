@@ -100,15 +100,27 @@
   padding-left: 0 !important;
   width: 100%;
 }
-/* for the tabs nod background styling FOR DEV */
-/* .tabItem_node_modules-\@docusaurus-theme-classic-lib-theme-TabItem-styles-module{
-  background-color: var(--custom-bg-tabs);
-  padding: 8px;
-  border-radius: 14px;
-} */
-
-/* for the tabs nod background styling FOR PROD */
-.tabItem_Ymn6 {
+/* The background behind a tab's contents.
+ *
+ * THIS USED TO NAME A GENERATED CLASS, `.tabItem_Ymn6`, with a commented-out
+ * twin naming the long dev-mode spelling because the two differ. Both are
+ * emitted by @docusaurus/theme-classic's CSS module for TabItem, and the
+ * five-character suffix is a HASH. Nothing guarantees it, and when it moves the
+ * rule silently stops matching: no build error, no warning, no missing file --
+ * the declaration is still valid CSS naming a class that no element carries.
+ *
+ * It moved when this project changed package manager. Under yarn the panels
+ * were `tabItem_Ymn6` on 104 pages; under pnpm they are `tabItem_VFbg`, because
+ * the hash follows the module's resolved path and pnpm's store layout is not
+ * yarn's. The tab backgrounds simply vanished, and the only reason anyone knows
+ * is that the two builds were diffed. A Docusaurus upgrade can move it exactly
+ * the same way.
+ *
+ * So the selector now uses what the theme actually promises: `tabs-container`
+ * is a plain, unhashed class, and `role="tabpanel"` is the ARIA role Docusaurus
+ * puts on each panel. Both survived the package-manager change unchanged, and
+ * neither is generated. Do not put a hashed class name back here. */
+.tabs-container [role="tabpanel"] {
   background-color: var(--custom-bg-tabs);
   padding: 8px;
   border-radius: 14px;

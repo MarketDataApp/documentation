@@ -1,0 +1,49 @@
+# pnpm settings for this project. There is no workspace here -- pnpm 11 reads
+# its non-npm settings from this file rather than from .npmrc, so a single-
+# package repo still needs one.
+#
+# ---------------------------------------------------------------------------
+# `allowBuilds` IS A SUPPLY-CHAIN GATE, AND IT IS WHY THIS FILE EXISTS
+# ---------------------------------------------------------------------------
+#
+# pnpm does not run a dependency's install or prepare scripts unless it is told
+# to, and it FAILS the install rather than skipping them quietly. So an
+# undeclared script cannot slip in unnoticed. yarn ran all of these and nothing
+# recorded that it did. Every entry below is a decision, not an inheritance.
+#
+# pnpm writes a placeholder line here itself when it meets a new one, so the
+# workflow is: run `pnpm install`, see the package it names, decide, set the
+# value. Do not delete a line to make an install pass -- pnpm will only put it
+# back, and `false` is the answer that records "we looked and declined".
+#
+# ---------------------------------------------------------------------------
+# @marketdataapp/ui: TRUE, AND THE COMMIT IS IN THE KEY ON PURPOSE
+# ---------------------------------------------------------------------------
+#
+# It is a GIT dependency (github:MarketDataApp/ui#v4.3.0), so pnpm runs its
+# `prepare` on fetch. That script is `husky || true` -- a no-op outside that
+# repository. The package needs no build at all: `dist/` is committed at
+# v4.3.0, so the tarball is already usable. We allow it only because pnpm has
+# no "skip" for git dependencies; `ignoredBuiltDependencies` does not apply to
+# them and fails with the same error.
+#
+# pnpm accepts no shorter key than the resolved tarball URL, commit sha and
+# all -- a bare "@marketdataapp/ui" is rejected. That is the useful part: the
+# approval covers ONE commit's code, not the dependency forever.
+#
+# TO BUMP @marketdataapp/ui:
+#   1. change the ref in package.json
+#   2. run `pnpm install`; it fails and PRINTS the new key
+#   3. paste that key here, having satisfied yourself the new commit is ours
+#
+# ---------------------------------------------------------------------------
+# core-js, core-js-pure: FALSE
+# ---------------------------------------------------------------------------
+#
+# Their postinstall only prints a funding banner. Nothing is compiled and no
+# file is produced, so declining costs nothing and removes two script
+# executions from every install.
+allowBuilds:
+  "@marketdataapp/ui@https://codeload.github.com/MarketDataApp/ui/tar.gz/8dcef9b511aec51724e6b2d57f82f94f6730449f": true
+  core-js: false
+  core-js-pure: false

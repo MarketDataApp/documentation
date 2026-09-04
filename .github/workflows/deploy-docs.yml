@@ -31,12 +31,16 @@ jobs:
           # nothing -- the build succeeds and the dates are quietly wrong.
           fetch-depth: 0
 
+      # pnpm/action-setup MUST come before setup-node: `cache: pnpm` makes
+      # setup-node run `pnpm store path`, which needs pnpm on PATH already.
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
+          cache: pnpm
 
-      - run: yarn install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
       - name: Set environment
         id: env
@@ -53,7 +57,7 @@ jobs:
           fi
 
       - name: Build
-        run: yarn build
+        run: pnpm run build
         env:
           PROD: ${{ steps.env.outputs.prod }}
 
