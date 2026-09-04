@@ -186,9 +186,20 @@ section name.** `Stock Candles (Python SDK)` matches both words of `stock
 candles`, adjacent and exact; `/api/stocks/candles` is titled `Candles` and
 matches one. The API page loses on `words` and never reaches the tie-break.
 
-That is a content problem, not a ranking one. It is fixed by titling the API
-pages for the concept (`Stock Candles`, not `Candles`), not by any crawler
-setting. Raising `pageRank` further would change nothing.
+That is a content problem, not a ranking one. Nine API pages were retitled for
+their asset class on 2026-09-04 — `Historical Candles` → `Stock Candles` — each
+keeping a `sidebar_label` so the navigation did not move. Four queries flipped.
+
+**Two got worse, and the mechanism is worth knowing before writing a title.**
+`proximity` and the position of a match are both evaluated BEFORE `custom`:
+
+- `bulk candles` — `Bulk Candles (PHP SDK)` holds the two words adjacent.
+  `Bulk Stock Candles` separates them, so the SDK page wins on proximity.
+- `earnings` — `Earnings (Go SDK)` matches at position 0, `Stock Earnings` at
+  position 1.
+
+So a qualifier helps when it adds a word the reader typed, and hurts when it
+lands *between* two words they typed. Raising `pageRank` reaches neither case.
 
 ### Watching it
 
