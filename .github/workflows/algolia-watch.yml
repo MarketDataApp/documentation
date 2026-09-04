@@ -1,0 +1,113 @@
+name: "Docs: Algolia index watch"
+
+# Asks one question a day: is the search index still a description of this
+# site? Nothing else in this repository can answer it.
+#
+# WHY THIS IS ITS OWN WORKFLOW AND NOT A JOB IN pr-checks.yml
+#
+# Its subject lives on Algolia's servers, not in the commit. No pull request
+# can make the index stale and none can make it fresh, so gating a merge on it
+# would stop authors on something no diff of theirs repairs -- and a check
+# people cannot act on is one they learn to skip. The whole reason this exists
+# is that the index sat six months stale while every gate in the repository
+# stayed green, so a gate is exactly the wrong shape for it.
+#
+# WHY DAILY, WHEN THE CRAWLER ONLY RUNS WEEKLY
+#
+# It is a fair objection: A2, A3 and A5 read numbers that only move on Monday,
+# so six runs in seven report yesterday's figures again. Three reasons it is
+# still daily, and the first is the one that decides it.
+#
+#   1. GitHub drops scheduled runs. The cron is best-effort -- runs are delayed
+#      under load and are sometimes skipped outright. A weekly schedule has one
+#      chance to fire; if that one is dropped we are blind for a fortnight,
+#      which is a smaller version of exactly the silence this file exists to
+#      end. Daily makes a dropped run cost nothing.
+#   2. Not every rule is on the crawl's cadence. A7 reads index settings, which
+#      a person can change in the dashboard on any afternoon, and B1 reads
+#      search analytics, which move every day.
+#   3. The run costs about 40 seconds and no dependency install.
+#
+# What daily does NOT buy is earlier detection of a stall: the budget is ten
+# days, so a missed Monday is not a failure until the following week either way.
+#
+# WHY 07:23 UTC
+#
+# The crawler is scheduled `every 1 week on monday at 6:00 am`, so this lands
+# after it and Monday's check reports Monday's crawl rather than last week's.
+# The odd minute keeps it off the hour, where GitHub's scheduler queues deepest.
+
+on:
+  schedule:
+    - cron: "23 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    # Bounded so a hang reports rather than burning the runner. With no
+    # `timeout-minutes` a job inherits GitHub's 360-minute default, and a
+    # step that wedges on a network call takes six hours to say nothing.
+    # Sized well above the observed maximum (about 40 seconds, most of it the
+    # 48 facet-cell queries), because a cap that trips on a slow-but-working
+    # run gets raised and then removed.
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # No `yarn install`. scripts/lint-algolia.js and lib/algolia.js use only
+      # Node built-ins and `fetch`, deliberately -- a watchdog that cannot run
+      # until a dependency tree resolves is a watchdog with a second way to go
+      # quiet. If that ever stops being true, this comment is the thing that
+      # should stop being true first.
+      - name: Watch the index
+        id: watch
+        env:
+          ALGOLIA_USAGE_API_KEY: ${{ secrets.ALGOLIA_USAGE_API_KEY }}
+          ALGOLIA_ANALYTICS_API_KEY: ${{ secrets.ALGOLIA_ANALYTICS_API_KEY }}
+          ALGOLIA_CRAWLER_USER_ID: ${{ secrets.ALGOLIA_CRAWLER_USER_ID }}
+          ALGOLIA_CRAWLER_API_KEY: ${{ secrets.ALGOLIA_CRAWLER_API_KEY }}
+        run: |
+          set -o pipefail
+          node scripts/lint-algolia.js 2>&1 | tee watch.txt
+
+      # `always()` so the report is filed on the run that failed, from the same
+      # file the check wrote. A reporter gated on success reports nothing on
+      # the only day anybody needs it.
+      - name: File or update the report
+        if: always() && steps.watch.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="Algolia index watch is failing"
+          BODY=$(printf '```\n%s\n```\n\n[run](%s/%s/actions/runs/%s)\n' \
+            "$(cat watch.txt)" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID")
+          # One issue, reopened and commented, never a new one each morning.
+          # A watchdog that files a duplicate a day is one somebody mutes.
+          #
+          # Matched on the TITLE, not on a marker in the body. GitHub's search
+          # does not index HTML comments, so `<!-- marker --> in:body` matches
+          # nothing and every run would file a fresh issue -- the failure mode
+          # this block exists to avoid, arriving through the block itself.
+          EXISTING=$(gh issue list --state all --search "$TITLE in:title" --limit 1 --json number,state,title \
+            --jq "[.[] | select(.title == \"$TITLE\")][0] | select(.) | \"\(.number) \(.state)\"")
+          if [ -n "$EXISTING" ]; then
+            NUM=${EXISTING%% *}
+            STATE=${EXISTING##* }
+            # An `if`, not `[ ... ] && gh issue reopen`. GitHub runs `run:`
+            # under `bash -eo pipefail`, where that idiom is safe only because
+            # it is not the last line of the script -- a property that stops
+            # holding the moment somebody appends one.
+            if [ "$STATE" = "CLOSED" ]; then gh issue reopen "$NUM"; fi
+            gh issue comment "$NUM" --body "$BODY"
+          else
+            gh issue create --title "$TITLE" --body "$BODY"
+          fi

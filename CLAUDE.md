@@ -101,9 +101,69 @@ merges into it — see the note in `deploy-docs.yml`.
 
 ## Search
 
-- Algolia DocSearch (App ID: IUHZFO750H, Index: "Market Data Documentation")
-- Crawler config is managed in the Algolia dashboard, not in the codebase
-- `hierarchy.lvl1` is ranked above `hierarchy.lvl0` in searchable attributes (custom tweak from Docusaurus default)
+Algolia DocSearch. App `IUHZFO750H`, index `Market Data Documentation`,
+crawler `f42f78d6-acf4-4160-80e8-c69558fa87a5` on `crawler.algolia.com`.
+
+**The index went six months stale and nothing said so.** The crawler was
+created 2026-02-24 with `schedule: null`. It ran once for three minutes and was
+never told to run again. On 2026-09-04 the index still held that crawl: the
+entire C# SDK returned zero hits, so did every Go page added since, and 418
+searches in 90 days had run against it. The crawler read `running: true`,
+`blocked: false`, no errors and no failed run — there was nothing to find,
+because a stale index and a fresh one are the same shape, answer in the same
+time, and render identically. **A visitor cannot miss a page they do not know
+exists**, so the only instrument that can see this is one that asks the index
+how old it is. That is `lint:algolia`, and its A2 rule is the whole reason the
+file exists.
+
+Repaired 2026-09-04: schedule set to `every 1 week on monday at 6:00 am`,
+reindexed (102s), 4,983 → 5,161 records, 267 of 268 sitemap routes covered.
+The gap is `/docs/search/`, the search UI, which has no content to index.
+
+### There is no admin key, and that decides the order of every repair
+
+Algolia keeps the admin key for a DocSearch-provisioned application. The
+dashboard exposes four: Search (public, in `docusaurus.config.js`), Analytics,
+Usage, and Monitoring. **Monitoring is a paid feature and answers 401/403 for
+this application** — the key is in `.env` only so nobody rediscovers that.
+
+So nothing here can write index settings. A ranking change must go into the
+crawler's `initialIndexSettings` **before** a reindex, never after, because
+afterwards there is no way to put it back.
+
+That trap was live on 2026-09-04. `hierarchy.lvl1` ranks above
+`hierarchy.lvl0` — a deliberate departure from the Docusaurus default — and it
+existed **only on the index**, while the crawler config still listed `lvl0`
+first. The config was corrected before the reindex ran, so the tweak survived.
+`lint:algolia` A7 is what keeps the two from drifting apart again.
+
+### Watching it
+
+`yarn lint:algolia` (`scripts/lint-algolia.js`, logic in `lib/algolia.js`).
+Runs daily in `.github/workflows/algolia-watch.yml`, **not** in PR checks: no
+pull request can make the index stale or fresh, and a check people cannot act
+on is one they learn to skip.
+
+Rules A1–A3 and A5–A7 need no secret — they use the public search key, so the
+check cannot be silenced by a missing environment variable. A4, B1 and B2 need
+`ALGOLIA_USAGE_API_KEY`, `ALGOLIA_ANALYTICS_API_KEY` and the crawler pair, and
+they report themselves SKIPPED by name rather than passing quietly.
+
+**A2 and A4 measure the same event through different instruments on purpose.**
+`updatedAt` moves for any write, including a settings edit that indexes no
+content; the log names the operation. A settings-only touch refreshes A2 and
+leaves A4 red, which is a state worth seeing rather than one to average away.
+
+Two limits the check states on every run rather than hiding:
+
+- The public key cannot `browse` (403) and pagination stops at 1,000 hits, so
+  the index is swept one `docusaurus_tag` × `type` facet cell at a time. One
+  cell (`docs-sdk-current/content`) exceeds that cap. A capped cell is **not** a
+  missing page, so every apparent miss is confirmed with a second, targeted
+  query before anything is reported.
+- `url` is not a searchable attribute on this index. Asking for
+  `restrictSearchableAttributes: ['url']` fails with an error that does not say
+  why.
 
 ## Sidebar Badges
 
