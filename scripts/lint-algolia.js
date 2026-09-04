@@ -80,6 +80,7 @@ const {
   normaliseUrl,
   settingsDrift,
 } = require('../lib/algolia');
+const { RELEVANCE, judge } = require('../lib/algolia-relevance');
 
 /**
  * The crawler runs `every 1 week on monday at 6:00 am`, set 2026-09-04.
@@ -274,6 +275,36 @@ async function main() {
     );
   }
 
+  // --- C1/B3. Does a search return the RIGHT page? ------------------------
+  //
+  // A2 proves the index is fresh and A5 proves every route is in it. Both were
+  // green on 2026-09-04 while five of twenty of these queries answered badly.
+  // Freshness and coverage are properties of the corpus; this is a property of
+  // the ranking, and only a real query with an asserted answer can read it.
+  //
+  // Split three ways on purpose, because they are different kinds of news:
+  //
+  //   C1  a query that USED to return the right page no longer does. Gated.
+  //       Ranking is one global lever, so a change made for one query moves
+  //       others -- demoting Sheets once fixed `troubleshooting` and silently
+  //       broke `optionchain`. These rows are the regression surface.
+  //   C2  a known gap that has started PASSING. Gated, and it names the line
+  //       to delete. Without it the gap list becomes a graveyard of things
+  //       fixed long ago, and stops describing the index.
+  //   B3  the known gaps themselves. Reported: they are content problems that
+  //       no crawler setting fixes, and a gate nobody can satisfy today is one
+  //       somebody switches off.
+  const firsts = {};
+  for (const row of RELEVANCE) {
+    const res = await search({ query: row.q, hitsPerPage: 1, attributesToRetrieve: ['url_without_anchor'] });
+    firsts[row.q] = res.hits[0]?.url_without_anchor ?? null;
+  }
+  const { regressions, gaps, fixed } = judge(firsts);
+  facts.relevance = `${RELEVANCE.length - gaps.length - regressions.length}/${RELEVANCE.length}`;
+  if (regressions.length) fail('C1', 'queries that no longer return the right page', regressions);
+  if (fixed.length) fail('C2', 'known relevance gaps that now pass; the table is stale', fixed);
+  if (gaps.length) report('B3', `${gaps.length} known relevance gap(s)`, gaps);
+
   // --- B2. The crawler's own state. Reported, never gated ------------------
   if (!process.env.ALGOLIA_CRAWLER_API_KEY) {
     report('B2', 'SKIPPED, ALGOLIA_CRAWLER_USER_ID / ALGOLIA_CRAWLER_API_KEY are not set');
@@ -308,6 +339,7 @@ function finish({ failures, reports, facts, asJson }) {
     if (facts.lastWriteAt) console.log(`last write op  ${facts.lastWriteAt} (${facts.lastWriteAgeDays} days ago)`);
     console.log(`coverage       ${facts.indexedUrls} indexed URLs against ${facts.sitemapUrls} in the sitemap`);
     if (facts.crawlerSchedule !== undefined) console.log(`schedule       ${JSON.stringify(facts.crawlerSchedule)}`);
+    if (facts.relevance) console.log(`relevance      ${facts.relevance} queries return the right page first`);
     if (facts.searches30d !== undefined) {
       console.log(`searches 30d   ${facts.searches30d}, ${(facts.noResultRate * 100).toFixed(1)}% returned nothing`);
     }

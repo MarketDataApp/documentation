@@ -197,6 +197,27 @@ Runs daily in `.github/workflows/algolia-watch.yml`, **not** in PR checks: no
 pull request can make the index stale or fresh, and a check people cannot act
 on is one they learn to skip.
 
+**C1, C2 and B3 ask whether a search returns the RIGHT page**, which no other
+rule here can. A2 proves the index is fresh, A5 proves every route is in it,
+and both were green while five of twenty asserted queries answered badly. The
+table is `lib/algolia-relevance.js`.
+
+| Rule | Asks                                                      | Verdict  |
+|------|-----------------------------------------------------------|----------|
+| C1   | a query that used to return the right page no longer does | gated    |
+| C2   | a **known gap has started passing** — the table is stale  | gated    |
+| B3   | the known gaps themselves                                 | reported |
+
+C2 is the one that keeps the list honest. Without it a gap list becomes a
+graveyard of things fixed long ago that nobody removed, and stops describing
+the index. It names the line to delete.
+
+**The passing rows are the point, not the failing ones.** Ranking is a single
+global lever, so a change made for one query moves others. The first `pageRank`
+tier fixed `troubleshooting` and silently broke `optionchain`; the score was
+8/20 before and after, so only the individual rows could see it. **Take the
+baseline before touching ranking, never after.**
+
 Rules A1–A3 and A5–A7 need no secret — they use the public search key, so the
 check cannot be silenced by a missing environment variable. A4, B1 and B2 need
 `ALGOLIA_USAGE_API_KEY`, `ALGOLIA_ANALYTICS_API_KEY` and the crawler pair, and
