@@ -489,6 +489,18 @@ the same tag. `future.v4`'s Faster pipeline minifies harder than 3.10 did.
 llms.txt fell from 55 KB to 23 KB — a structurally valid index, so nothing
 failed.
 
+The sharpest case is the search page, where **two spellings of the same
+concept sit in adjacent tags**:
+
+```html
+<meta data-rh=true property=robots content="noindex, follow"/>   <!-- theme's, inert -->
+<meta name="robots" content="noindex, nofollow">                 <!-- ours, effective -->
+```
+
+Grep for `name="robots"` and you find ours and miss the theme's. Grep for
+`property=robots` and you find the theme's and miss ours. Either answer looks
+complete. Only a parser sees both.
+
 **Knowing this does not protect you.** On the day it was found, the
 orchestrator's agent read the defect report, quoted the example back, and then
 wrote `grep -o 'name="build-commit"[^>]*'` against this build ten minutes
