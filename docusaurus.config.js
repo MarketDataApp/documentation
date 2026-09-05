@@ -199,7 +199,28 @@ const config = {
                 // D2 fails when the sitemap advertises a noindex route — so
                 // without these the build goes red rather than shipping a
                 // contradiction.
-ignorePatterns: ["/docs/internal/**", "/docs/internal/"],
+                // `/docs/search/` is the Algolia UI: a form with no content
+                // of its own, whose every result already has an indexable page
+                // of its own. Its result views are the SAME route with a query
+                // string, so nothing else needs listing either.
+                //
+                // This settles a disagreement rather than inventing a rule.
+                // The marketing half of the origin has always excluded its own
+                // `/search/` and `/review/*`, and the two halves have been
+                // named by ONE sitemap index since 2026-09-04 -- so until this,
+                // a crawler saw one origin declaring one convention twice,
+                // differently. Both halves also already agreed that internal
+                // pages stay out; the search page was the only difference.
+                //
+                // `plugins/noindex-head.js` marks the same route noindex, and
+                // the two must agree: `lint:seo` D2 fails a build that
+                // advertises a noindex route, so one without the other goes
+                // red rather than shipping a contradiction.
+                ignorePatterns: [
+                  "/docs/internal/**",
+                  "/docs/internal/",
+                  "/docs/search/",
+                ],
                 filename: "sitemap.xml",
               }
             : {},

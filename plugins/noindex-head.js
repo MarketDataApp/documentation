@@ -45,7 +45,26 @@ const path = require('node:path');
 const { applyHeadRules } = require('../lib/noindex-head');
 
 /** The section whose pages get the directive added. */
-const INTERNAL = 'internal';
+/**
+ * The route roots whose pages must say `noindex, nofollow`.
+ *
+ * `internal` is our own reference material -- see docusaurus.config.js.
+ *
+ * `search` is the Algolia search UI. It holds no content of its own: it is a
+ * form, and every result it shows already has its own indexable page. Its
+ * result "pages" are the SAME route with a query string
+ * (`/docs/search/?q=candles`), so one directive on the route covers the UI and
+ * every result view with it -- there is no second page to mark.
+ *
+ * It is excluded from the sitemap for the same reason, in
+ * `docusaurus.config.js`. The two have to agree: `lint:seo` D2 fails a build
+ * that advertises a noindex route in the sitemap, so marking this without
+ * excluding it turns the contradiction into a red build rather than a shipped
+ * one. The marketing half of the origin already excludes its own `/search/`
+ * and `/review/*`, so this settles a convention across both halves rather than
+ * inventing one here.
+ */
+const NOINDEX_ROOTS = ['internal', 'search'];
 
 /** Owned by plugins/not-found-head.js. See the header. */
 const SKIP = new Set(['404.html']);
@@ -69,25 +88,30 @@ module.exports = function noindexHeadPlugin() {
     async postBuild({ outDir }) {
       const pages = (await pagesUnder(outDir)).filter((p) => !SKIP.has(path.relative(outDir, p)));
 
-      const internalRoot = path.join(outDir, INTERNAL);
-      const internalPages = pages.filter((p) => p === internalRoot || p.startsWith(`${internalRoot}${path.sep}`));
-
-      // This plugin exists to make one assertion true about one directory. If
-      // the directory is not there the assertion is not true, and a warning
-      // would let the build ship pages nothing had marked.
-      if (!internalPages.length) {
-        throw new Error(
-          `[noindex-head] no ${INTERNAL}/ pages in the build. The docs plugin instance that ` +
-            'owns them is in docusaurus.config.js; either it was removed or the section moved, ' +
-            'and this plugin would silently do nothing either way.'
-        );
+      // Each root is resolved and counted SEPARATELY, and each must match at
+      // least one page. A combined count would let one root go empty while the
+      // other kept the total non-zero -- which is exactly the shape this
+      // plugin's own error message warns about, one level up.
+      const byRoot = new Map();
+      for (const root of NOINDEX_ROOTS) {
+        const dir = path.join(outDir, root);
+        const matched = pages.filter((p) => p === dir || p.startsWith(`${dir}${path.sep}`));
+        if (!matched.length) {
+          throw new Error(
+            `[noindex-head] no ${root}/ pages in the build. Whatever owns that route is in ` +
+              'docusaurus.config.js; either it was removed or the section moved, and this ' +
+              'plugin would silently do nothing for that root either way.'
+          );
+        }
+        byRoot.set(root, matched);
       }
+      const noindexPages = new Set([...byRoot.values()].flat());
 
       let stamped = 0;
       let stripped = 0;
       for (const target of pages) {
         const html = await fs.readFile(target, 'utf8');
-        const result = applyHeadRules(html, { internal: internalPages.includes(target) });
+        const result = applyHeadRules(html, { noindex: noindexPages.has(target) });
         if (!result.changed) continue;
         if (result.addedNoindex) stamped += 1;
         stripped += result.strippedCanonical;
@@ -100,9 +124,12 @@ module.exports = function noindexHeadPlugin() {
       // correctly produces -- every page already says noindex there -- and it
       // is also what a silently broken matcher would produce on production.
       // The two have to be told apart by the canonical figure beside them.
+      // Every number, every build, and PER ROOT. One total would hide a root
+      // that matched nothing the moment another root still matched something.
+      const perRoot = [...byRoot].map(([root, ps]) => `${root} ${ps.length}`).join(', ');
       console.log(
-        `[noindex-head] ${pages.length} page(s) read; stamped ${stamped} of ${internalPages.length} ` +
-          `internal page(s) noindex; stripped ${stripped} canonical(s) from noindex pages`
+        `[noindex-head] ${pages.length} page(s) read; stamped ${stamped} of ${noindexPages.size} ` +
+          `noindex page(s) (${perRoot}); stripped ${stripped} canonical(s) from noindex pages`
       );
     },
   };
