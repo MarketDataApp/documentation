@@ -15,7 +15,7 @@ The Market Data Python Client includes functionality for making API requests, ha
 1. Review the [documentation on authentication](/sdk/py/authentication) to learn how to set your API token.
 2. Create a [`MarketDataClient`](#marketdataclient) instance and use it to make requests to the Market Data API.
 3. Make a test request and review the console output. The SDK includes logging capabilities to help you debug requests.
-4. Check the [rate limit](#RateLimits) in the client to track credit usage and how many API credits remain.
+4. Check the [rate limit](#accessing-rate-limits) in the client to track credit usage and how many API credits remain.
 5. Configure [Settings](/sdk/py/settings) to customize output format, date format, and other universal parameters.
 
 <a name="MarketDataClient"></a>
@@ -32,7 +32,7 @@ class MarketDataClient:
 ### Properties
 
 - `token` (str): The authentication token for API requests. See [authentication documentation](/sdk/py/authentication) for details.
-- `rate_limits` ([UserRateLimits](#RateLimits)): Current rate limit information
+- `rate_limits` ([UserRateLimits](#accessing-rate-limits)): Current rate limit information
 - `base_url` (str): The base URL for API requests
 - `api_version` (str): The API version to use
 - `headers` (dict): HTTP headers including Authorization and User-Agent

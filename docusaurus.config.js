@@ -40,27 +40,26 @@ const config = {
   onBrokenLinks: process.env.STRICT_LINKS === "true" ? "throw" : "warn",
 
   // 3.10 CHECKS ANCHORS, AND 3.0.1 NEVER DID. The first build after the
-  // upgrade reported 254 broken anchors. 234 were OUR OWN FAULT and not
-  // broken at all: `src/theme/Heading` was a stale fork of the 3.0.1 file,
-  // and upstream had since added `brokenLinks.collectAnchor(id)` -- the call
-  // by which a page registers the anchors it defines. Without it every page
+  // upgrade reported 254 broken anchors. 234 were OUR OWN FAULT and not broken
+  // at all: `src/theme/Heading` was a stale fork of the 3.0.1 file, and
+  // upstream had since added `brokenLinks.collectAnchor(id)` -- the call by
+  // which a page registers the anchors it defines. Without it every page
   // declared none, so every table-of-contents self-link looked broken.
-  // Deleting that swizzle fixed all 234; see the note on swizzles in
-  // CLAUDE.md.
+  // Deleting that swizzle fixed all 234.
   //
-  // Of the 20 that remained, 18 were real and are fixed: SDK pages linking to
-  // `#MarketDataClient` and friends, where the generated id is lowercase.
-  // They had been broken since they were written and nothing could see them.
+  // The remaining 26 were real and every one is now fixed. They had been
+  // broken since they were written: `#MarketDataClient` where the generated id
+  // is lowercase, `#Logger` where the section is called Logging, and two that
+  // named documentation which does not exist at all.
   //
-  // "warn" RATHER THAN THE STRICT_LINKS TREATMENT THE LINKS ABOVE GET,
-  // because 8 known-broken anchors are left and they are content questions,
-  // not mechanical ones -- `#Logger`, `#RateLimits`, `#datewindow`,
-  // `#optionquote` name headings that do not exist under any spelling. Each
-  // needs an author to say what was meant; guessing would produce a link that
-  // goes somewhere plausible and wrong, which is worse than one that visibly
-  // fails. Once those 8 are settled, make this match `onBrokenLinks` so the
-  // PR check fails on a new one.
-  onBrokenAnchors: "warn",
+  // GATED THE SAME WAY AS `onBrokenLinks`, and that is the point of the
+  // exercise. A deploy builds with "warn" so a stray anchor cannot block a
+  // release; `pnpm run lint:links` builds with "throw", so the PR check is
+  // what keeps a broken one off the site. An anchor is the half of a link that
+  // nothing else can see: `onBrokenLinks` proves the PAGE exists and says
+  // nothing about the fragment, so a deep link can point into a page that
+  // renders perfectly and still land the reader nowhere.
+  onBrokenAnchors: process.env.STRICT_LINKS === "true" ? "throw" : "warn",
 
   // Opting into v4 behaviour while still on 3.10, so the major is a version
   // bump rather than a migration. Each flag is enabled deliberately; see the
@@ -200,7 +199,7 @@ const config = {
                 // D2 fails when the sitemap advertises a noindex route — so
                 // without these the build goes red rather than shipping a
                 // contradiction.
-                ignorePatterns: ["/docs/internal/**", "/docs/internal/"],
+ignorePatterns: ["/docs/internal/**", "/docs/internal/"],
                 filename: "sitemap.xml",
               }
             : {},

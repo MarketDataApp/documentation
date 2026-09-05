@@ -15,7 +15,7 @@ The Market Data JavaScript Client handles API requests, response parsing, rate-l
 1. Review the [documentation on authentication](/sdk/js/authentication) to learn how to set your API token.
 2. Create a [`MarketDataClient`](#marketdataclient) instance and use it to make requests to the Market Data API.
 3. Make a test request and review the console output. The SDK includes logging capabilities to help you debug requests.
-4. Check the [rate limit](#RateLimits) in the client to track credit usage and how many API credits remain.
+4. Check the [rate limit](#accessing-rate-limits) in the client to track credit usage and how many API credits remain.
 5. Configure [Settings](/sdk/js/settings) to customize output format, date format, and other universal parameters.
 
 <a name="MarketDataClient"></a>
@@ -46,12 +46,12 @@ interface MarketDataConfig {
 ### Properties
 
 - `token` (string, optional): The authentication token for API requests. See [authentication documentation](/sdk/js/authentication) for details.
-- `rateLimits` ([UserRateLimits](#RateLimits), optional): Current rate limit information. Populated by the startup `/user/` call (see `ready` below) or by the first successful API request when startup validation is skipped.
+- `rateLimits` ([UserRateLimits](#userratelimits), optional): Current rate limit information. Populated by the startup `/user/` call (see `ready` below) or by the first successful API request when startup validation is skipped.
 - `ready` (Promise&lt;void&gt;): Resolves when the eager `/user/` validation completes. Rejects with `AuthenticationError` on bad tokens; transient errors are logged and swallowed. Await it if you need the fail-fast behaviour on construction.
 - `baseUrl` (string): The base URL for API requests (default: `https://api.marketdata.app`).
 - `apiVersion` (string): The API version to use (default: `v1`).
 - `headers` (Record&lt;string, string&gt;): HTTP headers including `Authorization` and `User-Agent`.
-- `logger` ([Logger](#Logger)): The logger instance used for diagnostic output.
+- `logger` ([Logger](#logging)): The logger instance used for diagnostic output.
 - `settings` ([MarketDataSettings](/sdk/js/settings)): Resolved configuration including env-var defaults. See [Settings](/sdk/js/settings) for details.
 
 ### Resources
@@ -86,7 +86,7 @@ Creates and configures a new `MarketDataClient` instance. This initializes the c
   - `retryFactor` (number): Exponential backoff factor. Defaults to `2`.
   - `skipStartupValidation` (boolean): If `true`, skips the eager `/user/` call the constructor makes to validate the token. Defaults to `false`. Use on serverless platforms where cold-start latency matters.
   - `debug` (boolean): If `true`, sets the default logger level to `DEBUG`. Defaults to `false`.
-  - `logger` ([Logger](#Logger)): A custom logger instance. If omitted, the SDK uses its built-in `DefaultLogger`.
+  - `logger` ([Logger](#logging)): A custom logger instance. If omitted, the SDK uses its built-in `DefaultLogger`.
 
 #### Returns
 
@@ -211,18 +211,18 @@ try {
 
 ### Error classes
 
-| Class                  | When                                                                                                                                                                                                          |
-|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `AuthenticationError`  | 401 — token missing, invalid, or expired                                                                                                                                                                      |
-| `BadRequestError`      | 400 — malformed request or invalid parameters                                                                                                                                                                 |
-| `NotFoundError`        | 404 — exported but not thrown by default. The SDK translates 404 into an empty response with `no_data: true`; see [no-data handling](#NoData). The one exception is `/user/`, which opts into the throw path. |
-| `PaymentRequiredError` | 402 — request denied by your plan (data older than your plan allows, premium endpoint on Free/Trial, or `mode=cached` on Free/Trial)                                                                          |
-| `ForbiddenError`       | 403 — access denied. Typically the multi-IP block: the account is temporarily locked when used from more than one IP. Wait ~5 minutes and retry.                                                              |
-| `RateLimitError`       | 429 — per-minute/day rate limit exceeded                                                                                                                                                                      |
-| `ServerError`          | 5xx — retriable, server-side failure                                                                                                                                                                          |
-| `NetworkError`         | Transport failure: DNS, connection, TLS, or 99s timeout                                                                                                                                                       |
-| `ParseError`           | Response body failed schema or JSON parsing                                                                                                                                                                   |
-| `ValidationError`      | Client-side input validation failure (before the network call)                                                                                                                                                |
+| Class                  | When                                                                                                                                                                                                                     |
+|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `AuthenticationError`  | 401 — token missing, invalid, or expired                                                                                                                                                                                 |
+| `BadRequestError`      | 400 — malformed request or invalid parameters                                                                                                                                                                            |
+| `NotFoundError`        | 404 — exported but not thrown by default. The SDK translates 404 into an empty response with `no_data: true`; see [no-data handling](#no-data-responses). The one exception is `/user/`, which opts into the throw path. |
+| `PaymentRequiredError` | 402 — request denied by your plan (data older than your plan allows, premium endpoint on Free/Trial, or `mode=cached` on Free/Trial)                                                                                     |
+| `ForbiddenError`       | 403 — access denied. Typically the multi-IP block: the account is temporarily locked when used from more than one IP. Wait ~5 minutes and retry.                                                                         |
+| `RateLimitError`       | 429 — per-minute/day rate limit exceeded                                                                                                                                                                                 |
+| `ServerError`          | 5xx — retriable, server-side failure                                                                                                                                                                                     |
+| `NetworkError`         | Transport failure: DNS, connection, TLS, or 99s timeout                                                                                                                                                                  |
+| `ParseError`           | Response body failed schema or JSON parsing                                                                                                                                                                              |
+| `ValidationError`      | Client-side input validation failure (before the network call)                                                                                                                                                           |
 
 <a name="NoData"></a>
 ### No-data responses
