@@ -81,14 +81,39 @@ test('copy button puts the page\'s Markdown twin on the clipboard', async ({ pag
 });
 
 test('the last-updated date is per page, not one build date', async ({ page }) => {
-  const dates = [];
-  for (const path of PAGES) {
+  // WHAT THIS IS FOR: under a shallow clone `showLastUpdateTime` gives EVERY
+  // page the same date, the row still renders, and nothing else reports it.
+  // So the property is "more than one distinct date exists", and the failure
+  // it catches is "all of them are identical".
+  //
+  // It used to compare two named pages and assert they differed. That is a
+  // stricter claim than the property, and it broke the first time a commit
+  // touched both of them -- 59 files were edited in one pass to migrate
+  // admonition syntax, and two pages genuinely acquired the same date. The
+  // test was right about the pages and wrong about the site.
+  //
+  // Sampling across sections makes it robust to a bulk edit while still
+  // failing on a shallow clone, which cannot produce two distinct dates
+  // anywhere in the build.
+  const sample = [
+    '/api/options/chain',
+    '/api/authentication',
+    '/sdk/go/stocks/candles',
+    '/sheets/authentication',
+    '/account/plans',
+  ];
+
+  const dates = new Set();
+  for (const path of sample) {
     await page.goto(`${BASE_URL}${path}`, { waitUntil: 'domcontentloaded' });
-    dates.push(await page.getByText(/^Last updated /).innerText());
+    dates.add(await page.getByText(/^Last updated /).innerText());
   }
-  // Identical dates on two pages with different edit histories is the
-  // signature of a shallow clone at build time.
-  expect(dates[0]).not.toBe(dates[1]);
+
+  expect(
+    dates.size,
+    `all ${sample.length} sampled pages report "${[...dates][0]}" -- the signature of a ` +
+      'shallow clone at build time, where git gives every file the same last-commit date'
+  ).toBeGreaterThan(1);
 });
 
 test('the link underlines on hover and not before', async ({ page }) => {
