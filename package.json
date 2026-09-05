@@ -24,6 +24,7 @@
     "test:sitemap": "node --test tests/sitemap.integration.test.js",
     "wait:deploy": "node scripts/wait-for-deploy.js",
     "lint:links": "STRICT_LINKS=true pnpm run build",
+    "lint:external-links": "node scripts/check-external-links.js",
     "lint:sitemap": "PROD=true pnpm run build && node scripts/lint-sitemap.js",
     "lint:contract": "node scripts/check-build-contract.js",
     "lint:tables": "node scripts/fix-table-alignment.js",
