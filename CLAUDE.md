@@ -714,6 +714,52 @@ sees 200s and concludes it works.
 check that reads what the public reads. A green run there proves delivery, not
 completeness.
 
+## A `repository_dispatch` workflow runs from `main`, not from your branch
+
+**This bites exactly once per CI change, on the branch where you cannot see it
+coming.** GitHub loads a workflow file from the DEFAULT branch when the trigger
+is `repository_dispatch` (and `workflow_run`, and `schedule`). It then checks
+out whatever SHA the job asks for — so the workflow is `main`'s and the code is
+your branch's.
+
+| Workflow                | Trigger               | File comes from |
+|-------------------------|-----------------------|-----------------|
+| `deploy-docs.yml`       | `push`                | your branch ✅  |
+| `sync-sdk-docs.yml`     | `push`                | your branch ✅  |
+| `post-deploy-tests.yml` | `repository_dispatch` | **`main`**      |
+| `algolia-watch.yml`     | `schedule`            | **`main`**      |
+| `external-links.yml`    | `schedule`            | **`main`**      |
+
+The yarn → pnpm move hit this on its first staging deploy. `main`'s copy of
+`post-deploy-tests.yml` still ran `yarn install`, against a checkout whose
+`package.json` had just started declaring `packageManager: pnpm@…` — and yarn 1
+reads that field and refuses:
+
+```
+error This project's package.json defines "packageManager": "yarn@pnpm@11.18.0".
+```
+
+**The site was fine.** Running that job's own suites locally against live
+staging passed everything: 367 redirect assertions, the sitemap assertion, 14
+e2e. Only the runner's package manager was wrong, and only because it came from
+a branch that had not been updated yet.
+
+There is no fix from the feature branch — editing the file there changes
+nothing until it reaches `main`. So **expect one red post-deploy run per
+CI-affecting change, and verify the deploy by running its suites locally
+against the deployed host instead**:
+
+```bash
+TEST_ENV=staging pnpm run test:redirects
+TEST_ENV=staging pnpm run test:sitemap
+TEST_ENV=staging pnpm run test:e2e
+```
+
+`MarketDataApp/website` hit the same shape from the other direction: a
+`workflow_run` job loaded `main`'s workflow and so ran without an env var the
+branch had added, which made its build sentinel report `ref: HEAD` for one
+deploy.
+
 ## Reading the orchestrator's log after a deploy
 
 Our deploy ends at a `repository_dispatch` into
