@@ -61,7 +61,7 @@ type SupportContext struct {
 
 All of these types are exported from the `marketdata` package (they are aliases for the SDK's internal error types), so you refer to them as `marketdata.RateLimitError`, `marketdata.AuthenticationError`, and so on.
 
-:::note 404 is not always an error
+:::note[404 is not always an error]
 A `404` that means "no data for this valid request" is **not** returned as an error. It is surfaced through the `NoData` field of the [`*marketdata.Response`](/sdk/go/client#no-data-responses). A `NotFoundError` is only returned for a genuinely missing resource.
 :::
 

@@ -89,7 +89,7 @@ The `OPTIONCHAIN` function fetches current option chain data. The type of data y
 | Professional     | ❌               | Historical (1 day old) |
 | Unknown          | Any              | Historical (1 day old) |
 
-:::info What are entitlements?
+:::info[What are entitlements?]
 Entitlements are permissions granted by exchanges that allow access to their data. To get real-time options data, users need to sign the [OPRA agreement](/account/entitlements). [Learn more about entitlements](/account/entitlements).
 :::
 

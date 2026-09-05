@@ -197,7 +197,7 @@ type Candle struct {
 - `String() string` — a concise one-line summary, e.g. `2023-01-03 O: 352.76 H: 352.76 L: 352.76 C: 352.76`.
 - `Range() float64` — the high-low range (`High - Low`).
 
-:::note Zero values and null data
+:::note[Zero values and null data]
 Numeric fields are value types, not pointers. When the API returns `null` for a field, it decodes as the zero value, so a `0` may represent either an actual zero or the absence of data.
 :::
 

@@ -62,7 +62,7 @@ Pass any number of `Option` values to `NewClient`. Options are applied in order 
 
 The universal-parameter options (`WithMode`, `WithMaxAge`, `WithColumns`, `WithLimit`, `WithOffset`, `WithDateFormat`, `WithHumanReadable`, `WithAddHeaders`) are documented in depth on the [Parameters](/sdk/go/parameters) page.
 
-:::note Fixed timeouts and retry behavior
+:::note[Fixed timeouts and retry behavior]
 Per-request timeout (99s) and connection dial timeout (2s) are **fixed and cannot be changed**. Only the retry *count* is configurable, via `WithMaxRetries`. Requests are retried only on 501–599 status codes and transient network errors, with exponential backoff starting at 1s and doubling each attempt.
 :::
 

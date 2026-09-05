@@ -94,7 +94,7 @@ MarketDataClient("your_token", null, null, false).use { client ->
 </TabItem>
 </Tabs>
 
-:::info Fail-fast configuration
+:::info[Fail-fast configuration]
 A misconfigured base URL or API version is rejected with an `IllegalArgumentException` **at construction**, not later on the first request. Tokens are never printed in full — the client's `toString()` redacts them (long tokens show only the last four characters; short ones are hidden entirely).
 :::
 
@@ -261,7 +261,7 @@ client.stocks().quoteAsync(StockQuoteRequest.of("AAPL"))
 </TabItem>
 </Tabs>
 
-:::note `join()` vs `get()`
+:::note[`join()` vs `get()`]
 To block on a future, prefer **`join()`** — it throws an unchecked `CompletionException`. `get()` does the same thing but throws the checked `ExecutionException` (plus `InterruptedException`), forcing a `try/catch`. Both wrap the underlying cause identically, so `join()` is usually the friendlier choice.
 :::
 

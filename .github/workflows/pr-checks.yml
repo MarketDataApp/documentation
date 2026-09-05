@@ -137,6 +137,15 @@ jobs:
       # renders as grey plain text and reports nothing: the build succeeds and
       # the block still looks like a code block. `csharp` was unregistered
       # while 99 fences used it, and a person browsing a page is what found it.
+      # Also reuses that build, and for a defect in the same family: something
+      # that renders, ships, and reports nothing. `:::info Some Title` is MDX
+      # v1 syntax; with mdx1Compat disabled it is not parsed and the whole line
+      # becomes a paragraph. 74 openers across 56 files shipped to staging that
+      # way, and the upgrade's own verification missed it by grepping for a
+      # title string and finding it -- present as literal text.
+      - name: Check no MDX directive renders as literal text
+        run: pnpm run lint:directives
+
       - name: Check every code fence language highlights
         run: node scripts/check-highlighting.js
 

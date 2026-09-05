@@ -93,7 +93,7 @@ When you are looking for a single price for a stock, depending on what data you 
 
 The `STOCKDATA` function can return both quotes and candles, depending on whether date parameters are specified. The data type you receive depends on your user type and exchange entitlements.
 
-:::info What are entitlements?
+:::info[What are entitlements?]
 Entitlements are permissions granted by exchanges that allow access to their data. To get quotes, users need to sign the [IEX agreement](/account/entitlements). To get candles, users need to sign the [UTP agreement](/account/entitlements). [Learn more about entitlements](/account/entitlements).
 :::
 
@@ -132,7 +132,7 @@ When you use `STOCKDATA` with date parameters to request candles from past dates
 | Starter                       | 5 years                      |
 | Trader, Quant, Prime          | No limit (full access)       |
 
-:::info Plan Limits
+:::info[Plan Limits]
 If you attempt to access historical data older than your plan's limit permits, the formula will return an error. [Learn more about plan limits](/account/plan-limits).
 :::
 

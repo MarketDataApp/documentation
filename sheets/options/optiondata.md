@@ -50,7 +50,7 @@ Fetches a current or historical option quote from Market Data.
 
 The `OPTIONDATA` function can return both current option quotes and historical option quotes, depending on whether date parameters are specified. **Data availability restrictions based on user type and exchange entitlements only apply to current quotes.** Historical data is available to all users, with access limits based on your plan.
 
-:::info What are entitlements?
+:::info[What are entitlements?]
 Entitlements are permissions granted by exchanges that allow access to their data. To get real-time options data, users need to sign the [OPRA agreement](/account/entitlements). [Learn more about entitlements](/account/entitlements).
 :::
 
@@ -76,7 +76,7 @@ When you use `OPTIONDATA` with date parameters, it returns historical option quo
 | Starter                       | 5 years                      |
 | Trader, Quant, Prime          | No limit (full access)       |
 
-:::info Plan Limits
+:::info[Plan Limits]
 If you attempt to access historical data older than your plan's limit permits, the formula will return an error. [Learn more about plan limits](/account/plan-limits).
 :::
 

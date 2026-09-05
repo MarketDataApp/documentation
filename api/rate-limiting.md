@@ -22,7 +22,7 @@ The usage counter for all plans with a daily limit resets at **9:30 AM Eastern T
 
 This reset time is also a safety control: if a script runs out of control overnight, a 9:30 AM reset limits impact to one trading day budget instead of potentially consuming two trading-day budgets across midnight.
 
-:::tip Managing Timezone Changes
+:::tip[Managing Timezone Changes]
 To handle the reset time accurately regardless of your local timezone, it's recommended to use the `America/New_York` timezone identifier. This ensures that your application adjusts for any changes in Eastern Time, including daylight saving shifts, automatically.
 
 By aligning your application's timing functions with the `America/New_York` timezone, you can ensure that your usage of the API remains within the allocated rate limits, taking into account the precise reset timing at 9:30 AM Eastern Time.
@@ -81,6 +81,6 @@ We provide the following headers in our responses to help you manage the rate li
 - Use the extensive option chain filters such as `strikeLimit` to exclude unnecessary strikes from your requests.
 - Paying customers can make use of the reduced-price cached mode. Use the `mode=cached` parameter on supported bulk endpoints to retrieve previously cached quotes instead of making a live request. This can save thousands of credits. For more details, refer to the [mode parameter documentation](/api/universal-parameters/mode).
 
-:::note Trial plans
+:::note[Trial plans]
 `mode=cached` is not available on Starter Trial and Trader Trial plans.
 :::

@@ -26,7 +26,7 @@ If you query an options endpoint at 6:33 AM ET Wednesday on a plan that provides
 
 The tables below show the freshness category for every API endpoint, by plan, and assume non-professional status. Real-time exchange data is never available to professional subscribers — see the [Notes](#notes) below. For the underlying entitlement model, see [Exchange Entitlements](/account/entitlements).
 
-:::info Real-time stock pricing comes from `/v1/stocks/prices/`
+:::info[Real-time stock pricing comes from `/v1/stocks/prices/`]
 [`/v1/stocks/prices/`](/api/stocks/prices) delivers Real-time stock prices with no delay on every paid plan. `/v1/stocks/quotes/`, `/v1/stocks/candles/`, and `/v1/stocks/bulkcandles/` carry the standard 15-minute exchange delay. Point your application at `/v1/stocks/prices/` when you need the current price.
 :::
 

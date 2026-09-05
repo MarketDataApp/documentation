@@ -66,7 +66,7 @@ Relative dates allow Market Data formulas to continually modify the date sent to
 
   - `[number] years ago` The years ago keyword lets you select a relative date, 365 days before the current date. For example, if today is January 5, 2024, then using `2 years ago` would select the date January 5, 2022.
 
-:::caution Coming Soon
+:::caution[Coming Soon]
 
 The following relative date parameters are planned for the future and have not yet been implemented.
 

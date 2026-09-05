@@ -10,7 +10,7 @@ See [Professional Status Policy](/docs/account/data-policies/professional-status
 
 Verification activates real-time data only for subscribers classified as non-professional. Professional subscribers never receive real-time exchange data on a self-service plan, no matter which exchange agreements they sign. Real-time access for professional use requires direct exchange licensing — [contact our sales team](https://www.marketdata.app/contact/) to discuss it.
 
-:::tip Having trouble with verification?
+:::tip[Having trouble with verification?]
 If your account verification is delayed or you've been asked to provide additional documentation, see [Account Troubleshooting](/docs/account/troubleshooting/) for help with common issues.
 :::
 
