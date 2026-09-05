@@ -74,6 +74,33 @@
   padding-right: 0;
 }
 
+/**
+ * THE DATE SAT 2px ABOVE THE TWO CONTROLS, AND THE ROW'S OWN CSS WAS INNOCENT.
+ *
+ * This row is built from `<li>` inside the markdown body, so Infima's list
+ * spacing reaches it:
+ *
+ *     .markdown li + li { margin-top: var(--ifm-list-item-margin) }   (0,1,2)
+ *
+ * That is an ADJACENT-SIBLING rule, so it cannot match the first item. The
+ * second and third each took a 4px top margin and the first took none. The
+ * flex line then grew to fit the tallest margin box, `align-items: center`
+ * centred the unmargined first item inside it, and the date came to rest 2px
+ * high. Every item had identical height, padding, font-size and line-height
+ * throughout -- which is why reading this file explained nothing and measuring
+ * the boxes in a browser explained it immediately.
+ *
+ *     item 1  top 199.1  margin 0px          <- centred in a 27.6px line
+ *     item 2  top 201.1  margin 4px 0px 0px
+ *     item 3  top 201.1  margin 4px 0px 0px
+ *
+ * Same family as the `text-decoration` fight below: the markdown body styling
+ * a row that is only incidentally a list. Three classes to beat (0,1,2).
+ */
+.row .list .item {
+  margin: 0;
+}
+
 @media (min-width: 640px) {
   .item + .item {
     padding-left: 1rem;

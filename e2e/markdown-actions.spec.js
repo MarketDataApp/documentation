@@ -118,6 +118,34 @@ test('the link underlines on hover and not before', async ({ page }) => {
   }
 });
 
+test('the three items sit on one baseline', async ({ page }) => {
+  // The date rendered 2px above the two controls, on every doc page, in both
+  // themes. Nothing in this row's own CSS was wrong: it is built from <li>
+  // inside the markdown body, so Infima's `.markdown li + li { margin-top }`
+  // gave the SECOND and THIRD items a 4px top margin and, being an
+  // adjacent-sibling rule, could not give one to the first. The flex line grew
+  // to the tallest margin box and centred the unmargined date inside it.
+  //
+  // No unit test can see this and reading the stylesheet does not reveal it --
+  // every item has identical height, padding, font-size and line-height. Only
+  // measuring the rendered boxes does, so that is what this asserts.
+  //
+  // A wide viewport on purpose: the row wraps below 640px by design, and a
+  // wrapped row legitimately has items on different lines.
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.goto(`${BASE_URL}/api/options/chain`, { waitUntil: 'domcontentloaded' });
+
+  const tops = await page.evaluate(() => {
+    const list = document.querySelector('ul[class*="list_"]');
+    return [...list.children].map((li) => Math.round(li.getBoundingClientRect().top));
+  });
+
+  expect(tops.length).toBe(3);
+  // One line, so one top. Rounded to the pixel: sub-pixel layout differences
+  // are not what this is looking for; a 4px margin on two of three items is.
+  expect(new Set(tops).size).toBe(1);
+});
+
 test('the last-updated date is machine readable', async ({ page }) => {
   await page.goto(`${BASE_URL}/api/options/chain`, { waitUntil: 'domcontentloaded' });
 
