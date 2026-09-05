@@ -146,6 +146,13 @@ jobs:
       - name: Check no MDX directive renders as literal text
         run: pnpm run lint:directives
 
+      # Also reuses that build. A CSS rule naming a class no element carries is
+      # valid CSS that styles nothing, and nothing else reports it: the build
+      # is green and the page renders, only unstyled. `.tabItem_Ymn6` did
+      # exactly that on 104 pages when the package manager changed the hash.
+      - name: Check no CSS rule targets a class the build never emits
+        run: pnpm run lint:dead-css
+
       - name: Check every code fence language highlights
         run: node scripts/check-highlighting.js
 

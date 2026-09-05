@@ -512,6 +512,30 @@ of them was in this file's own checker.
 So: use `grep -a` with a quote-agnostic pattern, or parse. Do not rely on
 remembering.
 
+**Five instruments across the two repositories have now been bitten by it**, and
+the fifth is the one that shows the real cost. `MarketData-App/website`'s 404
+walk-up probe read `href="/docs/` and `name="generator"`, matched nothing
+against a 3.10 build, and **reported that this repository had lost its 404
+page** — a false accusation about someone else's work, made at the moment of a
+major upgrade. It was caught only because the operator opened the page and saw
+our generator tag. A quoting assumption does not always go quiet; it can go
+loud and wrong.
+
+### An instrument you rely on cannot live in a gitignored directory
+
+That probe sat in a gitignored scratch directory. Its owner had audited their
+committed checks for exactly this fuse the same day, reported them clean, and
+never looked in `.scratch/` — where the only detector for that regression
+happened to live.
+
+The same thing had happened here. `check-dead-css.mjs` was written in
+`.migration/` during the 3.10 migration and left there, and it is the only
+thing that can see a CSS rule targeting a class the build never emits. It is in
+`scripts/` now. **Before trusting an audit of "the checks", list what is
+ignored** — `git status --ignored --short` — because a script that is not
+committed is invisible to review, absent from a fresh clone, and skipped by
+every audit that greps the tracked tree.
+
 `lib/not-found-head.js`'s `attributesOf` came through untouched because it
 accepts all three HTML5 forms: `"x"`, `'x'`, and bare. Copy that, or parse with
 `@mixmark-io/domino`, which is why `lint:seo` uses it and why `lint:seo` was

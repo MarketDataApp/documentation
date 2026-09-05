@@ -34,6 +34,7 @@
     "lint:examples": "node scripts/check-example-parity.js",
     "lint:highlighting": "node scripts/check-highlighting.js",
     "lint:directives": "node scripts/check-directives.js",
+    "lint:dead-css": "node scripts/check-dead-css.mjs",
     "lint:seo": "node scripts/lint-seo.js",
     "lint:algolia": "node scripts/lint-algolia.js",
     "test:scripts": "node --test scripts/__tests__/*.test.js"

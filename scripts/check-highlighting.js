@@ -45,8 +45,29 @@ const ROOT = path.resolve(__dirname, '..');
 // to ask for a code block with no highlighting at all.
 const INTENTIONALLY_PLAIN = new Set(['text', 'plaintext', 'none', 'nohighlight']);
 
-const BLOCK = /<pre[^>]*class="[^"]*language-([a-z0-9#+_-]+)[^"]*"[^>]*>([\s\S]*?)<\/pre>/g;
-const TOKEN = /class="token ([a-z-]+)/g;
+/**
+ * Both accept a quoted OR an unquoted attribute value.
+ *
+ * They required the quotes and were CORRECT ANYWAY, for a reason worth writing
+ * down rather than relying on: the build emits unquoted attributes wherever a
+ * value needs no quote (36,101 of them today), but every value these two match
+ * has a SPACE in it -- `class="language-go codeBlockContainer_x theme-code-block"`
+ * and `class="token keyword"` -- and a value with a space must be quoted. So
+ * the patterns held by a property of Prism's markup, not by design.
+ *
+ * That is too thin a thread. If Prism ever emits a single-class token the
+ * pattern would match nothing, the token count would fall to zero, and the
+ * failure mode is a MISSING GRAMMAR SLIPPING THROUGH -- this check going quiet
+ * is indistinguishable from every language highlighting.
+ *
+ * The same assumption in `MarketData-App/website`'s 404 walk-up probe accused
+ * this repository of losing its 404 page on 2026-09-05: it read
+ * `href="/docs/` and 3.10 writes `href=/docs/`. Five instruments across the two
+ * repos have now been bitten by it. See CLAUDE.md.
+ */
+const BLOCK =
+  /<pre[^>]*class=(?:"[^"]*language-([a-z0-9#+_-]+)[^"]*"|'[^']*language-([a-z0-9#+_-]+)[^']*'|[^\s>]*language-([a-z0-9#+_-]+)[^\s>]*)[^>]*>([\s\S]*?)<\/pre>/g;
+const TOKEN = /class=(?:"token ([a-z-]+)|'token ([a-z-]+)|token-([a-z-]+))/g;
 
 // Directories with no rendered code blocks in them.
 const SKIP_DIRS = new Set(['assets', 'img', 'fonts']);
@@ -118,7 +139,11 @@ function scan(dir, files) {
     BLOCK.lastIndex = 0;
     let m;
     while ((m = BLOCK.exec(html)) !== null) {
-      const [, lang, body] = m;
+      // The language is in whichever quoting alternative matched; the body is
+      // always the last group. Reading m[1] alone would silently see `undefined`
+      // for an unquoted class and bucket every such block under one key.
+      const lang = m[1] ?? m[2] ?? m[3];
+      const body = m[4];
       if (!stats.has(lang)) stats.set(lang, { blocks: 0, highlighted: 0, pages: new Set() });
       const st = stats.get(lang);
       st.blocks++;
@@ -126,7 +151,8 @@ function scan(dir, files) {
       let t;
       let hasReal = false;
       while ((t = TOKEN.exec(body)) !== null) {
-        if (t[1] !== 'plain') {
+        const token = t[1] ?? t[2] ?? t[3];
+        if (token !== 'plain') {
           hasReal = true;
           break;
         }
