@@ -66,6 +66,28 @@ const { applyHeadRules } = require('../lib/noindex-head');
  */
 const NOINDEX_ROOTS = ['internal', 'search'];
 
+/**
+ * THE SEARCH PAGE ENDS UP WITH TWO ROBOTS TAGS, AND THAT IS THE FIX WORKING.
+ *
+ * Docusaurus's own SearchPage emits, in theme-search-algolia:
+ *
+ *   <meta property="robots" content="noindex, follow" />
+ *
+ * `property` is the Open Graph attribute. A robots directive is read from
+ * `name`, so **that tag has never instructed any crawler** -- Docusaurus has
+ * been trying to noindex its own search page with a spelling nothing acts on.
+ * The page was therefore indexable AND in our sitemap.
+ *
+ * `hasRobots()` in lib/noindex-head.js keys on `name` for exactly that reason,
+ * so it does not count the theme's tag and this plugin adds a real one. The
+ * built page then carries both: the theme's inert `property=robots` and our
+ * effective `name=robots`. They do not conflict, because only one of them is a
+ * directive at all.
+ *
+ * Do not "tidy" this by teaching hasRobots to accept `property` -- that would
+ * make the plugin skip the page and restore the original defect, silently.
+ */
+
 /** Owned by plugins/not-found-head.js. See the header. */
 const SKIP = new Set(['404.html']);
 
