@@ -348,3 +348,24 @@ img[alt="Google OAuth consent screen—select all permissions and click Continue
 .language-http .token.header-value {
   color: var(--md-http-header-value) !important;
 }
+
+/**
+ * An embed may not push the page sideways.
+ *
+ * YouTube's default embed code is `width="560" height="315"`, and one pasted
+ * into api/index.md kept it while the other three embeds in the docs had been
+ * changed to `width="100%"`. On a 390px phone that one iframe made the whole
+ * page 186px wider than the viewport, so every page on it scrolled sideways.
+ *
+ * The attribute is fixed too, but this rule is the durable half: the next
+ * person to paste an embed will paste YouTube's default, and a `max-width`
+ * costs nothing when the width is already fluid.
+ *
+ * Measured, not guessed -- an overflow sweep at 390px and 1440px found exactly
+ * one offender across the corpus, and e2e/responsive.spec.js keeps it that way.
+ */
+.markdown iframe,
+.markdown img,
+.markdown video {
+  max-width: 100%;
+}

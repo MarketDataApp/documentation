@@ -25,7 +25,7 @@ The easiest way to try out our API is using our [Swagger User Interface](https:/
 Our endpoints have **lots of optional parameters** to allow users to sort and filter responses. It can be overwhelming to new users at first. When you're first getting started testing our API in Swagger, scroll to the required parameters and ignore all the optional ones. Most endpoints require only a ticker symbol as a required parameter.
 :::
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/tOIZi7s6nqQ?si=sFxMcDQGsfnQHhhb" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="100%" height="315" src="https://www.youtube.com/embed/tOIZi7s6nqQ?si=sFxMcDQGsfnQHhhb" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 ### Get Started Quick — No Registration Required!
 
