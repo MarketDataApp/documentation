@@ -58,7 +58,7 @@
  * whole point: it turns the diagnosis #185 describes as expensive into one a
  * reader gets for free.
  *
- * Run with: TEST_ENV=staging yarn wait:deploy
+ * Run with: TEST_ENV=staging pnpm run wait:deploy
  */
 
 const { REDIRECTS } = require('../redirects');
@@ -128,7 +128,48 @@ async function probe(urls, attempt) {
   });
 }
 
+
+/**
+ * THE COMMIT GATE, AND WHY 200s WERE NOT ENOUGH.
+ *
+ * This waited only for a set of pages to answer 200 cache-busted. That proves
+ * the site is UP. It says nothing about WHICH BUILD is up -- and every one of
+ * those pages answers 200 from the previous deploy just as happily.
+ *
+ * So on 2026-09-07 the wait returned "ready" in seconds while staging was
+ * still serving a build from two days earlier, and the e2e suite ran against
+ * it and failed on a fix that was in the branch but not yet on the host. The
+ * error named the right defect on the wrong artefact, which is the most
+ * expensive kind of red: it looks exactly like the change not working.
+ *
+ * `/docs/build-info.json` exists to answer this in one request with an exact
+ * answer -- the whole reason it was built -- and this readiness check was not
+ * asking it.
+ *
+ * The commit is only KNOWN in CI, from GITHUB_SHA. Locally there is nothing to
+ * compare against, so the gate is skipped and SAYS SO rather than passing
+ * silently: a check that cannot tell "the right build" from "no idea" must not
+ * report the first.
+ */
+async function deployedCommit(host, attempt) {
+  const url = bust(`${host}${PREFIX}/build-info.json`, attempt, 0);
+  try {
+    const res = await fetch(url, { redirect: 'manual' });
+    if (res.status !== 200) return { error: `HTTP ${res.status}` };
+    const doc = await res.json();
+    return { commit: doc.commit, builtAt: doc.builtAt };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * The commit this run is testing. Set by CI; absent locally, where there is
+ * nothing to compare a deployed sentinel against.
+ */
+const WANTED_COMMIT = process.env.WAIT_FOR_COMMIT || process.env.GITHUB_SHA || '';
 
 async function main() {
   const env = process.env.TEST_ENV;
@@ -157,11 +198,34 @@ async function main() {
 
     if (down.length === 0) {
       const secs = Math.round((Date.now() - started) / 1000);
+
+      // Up is not the same as current. See deployedCommit above.
+      if (!WANTED_COMMIT) {
+        console.log(
+          `[wait-for-deploy] ${env} ready: ${urls.length} of ${urls.length} probe URL(s) ` +
+            `answered 200 (cache-busted) after ${secs}s.\n` +
+            '[wait-for-deploy] NO COMMIT TO CHECK (GITHUB_SHA unset), so this confirms the ' +
+            'site is up and NOT that it serves this build.'
+        );
+        return;
+      }
+
+      const sentinel = await deployedCommit(host, attempt);
+      if (sentinel.commit === WANTED_COMMIT) {
+        console.log(
+          `[wait-for-deploy] ${env} ready: ${urls.length} probe URL(s) answered 200 and ` +
+            `/build-info.json reports ${WANTED_COMMIT.slice(0, 7)} after ${secs}s`
+        );
+        return;
+      }
+
       console.log(
-        `[wait-for-deploy] ${env} ready: ${urls.length} of ${urls.length} ` +
-          `probe URL(s) answered 200 (cache-busted) after ${secs}s`
+        `[wait-for-deploy] ${env} is UP but serving ` +
+          `${sentinel.commit ? sentinel.commit.slice(0, 7) : `(${sentinel.error})`}` +
+          `, not ${WANTED_COMMIT.slice(0, 7)}; waiting ${INTERVAL_MS / 1000}s`
       );
-      return;
+      await sleep(INTERVAL_MS);
+      continue;
     }
 
     console.log(

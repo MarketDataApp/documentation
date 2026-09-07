@@ -10,7 +10,7 @@ The `mode` parameter allows you to control **how an API request is fulfilled**, 
 
 Our API supports four freshness modes — `live`, `delayed`, `eod`, and `historical` — plus `cached`, which serves recently stored data at a reduced credit cost. These options balance immediacy, availability, and cost efficiency. Below is a detailed overview of each mode, including examples and recommended use-cases.
 
-:::info Premium Parameter
+:::info[Premium Parameter]
 This parameter is available only on paid plans. Free and trial plans cannot change the data mode. They receive historical data — the last fully-closed session — and a request for any fresher mode (`mode=live`, `mode=delayed`, or `mode=eod`) returns [402 Payment Required](/api/troubleshooting/payment-required). See [Data Freshness](/docs/account/data-freshness/) for what each plan receives.
 :::
 
@@ -177,7 +177,7 @@ Market Data uses HTTP status codes to communicate where a successful response ca
 | `203 Non-Authoritative Information` | Response was served from a cache layer (Redis, database quote cache, response log, option-chain cache, etc.). | Any mode. Common during market hours regardless of `mode=live`, `mode=delayed`, or no `mode` specified. The body is identical in shape to a `200`. |
 | `204 No Content`                    | No cached data is available within the requested constraints. No credits charged.                             | Only when `mode=cached` (also `mode=cache` / `mode=stale`). Never returned by other modes.                                                         |
 
-:::caution Mode does not deterministically map to status code
+:::caution[Mode does not deterministically map to status code]
 A common (incorrect) assumption is that `mode=live` always returns `200` and `mode=delayed` always returns `203`. Both can return either `200` or `203` depending on whether a cache layer can satisfy the request at the moment. Only `mode=cached` is deterministic — it returns `203` on cache hit or `204` on cache miss, never `200`.
 :::
 

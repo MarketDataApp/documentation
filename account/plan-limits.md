@@ -26,7 +26,7 @@ Each time you call the API, the system increases your credits counter. Normally 
 For users working with options, take care before repeatedly requesting quotes for an entire option chain. **Each option symbol included in the response consumes credits**. If you download the entire SPX option chain (which has 20,000+ option symbols), you can exhaust your credit limit very quickly. Use our option chain filters to request only the strikes and expirations you need.
 :::
 
-:::note Trial plans
+:::note[Trial plans]
 Starter Trial and Trader Trial do not support `mode=cached`.
 :::
 

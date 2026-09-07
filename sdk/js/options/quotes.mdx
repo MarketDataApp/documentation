@@ -54,7 +54,7 @@ Additional endpoint-specific parameters like `from`, `to`, and `date` are passed
 
 ### Returns
 
-- [`MarketDataPromise<OptionsQuotes[] | OptionsQuotesHuman[] | Blob>`](/sdk/js/client#MarketDataPromise)
+- [`MarketDataPromise<OptionsQuotes[] | OptionsQuotesHuman[] | Blob>`](/sdk/js/client#marketdatapromise)
 
 <Tabs>
 <TabItem value="Single" label="Single Contract">
@@ -123,11 +123,11 @@ try {
 <a name="OptionsQuotes"></a>
 ## OptionsQuotes
 
-`OptionsQuotes` uses the same field shape as [`OptionsChain`](/sdk/js/options/chain#OptionsChain): `optionSymbol`, `underlying`, `expiration`, `side`, `strike`, `bid`, `ask`, `mid`, `last`, `openInterest`, `volume`, `inTheMoney`, `intrinsicValue`, `extrinsicValue`, `iv`, `delta`, `gamma`, `theta`, `vega`, and so on.
+`OptionsQuotes` uses the same field shape as [`OptionsChain`](/sdk/js/options/chain#optionschain): `optionSymbol`, `underlying`, `expiration`, `side`, `strike`, `bid`, `ask`, `mid`, `last`, `openInterest`, `volume`, `inTheMoney`, `intrinsicValue`, `extrinsicValue`, `iv`, `delta`, `gamma`, `theta`, `vega`, and so on.
 
-See [OptionsChain](/sdk/js/options/chain#OptionsChain) for the complete list of fields.
+See [OptionsChain](/sdk/js/options/chain#optionschain) for the complete list of fields.
 
 <a name="OptionsQuotesHuman"></a>
 ## OptionsQuotesHuman
 
-`OptionsQuotesHuman` is returned when `human: true` is set. Field shape mirrors [`OptionsChainHuman`](/sdk/js/options/chain#OptionsChainHuman) — same columns, `Title_Case` names.
+`OptionsQuotesHuman` is returned when `human: true` is set. Field shape mirrors [`OptionsChainHuman`](/sdk/js/options/chain#optionschainhuman) — same columns, `Title_Case` names.

@@ -35,3 +35,6 @@ worker/node_modules
 # Internal SOPs (not for public docs site)
 sop/
 
+
+# Build-diff harness for the 3.10 / pnpm / future.v4 migration (snapshots are large)
+.migration/

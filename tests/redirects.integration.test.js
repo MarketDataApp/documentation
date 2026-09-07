@@ -38,7 +38,7 @@
  *
  * Set TEST_ENV=staging or TEST_ENV=production for one host. Unset tests both.
  *
- * Run with: yarn test:redirects
+ * Run with: pnpm run test:redirects
  * Requires network access to www.marketdata.app and www-staging.marketdata.app.
  */
 

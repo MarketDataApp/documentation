@@ -62,7 +62,7 @@ repo has a test named for it.
 
 **Docs repo** (`.github/workflows/deploy-docs.yml`):
 
-1. Builds Docusaurus (`yarn build`)
+1. Builds Docusaurus (`pnpm run build`)
 2. Restructures build output to nest under `build/docs/`
 3. Generates `_headers` file for asset cache control
 4. Uploads build to R2 (`www-marketdata-app-builds` bucket) at `{env}/sources/docs/`
@@ -97,7 +97,42 @@ merges into it — see the note in `deploy-docs.yml`.
 
 ## Package Manager
 
-- Use **yarn**, not npm (project uses `yarn.lock`)
+**pnpm**, pinned by `packageManager` in `package.json`. Not yarn, not npm.
+`MarketDataApp/website` was already on pnpm, so the origin is no longer mixed.
+
+`pnpm-workspace.yaml` exists even though there is no workspace: pnpm 11 reads
+its non-npm settings from that file. Two of its behaviours will stop an install
+until you answer them, and both are deliberate.
+
+**`allowBuilds` is a supply-chain gate.** pnpm runs no dependency install or
+`prepare` script unless it is named there, and it FAILS rather than skipping
+quietly, so an undeclared script cannot slip past. `@marketdataapp/ui` is a git
+dependency, so pnpm wants to run its `prepare` on fetch; the key pnpm accepts is
+the resolved tarball URL **including the commit sha**, and no shorter form
+works. That is the useful part -- the approval covers one commit's code, not the
+dependency in perpetuity. **Bumping the ui version therefore breaks the install
+on purpose**: run `pnpm install`, read the new key it prints, satisfy yourself
+the commit is ours, paste it in.
+
+**pnpm does not hoist, so a phantom dependency fails loudly.** This found one
+immediately: ten swizzled components in `src/theme/` import
+`@docusaurus/theme-common`, which had never been in `package.json`. Under yarn
+it resolved off the flat tree at whatever version `preset-classic` dragged in.
+It is declared now.
+
+### Never hardcode a generated class name
+
+`src/css/custom.css` targeted `.tabItem_Ymn6`, a hashed CSS-module class from
+`@docusaurus/theme-classic`. The hash follows the module's resolved path, so the
+package-manager change moved it to `tabItem_VFbg` and **the rule silently
+matched nothing** -- valid CSS naming a class no element carries, so no build
+error, no warning, and tab backgrounds simply gone. A Docusaurus upgrade moves
+it the same way.
+
+The selector is `.tabs-container [role="tabpanel"]` now: `tabs-container` is a
+plain unhashed theme class and `role="tabpanel"` is the ARIA role. Neither is
+generated. **Only a diff of two builds could see this** -- see "Diff two builds
+before believing an upgrade" below.
 
 ## Search
 
@@ -203,7 +238,7 @@ lands *between* two words they typed. Raising `pageRank` reaches neither case.
 
 ### Watching it
 
-`yarn lint:algolia` (`scripts/lint-algolia.js`, logic in `lib/algolia.js`).
+`pnpm run lint:algolia` (`scripts/lint-algolia.js`, logic in `lib/algolia.js`).
 Runs daily in `.github/workflows/algolia-watch.yml`, **not** in PR checks: no
 pull request can make the index stale or fresh, and a check people cannot act
 on is one they learn to skip.
@@ -303,6 +338,346 @@ equivalent `sidebar_custom_props: { badge }`, which is what renders the Premium
 row pointing at them. All seven redirect to their section root, because they
 were in the sitemap and so may be indexed.
 
+## Diff two builds before believing an upgrade
+
+Every defect in the 3.10 / pnpm / `future.v4` migration was found this way, and
+**not one of them failed a build.** The pattern is always the same: something
+that renders, deploys and passes every gate, while being wrong.
+
+Take a snapshot of `build/`, change one thing, take another, and compare.
+
+**Measure the noise floor first** — build the same tree twice and diff those.
+Anything that differs there is noise you must normalise before you can read a
+real diff. That control is what found the `builtAt` bug below, and it is the
+step to repeat rather than trust.
+
+### The build is now byte-for-byte reproducible, and it was not before
+
+Two builds of one tree differ in **nothing**. Measured across 1401 files, with
+only `builtAt` normalised — and that field lives solely in `build-info.json`,
+which is served `no-store` and whose whole purpose is to vary.
+
+**This was false until the 3.10 upgrade**, in two separate ways, and both had
+to be fixed to get here:
+
+1. `builtAt` was passed to `plugins/build-info.js` as a plugin OPTION, and
+   Docusaurus serialises the config — options included — into `main.js`. A
+   clock in the client bundle moved its content hash every build.
+
+   **What is serialised is the plugin's PATH and its OPTIONS, never its
+   source.** So editing a plugin's code has never moved the bundle and still
+   does not; only the VALUES you hand it do. Worth being exact about, because
+   the opposite model — "the plugin is bundled" — predicts the same symptom for
+   the wrong reason and would send the next person editing the wrong thing.
+
+   Both shapes sit in the same array, two entries apart, which makes the rule
+   readable straight out of the artefact rather than taken on trust:
+
+   ```js
+   plugins:["./plugins/build-info", …,
+     ["@docusaurus/plugin-content-docs",{id:"api",path:"api",…}]]
+   ```
+
+   A plugin given options publishes them to every reader. A plugin given none
+   costs nothing.
+
+   **`require.resolve()` in this config is how the build machine's paths ship
+   to every visitor.** It returns an ABSOLUTE path, and an absolute path handed
+   to a plugin as an option is serialised like any other value.
+   `sidebarPath: require.resolve("./sidebars.js")` put the checkout's full path
+   into `main.js` five times over, once per docs instance, plus one for
+   `customCss`. It reads as a robustness idiom and is nothing of the kind.
+   Docusaurus resolves a relative string against `siteDir`, so `"./sidebars.js"`
+   is both correct and silent.
+
+   **It predated the upgrade and it is still live.** The production bundle
+   built from 3.0.1 carries NINE of them —
+   `/home/runner/work/documentation/documentation/…` — which is a GitHub
+   runner's fixed layout and an already-public repository name. So the live
+   disclosure is mild. The severity is in the shape, not today's value: the
+   same config produces `/home/<user>/…` the day anyone builds production from
+   a workstation or a self-hosted runner, which is exactly what it did here.
+
+   Six came from this config. The other three name `.docusaurus/` internals, a
+   source we do not control — and all nine are absent from the current build,
+   so the upgrade plus the relative paths closed more than the six we set out
+   to close. Verify with a strict pattern; a loose `/home/` match hits
+   `https://script.google.com/home/all` in the Sheets docs and reports two
+   false positives.
+2. Docusaurus 3.0.1 wrote plugin `globalData` in the order the five
+   content-docs instances happened to finish, which is not stable. So even
+   after removing the clock, `main.js` was still a permutation of itself
+   between builds. **3.10's Rspack pipeline made that ordering deterministic**,
+   which is what closed the gap.
+
+Two things follow, and the second is why it is worth a section:
+
+- **A deploy no longer invalidates the primary bundle for no reason.** It used
+  to publish a new `main.<hash>.js` on every build against a
+  `max-age=31536000, immutable` header, and strand every mid-session reader —
+  the exact reader `src/clientModules/chunkReload.js` exists to recover.
+- **Diffing built HTML now proves something.** A head-only change can be
+  verified by diffing the build directly, which is what this file has always
+  claimed and could not actually deliver. If a future change reintroduces
+  per-build variance, that claim quietly becomes false again — so if two builds
+  of one tree ever start differing, fix that before trusting any other diff.
+
+**Removing the clock was not enough, and the reasoning that stopped there is
+worth reading.** `builtAt` came out of the plugin options; the commit sha was
+deliberately left in, on the grounds that "a sha is stable for a given tree, so
+it costs no bundle churn". True per tree, and beside the point: **every deploy
+is a new commit.** A CLAUDE.md-only commit therefore still rehashed `main.js`
+and rewrote all 265 pages, and the orchestrator measured it — 269 files
+differing, every one identical once the sha was tokenised.
+
+`plugins/build-info.js` resolves the commit itself now, so it never enters the
+serialised config. Both consumers are build-time, and nothing in the browser
+ever needed it. Measured across two real commits afterwards:
+
+|                        |                                                        |
+|------------------------|--------------------------------------------------------|
+| asset files changed    | **0** — `main.js` keeps its hash                       |
+| non-HTML files changed | 1 — `build-info.json`, which exists to vary            |
+| per page               | one attribute, `<meta name="build-commit">`, by design |
+
+**The rule this yields:** anything a plugin needs at build time should be
+resolved inside the plugin. An option is a value published to every reader and
+charged to the bundle hash, and neither of those is visible at the call site.
+
+`plugins/build-info.js` now enforces that on itself: its `postBuild` fails when
+`main.<hash>.js` contains a 40-hex git sha or an ISO timestamp. **It is a
+property check, not a measurement, and the difference is the point.** "Rebuild
+twice and diff the assets" is a sample — true of the two commits you tried, and
+needing repeating forever. "No build-varying value is in the bundle" is checked
+once and settles every commit after it. Reach for that shape whenever the claim
+is about what *cannot* happen; it is cheaper and stronger at the same time.
+
+It fails on a missing bundle rather than passing, for the reason in "a count in
+a log is not a check" above, and it looks for 40 hex rather than 32 because the
+public Algolia search key is 32 hex, stable, and legitimately in the bundle.
+
+What that instrument found, none of which was visible any other way:
+
+| Defect                                                  | What the build said |
+|---------------------------------------------------------|---------------------|
+| a clock in the client bundle, busting it every deploy   | success             |
+| a CSS rule naming a class no element carries            | success             |
+| `article:modified_time` set to the year 58,641          | success             |
+| llms.txt losing all 259 descriptions                    | success             |
+| a swizzle so stale it reported 234 false broken anchors | success (warnings)  |
+
+### Never hardcode a generated name, and never regex a quoted attribute
+
+Two habits produce most of that table.
+
+**A hashed CSS-module class is not a name you may write down.** `.tabItem_Ymn6`
+moved when the package manager changed, because the hash follows the module's
+resolved path. The rule stayed valid and matched nothing.
+
+**Built HTML does not promise how it spells an attribute.** This is what
+`build/` actually contains today — copy it before writing any pattern against a
+built page:
+
+```html
+<meta name=build-commit content=a99b8391e31620b55ce53b9b325856d4a4331494>
+<h2 class="anchor anchorTargetStickyNavbar_WZc3" id=headers-type>
+```
+
+**Unquoted wherever the value needs no quote**, and quoted where it does — in
+the same tag. `future.v4`'s Faster pipeline minifies harder than 3.10 did.
+`lib/llms-txt.js` required the quotes, so every description vanished and
+llms.txt fell from 55 KB to 23 KB — a structurally valid index, so nothing
+failed.
+
+The sharpest case is the search page, where **two spellings of the same
+concept sit in adjacent tags**:
+
+```html
+<meta data-rh=true property=robots content="noindex, follow"/>   <!-- theme's, inert -->
+<meta name="robots" content="noindex, nofollow">                 <!-- ours, effective -->
+```
+
+Grep for `name="robots"` and you find ours and miss the theme's. Grep for
+`property=robots` and you find the theme's and miss ours. Either answer looks
+complete. Only a parser sees both.
+
+**Knowing this does not protect you.** On the day it was found, the
+orchestrator's agent read the defect report, quoted the example back, and then
+wrote `grep -o 'name="build-commit"[^>]*'` against this build ten minutes
+later. It reported the tag missing from all 265 pages. It was caught only
+because "missing" contradicted a measurement made minutes earlier — not because
+the rule had been read. Two other greps here were fooled the same way, and one
+of them was in this file's own checker.
+
+So: use `grep -a` with a quote-agnostic pattern, or parse. Do not rely on
+remembering.
+
+**Five instruments across the two repositories have now been bitten by it**, and
+the fifth is the one that shows the real cost. `MarketData-App/website`'s 404
+walk-up probe read `href="/docs/` and `name="generator"`, matched nothing
+against a 3.10 build, and **reported that this repository had lost its 404
+page** — a false accusation about someone else's work, made at the moment of a
+major upgrade. It was caught only because the operator opened the page and saw
+our generator tag. A quoting assumption does not always go quiet; it can go
+loud and wrong.
+
+### An instrument you rely on cannot live in a gitignored directory
+
+That probe sat in a gitignored scratch directory. Its owner had audited their
+committed checks for exactly this fuse the same day, reported them clean, and
+never looked in `.scratch/` — where the only detector for that regression
+happened to live.
+
+The same thing had happened here. `check-dead-css.mjs` was written in
+`.migration/` during the 3.10 migration and left there, and it is the only
+thing that can see a CSS rule targeting a class the build never emits. It is in
+`scripts/` now. **Before trusting an audit of "the checks", list what is
+ignored** — `git status --ignored --short` — because a script that is not
+committed is invisible to review, absent from a fresh clone, and skipped by
+every audit that greps the tracked tree.
+
+`lib/not-found-head.js`'s `attributesOf` came through untouched because it
+accepts all three HTML5 forms: `"x"`, `'x'`, and bare. Copy that, or parse with
+`@mixmark-io/domino`, which is why `lint:seo` uses it and why `lint:seo` was
+the check that did not care.
+
+### A count in a log is not a check
+
+The llms.txt collapse **printed both of its own symptoms** — `23 KB` where it
+had been 55, and `259 without a description` where it had been 0 — on the line
+the build writes every time. Nothing gated on either, so the build was green
+and the file shipped gutted.
+
+Reporting a number is not the same as asserting one. `plugins/llms-txt.js` now
+throws when a MAJORITY of entries have no description, and there is a
+deliberate asymmetry in that threshold: the failure is all-or-nothing, because
+the pattern either matches the build's spelling or it does not. One page
+without a description is ordinary content; half of them cannot be.
+
+`scripts/check-highlighting.js` has the older version of the same idea, and its
+wording is the one to copy: *"a tripwire for a walk that stopped matching, not
+a content baseline. Do not lower the floor to make it pass."*
+
+**A structural gate reports success over gutted substance.** `llms.txt` with
+every description stripped still had one H1 first, no H6, and 260 lines
+reaching `/docs/` — so this repo's `lint:contract` passed it, and so did the
+orchestrator's splice preconditions, which demote its headings and require
+exactly those properties. Both gates asked *can this be spliced*. Neither asked
+*is it still worth splicing*.
+
+### The thin twins are expected
+
+16 routes produce a Markdown twin under 200 bytes, and `sheets/stocks.md` is 17
+bytes against an 18 KB HTML page. **This is correct, and it is worth writing
+down because it is byte-indistinguishable from the defect above.**
+
+Those pages are hubs whose entire body is `<DocCardList items={...} />`. That is
+navigation, not prose, and `cleanMdx` drops JSX — so the twin is the title and
+nothing else. Where such a page also has prose, the prose is there:
+`api/stocks.md` is 181 bytes and carries every sentence its source has.
+
+They have sources; they are not generated category indexes. Do not "fix" them,
+and do not add a twin size floor — a legitimately thin hub and a twin gutted by
+a parser regression are the same size, and only the description floor above can
+tell those apart.
+
+### Six built pages contain a NUL byte, and grep skips them silently
+
+A stray `\x00` lands immediately before certain U+20xx characters (em dash,
+zero-width space, curly apostrophe). It predates all of this -- the 3.0.1
+baseline has it -- and the count and the pages move between builds.
+
+It matters because **grep treats a file containing NUL as binary and skips it
+with no message.** A robots-meta count came up six pages short during this work
+and the tag was present all along. Use `grep -a` on built HTML, and prefer a
+parser. `scripts/check-build-contract.js` does not report it; the migration
+harness did.
+
+## Swizzles: a fork you do not maintain is a fork that lies
+
+`src/theme/` was 27 components. **Eleven had no local changes at all** -- ten
+already matched upstream 3.10, one was a stale copy of 3.0.1. They were deleted
+in the 3.10 upgrade, because a swizzle with no customisation can only fall
+behind upstream, and one of them proved what that costs.
+
+`src/theme/Heading` was a byte-for-byte fork of the 3.0.1 file. Upstream had
+since added `brokenLinks.collectAnchor(id)` -- the call by which a page
+registers the anchors it defines. Ours never made it, so every page declared
+none, and when 3.10 began checking anchors it reported **254 broken, of which
+234 were not broken at all.** Deleting the swizzle fixed all 234.
+
+**Before upgrading Docusaurus, classify every swizzle against upstream.**
+Normalise away comments, quote style, trailing commas and whitespace, then
+compare each file in `src/theme/` with the same path in
+`node_modules/.pnpm/@docusaurus+theme-classic@<version>/.../lib/theme/`. Delete
+anything that matches. Reconcile the rest by hand -- and check the sibling
+`styles.module.css` separately, because a component and its stylesheet drift
+independently.
+
+Twelve customised swizzles and four of our own remain.
+
+## `future.v4` is on, and one flag needed a counterweight
+
+`future: { v4: true }` in `docusaurus.config.js` turns on all five v4 flags
+early, so the major is a version bump rather than a migration. Four were free.
+
+**`siteStorageNamespacing` was not, and it would have failed silently.** It
+namespaces browser storage: `theme` becomes `theme-f3b`, a hash of the site's
+url and baseUrl. That exists so two Docusaurus sites on one domain cannot read
+each other's preferences -- and **we want them to.** `theme` is a contract
+across the whole origin: `plugins/theme-cookie-sync.js` seeds it from the
+`.marketdata.app` cookie, and `@marketdataapp/ui`'s `theme.js`, used by every
+other property, reads the same unprefixed key. With the flag on, the built
+bootstrap read `theme-f3b` while our bridge still wrote `theme`, so a reader
+who chose dark mode on the marketing site arrived here in light mode.
+
+`storage: { namespace: false }` pins it. Namespacing it "properly" is not
+available: the hash comes from the url, so staging and production would
+disagree with each other and with the marketing half, which cannot know either
+value.
+
+The other four, for the record: `removeLegacyPostBuildHeadAttribute` is free
+because no plugin here takes `head` in `postBuild`; `useCssCascadeLayers`
+changed no rule we own; `mdx1CompatDisabledByDefault` needed content work,
+below.
+
+**`fasterByDefault` is the one with a number attached.** Same tree, same
+machine, only that flag moved:
+
+| Bundler                         | Full `pnpm run build` |
+|---------------------------------|-----------------------|
+| webpack (`fasterByDefault` off) | 56s                   |
+| Rspack + SWC (on)               | **8s**                |
+
+It needs the `@docusaurus/faster` dependency, and that pulls in `@swc/core` --
+the one dependency here whose install script does real work, since it resolves
+a native binding. It is `true` in `pnpm-workspace.yaml` for that reason, unlike
+`core-js`, which is declined.
+
+### React 19
+
+**v4 drops React 18**, so `future.v4` without React 19 is only half ready. The
+bump was measured the same way as everything else: every built page identical
+in text content, all 794 Markdown twins byte-identical, llms.txt, sitemap.xml
+and `_redirects` byte-identical, 229 lib tests, 103 script tests and 14 e2e
+tests green.
+
+3.10 accepts `^18.0.0 || ^19.0.0`, so this is separable from the rest of the
+migration if it ever needs to come out.
+
+### Strict MDX: `{#id}` is JavaScript now
+
+With MDX v1 compatibility off, `## Title {#my-id}` is parsed as a JS
+expression and fails the build. The supported spelling is `{/* #my-id */}`, and
+it also stops the id leaking into the page's Markdown twin.
+
+**`<!-- -->` inside a code fence is not affected and must not be converted.**
+Only prose comments were ever compat-handled. A blanket rewrite here corrupted
+an XML sample in `sdk/csharp/installation.mdx` before the build diff caught it.
+
+Admonition titles (`:::note Some Title`) are unaffected -- 75 of them build
+identically with the flag on.
+
 ## Sidebar Badges
 
 - Badges (New, Premium, Beta, High Usage) are configured via `sidebar_custom_props: { badge: n/p/b/h }` in page frontmatter
@@ -362,6 +737,92 @@ sees 200s and concludes it works.
 `tests/sitemap.integration.test.js` is deliberately cache-warm: it is the only
 check that reads what the public reads. A green run there proves delivery, not
 completeness.
+
+## A `repository_dispatch` workflow runs from `main`, not from your branch
+
+**This bites exactly once per CI change, on the branch where you cannot see it
+coming.** GitHub loads a workflow file from the DEFAULT branch when the trigger
+is `repository_dispatch` (and `workflow_run`, and `schedule`). It then checks
+out whatever SHA the job asks for — so the workflow is `main`'s and the code is
+your branch's.
+
+| Workflow                | Trigger               | File comes from |
+|-------------------------|-----------------------|-----------------|
+| `deploy-docs.yml`       | `push`                | your branch ✅  |
+| `sync-sdk-docs.yml`     | `push`                | your branch ✅  |
+| `post-deploy-tests.yml` | `repository_dispatch` | **`main`**      |
+| `algolia-watch.yml`     | `schedule`            | **`main`**      |
+| `external-links.yml`    | `schedule`            | **`main`**      |
+
+The yarn → pnpm move hit this on its first staging deploy. `main`'s copy of
+`post-deploy-tests.yml` still ran `yarn install`, against a checkout whose
+`package.json` had just started declaring `packageManager: pnpm@…` — and yarn 1
+reads that field and refuses:
+
+```
+error This project's package.json defines "packageManager": "yarn@pnpm@11.18.0".
+```
+
+**The site was fine.** Running that job's own suites locally against live
+staging passed everything: 367 redirect assertions, the sitemap assertion, 14
+e2e. Only the runner's package manager was wrong, and only because it came from
+a branch that had not been updated yet.
+
+There is no fix from the feature branch — editing the file there changes
+nothing until it reaches `main`. So **expect one red post-deploy run per
+CI-affecting change, and verify the deploy by running its suites locally
+against the deployed host instead**:
+
+```bash
+TEST_ENV=staging pnpm run test:redirects
+TEST_ENV=staging pnpm run test:sitemap
+TEST_ENV=staging pnpm run test:e2e
+```
+
+`MarketDataApp/website` hit the same shape from the other direction: a
+`workflow_run` job loaded `main`'s workflow and so ran without an env var the
+branch had added, which made its build sentinel report `ref: HEAD` for one
+deploy.
+
+## Reading the orchestrator's log after a deploy
+
+Our deploy ends at a `repository_dispatch` into
+`MarketData-App/www-marketdata-app`. What happens next is in THAT repo's run
+log, and this is how to read it.
+
+```bash
+gh run list --repo MarketData-App/www-marketdata-app \
+  --workflow "Orchestrator: Merge Sources & Deploy to CF Pages"
+gh run view <id> --repo MarketData-App/www-marketdata-app --log | grep -a "sitemap"
+```
+
+**Read the log body, not the run metadata.** `gh run list` shows every
+orchestrator run as branch `main`, trigger `repository_dispatch`, with an
+identical display name — **whether it deployed staging or production.** The only
+reliable marker is `(environment: staging)` inside the step output. Verified on
+two real runs 25 minutes apart:
+
+| Run         | Metadata says | Actually was | Sitemaps    |
+|-------------|---------------|--------------|-------------|
+| 33922876619 | `main`        | staging      | 110 URLs, 1 |
+| 33924580277 | `main`        | production   | 370 URLs, 2 |
+
+A correct **staging** run prints, and this is success rather than a problem:
+
+```
+build/docs/sitemap.xml is absent, and staging does not require it.
+Nothing spliced; the index is unchanged.
+110 URL(s) declared in total, across 1 sitemap(s).
+```
+
+Our `noIndex` build publishes no sitemap, so there is nothing to splice. **If
+staging ever reports 2 sitemaps and 370 URLs, this repo emitted a sitemap under
+`noIndex`** — not a failure there, but a change here worth finding.
+
+**The sitemap requirement is production-only and was added 2026-09-04**, which
+makes it the youngest gate in the chain and the first place to look if a
+production deploy surprises you. Every other production-only behaviour has run
+many times. Its error text names its own suspects.
 
 ## The build sentinel
 
@@ -496,11 +957,15 @@ Two more traps that stylesheets do not report:
 
 ## Testing
 
-- **Converter tests**: `yarn test:lib` — `cleanMdx` (MDX→Markdown) and `cleanHtml` (built HTML→Markdown), the two twin converters
-- **Redirect tests**: `TEST_ENV=staging yarn test:redirects` — verifies every rule in `redirects.js` answers 301 for GET and HEAD, in both slash forms
-- **Sitemap tests**: `TEST_ENV=production yarn test:sitemap` — fetches the deployed sitemap and requires every URL to answer 200. On staging it asserts the opposite: a `noIndex` build must publish no sitemap
-- **Example parity**: `yarn lint:examples` — every language tab on an API page must make the same request with the same inputs (#167). Compares a normalised fixture set, so `2024-01-01`, `LocalDate.of(2024, 1, 1)` and `new DateOnly(2024, 1, 1)` are one token
-- **Highlighting**: `yarn lint:highlighting` — run after a build; fails when a ``` fence language produces no highlighting anywhere, which is what a missing Prism grammar looks like. Per language, not per block: a one-word shell command legitimately has nothing to colour. Add new languages to `additionalLanguages` in `docusaurus.config.js`, and use the id Prism knows (`ini` not `env`, `batch` not `cmd`)
-- **Sitemap lint**: `yarn lint:sitemap` — builds with `PROD=true` and fails if the sitemap lists a URL with no page in `build/`
-- **E2E tests**: `TEST_ENV=staging yarn test:e2e` — Playwright tests for Context7 widget rendering and the Markdown actions row (`TEST_BASE_URL=http://…/docs` points them at a local build instead)
+- **Converter tests**: `pnpm run test:lib` — `cleanMdx` (MDX→Markdown) and `cleanHtml` (built HTML→Markdown), the two twin converters
+- **Redirect tests**: `TEST_ENV=staging pnpm run test:redirects` — verifies every rule in `redirects.js` answers 301 for GET and HEAD, in both slash forms
+- **Sitemap tests**: `TEST_ENV=production pnpm run test:sitemap` — fetches the deployed sitemap and requires every URL to answer 200. On staging it asserts the opposite: a `noIndex` build must publish no sitemap
+- **Example parity**: `pnpm run lint:examples` — every language tab on an API page must make the same request with the same inputs (#167). Compares a normalised fixture set, so `2024-01-01`, `LocalDate.of(2024, 1, 1)` and `new DateOnly(2024, 1, 1)` are one token
+- **Highlighting**: `pnpm run lint:highlighting` — run after a build; fails when a ``` fence language produces no highlighting anywhere, which is what a missing Prism grammar looks like. Per language, not per block: a one-word shell command legitimately has nothing to colour. Add new languages to `additionalLanguages` in `docusaurus.config.js`, and use the id Prism knows (`ini` not `env`, `batch` not `cmd`)
+- **Link and anchor checking**: two halves, split by whether the answer needs the network.
+  - `pnpm run lint:links` — a build with `STRICT_LINKS=true`, so **both** `onBrokenLinks` and `onBrokenAnchors` throw. Runs in PR checks. Deploys build with `warn`, so this is the gate that keeps a broken link *or a broken fragment* off the site. **An anchor is the half of a link nothing else can see**: `onBrokenLinks` proves the page exists and says nothing about the fragment, so a deep link can point into a page that renders perfectly and land the reader nowhere. That is how 26 of them survived being written, invisible until 3.10 started checking
+  - `pnpm run lint:external-links` — off-site URLs, from the **built HTML** via domino. Weekly, `not` in PR checks, for the reason `lint:algolia` gives: no pull request can make a third-party site go down, and a check that reddens for reasons the author cannot fix is one people learn to skip. **The fragment is deliberately ignored on external links** — we do not own their heading ids, and many pages build anchors in the browser, so asserting one produces failures nobody can act on. Only 404/410 fail; a timeout, 429, 5xx or 403 is reported as unreachable and never counted as a pass. `KNOWN_BROKEN` lists genuine failures with their issue, and **fails when a listed URL starts working**, which is `lib/algolia-relevance.js`'s C2 rule applied here so the list cannot become a graveyard
+- **Sitemap lint**: `pnpm run lint:sitemap` — builds with `PROD=true` and fails if the sitemap lists a URL with no page in `build/`
+- **Orchestrator contract**: `pnpm run lint:contract` — reads a built `build/` and asserts what `MarketDataApp/www-marketdata-app` requires of it. Not a duplicate of that repo's gates: it is the part we can answer before pushing. **The rule that exists nowhere else is `404.html`** — Cloudflare Pages serves the nearest one by walking up the tree, and ours terminates that walk for `/docs/*`; lose it and `/docs/*` quietly serves the marketing 404 with every gate in both repositories green. That repo asked us to assert it here because it cannot. Also covers the llms.txt demotion preconditions (one H1, first, no H6), the twins each resolving to `<route>/index.html`, the sitemap (required on production, forbidden under `noIndex`), and the two `_redirects` budgets shared with the website half
+- **E2E tests**: `TEST_ENV=staging pnpm run test:e2e` — Playwright tests for Context7 widget rendering and the Markdown actions row (`TEST_BASE_URL=http://…/docs` points them at a local build instead)
 - **Browser for e2e**: the machine's own Chromium, not a build this repo pins. `scripts/resolve-chromium.js` resolves it (`CHROMIUM_PATH` override → system browser → Playwright's bundled build) and `playwright.config.js` feeds it to `launchOptions`. Do not reintroduce a bare `browserName: 'chromium'` with no `executablePath` — that re-pins the browser to the installed `@playwright/test`. CI installs Playwright's build only when the runner has no browser. See README.md "Which browser the e2e tests run".

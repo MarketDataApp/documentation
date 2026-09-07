@@ -100,15 +100,27 @@
   padding-left: 0 !important;
   width: 100%;
 }
-/* for the tabs nod background styling FOR DEV */
-/* .tabItem_node_modules-\@docusaurus-theme-classic-lib-theme-TabItem-styles-module{
-  background-color: var(--custom-bg-tabs);
-  padding: 8px;
-  border-radius: 14px;
-} */
-
-/* for the tabs nod background styling FOR PROD */
-.tabItem_Ymn6 {
+/* The background behind a tab's contents.
+ *
+ * THIS USED TO NAME A GENERATED CLASS, `.tabItem_Ymn6`, with a commented-out
+ * twin naming the long dev-mode spelling because the two differ. Both are
+ * emitted by @docusaurus/theme-classic's CSS module for TabItem, and the
+ * five-character suffix is a HASH. Nothing guarantees it, and when it moves the
+ * rule silently stops matching: no build error, no warning, no missing file --
+ * the declaration is still valid CSS naming a class that no element carries.
+ *
+ * It moved when this project changed package manager. Under yarn the panels
+ * were `tabItem_Ymn6` on 104 pages; under pnpm they are `tabItem_VFbg`, because
+ * the hash follows the module's resolved path and pnpm's store layout is not
+ * yarn's. The tab backgrounds simply vanished, and the only reason anyone knows
+ * is that the two builds were diffed. A Docusaurus upgrade can move it exactly
+ * the same way.
+ *
+ * So the selector now uses what the theme actually promises: `tabs-container`
+ * is a plain, unhashed class, and `role="tabpanel"` is the ARIA role Docusaurus
+ * puts on each panel. Both survived the package-manager change unchanged, and
+ * neither is generated. Do not put a hashed class name back here. */
+.tabs-container [role="tabpanel"] {
   background-color: var(--custom-bg-tabs);
   padding: 8px;
   border-radius: 14px;
@@ -335,4 +347,52 @@ img[alt="Google OAuth consent screen—select all permissions and click Continue
 
 .language-http .token.header-value {
   color: var(--md-http-header-value) !important;
+}
+
+/**
+ * An embed may not push the page sideways.
+ *
+ * YouTube's default embed code is `width="560" height="315"`, and one pasted
+ * into api/index.md kept it while the other three embeds in the docs had been
+ * changed to `width="100%"`. On a 390px phone that one iframe made the whole
+ * page 186px wider than the viewport, so every page on it scrolled sideways.
+ *
+ * The next person to paste an embed will paste YouTube's default, and a
+ * `max-width` costs nothing when the width is already fluid.
+ */
+.markdown iframe,
+.markdown img,
+.markdown video {
+  max-width: 100%;
+}
+
+/**
+ * A VIDEO KEEPS ITS SHAPE, AND A FIXED PIXEL HEIGHT CANNOT DO THAT.
+ *
+ * Making the width fluid without touching the height was half a fix and it
+ * produced a second, more visible defect: the player box stayed 315px tall
+ * while the width grew to the column, so the frame was 2.61:1 and YouTube
+ * pillarboxed the video inside it with black bars either side.
+ *
+ * Measured across all four embeds -- none was 16:9, and the three that had
+ * been made fluid long before this change were 1.64:1 for the same reason:
+ *
+ *     /api/                          823x315   2.61
+ *     /sheets/                       823x503   1.64
+ *     /sheets/options/optionchain/   823x503   1.64
+ *     /sheets/options/optionlookup/  823x503   1.64
+ *
+ * `aspect-ratio` ties the height to the width instead, so the frame is 16:9 at
+ * every column width and the `height` attribute in the Markdown stops
+ * mattering. Scoped to YouTube rather than every iframe: a map or a form embed
+ * has no business being 16:9.
+ *
+ * e2e/responsive.spec.js asserts the ratio, because nothing else can see it --
+ * the page is valid, nothing overflows, and only the picture is wrong.
+ */
+.markdown iframe[src*='youtube.com/embed'],
+.markdown iframe[src*='youtube-nocookie.com/embed'] {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
 }

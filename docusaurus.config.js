@@ -8,18 +8,16 @@ const darkCodeTheme = require("prism-react-renderer").themes.dracula;
 
 require("dotenv").config();
 
-// Resolved ONCE, here, and handed to plugins/build-info.js. Both halves of the
-// sentinel -- /docs/build-info.json and the <meta name="build-commit"> on every
-// page -- read this one value. Two call sites resolving the commit separately
-// would be two ways to answer one question, and they would disagree the day
-// somebody changed one of them.
+// The build sentinel resolves its own commit, inside plugins/build-info.js.
+// It is NOT resolved here and handed over as a plugin option, because
+// Docusaurus serialises this config -- options included -- into `main.js`.
 //
-// `builtAt` is in the JSON only. It must never reach the head: two builds of one
-// tree have to differ only where they are already known to, or a head-only
-// change cannot be verified by diffing built HTML. That was the other repo's
-// condition on the shared format and it is worth as much here.
-const { resolveGit } = require("./lib/build-info");
-const BUILD_INFO = { resolved: resolveGit(), builtAt: new Date().toISOString() };
+// That is how a clock got into the client bundle and moved its content hash on
+// every build. Removing the clock was not enough: the commit sha stayed, and
+// every deploy is a new commit, so a documentation-only change still rehashed
+// the bundle and rewrote all 265 pages against a one-year immutable header.
+//
+// Nothing here needs the commit. Both consumers are inside that plugin.
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -40,7 +38,71 @@ const config = {
   // of letting broken links reach the site. This was "ignore" and silently
   // accumulated 14 broken links.
   onBrokenLinks: process.env.STRICT_LINKS === "true" ? "throw" : "warn",
-  onBrokenMarkdownLinks: process.env.STRICT_LINKS === "true" ? "throw" : "warn",
+
+  // 3.10 CHECKS ANCHORS, AND 3.0.1 NEVER DID. The first build after the
+  // upgrade reported 254 broken anchors. 234 were OUR OWN FAULT and not broken
+  // at all: `src/theme/Heading` was a stale fork of the 3.0.1 file, and
+  // upstream had since added `brokenLinks.collectAnchor(id)` -- the call by
+  // which a page registers the anchors it defines. Without it every page
+  // declared none, so every table-of-contents self-link looked broken.
+  // Deleting that swizzle fixed all 234.
+  //
+  // The remaining 26 were real and every one is now fixed. They had been
+  // broken since they were written: `#MarketDataClient` where the generated id
+  // is lowercase, `#Logger` where the section is called Logging, and two that
+  // named documentation which does not exist at all.
+  //
+  // GATED THE SAME WAY AS `onBrokenLinks`, and that is the point of the
+  // exercise. A deploy builds with "warn" so a stray anchor cannot block a
+  // release; `pnpm run lint:links` builds with "throw", so the PR check is
+  // what keeps a broken one off the site. An anchor is the half of a link that
+  // nothing else can see: `onBrokenLinks` proves the PAGE exists and says
+  // nothing about the fragment, so a deep link can point into a page that
+  // renders perfectly and still land the reader nowhere.
+  onBrokenAnchors: process.env.STRICT_LINKS === "true" ? "throw" : "warn",
+
+  // Opting into v4 behaviour while still on 3.10, so the major is a version
+  // bump rather than a migration. Each flag is enabled deliberately; see the
+  // notes on `storage` below for the one that needed a counterweight.
+  future: {
+    v4: true,
+  },
+
+  // THE COUNTERWEIGHT TO `future.v4.siteStorageNamespacing`, AND IT IS
+  // DELIBERATE RATHER THAN A CLIMBDOWN.
+  //
+  // That flag namespaces browser-storage keys -- `theme` becomes `theme-f3b`,
+  // a hash of the site's url and baseUrl. It exists so that two Docusaurus
+  // sites sharing one domain cannot read each other's preferences.
+  //
+  // WE WANT THEM TO. `theme` is a contract across the whole origin: the
+  // marketing half at www.marketdata.app/ and the docs at /docs/ are one site
+  // to a reader, and the theme has to follow them across the seam.
+  // `plugins/theme-cookie-sync.js` seeds it from the .marketdata.app cookie
+  // before Docusaurus reads it, and @marketdataapp/ui's theme.js -- used by
+  // every other property -- reads and writes the same unprefixed key.
+  //
+  // Turning v4 on without this was measured, not assumed: the built bootstrap
+  // script read `localStorage.getItem("theme-f3b")` while our bridge still
+  // wrote `theme`, so a reader who chose dark mode on the marketing site would
+  // have arrived here in light mode. Nothing would have failed; the theme
+  // would just have stopped following them.
+  //
+  // Namespacing it properly is not an option: the hash is derived from the
+  // url, so staging and production would disagree with each other AND with the
+  // marketing half, which cannot know either value.
+  storage: {
+    namespace: false,
+  },
+
+  markdown: {
+    hooks: {
+      // Moved out of the top level in 3.10, where `siteConfig.onBrokenMarkdownLinks`
+      // is deprecated and warns on every build. It is removed in v4.
+      onBrokenMarkdownLinks:
+        process.env.STRICT_LINKS === "true" ? "throw" : "warn",
+    },
+  },
   favicon: "img/favicon.ico",
 
   organizationName: "marketdata",
@@ -108,7 +170,7 @@ const config = {
         docs: false,
         blog: false,
         theme: {
-          customCss: [require.resolve("./src/css/custom.css")],
+          customCss: ["./src/css/custom.css"],
         },
         sitemap:
           process.env.PROD == "true"
@@ -137,7 +199,28 @@ const config = {
                 // D2 fails when the sitemap advertises a noindex route — so
                 // without these the build goes red rather than shipping a
                 // contradiction.
-                ignorePatterns: ["/docs/internal/**", "/docs/internal/"],
+                // `/docs/search/` is the Algolia UI: a form with no content
+                // of its own, whose every result already has an indexable page
+                // of its own. Its result views are the SAME route with a query
+                // string, so nothing else needs listing either.
+                //
+                // This settles a disagreement rather than inventing a rule.
+                // The marketing half of the origin has always excluded its own
+                // `/search/` and `/review/*`, and the two halves have been
+                // named by ONE sitemap index since 2026-09-04 -- so until this,
+                // a crawler saw one origin declaring one convention twice,
+                // differently. Both halves also already agreed that internal
+                // pages stay out; the search page was the only difference.
+                //
+                // `plugins/noindex-head.js` marks the same route noindex, and
+                // the two must agree: `lint:seo` D2 fails a build that
+                // advertises a noindex route, so one without the other goes
+                // red rather than shipping a contradiction.
+                ignorePatterns: [
+                  "/docs/internal/**",
+                  "/docs/internal/",
+                  "/docs/search/",
+                ],
                 filename: "sitemap.xml",
               }
             : {},
@@ -156,7 +239,7 @@ const config = {
   ],
 
   plugins: [
-    ['./plugins/build-info', BUILD_INFO],
+    './plugins/build-info',
     './plugins/theme-cookie-sync',
     './plugins/markdown-twins',
     './plugins/not-found-head',
@@ -169,7 +252,7 @@ const config = {
         id: "api",
         path: "api",
         routeBasePath: "api",
-        sidebarPath: require.resolve("./sidebars.js"),
+        sidebarPath: "./sidebars.js",
 
         editUrl: ({ docPath }) => {
           const host = process.env.PROD == "true" ? "www.marketdata.app" : "www-staging.marketdata.app";
@@ -196,7 +279,7 @@ const config = {
         // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
         // With a shallow clone every page reports the same date.
         showLastUpdateTime: true,
-        sidebarPath: require.resolve("./sidebars.js"),
+        sidebarPath: "./sidebars.js",
       },
     ],
     [
@@ -214,7 +297,7 @@ const config = {
         // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
         // With a shallow clone every page reports the same date.
         showLastUpdateTime: true,
-        sidebarPath: require.resolve("./sidebars.js"),
+        sidebarPath: "./sidebars.js",
       },
     ],
     [
@@ -232,7 +315,7 @@ const config = {
         // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
         // With a shallow clone every page reports the same date.
         showLastUpdateTime: true,
-        sidebarPath: require.resolve("./sidebars.js"),
+        sidebarPath: "./sidebars.js",
       },
     ],
     [
@@ -266,7 +349,7 @@ const config = {
         // deploy-docs.yml and pr-checks.yml check out with fetch-depth: 0.
         // With a shallow clone every page reports the same date.
         showLastUpdateTime: true,
-        sidebarPath: require.resolve("./sidebars.js"),
+        sidebarPath: "./sidebars.js",
       },
     ],
   ],

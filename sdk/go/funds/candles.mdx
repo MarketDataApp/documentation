@@ -4,6 +4,8 @@ sidebar_label: Candles
 sidebar_position: 1
 ---
 
+{/* The DateWindow type is not documented on this page yet -- see #211. */}
+
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
@@ -33,7 +35,7 @@ Get historical OHLC candles for a mutual fund from the `/v1/funds/candles/{resol
 - `symbol` (`string`) — the fund's ticker, for example `"VFINX"`. Required; an empty symbol returns a validation error without making a request.
 - Options:
   - `funds.WithResolution(r funds.Resolution)` — the candle timeframe. Defaults to `funds.ResolutionDaily`. The funds endpoint supports `funds.ResolutionDaily` (`"D"`), `funds.ResolutionWeekly` (`"W"`), `funds.ResolutionMonthly` (`"M"`), and `funds.ResolutionYearly` (`"Y"`) only. The resolution becomes part of the request path, so an unsupported value causes the API to reject the request.
-  - `funds.WithCandleWindow(w funds.DateWindow)` — the date range, expressed as a single [`DateWindow`](#datewindow) value. Omitting it lets the API return its default recent window.
+  - `funds.WithCandleWindow(w funds.DateWindow)` — the date range, expressed as a single `funds.DateWindow` value. Omitting it lets the API return its default recent window.
 
 ### Returns
 
@@ -195,7 +197,7 @@ type Candle struct {
 - `String() string` — a concise one-line summary, e.g. `2023-01-03 O: 352.76 H: 352.76 L: 352.76 C: 352.76`.
 - `Range() float64` — the high-low range (`High - Low`).
 
-:::note Zero values and null data
+:::note[Zero values and null data]
 Numeric fields are value types, not pointers. When the API returns `null` for a field, it decodes as the zero value, so a `0` may represent either an actual zero or the absence of data.
 :::
 

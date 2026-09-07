@@ -353,7 +353,7 @@ environment-independent and its own staging run proved otherwise.
 `I1` no longer differs between the arms, and gating it is what forced the
 issue. `LENGTH_ENFORCED` turned a difference S1 could route around into a
 failure nothing could: the same authored titles measured 0 on production and
-10 on staging, so an ordinary `yarn build` — CI always passes `PROD=true` —
+10 on staging, so an ordinary `pnpm run build` — CI always passes `PROD=true` —
 failed on ten titles whose extra characters are all in the suffix.
 
 **I1's budget now moves with the suffix.** Staging measures against

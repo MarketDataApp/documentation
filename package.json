@@ -2,13 +2,14 @@
   "name": "marketdata",
   "version": "0.0.0",
   "private": true,
+  "packageManager": "pnpm@11.18.0",
   "scripts": {
     "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
     "hooks:install": "git config core.hooksPath .githooks",
     "docusaurus": "docusaurus",
     "copy:ui-css": "mkdir -p static/css && cp node_modules/@marketdataapp/ui/dist/css/components.no-reset.css static/css/",
-    "start": "yarn copy:ui-css && docusaurus start",
-    "build": "yarn copy:ui-css && docusaurus build",
+    "start": "pnpm run copy:ui-css && docusaurus start",
+    "build": "pnpm run copy:ui-css && docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -22,35 +23,41 @@
     "test:redirects": "node --test tests/redirects.integration.test.js",
     "test:sitemap": "node --test tests/sitemap.integration.test.js",
     "wait:deploy": "node scripts/wait-for-deploy.js",
-    "lint:links": "STRICT_LINKS=true yarn build",
-    "lint:sitemap": "PROD=true yarn build && node scripts/lint-sitemap.js",
+    "lint:links": "STRICT_LINKS=true pnpm run build",
+    "lint:external-links": "node scripts/check-external-links.js",
+    "lint:sitemap": "PROD=true pnpm run build && node scripts/lint-sitemap.js",
+    "lint:contract": "node scripts/check-build-contract.js",
     "lint:tables": "node scripts/fix-table-alignment.js",
     "fix:tables": "node scripts/fix-table-alignment.js --fix",
     "test:e2e": "playwright test",
     "lint:options": "node scripts/check-option-symbols.js",
     "lint:examples": "node scripts/check-example-parity.js",
     "lint:highlighting": "node scripts/check-highlighting.js",
+    "lint:directives": "node scripts/check-directives.js",
+    "lint:dead-css": "node scripts/check-dead-css.mjs",
     "lint:seo": "node scripts/lint-seo.js",
     "lint:algolia": "node scripts/lint-algolia.js",
     "test:scripts": "node --test scripts/__tests__/*.test.js"
   },
   "dependencies": {
-    "@docusaurus/core": "3.0.1",
-    "@docusaurus/plugin-content-docs": "3.0.1",
-    "@docusaurus/preset-classic": "3.0.1",
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/plugin-content-docs": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@docusaurus/theme-common": "3.10.2",
     "@marketdataapp/ui": "github:MarketDataApp/ui#v4.3.0",
     "@mdx-js/react": "^3.0.0",
     "@mixmark-io/domino": "^2.2.0",
     "clsx": "^2.0.0",
     "dotenv": "^16.0.2",
     "prism-react-renderer": "^2.3.1",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "turndown": "^7.2.2"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.0.1",
-    "@docusaurus/tsconfig": "3.0.1",
+    "@docusaurus/faster": "3.10.2",
+    "@docusaurus/module-type-aliases": "3.10.2",
+    "@docusaurus/tsconfig": "3.10.2",
     "@playwright/test": "^1.58.2",
     "@tsconfig/docusaurus": "^1.0.5",
     "typescript": "^4.7.4"
@@ -68,7 +75,7 @@
     ]
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "license": "MIT"
 }

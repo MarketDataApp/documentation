@@ -16,7 +16,7 @@ Fetch a range of days with the `StatusHistory` method on the `client.Markets` se
 |-----------------------------------|-------------------------------------------------------|-----------------------------------------------------------------------------------------|
 | **`StatusHistory(ctx, ...opts)`** | `([]markets.MarketStatus, *response.Response, error)` | Context-aware; returns one entry per day plus the raw response and rate-limit metadata. |
 
-:::note Context method only
+:::note[Context method only]
 Unlike most SDK endpoints, `StatusHistory` has no `Get*` convenience wrapper — it is only available as a context-aware method. For a single day, use [Status](/sdk/go/markets/status), which offers both call styles.
 :::
 

@@ -27,7 +27,7 @@ Task<OptionsChainResponse> GetChainAsync(
 Task<OptionsChainResponse> GetChainAsync(OptionsChainRequest request, ...)
 ```
 
-:::caution Quota
+:::caution[Quota]
 A chain response bills roughly **one credit per contract returned**. An unfiltered chain for a liquid underlying can run to thousands of contracts. Always narrow with an expiration filter, `StrikeLimit`, or `Side` unless you really need the whole chain.
 :::
 

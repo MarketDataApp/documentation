@@ -172,7 +172,7 @@ cannot drift from itself.
 ## Testing
 
 - Unit tests for categorisation and entry formatting, under the existing
-  `yarn test:lib` harness.
+  `pnpm run test:lib` harness.
 - A build-time assertion that every indexed route resolves to a twin.
 - An integration test that `/docs/llms.txt` serves 200 and every URL it lists
   does too, modelled on `tests/sitemap.integration.test.js`.

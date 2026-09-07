@@ -196,7 +196,7 @@ foreach (var quote in (await client.Options.GetQuoteAsync("AAPL271217C00250000")
 
   Use to lookup a historical end of day quote from a specific trading day. If no date is specified the quote will be the most current price available during market hours. When the market is closed the quote will be from the last trading day. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
 
-  :::info Historical quotes carry no Greeks
+  :::info[Historical quotes carry no Greeks]
   Greeks and implied volatility are not stored historically. On any request that includes `date`, `from` or `to`, the `iv`, `delta`, `gamma`, `theta` and `vega` columns are returned as `null`, on every plan.
   :::
 
@@ -276,7 +276,7 @@ foreach (var quote in (await client.Options.GetQuoteAsync("AAPL271217C00250000")
 
   The date and time of this quote snapshot. All timestamps use US Eastern Time (America/New_York). See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
 
-:::note Greeks on historical requests
+:::note[Greeks on historical requests]
 `iv`, `delta`, `gamma`, `theta` and `vega` are only populated on current (real-time, delayed or end-of-day) quotes. On any request that includes `date`, `from` or `to` these columns are returned as `null`, on every plan, because Greeks and implied volatility are not stored historically.
 :::
 

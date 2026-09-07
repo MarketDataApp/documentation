@@ -34,5 +34,11 @@ export default defineConfig({
       testMatch: ['markdown-actions.spec.js'],
       use: { browserName: 'chromium' },
     },
+    {
+      // Sets its own viewport per test, so it takes no `use.viewport` here.
+      name: 'responsive',
+      testMatch: ['responsive.spec.js'],
+      use: { browserName: 'chromium' },
+    },
   ],
 });

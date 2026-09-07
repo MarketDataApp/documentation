@@ -321,7 +321,7 @@ Eastern time.
 - `Spread() float64` — the bid-ask spread (`Ask` minus `Bid`).
 - `CalcMid() float64` — the bid-ask midpoint computed locally from `Bid` and `Ask`, unlike the `Mid` field, which is the midpoint reported by the API.
 
-:::note Zero values and null data
+:::note[Zero values and null data]
 Numeric fields use Go value types (`float64`, `int64`), not pointers. When the
 API returns null for a field it is decoded as the zero value (`0` or `0.0`). For
 `IV` and the Greeks (`Delta`, `Gamma`, `Theta`, `Vega`), a zero value may mean

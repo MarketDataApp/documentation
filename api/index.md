@@ -7,11 +7,11 @@ slug: /
 
 The Market Data API is designed around REST and supports standard HTTP response codes and methods. All responses are delivered via JSON for programmatic use of the information or via CSV files to load into your preferred spreadsheet application.
 
-:::info Root Endpoint
+:::info[Root Endpoint]
 https://api.marketdata.app/
 :::
 
-:::caution Accept HTTP 203 as success
+:::caution[Accept HTTP 203 as success]
 Any endpoint may return HTTP `203 Non-Authoritative Information` instead of `200 OK` when the response is served from our caching tier. This is normal — the body is identical in shape, and you should treat 203 exactly the same as 200. Many HTTP clients (and many OpenAPI-generated SDKs) default to treating only 200 as success; you must update your client to also accept 203 or your integration will silently fail in production.
 
 A `204 No Content` response can also occur when `mode=cached` is requested and no cached data is available — see [Data Mode](/api/universal-parameters/mode) and [Troubleshooting](/api/troubleshooting) for the full list of status codes.
@@ -25,7 +25,7 @@ The easiest way to try out our API is using our [Swagger User Interface](https:/
 Our endpoints have **lots of optional parameters** to allow users to sort and filter responses. It can be overwhelming to new users at first. When you're first getting started testing our API in Swagger, scroll to the required parameters and ignore all the optional ones. Most endpoints require only a ticker symbol as a required parameter.
 :::
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/tOIZi7s6nqQ?si=sFxMcDQGsfnQHhhb" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="100%" height="315" src="https://www.youtube.com/embed/tOIZi7s6nqQ?si=sFxMcDQGsfnQHhhb" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 ### Get Started Quick — No Registration Required!
 

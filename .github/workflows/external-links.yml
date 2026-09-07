@@ -1,0 +1,56 @@
+name: "Docs: External Links"
+
+# WEEKLY, AND DELIBERATELY NOT A PR CHECK.
+#
+# Same reasoning as algolia-watch.yml: no pull request can make a third-party
+# site go down, and a check that goes red for reasons the author cannot fix is
+# one people learn to skip. A PR *can* introduce a wrong URL, and this catches
+# that on the next run rather than at review time -- a deliberate trade against
+# a network check that is flaky in CI.
+#
+# Internal links and their anchors are gated in PR checks instead, by
+# `pnpm run lint:links`, because those are deterministic and need no network.
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+jobs:
+  external-links:
+    runs-on: ubuntu-latest
+    # Bounded so a hang reports rather than burning the runner. Sized well
+    # above the observed maximum (about 3 minutes: build, then ~100 URLs at
+    # concurrency 6 with a 15s timeout each).
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # showLastUpdateTime reads git history. A shallow clone gives every
+          # page the same date, which does not affect link extraction but does
+          # make the build warn, and a warning nobody needs is one that trains
+          # people to ignore warnings.
+          fetch-depth: 0
+
+      # pnpm/action-setup MUST come before setup-node: `cache: pnpm` makes
+      # setup-node run `pnpm store path`, which needs pnpm on PATH already.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The check reads BUILT HTML, not sources, so it sees links that come
+      # from components as well as from Markdown. PROD=true only to match what
+      # is actually served; link extraction does not depend on it.
+      - name: Build
+        run: pnpm run build
+        env:
+          PROD: "true"
+
+      - name: Check every external link still answers
+        run: pnpm run lint:external-links

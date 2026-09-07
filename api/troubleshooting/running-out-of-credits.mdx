@@ -54,11 +54,11 @@ Troubleshooting should follow your plan's optimization capabilities.
 | Starter + Trader | Starter, Trader                           | Daily        | Yes                     |
 | Quant + Prime    | Quant, Prime                              | Per-minute   | Yes                     |
 
-:::warning Trial plan limitation
+:::warning[Trial plan limitation]
 `mode=cached` is **not available** on Starter Trial and Trader Trial.
 :::
 
-:::caution Reset Window Gotcha (All Daily-Reset Plans)
+:::caution[Reset Window Gotcha (All Daily-Reset Plans)]
 All plans with daily credit windows (Free Forever, Starter Trial, Trader Trial, Starter, Trader) reset at **9:30 AM Eastern Time**, not midnight.
 
 This is intentional safety behavior: if a script runs out of control overnight, the reset timing limits impact to one trading day budget instead of potentially consuming two trading-day budgets across a midnight boundary.

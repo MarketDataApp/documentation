@@ -63,7 +63,7 @@ jobs:
         with:
           node-version: 22
 
-      # No `yarn install`. scripts/lint-algolia.js and lib/algolia.js use only
+      # No `pnpm install`. scripts/lint-algolia.js and lib/algolia.js use only
       # Node built-ins and `fetch`, deliberately -- a watchdog that cannot run
       # until a dependency tree resolves is a watchdog with a second way to go
       # quiet. If that ever stops being true, this comment is the thing that

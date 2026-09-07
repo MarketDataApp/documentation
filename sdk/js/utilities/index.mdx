@@ -10,7 +10,7 @@ The JavaScript SDK from Market Data provides methods designed to streamline your
 
 Both utilities skip the per-token rate-limit gate and bypass the `/v1/` URL prefix, so they remain reachable even when your account is throttled.
 
-Rate-limit data is exposed on the client itself — see [`client.rateLimits`](/sdk/js/client#RateLimits), which the SDK populates automatically at startup from the same `/user/` response headers.
+Rate-limit data is exposed on the client itself — see [`client.rateLimits`](/sdk/js/client#accessing-rate-limits), which the SDK populates automatically at startup from the same `/user/` response headers.
 
 ## Utilities Endpoints
 

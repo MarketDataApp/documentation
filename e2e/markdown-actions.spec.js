@@ -24,11 +24,11 @@
  *   - The DATE METADATA is invisible by definition. Three spellings have to
  *     agree with each other and with the page's canonical URL.
  *
- * Run with: TEST_ENV=staging yarn test:e2e
+ * Run with: TEST_ENV=staging pnpm run test:e2e
  */
 import { test, expect } from '@playwright/test';
 
-// TEST_BASE_URL points the suite at a local `yarn build` served under /docs/,
+// TEST_BASE_URL points the suite at a local `pnpm run build` served under /docs/,
 // so the row can be proved before it is deployed rather than after. Without it
 // the suite behaves like context7-widget.spec.js: staging or production.
 const BASE_URL = process.env.TEST_BASE_URL
@@ -81,14 +81,39 @@ test('copy button puts the page\'s Markdown twin on the clipboard', async ({ pag
 });
 
 test('the last-updated date is per page, not one build date', async ({ page }) => {
-  const dates = [];
-  for (const path of PAGES) {
+  // WHAT THIS IS FOR: under a shallow clone `showLastUpdateTime` gives EVERY
+  // page the same date, the row still renders, and nothing else reports it.
+  // So the property is "more than one distinct date exists", and the failure
+  // it catches is "all of them are identical".
+  //
+  // It used to compare two named pages and assert they differed. That is a
+  // stricter claim than the property, and it broke the first time a commit
+  // touched both of them -- 59 files were edited in one pass to migrate
+  // admonition syntax, and two pages genuinely acquired the same date. The
+  // test was right about the pages and wrong about the site.
+  //
+  // Sampling across sections makes it robust to a bulk edit while still
+  // failing on a shallow clone, which cannot produce two distinct dates
+  // anywhere in the build.
+  const sample = [
+    '/api/options/chain',
+    '/api/authentication',
+    '/sdk/go/stocks/candles',
+    '/sheets/authentication',
+    '/account/plans',
+  ];
+
+  const dates = new Set();
+  for (const path of sample) {
     await page.goto(`${BASE_URL}${path}`, { waitUntil: 'domcontentloaded' });
-    dates.push(await page.getByText(/^Last updated /).innerText());
+    dates.add(await page.getByText(/^Last updated /).innerText());
   }
-  // Identical dates on two pages with different edit histories is the
-  // signature of a shallow clone at build time.
-  expect(dates[0]).not.toBe(dates[1]);
+
+  expect(
+    dates.size,
+    `all ${sample.length} sampled pages report "${[...dates][0]}" -- the signature of a ` +
+      'shallow clone at build time, where git gives every file the same last-commit date'
+  ).toBeGreaterThan(1);
 });
 
 test('the link underlines on hover and not before', async ({ page }) => {
@@ -116,6 +141,34 @@ test('the link underlines on hover and not before', async ({ page }) => {
 
     await page.mouse.move(0, 0);
   }
+});
+
+test('the three items sit on one baseline', async ({ page }) => {
+  // The date rendered 2px above the two controls, on every doc page, in both
+  // themes. Nothing in this row's own CSS was wrong: it is built from <li>
+  // inside the markdown body, so Infima's `.markdown li + li { margin-top }`
+  // gave the SECOND and THIRD items a 4px top margin and, being an
+  // adjacent-sibling rule, could not give one to the first. The flex line grew
+  // to the tallest margin box and centred the unmargined date inside it.
+  //
+  // No unit test can see this and reading the stylesheet does not reveal it --
+  // every item has identical height, padding, font-size and line-height. Only
+  // measuring the rendered boxes does, so that is what this asserts.
+  //
+  // A wide viewport on purpose: the row wraps below 640px by design, and a
+  // wrapped row legitimately has items on different lines.
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.goto(`${BASE_URL}/api/options/chain`, { waitUntil: 'domcontentloaded' });
+
+  const tops = await page.evaluate(() => {
+    const list = document.querySelector('ul[class*="list_"]');
+    return [...list.children].map((li) => Math.round(li.getBoundingClientRect().top));
+  });
+
+  expect(tops.length).toBe(3);
+  // One line, so one top. Rounded to the pixel: sub-pixel layout differences
+  // are not what this is looking for; a 4px margin on two of three items is.
+  expect(new Set(tops).size).toBe(1);
 });
 
 test('the last-updated date is machine readable', async ({ page }) => {

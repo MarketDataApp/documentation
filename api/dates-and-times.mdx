@@ -10,7 +10,7 @@ By default, all timestamps returned by the API are **Unix timestamps** (seconds 
 
 ## Response Timezone
 
-:::info All Timestamps Use Eastern Time
+:::info[All Timestamps Use Eastern Time]
 All US market timestamps returned by the Market Data API are anchored to the **America/New_York** timezone (US Eastern Time). This applies to **all asset classes**, including equities and options. Even though many US-listed options trade on Chicago exchanges, the API normalizes all US timestamps to Eastern Time. The API automatically adjusts for **daylight saving time** (EST/EDT).
 :::
 
@@ -22,11 +22,11 @@ For responses that represent a **calendar date** rather than a specific moment i
 
 For example, a daily candle for **March 6, 2026** has Unix timestamp `1772773200`, which equals **05:00 UTC** (= 00:00 Eastern during EST). The 05:00 UTC value does not represent a market event — it is simply midnight Eastern expressed as a UTC-based Unix timestamp. The date portion (March 6) identifies the trading session.
 
-:::caution Common Mistake
+:::caution[Common Mistake]
 If you parse a daily timestamp as UTC instead of Eastern Time, the date may appear shifted. For example, Unix timestamp `1772773200` is `2026-03-06 05:00:00 UTC` but `2026-03-06 00:00:00 America/New_York`. If your code extracts the date using UTC, it will produce the correct result in this case, but during EDT the offset changes to 04:00 UTC and edge cases can cause the date to shift by a day. Always use `America/New_York` when extracting dates from these timestamps.
 :::
 
-:::tip SDK Users
+:::tip[SDK Users]
 If you use an official [Market Data SDK](/docs/sdk), timezone handling is done for you automatically. The SDKs convert all API timestamps to proper date and time objects in America/New_York — for example, Carbon in PHP, datetime in Python, and time.Time in Go — so you don't need to manage timezone conversion yourself.
 :::
 
@@ -105,7 +105,7 @@ Relative dates allow Market Data endpoints to continually modify the date sent t
 
   - `[number] years ago` The years ago keyword lets you select a relative date, 365 days before the current date. For example, if today is January 5, 2024, then using `2 years ago` would select the date January 5, 2022.
 
-:::caution Coming Soon
+:::caution[Coming Soon]
 
 The following relative date parameters are planned for the future and have not yet been implemented.
 
