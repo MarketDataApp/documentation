@@ -83,3 +83,46 @@ for (const vp of WIDTHS) {
     });
   }
 }
+
+/**
+ * A video embed keeps its shape at every width.
+ *
+ * Making the width fluid to stop the sideways scroll was half a fix: the
+ * height attribute stayed a fixed pixel value, so the frame stretched to 2.61:1
+ * and YouTube pillarboxed the video inside it with black bars either side. The
+ * three embeds that had been made fluid long before were 1.64:1 for the same
+ * reason, so this had never been right on any of them.
+ *
+ * Nothing else can see it. The page is valid, nothing overflows, the link
+ * checker is happy -- only the picture is the wrong shape, and only at a
+ * rendered width.
+ */
+const EMBED_PAGES = ['/api/', '/sheets/', '/sheets/options/optionchain/'];
+
+for (const vp of WIDTHS) {
+  for (const path of EMBED_PAGES) {
+    test(`video embeds are 16:9 at ${vp.name} width on ${path}`, async ({ page }) => {
+      await page.setViewportSize({ width: vp.width, height: vp.height });
+      await page.goto(`${BASE_URL}${path}`, { waitUntil: 'domcontentloaded' });
+
+      const frames = await page.evaluate(() =>
+        [...document.querySelectorAll('iframe')]
+          .filter((f) => /youtube(-nocookie)?\.com\/embed/.test(f.src))
+          .map((f) => {
+            const b = f.getBoundingClientRect();
+            return { w: Math.round(b.width), h: Math.round(b.height), ratio: b.width / b.height };
+          })
+      );
+
+      expect(frames.length, 'no YouTube embed found -- this test would pass vacuously').toBeGreaterThan(0);
+
+      for (const f of frames) {
+        expect(
+          Math.abs(f.ratio - 16 / 9),
+          `embed is ${f.w}x${f.h} (${f.ratio.toFixed(2)}:1), not 16:9. A fixed pixel ` +
+            'height cannot hold a ratio against a fluid width -- use aspect-ratio.'
+        ).toBeLessThan(0.05);
+      }
+    });
+  }
+}

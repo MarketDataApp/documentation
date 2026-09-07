@@ -357,15 +357,42 @@ img[alt="Google OAuth consent screen—select all permissions and click Continue
  * changed to `width="100%"`. On a 390px phone that one iframe made the whole
  * page 186px wider than the viewport, so every page on it scrolled sideways.
  *
- * The attribute is fixed too, but this rule is the durable half: the next
- * person to paste an embed will paste YouTube's default, and a `max-width`
- * costs nothing when the width is already fluid.
- *
- * Measured, not guessed -- an overflow sweep at 390px and 1440px found exactly
- * one offender across the corpus, and e2e/responsive.spec.js keeps it that way.
+ * The next person to paste an embed will paste YouTube's default, and a
+ * `max-width` costs nothing when the width is already fluid.
  */
 .markdown iframe,
 .markdown img,
 .markdown video {
   max-width: 100%;
+}
+
+/**
+ * A VIDEO KEEPS ITS SHAPE, AND A FIXED PIXEL HEIGHT CANNOT DO THAT.
+ *
+ * Making the width fluid without touching the height was half a fix and it
+ * produced a second, more visible defect: the player box stayed 315px tall
+ * while the width grew to the column, so the frame was 2.61:1 and YouTube
+ * pillarboxed the video inside it with black bars either side.
+ *
+ * Measured across all four embeds -- none was 16:9, and the three that had
+ * been made fluid long before this change were 1.64:1 for the same reason:
+ *
+ *     /api/                          823x315   2.61
+ *     /sheets/                       823x503   1.64
+ *     /sheets/options/optionchain/   823x503   1.64
+ *     /sheets/options/optionlookup/  823x503   1.64
+ *
+ * `aspect-ratio` ties the height to the width instead, so the frame is 16:9 at
+ * every column width and the `height` attribute in the Markdown stops
+ * mattering. Scoped to YouTube rather than every iframe: a map or a form embed
+ * has no business being 16:9.
+ *
+ * e2e/responsive.spec.js asserts the ratio, because nothing else can see it --
+ * the page is valid, nothing overflows, and only the picture is wrong.
+ */
+.markdown iframe[src*='youtube.com/embed'],
+.markdown iframe[src*='youtube-nocookie.com/embed'] {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
 }

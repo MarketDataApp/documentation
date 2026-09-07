@@ -185,14 +185,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # pnpm, but deliberately NO INSTALL. This suite is `node --test` against
+      # the standard library and global fetch, so it needs no dependencies --
+      # it used to borrow worker/'s vitest, and worker/ has gone. There is no
+      # `cache: pnpm` for the same reason: nothing is installed to cache.
+      #
+      # pnpm/action-setup IS still required, because the steps below invoke the
+      # scripts through `pnpm run`. The yarn -> pnpm migration converted those
+      # commands and missed this job, since it added the setup step wherever it
+      # found `cache: yarn` and this job never had one. The job then failed in
+      # 7 seconds on "Wait for staging to finish deploying" -- a step whose name
+      # makes a fast failure look like anything but a missing binary.
+      #
+      # The commands go through `pnpm run` rather than calling node directly so
+      # that package.json stays the single definition of what each check is.
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      # No install step. This suite is `node --test` against the standard
-      # library and global fetch, so it needs no dependencies -- it used to
-      # borrow worker/'s vitest, and worker/ has gone. Same reason there is no
-      # `cache: pnpm` here any more: there is no lockfile to key it on.
       # #185: this job probes the LIVE staging site, which a merge to `staging`
       # takes through a ~5 minute deploy chain. A run landing inside that window
       # fails on pages that are mid-deploy, with a message identical to a broken
