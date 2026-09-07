@@ -90,7 +90,21 @@ for (const f of await walk(dir)) {
 // a name that has gone away, which is the failure this exists for.
 const declared = new Map();
 for (const file of cssFiles) {
-  const css = readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  // Strip, in this order: comments, then QUOTED STRINGS, then the contents of
+  // attribute selectors.
+  //
+  // The quoted-string pass is the one that matters and it was missing. A dot
+  // inside a string is not a class:
+  //
+  //     .markdown iframe[src*='youtube.com/embed'] { ... }
+  //
+  // reported `.com` as a class no page carries, and failed a PR check on a
+  // rule that was perfectly correct. Every selector this file reads is written
+  // by us, so the fix is to read only the parts of it that can be a selector.
+  const css = readFileSync(file, 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/"[^"]*"|'[^']*'/g, '""')
+    .replace(/\[[^\]]*\]/g, '');
   for (const m of css.matchAll(/\.(-?[_a-zA-Z][\w-]*)/g)) {
     const name = m[1];
     if (!declared.has(name)) declared.set(name, file);
