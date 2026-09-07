@@ -35,9 +35,27 @@
 
 const { promises: fs } = require('node:fs');
 const path = require('node:path');
-const { resolveGit, environmentOf, buildInfo } = require('../lib/build-info');
+const {
+  SENTINEL_FILE,
+  resolveGit,
+  environmentOf,
+  buildInfo,
+  buildCommitTag,
+  commitTagOf,
+  auditProvenance,
+} = require('../lib/build-info');
 
-const FILE = 'build-info.json';
+// Named in lib/build-info.js, because deploy-docs.yml's `no-store` rule names
+// the same string and nothing else couples them.
+const FILE = SENTINEL_FILE;
+
+// A "the walk found nothing" tripwire, NOT a page count to keep in step with
+// the content. The build has 265 pages; a walk that stops matching, a renamed
+// output directory or a truncated build all arrive here as a small number, and
+// without this they arrive as a clean pass over almost nothing. Set far below
+// any plausible content state, so no ordinary edit approaches it. Do not lower
+// it to make it pass. Same shape as scripts/check-highlighting.js's floor.
+const PAGE_FLOOR = 50;
 
 
 /**
@@ -114,6 +132,150 @@ async function assertBundleCarriesNoBuildVaryingValue(outDir) {
   }
 }
 
+/** Every built .html file, depth first. */
+async function builtPages(dir, acc = []) {
+  for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) await builtPages(full, acc);
+    else if (entry.name.endsWith('.html')) acc.push(full);
+  }
+  return acc;
+}
+
+/** GitHub Actions sets both. Nothing else here should. */
+function inCI(env) {
+  return env.CI === 'true' || env.GITHUB_ACTIONS === 'true';
+}
+
+/**
+ * The pages and the endpoint must name ONE commit, and it must be a real one.
+ *
+ * ---------------------------------------------------------------------------
+ * WHY THE SENTINEL NEEDS A GATE MORE THAN ANYTHING ELSE HERE DOES
+ * ---------------------------------------------------------------------------
+ *
+ * Every other check in this repository guards something that fails VISIBLY. A
+ * sentinel fails by ANSWERING -- with `unknown`, or with a commit its own pages
+ * disagree with -- and an answer is exactly what the reader came for. Its whole
+ * value is that somebody stops guessing what is live and trusts it instead, so
+ * its failure mode is a confident wrong answer at the moment somebody decided
+ * to stop checking. Nothing about the page looks different.
+ *
+ * ---------------------------------------------------------------------------
+ * WHY IT RUNS HERE AND NOT IN A LINT SCRIPT
+ * ---------------------------------------------------------------------------
+ *
+ * The build that deploys runs `pnpm run build` and nothing else. A check in
+ * `scripts/` gates pull requests and is absent from the one build whose output
+ * ships -- and the defect it looks for is introduced by editing THIS file, in a
+ * commit that need not touch anything a PR check reads. So it runs where it
+ * cannot be skipped, beside the bundle property above, for the same reason.
+ *
+ * MarketDataApp/website asserts the same property from `dist/` as
+ * `test:build-sentinel`; that repo builds its own deploy artefact under its own
+ * check suite, so a script is enough there. The two halves must agree about
+ * this or the comparison between them means nothing, which is the whole reason
+ * the format is shared.
+ *
+ * ---------------------------------------------------------------------------
+ * THREE STATES, AND ONLY TWO OF THEM ARE HONEST
+ * ---------------------------------------------------------------------------
+ *
+ *   a real 40-hex sha  -> every page carries it, and the endpoint publishes it
+ *   no commit at all   -> no page carries a tag, and the endpoint says
+ *                         `unknown`. Permitted on a workstation with no git,
+ *                         and never in CI, where GITHUB_SHA is always set.
+ *   anything else      -> the endpoint publishes a string the pages cannot
+ *                         carry. `buildCommitTag` drops it rather than emit a
+ *                         value nobody can hand back to git, so the endpoint
+ *                         answers while every page is silent. Always fatal.
+ */
+async function assertPagesAndSentinelNameOneCommit(outDir, { sha, doc, env = process.env }) {
+  const expected = buildCommitTag(sha);
+
+  if (!expected && sha) {
+    throw new Error(
+      `[build-info] the sentinel would publish commit "${doc.commit}", which is not a 40-character sha.\n\n` +
+        'Every built page therefore carries NO build-commit tag: buildCommitTag()\n' +
+        'emits nothing rather than a value that cannot be handed back to git. So\n' +
+        '/docs/build-info.json would answer, authoritatively, with something no\n' +
+        'reader can use, and no page would contradict it.\n\n' +
+        'GITHUB_SHA is the usual source. It is 40 hex characters or it is a mistake.'
+    );
+  }
+
+  if (!expected && inCI(env)) {
+    throw new Error(
+      '[build-info] no commit could be resolved, so the sentinel would ship "unknown".\n\n' +
+        'resolveGit() falls back rather than throwing, because no git is not a build\n' +
+        'error on a workstation. In CI it is one: Actions always sets GITHUB_SHA and\n' +
+        'actions/checkout always leaves a repository behind. A deployed sentinel\n' +
+        'saying "unknown" answers every "what is live?" with a shrug -- which is the\n' +
+        'answer this endpoint exists to replace.'
+    );
+  }
+
+  const files = await builtPages(outDir);
+  const pages = await Promise.all(
+    files.map(async (file) => ({
+      file: path.relative(outDir, file),
+      commit: commitTagOf(await fs.readFile(file, 'utf8')),
+    }))
+  );
+
+  const { scanned, tagged, untagged, disagreeing } = auditProvenance({ expected, pages });
+
+  if (scanned < PAGE_FLOOR) {
+    throw new Error(
+      `[build-info] only ${scanned} built page(s) under ${outDir}, below the floor of ${PAGE_FLOOR}.\n\n` +
+        'This is a tripwire for a walk that stopped matching, not a content\n' +
+        'baseline. Either the build is incomplete or this check is no longer\n' +
+        'finding what it reads. Do not lower the floor to make it pass.'
+    );
+  }
+
+  const sample = (list) =>
+    list.slice(0, 5).map((p) => `    ${p}`).join('\n') + (list.length > 5 ? `\n    ... and ${list.length - 5} more` : '');
+
+  if (!expected) {
+    if (disagreeing.length) {
+      throw new Error(
+        `[build-info] ${disagreeing.length} of ${scanned} page(s) carry a build-commit tag ` +
+          'the sentinel does not publish.\n' +
+          sample(disagreeing) +
+          '\n\nNo commit was resolved, so this plugin emitted no tag. Something else\n' +
+          'wrote one, which means two writers answer one question.'
+      );
+    }
+    return { scanned, tagged, expected };
+  }
+
+  if (untagged.length) {
+    throw new Error(
+      `[build-info] ${untagged.length} of ${scanned} built page(s) carry no build-commit tag.\n` +
+        sample(untagged) +
+        '\n\ninjectHtmlTags() puts it in every page. A page without it has no\n' +
+        'provenance, so a reader looking at it cannot tell which build served it --\n' +
+        'and the page and the endpoint are ALLOWED to disagree, because pages are\n' +
+        'edge-cached and the sentinel is not. That disagreement is readable only\n' +
+        'while every page states its own commit.'
+    );
+  }
+
+  if (disagreeing.length) {
+    throw new Error(
+      `[build-info] ${disagreeing.length} of ${scanned} page(s) name a commit other than the ` +
+        `sentinel's (${expected}).\n` +
+        sample(disagreeing) +
+        '\n\nThe tag and the endpoint must come from ONE resolver. Two call sites\n' +
+        'answering one question is two ways to be right and one way to disagree,\n' +
+        'and the disagreement is invisible: both halves still answer.'
+    );
+  }
+
+  return { scanned, tagged, expected };
+}
+
 module.exports = function buildInfoPlugin() {
   // ---------------------------------------------------------------------
   // RESOLVED HERE, NOT IN docusaurus.config.js, AND THAT IS THE WHOLE POINT
@@ -179,6 +341,8 @@ module.exports = function buildInfoPlugin() {
       await fs.writeFile(temporary, `${JSON.stringify(doc, null, 2)}\n`, 'utf8');
       await fs.rename(temporary, target);
 
+      const provenance = await assertPagesAndSentinelNameOneCommit(outDir, { sha, doc });
+
       await assertBundleCarriesNoBuildVaryingValue(outDir);
 
       // Every value, every build. A sentinel that prints nothing cannot be told
@@ -186,8 +350,19 @@ module.exports = function buildInfoPlugin() {
       // no git available produces.
       console.log(
         `[build-info] ${FILE}: ${doc.commit} on ${doc.ref} (${doc.environment})` +
-          `${doc.dirty ? ' -- DIRTY TREE, this build is not its commit' : ''}`
+          `${doc.dirty ? ' -- DIRTY TREE, this build is not its commit' : ''}` +
+          `, and all ${provenance.scanned} built page(s) agree` +
+          `${provenance.expected ? '' : ' (no commit resolved, so no page claims one)'}`
       );
     },
   };
 };
+
+// Exported for `lib/__tests__/build-info.test.js`, and for nothing else.
+//
+// Two of the branches above can only be reached with a broken resolver or with
+// no git at all, which is a state a test can describe and a machine cannot be
+// put into on demand. Docusaurus requires this module and calls the default
+// export; a property hung on it is never read, never serialised, and never
+// reaches the client bundle -- unlike a plugin OPTION, which is all three.
+module.exports.assertPagesAndSentinelNameOneCommit = assertPagesAndSentinelNameOneCommit;
