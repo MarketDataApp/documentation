@@ -1,5 +1,6 @@
 ---
 title: Columns
+description: Use the columns parameter on any Market Data endpoint to return only the fields you name, such as columns=ask,bid, which suppresses the status output.
 sidebar_position: 6
 ---
 

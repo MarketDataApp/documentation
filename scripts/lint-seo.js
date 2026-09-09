@@ -98,7 +98,7 @@ const ROOT = path.resolve(__dirname, '..');
 
 const TITLE_UNIQUE_ENFORCED = true; // 270 distinct titles across 270 pages
 const DESC_UNIQUE_ENFORCED = true; // 262 distinct descriptions across 262 content pages
-const LENGTH_ENFORCED = true; // 0 titles > 60, and every description is 70-160
+const LENGTH_ENFORCED = true; // 0 titles > 60, and every description is 100-160
 const CARD_IMAGE_ENFORCED = true; // themeConfig.image landed; 271 of 271 declare one
 const HEADING_ORDER_ENFORCED = true; // 0 pages skip a heading level
 // The 404 names no URL of its own: plugins/not-found-head.js cuts the
@@ -134,7 +134,21 @@ const ENFORCED = {
 
 const TITLE_MAX = 60;
 const DESC_MAX = 160;
-const DESC_MIN = 70;
+/**
+ * 70 UNTIL 2026-09-09, AND 70 WAS THE WRONG NUMBER. Bing's Site Scan flagged
+ * 41 pages of this site as "Meta descriptions ... too short", every one of
+ * them green under I3. Of the pages whose description had not changed since
+ * the crawl, every flagged one measured 72 to 97 and every unflagged one 104
+ * or more; the website repo's own pages gave the same bound (82-88 flagged,
+ * 104+ not). So Bing's floor is 100, and a gate below it is a gate that lets
+ * the report through. 48 pages were under it, 45 of them on a description
+ * Docusaurus had DERIVED from the first line of the body -- which is also how
+ * a hard-wrapped sentence shipped cut off at "for an", an MDX comment shipped
+ * as `{/ The DateWindow type is not documented ... /}`, and an admonition's
+ * "This formula can only be used with paid plans" stood in for the page. Each
+ * of those now carries a hand-written `description:`.
+ */
+const DESC_MIN = 100;
 
 const SITE_SUFFIX = 'Market Data';
 

@@ -1,5 +1,6 @@
 ---
 title: No Headers
+description: Add the noheaders attribute to any Market Data Google Sheets formula, such as STOCKQUOTE or OPTIONDATA, to leave the header row out of the output.
 sidebar_position: 1
 ---
 

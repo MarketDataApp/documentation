@@ -1,5 +1,9 @@
 ---
-title: Google Sheets Add-on
+# "Google Sheets Add-on" alone is the marketing site's <title> for /sheets/,
+# so the two pages competed for one result -- Bing's Site Scan named the pair
+# on 2026-09-09. The sidebar keeps the short form.
+title: Google Sheets Add-on Documentation
+sidebar_label: Google Sheets Add-on
 description: The Market Data add-on brings stock, option, index and fund data into Google Sheets through custom formulas. Start here to install and use it.
 sidebar_position: 1
 slug: /
