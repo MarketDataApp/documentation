@@ -1,5 +1,6 @@
 ---
 title: Data Freshness
+description: Real-time, delayed and historical are the three freshness categories Market Data applies to responses, with different cutovers for stocks and options.
 sidebar_position: 5.5
 ---
 

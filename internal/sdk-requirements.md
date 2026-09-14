@@ -257,15 +257,21 @@ When no token is provided:
 
 All SDKs must define these error types:
 
-| Error Type            | When to Use                          |
-|-----------------------|--------------------------------------|
-| `AuthenticationError` | 401 responses, invalid/missing token |
-| `BadRequestError`     | 400 responses, invalid parameters    |
-| `NotFoundError`       | 404 responses                        |
-| `RateLimitError`      | 429 responses, rate limit exceeded   |
-| `ServerError`         | 5xx responses                        |
-| `NetworkError`        | Connection failures, timeouts        |
-| `ParseError`          | Failed to parse response             |
+| Error Type             | When to Use                                               |
+|------------------------|-----------------------------------------------------------|
+| `AuthenticationError`  | 401 responses, invalid/missing token                      |
+| `BadRequestError`      | 400 responses, invalid parameters                         |
+| `PaymentRequiredError` | 402 responses, request valid but not included in the plan |
+| `ForbiddenError`       | 403 responses, token rejected for this request            |
+| `NotFoundError`        | 404 responses                                             |
+| `RateLimitError`       | 429 responses, rate limit exceeded                        |
+| `ServerError`          | 5xx responses                                             |
+| `NetworkError`         | Connection failures, timeouts                             |
+| `ParseError`           | Failed to parse response                                  |
+
+Use the naming convention the language already uses for its other error types. Go returns a sentinel alongside the type, so `PaymentRequiredError` pairs with `ErrPaymentRequired` and `ForbiddenError` with `ErrForbidden`.
+
+**Why 402 is its own type.** A 402 says the token is valid and the request is well-formed — only the plan does not cover it. That is a different fact from a 401, where no usable identity was presented, and from a 403, where an identity was presented and refused. A caller that must tell "you may not ask this" apart from "you asked this wrong" cannot do so once all three collapse into one class, and must not have to read `.status_code` off a generic HTTP error to find out. Capability and entitlement discovery is the concrete case: a consumer probing what its plan allows needs 402 to be a typed, catchable answer. See [402: Payment Required](/api/troubleshooting/payment-required/) for the canonical semantics.
 
 ### 6.2 Support Context
 
@@ -409,12 +415,18 @@ client.rate_limits
 | 203         | Success - non-authoritative (cached data) - parse response       |
 | 400         | Throw `BadRequestError` - do not retry                           |
 | 401         | Throw `AuthenticationError` - **fail immediately**, do not retry |
+| 402         | Throw `PaymentRequiredError` - do not retry                      |
+| 403         | Throw `ForbiddenError` - do not retry                            |
 | 404         | Return empty/no-data response (not an error for most endpoints)  |
 | 429         | Throw `RateLimitError` - do not retry, expose retry-after        |
 | 500         | Throw `ServerError` - do not retry                               |
 | 501-599     | Retry with exponential backoff                                   |
 
 **Note on 404**: Most endpoints return 404 when no data exists (e.g., no quotes for a delisted symbol). SDKs should return an empty result object with `no_data = true` rather than throwing an exception.
+
+**Note on 402**: Unlike 404, a 402 must never be returned as an empty or no-data result. [402: Payment Required](/api/troubleshooting/payment-required/) states that the request itself is valid — the API declined to answer it, and 402 is that refusal. Rendering it as no-data tells the caller the data does not exist, which is false, and it fails silently: there is no exception anywhere for the caller to catch. An SDK that probes a customer's history depth by walking back until the API stops answering reads a plan denial as the end of the archive, and silently truncates that customer's price history. 402 must throw.
+
+**Note on 402 and 403 retries**: Both rows forbid the SDK's automatic retry, and they are terminal for different lengths of time. A 402 stands until the plan changes, so an immediate retry only spends a request. A 403 is terminal for that request, but the condition behind it can clear on its own — the common cause is the multi-IP block, which lifts after about 5 minutes. The SDK must not retry either code itself; the caller may try a 403 again once the block clears.
 
 ### 9.2 Retry Conditions
 

@@ -67,8 +67,15 @@ jobs:
       - name: Check every language tab makes the same request
         run: node scripts/check-example-parity.js
 
+      # BOTH suites, and `lib/` was the one missing. Its 229 tests ran only in
+      # `sync-sdk-docs.yml`, which fires on an SDK export and not on a pull
+      # request -- so the converters, the head rewriters and the build sentinel
+      # were covered by tests that no PR ran. A test that gates nothing is a
+      # test somebody deletes a branch of and never hears about. They cost 0.2s.
       - name: Unit-test the checkers
-        run: node --test scripts/__tests__/*.test.js
+        run: |
+          node --test scripts/__tests__/*.test.js
+          node --test lib/__tests__/*.test.js
 
   broken-links:
     runs-on: ubuntu-latest

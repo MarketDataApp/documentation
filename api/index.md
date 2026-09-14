@@ -1,5 +1,9 @@
 ---
-title: Market Data API
+# "Market Data API" alone is the marketing site's <title> for /api/, so the
+# two pages competed for one result -- Bing's Site Scan named the pair on
+# 2026-09-09. The sidebar keeps the short form.
+title: Market Data API Documentation
+sidebar_label: Market Data API
 description: The Market Data API is a REST service with standard HTTP methods and status codes, returning JSON for code or CSV for a spreadsheet.
 sidebar_position: 1
 slug: /

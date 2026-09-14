@@ -1,5 +1,6 @@
 ---
 title: Headers Parameter
+description: Set headers=false on any CSV request to drop the header row and return only the data points; headers are on by default when the parameter is omitted.
 sidebar_label: Headers
 sidebar_position: 7
 ---

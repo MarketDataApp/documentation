@@ -1,5 +1,6 @@
 ---
 title: Cancellations
+description: Cancel your Market Data subscription from your member page or the Billing Portal, and see what happens to unused time and how to restart later.
 sidebar_position: 9
 ---
 

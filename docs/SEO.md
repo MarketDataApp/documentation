@@ -85,11 +85,22 @@ Docusaurus derives the description from the page's first paragraph when the
 frontmatter does not set one. That default produced descriptions of every wrong
 shape: a bare heading (`"Problem Overview"`, 16 characters, on eight pages at
 once), and 107 descriptions running past 160 characters to as many as 493.
-Every content page now sets its own `description:` in frontmatter, so nothing
-is derived and nothing repeats.
+**This paragraph used to end "Every content page now sets its own
+`description:` in frontmatter, so nothing is derived."** That was not true:
+the 2026-09-03 pass wrote 165 and left the pages already inside the band on
+the derived text, and on 2026-09-09 Bing's Site Scan flagged 41 of those as
+too short. The derived text is also how a hard-wrapped first line shipped cut
+off at "for an", how an MDX comment shipped as the description of the Go fund
+candles page, and how an admonition's "This formula can only be used with paid
+plans" stood in for the EARNINGS formula. 45 more pages carry a hand-written
+description since that day. Some pages still derive theirs; a derived one that
+is inside the band and unique passes every rule below, and nothing yet asserts
+the frontmatter itself.
 
 *Gated by rule B1 (presence), rule H2 (uniqueness) and rules I2 and I3
-(160 characters or fewer, 70 or more).*
+(160 characters or fewer, 100 or more — the floor was 70 until 2026-09-09,
+when Bing showed it flags anything under 100; see the note beside `DESC_MIN`
+in `scripts/lint-seo.js`).*
 
 ## Canonical URLs
 
@@ -434,7 +445,8 @@ page set a `description:`, so Docusaurus derived one from the first paragraph.
 That is why eight account troubleshooting pages and one Sheets page all
 described themselves as `Problem Overview`, and why 107 descriptions ran past
 160 characters — the longest, `/account/upgrades/`, was 493. 165 pages now
-carry a hand-written description of 70 to 160 characters.
+carry a hand-written description of 70 to 160 characters (210 since
+2026-09-09, when the floor rose to 100).
 
 The six language SDKs document the same endpoints, so a description written
 for the endpoint alone collides the way the titles did. **Every SDK

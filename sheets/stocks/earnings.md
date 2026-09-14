@@ -1,5 +1,6 @@
 ---
 title: EARNINGS
+description: Use the EARNINGS formula in Google Sheets to fetch current or past earnings data for a stock ticker, with attributes such as eps and report date.
 sidebar_position: 2
 sidebar_custom_props:
   badge: p

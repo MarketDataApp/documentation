@@ -1,5 +1,6 @@
 ---
 title: Token
+description: Pass your read-only access token as a token query parameter when a header is impossible, and see why the URL form exposes the token in logs.
 sidebar_position: 0
 ---
 

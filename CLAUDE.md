@@ -848,9 +848,12 @@ The sha is **full length** by agreement: an abbreviation is ambiguous across
 two repositories and cannot be handed back to `git`.
 
 Written by `plugins/build-info.js` in postBuild, from `lib/build-info.js`. The
-commit is resolved **once**, in `docusaurus.config.js`, and handed to the
-plugin — two call sites resolving it separately would be two ways to answer one
-question, and they would disagree the day somebody changed one.
+commit is resolved **once**, inside the plugin, and both consumers read that one
+value — the endpoint and every page's `<meta name="build-commit">`. Two call
+sites resolving it separately would be two ways to answer one question, and they
+would disagree the day somebody changed one. (It used to be resolved in
+`docusaurus.config.js` and handed over as a plugin option, which published it to
+every reader and rehashed `main.js` on every deploy. See "Diff two builds".)
 
 ### Three traps, each of which defeats the whole thing
 
@@ -879,6 +882,53 @@ per-build-varying value: two builds of one tree must differ only where they are
 already known to, or a head-only change cannot be verified by diffing built
 HTML. It was the other repo's condition on the shared format and it is worth as
 much here, where `lib/build-freshness.js` and several checks read built HTML.
+
+### What gates it, and why each half is somewhere different
+
+A sentinel fails by **answering** — with `unknown`, with a stale commit, or with
+one its own pages disagree with — and an answer is what the reader came for. So
+the failure arrives as confidence, at the moment somebody has stopped guessing.
+Nothing about the page looks different.
+
+**The build asserts itself, in `plugins/build-info.js`'s postBuild.** Not in a
+`scripts/` check: the deploy runs `pnpm run build` and nothing else, so a PR-only
+gate is absent from the one build whose output ships — and the defect is
+introduced by editing that plugin, in a commit that need not touch anything a PR
+check reads. Three states, and only two are honest:
+
+| Resolved commit | The build must then be                               | Verdict                 |
+|-----------------|------------------------------------------------------|-------------------------|
+| a 40-hex sha    | every page carries it, and the endpoint publishes it | the normal case         |
+| none at all     | no page carries a tag, endpoint says `unknown`       | local only, never in CI |
+| anything else   | endpoint answers, every page silent                  | always fatal            |
+
+The third row is the shape worth remembering: `buildCommitTag` refuses to emit a
+value that cannot be handed back to `git`, so a half-valid sha leaves the
+endpoint answering **alone**, with nothing to contradict it. The walk carries a
+floor of 50 pages against a real 265 — a tripwire on the walk, not a baseline on
+the content.
+
+**The wiring is asserted in `scripts/__tests__/deploy-sentinel.test.js`**, which
+reads `deploy-docs.yml` and can fail *before* a workflow runs. Three pairings,
+each with its halves tens of lines apart in a file nobody reads top to bottom:
+
+- the build's `PROD` and the dispatch payload's `environment` come from **one**
+  step, so a production deploy cannot carry a sentinel saying `staging`
+- the payload's `commit_sha` is `github.sha`, the same value `resolveGit()`
+  reads, so the website half's post-deploy comparison compares one question
+  rather than two that happen to agree
+- **exactly one** `_headers` rule matches the sentinel, and it is `no-store`
+
+Each of those is driven by a mutation of the workflow that must break it, and
+`mutate()` fails when its anchor matches nothing — so a mutation that stops
+applying reports itself instead of quietly testing an unchanged file. The
+sentinel's filename is `SENTINEL_FILE` in `lib/build-info.js`, read by both the
+plugin and that test, because renaming it silently unhooks the cache rule.
+
+`lib/__tests__/*.test.js` now runs in PR checks. It did not: 229 tests ran only
+in `sync-sdk-docs.yml`, which fires on an SDK export, so the converters, the
+head rewriters and this sentinel were covered by tests no pull request ran.
+
 
 ## Markdown Twins
 
