@@ -40,7 +40,7 @@ function page(route, o = {}) {
   if (o.title !== null) parts.push(`<title>${o.title ?? 'A Page'} | ${o.suffix ?? 'Market Data'}</title>`);
   if (o.extraTitle) parts.push(`<title>Second</title>`);
   if (o.description !== null) {
-    parts.push(`<meta name="description" content="${o.description ?? 'A description long enough to be a real one for the purposes of this fixture.'}">`);
+    parts.push(`<meta name="description" content="${o.description ?? 'A description long enough to be a real one for the purposes of this fixture, and well past the I3 floor.'}">`);
   }
   if (o.canonical !== null) parts.push(`<link rel="canonical" href="${o.canonical ?? url}">`);
   if (o.extraCanonical) parts.push(`<link rel="canonical" href="${url}?x">`);
@@ -107,7 +107,7 @@ test('unquoted, reordered, minified attributes are read correctly', () => {
     '<!DOCTYPE html><html lang=en><head>' +
     '<meta charset=utf-8><meta content=width=device-width name=viewport>' +
     '<title>A Page | Market Data</title>' +
-    '<meta content="A description long enough to be a real one for this fixture and then some." name=description>' +
+    '<meta content="A description long enough to be a real one for this fixture and then some, and past the I3 floor too." name=description>' +
     // No canonical: this page says noindex, and C1 forbids the pair. The
     // unquoted-attribute coverage this fixture exists for is carried by the
     // robots, viewport and description tags around it, and by the sibling test
@@ -147,6 +147,33 @@ test('B1 fails when a content page has no description', () => {
   assert.match(r.out, /B1.*no description/);
 });
 
+// I3 had no test at all, and that is how the floor came to disagree with this
+// file. DESC_MIN was raised from 70 to 100 on 2026-09-09; every fixture
+// description here had been written to clear 70 and measured 74 to 83, so
+// sixteen tests that assert a CLEAN run started failing on a rule none of them
+// is about -- and nothing said so until the first pull request to run them.
+// The floor is read out of the checker's own message rather than written down
+// here, so this test keeps meaning the same thing the next time it moves.
+test('I3 fails one character under the floor and passes at it', () => {
+  const short = run({ '/api/thing/': page('/api/thing/', { description: 'Too short.' }) },
+    { sitemap: ['/api/thing/'] });
+  assert.strictEqual(short.code, 1);
+  const m = short.out.match(/I3 {2}description under (\d+) characters/);
+  assert.ok(m, short.out);
+  const floor = Number(m[1]);
+
+  const pad = (n) => `A description padded out to exactly ${n} characters `.padEnd(n, 'x').slice(0, n);
+
+  const under = run({ '/api/thing/': page('/api/thing/', { description: pad(floor - 1) }) },
+    { sitemap: ['/api/thing/'] });
+  assert.strictEqual(under.code, 1);
+  assert.match(under.out, new RegExp(`I3.*\\n.*\\(${floor - 1}\\)`));
+
+  const at = run({ '/api/thing/': page('/api/thing/', { description: pad(floor) }) },
+    { sitemap: ['/api/thing/'] });
+  assert.strictEqual(at.code, 0, at.out);
+});
+
 test('B1 exempts navigation artifacts, using the classifier llms-txt already exports', () => {
   const r = run({
     '/api/thing/': page('/api/thing/'),
@@ -184,7 +211,7 @@ test('C1 reads an UNQUOTED canonical on a noindex page', () => {
     '<!DOCTYPE html><html lang=en><head>' +
     '<meta charset=utf-8><meta content=width=device-width name=viewport>' +
     '<title>A Page | Market Data</title>' +
-    '<meta content="A description long enough to be a real one for this fixture and then some." name=description>' +
+    '<meta content="A description long enough to be a real one for this fixture and then some, and past the I3 floor too." name=description>' +
     `<link href=${PROD}/docs/api/thing/ rel=canonical>` +
     `<meta content=${PROD}/docs/api/thing/ property=og:url>` +
     '<meta content=noindex,nofollow name=robots>' +
@@ -423,7 +450,7 @@ function fifteenSkips() {
     // fixture that repeats either fails on those instead of on D3.
     pages[route] = page(route, {
       title: `Page ${i}`,
-      description: `Description number ${i}, written long enough to clear the minimum length.`,
+      description: `Description number ${i}, written out at a length that clears the minimum description length I3 requires.`,
       body: SKIPPED_HEADING,
     });
     sitemap.push(route);
@@ -659,7 +686,7 @@ test('G2 fails when a noindex route is advertised in the llms files', () => {
       robots: 'noindex, nofollow',
       canonical: null,
       title: 'Secret',
-      description: 'A second description, distinct from its sibling so H1 and H2 stay out of the way.',
+      description: 'A second description, distinct from its sibling so H1 and H2 stay out of the way, and long enough for I3.',
     }),
   }, {
     sitemap: ['/api/thing/'],
@@ -678,7 +705,7 @@ test('G2 passes when the noindex route is withheld', () => {
       robots: 'noindex, nofollow',
       canonical: null,
       title: 'Secret',
-      description: 'A second description, distinct from its sibling so H1 and H2 stay out of the way.',
+      description: 'A second description, distinct from its sibling so H1 and H2 stay out of the way, and long enough for I3.',
     }),
   }, {
     sitemap: ['/api/thing/'],
@@ -698,7 +725,7 @@ test('G2 floor fires on a truncated index', () => {
     '/api/thing/': page('/api/thing/'),
     '/api/other/': page('/api/other/', {
       title: 'Other',
-      description: 'A second description, distinct from its sibling so H1 and H2 stay out of the way.',
+      description: 'A second description, distinct from its sibling so H1 and H2 stay out of the way, and long enough for I3.',
     }),
   }, {
     sitemap: ['/api/thing/', '/api/other/'],
