@@ -2,6 +2,7 @@
 title: BYOK Compliance Audit Prompt
 description: The prompt we give Claude or Codex to audit a repository against the BYOK model and the Market Data data policies, and to return a GO or NO-GO report.
 hide_table_of_contents: false
+sidebar_position: 3
 ---
 
 This page holds one prompt. Paste it into Claude Code or Codex, point the agent at
