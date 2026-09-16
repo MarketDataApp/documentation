@@ -2,6 +2,7 @@
 title: SDK Requirements
 description: Internal language-agnostic SDK requirements for Market Data REST API libraries
 hide_table_of_contents: false
+sidebar_position: 2
 ---
 
 This document defines the requirements for official Market Data SDKs. Use this as acceptance criteria when building or evaluating SDK implementations.
