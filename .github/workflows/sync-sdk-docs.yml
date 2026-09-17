@@ -183,6 +183,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Open / update PR in target SDK repo
+        id: pr
         uses: peter-evans/create-pull-request@v6
         with:
           path: target
@@ -209,3 +210,24 @@ jobs:
             > edit the source `.mdx` there, not the rendered `.md` here.
             > Hand-edits to files listed in `docs/.sync-manifest.txt` will
             > be overwritten on the next sync.
+
+      - name: Let the PR merge itself once its checks pass
+        if: steps.pr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR: ${{ steps.pr.outputs.pull-request-number }}
+          REPO: ${{ env.TARGET_OWNER }}/${{ matrix.repo }}
+        run: |
+          # Without this the sync PRs just accumulate. Four of them sat green,
+          # unreviewed and unmerged for up to a month -- sdk-js#76 and
+          # sdk-java#59 from 2026-08-19 -- while the anchor-link fixes they
+          # carried stayed broken on the published docs. Nothing blocked them;
+          # nobody owned merging them. An automated pipeline that needs a human
+          # to press the last button is not automated.
+          #
+          # `--auto` bypasses nothing. GitHub merges only when the branch's
+          # required checks pass, so a red `Tests passed` still blocks, and a
+          # rule that requires review still waits for the review. It is the
+          # merge queue, not a merge.
+          echo "Enabling auto-merge on ${REPO}#${PR}"
+          gh pr merge "$PR" --repo "$REPO" --squash --auto
