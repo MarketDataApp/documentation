@@ -28,7 +28,19 @@ name: "SDK Docs: Sync to SDK Repos"
 
 on:
   push:
-    branches: [staging]
+    # `main`, which is production: deploy-docs.yml builds a push to main as the
+    # production environment, and work reaches it as a `staging -> main`
+    # promotion pull request.
+    #
+    # This used to watch `staging`, the integration branch, so the SDK repos
+    # received documentation before it was published -- including anything that
+    # was changed again, or dropped, before the promotion. Tracking main means
+    # the docs vendored into each SDK are the docs the site is actually serving.
+    #
+    # It also removes a split: `main` is the repository default, so the
+    # `workflow_dispatch` below already checked out main. A dispatch and a push
+    # synced different content, and only the dispatch was right.
+    branches: [main]
     paths:
       - 'sdk/js/**'
       - 'sdk/java/**'
@@ -206,7 +218,7 @@ jobs:
             ```
 
             > **These files are auto-synced from
-            > [MarketDataApp/documentation](https://github.com/MarketDataApp/documentation/tree/staging/sdk/${{ matrix.sdk }})** —
+            > [MarketDataApp/documentation](https://github.com/MarketDataApp/documentation/tree/main/sdk/${{ matrix.sdk }})** —
             > edit the source `.mdx` there, not the rendered `.md` here.
             > Hand-edits to files listed in `docs/.sync-manifest.txt` will
             > be overwritten on the next sync.
