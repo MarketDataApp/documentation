@@ -82,5 +82,5 @@ We provide the following headers in our responses to help you manage the rate li
 - Paying customers can make use of the reduced-price cached mode. Use the `mode=cached` parameter on supported bulk endpoints to retrieve previously cached quotes instead of making a live request. This can save thousands of credits. For more details, refer to the [mode parameter documentation](/api/universal-parameters/mode).
 
 :::note[Trial plans]
-`mode=cached` is not available on Starter Trial and Trader Trial plans.
+`mode=cached` is not available on Starter Trial, Trader Trial, and Prime Trial plans.
 :::
