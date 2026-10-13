@@ -188,7 +188,7 @@ or UNRESOLVED.
 
 | ID | The rule |
 |----|----------|
-| E1 | Every request carries a unique `User-Agent` that names the application and its version. A library default such as `axios/1.6.0`, `python-requests/2.31.0`, or `okhttp/4.12.0` fails this rule. |
+| E1 | Every request identifies the application and its version, in one of two ways. The first is the header `X-MarketData-Client: <app>/<version>`, where `<app>` is lowercase letters, digits, `.`, `_`, or `-`, at most 64 characters, and `<version>` is at most 32 characters. A browser application must use this header, because Chrome and Safari drop a `User-Agent` set from JavaScript. The second is for a native application only (desktop, mobile, a CLI with no server, a platform plugin): a `User-Agent` that names the application and its version. A native application may use either one. A library default such as `axios/1.6.0`, `python-requests/2.31.0`, or `okhttp/4.12.0` with no `X-MarketData-Client` header fails this rule. So does a header whose app name is generic or is not the application's own, such as `app`, `test`, `sheets`, or a language name. The header identifies the application for attribution only. It grants no access, no credits, and no exemption from any control. An application that relies on it for anything else is wrong. |
 | E2 | Option chain requests use `mode=cached` unless the use case needs live data. A live chain costs one credit per contract; a cached chain costs one credit. Cached mode is available only on paid plans that are not trials. Free Forever and every trial (Starter Trial, Trader Trial, Prime Trial) get a `402` for `mode=cached`, so on a `402` the application repeats the request without `mode`. |
 | E3 | Polling intervals fit a credit budget. A free key holds 100 credits a day. State the worst-case daily credit spend you can derive from the code. |
 | E4 | The application handles `429`, `402`, and `403` with a message to the user. A `403` is the single-IP control. The block expires five minutes after the IP switch; further requests during the block do not extend it. |
@@ -256,6 +256,7 @@ Bearer                           # authorization headers
 /v1/options/chain                # and the other endpoints
 mode=cached
 User-Agent
+X-MarketData-Client
 ```
 
 Then search the repository's own vocabulary for each rule group: the name of
@@ -344,6 +345,6 @@ outside its reach, and the report should not be read as covering them:
   hosting dashboard leaves no file to find.
 - **A binary or closed dependency.** The prompt records these as unresolved
   rather than clearing them.
-- **Live request behaviour.** Our own API logs answer this. A `User-Agent` in
-  the code and a `User-Agent` on the wire are two claims.
+- **Live request behaviour.** Our own API logs answer this. An identifying header
+  in the code and the same header on the wire are two claims.
 - **Whether the developer follows the report.** A GO is a verdict on a commit.
