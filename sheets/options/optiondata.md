@@ -19,13 +19,14 @@ Fetches current or historical option quotes from Market Data, for one option con
 =OPTIONDATA(A1:A500, "bid,ask,noheaders")
 =OPTIONDATA("AAPL271217C00250000,AAPL271217P00250000", "mid")
 =OPTIONDATA(A1:A500, "mid", "9/15/2026")
+=OPTIONDATA(A1:D50, "symbol,mid")
 ```
 ## Syntax
 ```excel-formula
 =OPTIONDATA(option symbol, [attributes], start date, end date)
 ```
 
-- **option symbol** _(REQUIRED)_ Use the current OCC option symbol format for the option symbol, even for historic options prior to the symbol format change in 2010. Several contracts can be fetched at once: pass a range of cells in a single row or a single column, or several OCC symbols separated by commas. See [Working With Multiple Contracts](#working-with-multiple-contracts).
+- **option symbol** _(REQUIRED)_ Use the current OCC option symbol format for the option symbol, even for historic options prior to the symbol format change in 2010. Several contracts can be fetched at once: pass a range of cells in a single row or a single column, several OCC symbols separated by commas, or a table of four columns with one contract per row. See [Working With Multiple Contracts](#working-with-multiple-contracts).
 - **attribute** _(OPTIONAL "price" by default)_ Use at least one of the following attributes; seperate multiple attributes with commas:
   - "symbol" - The OCC option symbol.
   - "date", "updated" - The date and time of the quote.
@@ -89,15 +90,31 @@ If you attempt to access historical data older than your plan's limit permits, t
 
 ### Working With Multiple Contracts
 
-A single `OPTIONDATA` formula can fetch quotes for many option contracts at once. Pass a range of cells, or several OCC symbols separated by commas, as the option symbol.
+A single `OPTIONDATA` formula can fetch quotes for many option contracts at once. Pass a range of cells, several OCC symbols separated by commas, or a table of contracts as the option symbol.
 
-- One row comes back for each cell, in the same order as the range, even when the range is a row. Wrap the formula in `TRANSPOSE()` to lay the results out horizontally.
-- A contract that cannot be found, or that has expired, comes back as a blank row in its place, so the results stay aligned with your contracts.
+- One row comes back for each contract, in the same order as your cells, even when the range is a row. Wrap the formula in `TRANSPOSE()` to lay the results out horizontally.
+- A contract that cannot be served (not found, expired, or misspelled) keeps its place, so the results stay aligned with your contracts. Its row shows what you entered in the symbol column, with the other columns blank, so you can spot it. Request the `symbol` attribute to see it; without it the row is blank.
 - Use a single historical date (start date only). Date ranges are not supported with more than one contract.
-- The range must be a single row or a single column. A table of several rows and several columns returns an error.
-- A row of cells can also describe one contract in parts: underlying, expiration date, strike and side (for example, `AAPL | 12/17/2027 | 250 | call`). A row like that is read as a single contract, so it also accepts a date range.
+- A range must be a single row, a single column, or a table of exactly four columns. Any other table, such as three or five columns, returns an error.
+- A row of four cells can describe one contract in parts: underlying, expiration date, strike and side (for example, `AAPL | 12/17/2027 | 250 | call`). On its own, a row like that is read as a single contract, so it also accepts a date range.
 - With more than one contract the results include a header row. Add `noheaders` to the attributes to line the results up with your cells.
-- For best results use OCC symbols. Contracts written in words are slower to read, and a long list of them may fill in over a few refreshes.
+- For best results use OCC symbols, or a table with dates in `YYYY-MM-DD` format and numeric strikes. Contracts written in words are slower to read, and a long list of them may fill in over a few refreshes.
+
+#### Tables of Contracts
+
+A table of four columns is read as one contract per row, with the underlying, expiration date, strike and side in its columns:
+
+|   | A    | B          | C   | D    |
+|---|------|------------|-----|------|
+| 1 | AAPL | 2027-12-17 | 250 | call |
+| 2 | AAPL | 2027-12-17 | 250 | put  |
+| 3 | MSFT | 2027-12-17 | 500 | call |
+
+`=OPTIONDATA(A1:D3, "symbol,mid")` returns a header row and one row for each of the three contracts.
+
+- The columns can be in any order. The first row sets it, and every other row is read the same way.
+- Because of that, the first row must be a contract, not a header. A table that starts with a header row returns an error, so start the range on the first contract (for example, `A2:D50`).
+- A later row that does not fit the order of the first row (columns swapped, a missing or misspelled cell) fails on its own, without affecting the other rows.
 
 ## Notes
 
