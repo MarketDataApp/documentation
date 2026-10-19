@@ -248,9 +248,22 @@ This is a current chain, so the Greek columns are populated. A historical reques
   Combining the `all` parameter with large options chains such as SPX, SPY, QQQ, etc. can cause you to consume your requests very quickly. The full SPX option chain has more than 20,000 contracts. A request is consumed for each contact you request with a price in the option chain.
   :::
 
-- **dte** `number`
+- **dte** `string`
 
-  Days to expiry. Limit the option chain to a single expiration date closest to the `dte` provided. Should not be used together with `from` and `to`. Take care before combining with `weekly`, `monthly`, `quarterly`, since that will limit the expirations `dte` can return. If you are using the `date` parameter, dte is relative to the `date` provided.
+  Days to expiry, in the same syntax as `strike` and `delta`:
+
+  - Limit the option chain to the single expiration date closest to the `dte` provided. (e.g. `45`)
+  - Limit the option chain to the closest expiration for each of a set of values, deduplicated where two values resolve to the same expiration. (e.g. `15,30,45`)
+  - Limit the option chain to every expiration in a closed interval, both endpoints included. (e.g. `0-45`)
+  - Limit the option chain to every expiration on one side of a bound, using a logical expression. (e.g. `>=30`, `<45`)
+
+  Values are whole numbers of days, at most 36500. A malformed `dte` — a fraction, `nan`, a reversed range, or a value above that cap — is rejected with `400` and a message naming the problem. A well-formed range that matches no expiration returns `s: no_data` rather than an error.
+
+  Should not be used together with `from` and `to`. Take care before combining with `weekly`, `monthly`, `quarterly`, since that will limit the expirations `dte` can return. If you are using the `date` parameter, dte is relative to the `date` provided.
+
+  :::caution A range returns every expiration in it, and bills for all of them
+  A single value and a list each resolve to one expiration per value. A range or an operator does not — it is a filter, so `dte=0-45` on a liquid underlying returns every expiration in that window and consumes one credit per contract returned, exactly like the equivalent `from`/`to` request.
+  :::
 
 - **from** `date`
 
