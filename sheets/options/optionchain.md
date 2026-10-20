@@ -87,8 +87,8 @@ Fetches a current option chain, or the end-of-day option chain of a past trading
   - _(omitted)_ or "current" - The current chain, the same as a formula without this parameter.
   - "date" - A single date in YYYY-MM-DD or MM/DD/YYYY format enclosed between quotes.
   - \[date cell reference] - A cell reference to a date in Sheets.
-  - "last session" - The most recent trading day whose end-of-day chain has been published.
-  - "yesterday", "today" - The calendar day before today, or today. On a weekend or holiday these return an error, so "last session" is usually the better choice.
+  - "last session" - The last closed market session. See [Relative Dates and Times](/sheets/dates-and-times#relative-dates-and-times).
+  - "yesterday" - The calendar day before today. If that day was a weekend or a market holiday, the formula returns an error, so "last session" is usually the better choice.
   - An empty cell or `""` returns an error, not the current chain. To switch a sheet between current and historical chains with one cell, write "current" in it.
 
 ## Usage Information
@@ -112,7 +112,7 @@ With an **as of** date, `OPTIONCHAIN` returns the chain as it closed on that tra
 - Only end-of-day chains are available. There are no intraday snapshots, and only one date per formula.
 - The columns are the same as for a current chain. Implied volatility and the greeks (delta, gamma, theta, vega) are blank, and selecting strikes by delta is not available.
 - Open interest is the figure settled out of the previous session, as described under the "open interest" attribute.
-- A date in the future, a weekend or a market holiday returns an error. Today's chain returns a "not available yet" error until the end-of-day chain is published after the close.
+- A date in the future, a weekend or a market holiday returns an error. The chain of the most recent session returns a "not available yet" error until its end-of-day data is published.
 - A relative date such as "last session" is resolved when the formula calculates. It updates when the sheet is refreshed or a referenced cell changes, not on its own as days pass.
 - Historical data is subject to your plan's limits. [Learn more about plan limits](/account/plan-limits).
 

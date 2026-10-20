@@ -25,6 +25,6 @@ Add `noheaders` anywhere in the attribute list of any Market Data formula. Ensur
 
 :::info
 
-The `noheaders` attribute is needed whenever the output has more than one row or column: several attributes, several symbols or contracts, or a date range. A single attribute for a single symbol and date returns one cell with no header.
+The `noheaders` attribute is needed whenever the output has more than one row or column: several attributes, several symbols or contracts, or a date range. A single attribute for a single symbol and date returns one cell with no header. `OPTIONCHAIN` with a single attribute returns one column with no header row.
 
 :::
