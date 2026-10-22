@@ -29,6 +29,12 @@ Fetches current or historical option quotes from Market Data, for one option con
 - **option symbol** _(REQUIRED)_ Use the current OCC option symbol format for the option symbol, even for historic options prior to the symbol format change in 2010. Several contracts can be fetched at once: pass a range of cells in a single row or a single column, several OCC symbols separated by commas, or a table of four columns with one contract per row. See [Working With Multiple Contracts](#working-with-multiple-contracts).
 - **attribute** _(OPTIONAL "price" by default)_ Use at least one of the following attributes; seperate multiple attributes with commas:
   - "symbol" - The OCC option symbol.
+  - "underlying" - The underlying symbol.
+  - "expiration" - The option's expiration date.
+  - "side" - Call or put.
+  - "strike" - The option's strike price.
+  - "first traded" - The date this option first began to trade.
+  - "dte" - Days to expiration: the calendar days until the option expires, counted from today on a current quote and from the quote date on a historical one.
   - "date", "updated" - The date and time of the quote.
   - "price", "mid", "mark" – The midpoint price of the option.
   - "bid" – The bid price of the option.

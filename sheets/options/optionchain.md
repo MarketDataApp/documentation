@@ -38,6 +38,7 @@ Fetches a current option chain, or the end-of-day option chain of a past trading
   - "side" - Call or put.
   - "strike" - The option's strike price.
   - "first traded" - The date this option first began to trade.
+  - "dte" - Days to expiration: the calendar days until the option expires, counted from today on a current quote and from the quote date on a historical one.
   - "date", "updated" - The date and time of the quote.
   - "bid" – The bid price of the option.
   - "bid size" – The quantity of contracts offered at the bid price.
