@@ -112,7 +112,7 @@ With an **as of** date, `OPTIONCHAIN` returns the chain as it closed on that tra
 - Only end-of-day chains are available. There are no intraday snapshots, and only one date per formula.
 - The columns are the same as for a current chain. Implied volatility and the greeks (delta, gamma, theta, vega) are blank, and selecting strikes by delta is not available.
 - Open interest is the figure settled out of the previous session, as described under the "open interest" attribute.
-- A date in the future, a weekend or a market holiday returns an error. The chain of the most recent session returns a "not available yet" error until its end-of-day data is published.
+- A date in the future, a weekend or a market holiday returns an error, and so does today's date while the market is open. After the close, today's chain is available as soon as its end-of-day data is published; until then the formula returns a "not available yet" error.
 - A relative date such as "last session" is resolved when the formula calculates. It updates when the sheet is refreshed or a referenced cell changes, not on its own as days pass.
 - Historical data is subject to your plan's limits. [Learn more about plan limits](/account/plan-limits).
 
