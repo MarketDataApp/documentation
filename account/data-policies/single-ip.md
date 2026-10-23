@@ -31,7 +31,7 @@ If your account has been blocked, see [403: Multiple IP Addresses](/docs/api/tro
 
 ## Commercial Use and Multi-Device Access
 
-The single IP policy applies to all standard subscription plans. If your use case legitimately requires API access from multiple IP addresses simultaneously — for example, distributed systems or serving data to multiple users — this constitutes redistribution and requires a commercial license. Please contact sales to discuss licensing options.
+The single IP policy applies to all self-service plans. The [Commercial Plan](/docs/account/plans/commercial/) has no IP limit: if your use case requires API access from multiple IP addresses simultaneously — for example, distributed systems or serving data to multiple users — the Commercial Plan lets you call the API from as many servers and IP addresses as your product needs. For needs beyond the Commercial Plan, [contact us](https://www.marketdata.app/contact/) about enterprise licensing.
 
 ## Violations
 

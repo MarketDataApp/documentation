@@ -27,7 +27,7 @@ For users working with options, take care before repeatedly requesting quotes fo
 :::
 
 :::note[Trial plans]
-Starter Trial and Trader Trial do not support `mode=cached`.
+Starter Trial, Trader Trial, and Prime Trial do not support `mode=cached`.
 :::
 
 ## Device Restrictions

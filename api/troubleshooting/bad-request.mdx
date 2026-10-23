@@ -83,12 +83,12 @@ You may receive:
 Meaning:
 
 - Request can be otherwise valid
-- `date` was used in a current-data context
+- `date` was used in a current-data context, such as today's date while the market is open
 
 How to fix:
 
 1. For current data: omit `date`
-2. For historical data: provide a past trading date
+2. For historical data: provide a past trading date, or today's date after the market closes
 
 ```http
 # Current request (correct): no date parameter

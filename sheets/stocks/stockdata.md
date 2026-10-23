@@ -60,8 +60,11 @@ Fetches a current stock quote or historical stock candles from Market Data. It c
     - "bidSize" – The quantity of shares offered at the bid price.
     - "askSize" – The quantity of shares offered at the ask price.
     - "volume" – The quantity of shares traded.
+    - "52weekHigh" – The 52-week high for the stock.
+    - "52weekLow" – The 52-week low for the stock.
+    - "52week" – Adds both 52-week columns. "all" does not include them: use "all,52week" to return every value and the 52-week high and low.
     - "symbol" - The ticker symbol of the stock. _Only returned when using a bulk quotes formula._ 
-    - "all" – Returns all values.
+    - "all" – Returns all values except the 52-week high and low.
 
 - **start date** _(OPTIONAL)_ The start date when fetching historical data. If start date is specified, but endDate is not, only the single day’s data is returned. Multiple tickers may be used if only a single day's data is being returned.
 

@@ -64,6 +64,8 @@ If your business is in a non-financial field (e.g., construction, healthcare, re
 
 Professional subscribers never receive real-time exchange data on a self-service plan, no matter which exchange agreements they sign. Real-time access for professional use requires direct exchange licensing, which Market Data arranges individually. [Contact our sales team](https://www.marketdata.app/contact/) to discuss it. Delayed / historical data access remains available on your current plan, depending on the data policies of each exchange.
 
+If your business uses market data in a product or service, the [Commercial Plan](/docs/account/plans/commercial/) is made for it: real-time stock and options prices with a commercial license, and no exchange licensing or exchange fees.
+
 ## Still Need Help?
 
 If you are unsure how your business would be classified, please contact our [support helpdesk](https://www.marketdata.app/dashboard/) and describe what your business does. Our support team will let you know what classification applies and what documentation, if any, is needed.

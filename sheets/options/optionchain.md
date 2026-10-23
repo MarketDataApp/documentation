@@ -1,12 +1,12 @@
 ---
 title: OPTIONCHAIN
-description: The OPTIONCHAIN formula fetches a current option chain into your spreadsheet. See the syntax, sample usage and data availability.
+description: The OPTIONCHAIN formula fetches a current or end-of-day historical option chain into your spreadsheet. See the syntax, samples and data availability.
 sidebar_position: 3
 sidebar_custom_props:
   badge: h
 ---
 
-Fetches a current option chain from Market Data.
+Fetches a current option chain, or the end-of-day option chain of a past trading day, from Market Data.
 
 ## Video Tutorial
 <iframe width="100%" height="503" src="https://www.youtube.com/embed/Pwnsp5SsU3M" title="How To View and Filter The Options Chain" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -18,10 +18,16 @@ Fetches a current option chain from Market Data.
 =OPTIONCHAIN("AAPL","all,noheaders","60 DTE","150,160)
 =OPTIONCHAIN("AAPL","all","60 DTE","100-200","calls")
 ```
+### Historical Chains
+```excel-formula
+=OPTIONCHAIN("AAPL","strike,bid,ask","45 DTE","200-250","puts","2026-09-01")
+=OPTIONCHAIN("AAPL",,,,,"last session")
+=OPTIONCHAIN(A2,"strike,bid,ask","45 DTE","200-250","puts",B2)
+```
 
 ## Syntax
 ```excel-formula
-=OPTIONCHAIN(underlying symbol, [attributes], expiration date, [strikes], [filters])
+=OPTIONCHAIN(underlying symbol, [attributes], expiration date, [strikes], [filters], [as of])
 ```
 
 - **underlying symbol** _(REQUIRED)_ Use the stock, etf, or underlying index symbol.
@@ -32,6 +38,7 @@ Fetches a current option chain from Market Data.
   - "side" - Call or put.
   - "strike" - The option's strike price.
   - "first traded" - The date this option first began to trade.
+  - "dte" - Days to expiration: the calendar days until the option expires, counted from today on a current quote and from the quote date on a historical one.
   - "date", "updated" - The date and time of the quote.
   - "bid" – The bid price of the option.
   - "bid size" – The quantity of contracts offered at the bid price.
@@ -55,7 +62,8 @@ Fetches a current option chain from Market Data.
 - **expiration date** - _(OPTIONAL)_ - The expiration date of the option chain. Options from this expiration will be returned. If no value is specified, the next monthly expiration will be used.
   - "date" - A single date in YYYY-MM-DD or MM/DD/YYYY format enclosed between quotes.
   - \[date cell reference] - A cell reference to a date in Sheets.
-  - "dte _number_" - Days to expiry. Return the expiration date most closely matching the indicated number. For example, if today was Jan 1 and you used a DTE of 45, the expiration closest to Feb 15 would be selected.
+  - "dte _number_" - Days to expiry. Return the expiration date most closely matching the indicated number. For example, if today was Jan 1 and you used a DTE of 45, the expiration closest to Feb 15 would be selected. With an **as of** date, the days are counted from that date instead of today.
+  - The expiration date is always the contract's expiration, never the quote date. To see a chain as it was on a past day, use **as of**.
 - **strikes** _(OPTIONAL)_ – Limit the strikes returned from the option chain formula to only the specified strikes or deltas. The formula will assume strikes for numbers greater than 1 and deltas for numbers less than 1 or when the word `delta` is placed before the number(s).
   - \[number] - A single number or a cell reference to a number. Example: `150`
   - \[decimal] - A decimal number will be interpreted as a delta value to be matched and the formula will return the strike that most closely matches the delta provided. Example: `.60`
@@ -68,18 +76,26 @@ Fetches a current option chain from Market Data.
   - "string of decimals" - Seperate multiple deltas with commas. Example: `".50,.60.,70"`
   - "logical expression" - A logical expression. Example: `"<200 delta <.50"`
   - "limit \[number]" - Limit the output to \[number] strikes closest to the money. Example: `"limit 4"`
+  - Deltas are only available for current chains. Selecting strikes by delta together with an **as of** date returns an error; use strikes instead.
 - **filters** _(OPTIONAL)_ – Use specific keywords to further filter the option chain.
   - "call", "calls" - Only return calls.
   - "put", "puts" - Only return puts.
   - "itm", "in the money" - Only return in the money options.
   - "otm", "out of the money" - Only return out of the money options.
   - "nonstandard", "non-standard" - Include non-standard contracts in the optionchain output.
+- **as of** _(OPTIONAL)_ – The quote date. Leave it out for the current chain, or give one past trading day to get that day's end-of-day chain. See [Working With Historical Chains](#working-with-historical-chains).
+  - _(omitted)_ or "current" - The current chain, the same as a formula without this parameter.
+  - "date" - A single date in YYYY-MM-DD or MM/DD/YYYY format enclosed between quotes.
+  - \[date cell reference] - A cell reference to a date in Sheets.
+  - "last session" - The last closed market session. See [Relative Dates and Times](/sheets/dates-and-times#relative-dates-and-times).
+  - "yesterday" - The calendar day before today. If that day was a weekend or a market holiday, the formula returns an error, so "last session" is usually the better choice.
+  - An empty cell or `""` returns an error, not the current chain. To switch a sheet between current and historical chains with one cell, write "current" in it.
 
 ## Usage Information
 
 ### Data Availability
 
-The `OPTIONCHAIN` function fetches current option chain data. The type of data you receive depends on your user type and OPRA entitlement. This may include real-time data, 15-minute delayed data, or historical data, depending on the plan or access level. To get real-time options data, users need to sign the OPRA agreement.
+Without an **as of** date, the `OPTIONCHAIN` function fetches current option chain data. The type of data you receive depends on your user type and OPRA entitlement. This may include real-time data, 15-minute delayed data, or historical data, depending on the plan or access level. To get real-time options data, users need to sign the OPRA agreement.
 
 | User Type        | OPRA Entitlement | Data Type              |
 |------------------|------------------|------------------------|
@@ -88,6 +104,17 @@ The `OPTIONCHAIN` function fetches current option chain data. The type of data y
 | Professional     | ✅               | 15-min delayed         |
 | Professional     | ❌               | Historical (1 day old) |
 | Unknown          | Any              | Historical (1 day old) |
+
+### Working With Historical Chains
+
+With an **as of** date, `OPTIONCHAIN` returns the chain as it closed on that trading day.
+
+- Only end-of-day chains are available. There are no intraday snapshots, and only one date per formula.
+- The columns are the same as for a current chain. Implied volatility and the greeks (delta, gamma, theta, vega) are blank, and selecting strikes by delta is not available.
+- Open interest is the figure settled out of the previous session, as described under the "open interest" attribute.
+- A date in the future, a weekend or a market holiday returns an error, and so does today's date while the market is open. After the close, today's chain is available as soon as its end-of-day data is published; until then the formula returns a "not available yet" error.
+- A relative date such as "last session" is resolved when the formula calculates. It updates when the sheet is refreshed or a referenced cell changes, not on its own as days pass.
+- Historical data is subject to your plan's limits. [Learn more about plan limits](/account/plan-limits).
 
 :::info[What are entitlements?]
 Entitlements are permissions granted by exchanges that allow access to their data. To get real-time options data, users need to sign the [OPRA agreement](/account/entitlements). [Learn more about entitlements](/account/entitlements).
