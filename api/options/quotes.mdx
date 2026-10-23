@@ -225,6 +225,30 @@ foreach (var quote in (await client.Options.GetQuoteAsync("AAPL271217C00250000")
 
   The option symbol according to OCC symbology.
 
+- **underlying** `array[string]`
+
+  The ticker symbol of the underlying security.
+
+- **expiration** `array[number]`
+
+  The option's expiration date and time. Equity options expire at 4:00 PM Eastern and index options expire at 4:15 PM Eastern. All timestamps use US Eastern Time (America/New_York). See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
+
+- **side** `array[string]`
+
+  The response will be `call` or `put`.
+
+- **strike** `array[number]`
+
+  The exercise price of the option.
+
+- **firstTraded** `array[date]`
+
+  The date the option was first traded.
+
+- **dte** `array[number]`
+
+  The number of days until the option expires.
+
 - **ask** `array[number]`
 
   The ask price.

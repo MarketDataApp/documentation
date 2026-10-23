@@ -65,6 +65,12 @@ reading as a failure.
 
 ## The prompt
 
+{/* TODO(compliance): confirm whether the 4:15:01 PM ET stock cutoff, taken from
+account/data-freshness.md, is also the exchange redistribution-fee boundary for
+stock data. The prompt's "One case that is neither a PASS nor a plain FAIL"
+section treats it as historical, and so as fee-free, until compliance says
+otherwise. See #222. */}
+
 ````
 You are an independent compliance auditor. Audit the repository at [REPO PATH]
 against the Market Data BYOK model and the Market Data data policies. Write your
@@ -183,9 +189,9 @@ or UNRESOLVED.
 | ID | The rule |
 |----|----------|
 | E1 | Every request carries a unique `User-Agent` that names the application and its version. A library default such as `axios/1.6.0`, `python-requests/2.31.0`, or `okhttp/4.12.0` fails this rule. |
-| E2 | Option chain requests use `mode=cached` unless the use case needs live data. A live chain costs one credit per contract; a cached chain costs one credit. |
+| E2 | Option chain requests use `mode=cached` unless the use case needs live data. A live chain costs one credit per contract; a cached chain costs one credit. Cached mode is available only on paid plans that are not trials. Free Forever and every trial (Starter Trial, Trader Trial, Prime Trial) get a `402` for `mode=cached`, so on a `402` the application repeats the request without `mode`. |
 | E3 | Polling intervals fit a credit budget. A free key holds 100 credits a day. State the worst-case daily credit spend you can derive from the code. |
-| E4 | The application handles `429`, `402`, and `403` with a message to the user. A `403` is the single-IP control and clears after five minutes with no requests. |
+| E4 | The application handles `429`, `402`, and `403` with a message to the user. A `403` is the single-IP control. The block expires five minutes after the IP switch; further requests during the block do not extend it. |
 
 ### Group F — Onboarding and entitlement (all P2)
 
@@ -193,7 +199,7 @@ or UNRESOLVED.
 |----|----------|
 | F1 | Onboarding tells the user they need a second account, and links to the Market Data sign-up page. |
 | F2 | Onboarding explains the verification step and the wait of up to one business day before real-time data arrives. |
-| F3 | The application works on a delayed, historical, or quota-limited key, and reads response timestamps rather than assuming the data is live. A missing entitlement raises no error: the API returns the freshest data the user is entitled to. |
+| F3 | The application works on a delayed, historical, or quota-limited key, and reads response timestamps rather than assuming the data is live. When the request sends no `mode`, a missing entitlement raises no error: the API returns the freshest data the user is entitled to. A paid plan is also downgraded silently. On a Free Forever or trial key, an explicit `mode=live`, `mode=delayed`, or `mode=eod` returns `402` "Feed not available for your plan.", and so does a date older than the plan allows. The application omits `mode` unless it needs one, and handles the `402`. |
 | F4 | The application does not assume every user is non-professional. A user our compliance team classifies as professional never receives real-time data on a self-service plan. |
 
 ## What is NOT a finding
@@ -220,8 +226,8 @@ Do not report these. Each one is a legitimate design.
 
 A developer server that handles only **historical** data is not BYOK, and it is
 also not automatically a violation. The exchanges charge no redistribution fee
-for historical data, meaning data from a completed session once the next session
-has opened. Delayed data does not qualify.
+for historical data, meaning data from a completed session. Delayed data does not
+qualify.
 
 If you find a server path that carries only historical data, record it as a P1
 against A2, and add a note that the product may qualify under the historical-only
@@ -229,9 +235,14 @@ model. Recommend that the developer contact Market Data sales rather than
 recommending a code change. Say plainly that you cannot grant that model, and
 that only Market Data can.
 
-Data becomes historical at the open of the next trading session. A product that
-serves the previous session's data at 06:00 Eastern is serving delayed data and
-is fee-liable until the bell.
+Stocks and options become historical at different times:
+
+- Stock data becomes historical at 4:15:01 PM Eastern on the session day.
+- Option data becomes historical at 9:30:01 AM Eastern, at the open of the next
+  trading session.
+
+A product that serves the previous session's option data at 06:00 Eastern is
+serving delayed data and is fee-liable until the bell.
 
 ## Search seeds
 
