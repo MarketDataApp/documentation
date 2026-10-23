@@ -4,7 +4,7 @@ description: Market Data self-service plans serve non-professional subscribers o
 sidebar_position: 4
 ---
 
-All Market Data self-service plans are available to **non-professional subscribers only**. Exchange rules require vendors to classify and certify the status of every subscriber who receives real-time market data. It is your responsibility to subscribe under the correct classification. Business use of market data is only available under a commercial plan.
+All Market Data self-service plans are available to **non-professional subscribers only**. Exchange rules require vendors to classify and certify the status of every subscriber who receives real-time market data. It is your responsibility to subscribe under the correct classification. Business use of market data is only available under the [Commercial Plan](/docs/account/plans/commercial/), which includes real-time stock and options prices with no exchange licensing and no exchange fees.
 
 For a full explanation of how the exchanges define professional status and how to determine your own classification, see [Professional Status Explained](https://www.marketdata.app/education/stocks/professional-status-explained/).
 
