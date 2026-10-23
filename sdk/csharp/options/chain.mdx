@@ -92,7 +92,7 @@ public record OptionQuote(
     double? Iv, double? Delta, double? Gamma, double? Theta, double? Vega, double? Rho);
 ```
 
-`OptionQuote.PresentGreeks` returns the set of greeks that are non-null on a given row (some feeds omit `Rho`).
+`OptionQuote.PresentGreeks` returns the set of greeks that are non-null on a given row (for example, `Rho` can be null).
 
 ## Examples
 
