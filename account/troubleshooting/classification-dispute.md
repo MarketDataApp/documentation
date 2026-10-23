@@ -31,7 +31,7 @@ If you plan to use market data in connection with a business — including a sta
 
 Any use of data to support a business function — such as building a product, providing a service, generating reports for clients, or integrating data into an application — is classified as professional. This includes personal LLCs, even single-member pass-through entities.
 
-Non-professional plans are for **personal, non-commercial use only**. If you need data for a business, you will need a commercial or exchange license. [Contact our sales team](https://www.marketdata.app/contact/) to discuss licensing.
+Non-professional plans are for **personal, non-commercial use only**. If you need data for a business, the [Commercial Plan](/docs/account/plans/commercial/) is made for business use. [Contact our sales team](https://www.marketdata.app/contact/) to get started.
 
 ### Job Function Suggests Professional Use
 
