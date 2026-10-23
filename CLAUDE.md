@@ -614,7 +614,16 @@ anything that matches. Reconcile the rest by hand -- and check the sibling
 `styles.module.css` separately, because a component and its stylesheet drift
 independently.
 
-Twelve customised swizzles and four of our own remain.
+Eleven customised swizzles and four of our own remain.
+
+`src/theme/DocItem/Paginator` was the twelfth, and it was not customised: it
+was the 3.0.1 file, which the classification above misread as a change because
+upstream had since ADDED `className="docusaurus-mt-lg"` to it. That class is
+the only space between the article and the next/previous cards. It went
+unnoticed while the tag footer, which carries the same class, rendered above
+the cards; retiring the tags on 2026-09-04 left every page with a 0px gap.
+Deleted on 2026-10-23. **A swizzle that differs from upstream only by
+upstream's newer lines is stale, not customised.**
 
 ## `future.v4` is on, and one flag needed a counterweight
 

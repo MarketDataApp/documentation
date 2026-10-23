@@ -21,7 +21,9 @@ The single-IP restriction is one enforcement mechanism for this policy. See [Sin
 
 ## Commercial Redistribution
 
-Redistribution is permitted, but it requires a license granted directly by the exchanges — not by Market Data. Market Data cannot authorize redistribution on behalf of an exchange. If your use case involves distributing data to others, contact our sales team and we will connect you with the appropriate exchanges to get the required licenses in place.
+To display market data to the users of your own app, dashboard, or product, use the [Commercial Plan](/docs/account/plans/commercial/). It includes a business-wide commercial license with display rights, and there are no exchange agreements to sign, no exchange fees, and no per-user fees.
+
+For dedicated exchange feeds, API distribution to other businesses, or resale rights, [contact us](https://www.marketdata.app/contact/) about enterprise licensing.
 
 ## Violations
 
