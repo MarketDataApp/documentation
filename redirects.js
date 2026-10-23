@@ -263,8 +263,8 @@ const REDIRECTS = [
   //   licensing       no page of that name, but account/data-policies is the
   //                   index of exactly that subject -- redistribution rights,
   //                   exchange agreements, professional status. Deliberately
-  //                   NOT account/plans/commercial.mdx, which is `unlisted`
-  //                   and noindex and must not be a redirect destination.
+  //                   NOT account/plans/commercial.mdx, which sells one plan
+  //                   rather than explaining licensing.
   //
   // option-chain is the singular-hyphenated sibling of options/chains, which
   // this array already redirects. The plural was fixed and the hyphen was
