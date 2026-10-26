@@ -38,7 +38,7 @@ For real-time quotes, intraday candles, and `updated` fields, the timestamp repr
 
 Although US-listed options primarily trade on exchanges in Chicago (CBOE), the API returns all option timestamps in **Eastern Time**, consistent with the rest of the API. The `updated` field on option quotes and chain responses reflects the Eastern Time snapshot of the data.
 
-Option expiration timestamps reflect the **actual expiration time**, not midnight. Equity options expire at **4:00 PM Eastern** and index options expire at **4:15 PM Eastern**.
+Option expiration timestamps reflect the **actual expiration time**, not midnight. Equity options and PM-settled index options, such as SPXW, NDXP, RUTW and XSP, expire at **4:00 PM Eastern**. AM-settled index options, such as the monthly SPX, NDX and RUT contracts, carry **9:30 AM Eastern** on the expiration date, the time of the opening settlement; their last trading day is the business day before.
 
 ## Request Date Formats
 
