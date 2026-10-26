@@ -252,7 +252,7 @@ Represents option quote data for one or more contracts.
 - `quotes` (array): Array of option quotes, each containing:
   - `option_symbol` (string): OCC-formatted option symbol
   - `underlying` (string): Underlying ticker symbol
-  - `expiration` (Carbon): Expiration date
+  - `expiration` (Carbon): Settlement value time, the moment the payout price is fixed. See [Option Expiration](/api/dates-and-times#option-expiration).
   - `side` (string): "call" or "put"
   - `strike` (float): Strike price
   - `bid` (float): Bid price

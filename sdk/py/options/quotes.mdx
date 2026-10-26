@@ -237,7 +237,7 @@ OptionsQuotes represents option quotes data with lists of equal length for each 
 - `s` (str): Status indicator ("ok" for successful responses).
 - `optionSymbol` (list[str]): List of option symbols.
 - `underlying` (list[str]): List of underlying symbols.
-- `expiration` (list[datetime.datetime]): List of expiration dates (automatically converted from timestamps).
+- `expiration` (list[datetime.datetime]): List of settlement value times, the moment each payout price is fixed (automatically converted from timestamps). See [Option Expiration](/api/dates-and-times#option-expiration).
 - `side` (list[str]): List of option sides ("call" or "put").
 - `strike` (list[float]): List of strike prices.
 - `firstTraded` (list[datetime.datetime]): List of first traded dates (automatically converted from timestamps).
@@ -305,7 +305,7 @@ OptionsQuotesHumanReadable represents option quotes in human-readable format wit
 
 - `Symbol` (list[str]): List of option symbols.
 - `Underlying` (list[str]): List of underlying symbols.
-- `Expiration_Date` (list[datetime.datetime]): List of expiration dates (automatically converted from timestamps).
+- `Expiration_Date` (list[datetime.datetime]): List of settlement value times, the moment each payout price is fixed (automatically converted from timestamps). See [Option Expiration](/api/dates-and-times#option-expiration).
 - `Option_Side` (list[str]): List of option sides ("call" or "put").
 - `Strike` (list[float | int]): List of strike prices.
 - `First_Traded` (list[datetime.datetime]): List of first traded dates (automatically converted from timestamps).
