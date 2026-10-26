@@ -38,7 +38,7 @@ For real-time quotes, intraday candles, and `updated` fields, the timestamp repr
 
 Although US-listed options primarily trade on exchanges in Chicago (CBOE), the API returns all option timestamps in **Eastern Time**, consistent with the rest of the API. The `updated` field on option quotes and chain responses reflects the Eastern Time snapshot of the data.
 
-Option expiration timestamps reflect the **actual expiration time**, not midnight. Equity options expire at **4:00 PM Eastern** and index options expire at **4:15 PM Eastern**.
+Option expiration timestamps reflect the **actual expiration time**, not midnight. Equity options and PM-settled index options, such as SPXW, NDXP, RUTW and XSP, expire at **4:00 PM Eastern**. AM-settled index options, such as the monthly SPX, NDX and RUT contracts, carry **9:30 AM Eastern** on the expiration date, the time of the opening settlement; their last trading day is the business day before.
 
 ## Request Date Formats
 
@@ -81,7 +81,7 @@ Relative dates allow Market Data endpoints to continually modify the date sent t
 
   - `yesterday` Yesterday's date.
 
-  - `last session` Returns the date of the last closed market session. This keyphrase always gets the previous closed session, accounting for weekends, holidays, and half-days (which are counted as valid sessions). For example, on Monday during market hours, it would return Friday's date. After market close on Monday, it would return Monday's date. This allows you to always track the previous session without having to account for weekends, holidays, or other market closures.
+  - `last session` Returns the date of the last closed market session. This keyphrase always gets the previous closed session, accounting for weekends, holidays, and half-days (which are counted as valid sessions). For example, on Monday during market hours, it would return Friday's date. After market close on Monday, it would return Monday's date. This allows you to always track the previous session without having to account for weekends, holidays, or other market closures. The date is the same on every plan. On a plan that provides only Historical options data, an options session becomes Historical at the next session's open (see [Data Freshness](/account/data-freshness)), so between the close and the next open an options request for `last session` returns a 402 error.
 
   - `-[number] days` Use negative days to specify a time in the past _n_ days before. When this is used alone, it is relative to the current day. When used in conjunction in `from` field (i.e. the starting date), it is relative to the `to` field (i.e. the ending date). For example, if the current date is January 20, but January 10 is used in the `to` field and `-5 days` in the `from` field, then the starting day will be January 5. The query would return values from January 5 to January 10. However, if the `to` field were to be omitted, then the same query would return data from January 15 to January 20 since `-5 days` would be relative to the current date of January 20.
 

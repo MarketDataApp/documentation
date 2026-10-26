@@ -100,11 +100,12 @@ A single `OPTIONDATA` formula can fetch quotes for many option contracts at once
 
 - One row comes back for each contract, in the same order as your cells, even when the range is a row. Wrap the formula in `TRANSPOSE()` to lay the results out horizontally.
 - A contract that cannot be served (not found, expired, or misspelled) keeps its place, so the results stay aligned with your contracts. Its row shows what you entered in the symbol column, with the other columns blank, so you can spot it. Request the `symbol` attribute to see it; without it the row is blank.
+- If none of the contracts can be served, the formula returns an error instead of blank rows.
 - Use a single historical date (start date only). Date ranges are not supported with more than one contract.
 - A range must be a single row, a single column, or a table of exactly four columns. Any other table, such as three or five columns, returns an error.
 - A row of four cells can describe one contract in parts: underlying, expiration date, strike and side (for example, `AAPL | 12/17/2027 | 250 | call`). On its own, a row like that is read as a single contract, so it also accepts a date range.
 - With more than one contract the results include a header row. Add `noheaders` to the attributes to line the results up with your cells.
-- For best results use OCC symbols, or a table with dates in `YYYY-MM-DD` format and numeric strikes. Contracts written in words are slower to read, and a long list of them may fill in over a few refreshes.
+- For best results use OCC symbols, or a table with date cells (or dates in `YYYY-MM-DD` format) and numeric strikes. Contracts written in words are slower to read, and a long list of them may fill in over a few refreshes.
 
 #### Tables of Contracts
 
