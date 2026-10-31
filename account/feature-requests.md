@@ -4,11 +4,11 @@ description: Submit and upvote ideas on the Market Data Feature Request Board, f
 sidebar_position: 11
 ---
 
-Market Data is _extremely_ customer-focused and we want our products and services to satisfy our users. Please make sure to visit our [Product Roadmap](https://roadmap.marketdata.app/) to see what we have planned along with our [Feature Request Board](https://roadmap.marketdata.app/features) to submit or upvote your own ideas.
+Market Data is _extremely_ customer-focused and we want our products and services to satisfy our users. Please make sure to visit our [Product Roadmap](https://roadmap.marketdata.app/roadmap) to see what we have planned along with our [Feature Request Board](https://roadmap.marketdata.app/) to submit or upvote your own ideas.
 
 ## Feature Request Procedure
 
-Any user can make a feature request with their Market Data account. Just visit the [Feature Request Board](https://roadmap.marketdata.app/features) and add your requested feature. If enough people upvote it, we'll consider adding your feature to a future version of Market Data.
+Any user can make a feature request with their Market Data account. Just visit the [Feature Request Board](https://roadmap.marketdata.app/) and add your requested feature. If enough people upvote it, we'll consider adding your feature to a future version of Market Data.
 
 ## Urgent Feature Requests
 
