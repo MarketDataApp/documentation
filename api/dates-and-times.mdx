@@ -38,7 +38,21 @@ For real-time quotes, intraday candles, and `updated` fields, the timestamp repr
 
 Although US-listed options primarily trade on exchanges in Chicago (CBOE), the API returns all option timestamps in **Eastern Time**, consistent with the rest of the API. The `updated` field on option quotes and chain responses reflects the Eastern Time snapshot of the data.
 
-Option expiration timestamps reflect the **actual expiration time**, not midnight. Equity options and PM-settled index options, such as SPXW, NDXP, RUTW and XSP, expire at **4:00 PM Eastern**. AM-settled index options, such as the monthly SPX, NDX and RUT contracts, carry **9:30 AM Eastern** on the expiration date, the time of the opening settlement; their last trading day is the business day before.
+#### Option Expiration
+
+The `expiration` field of an option is a timestamp, not a date at midnight. It is the **settlement value time**: the moment the price that decides the option's payout is fixed. Use it as the end point when you calculate the time to expiration, for example for Greeks.
+
+| Contract                 | `expiration` time                                            | Examples                                         |
+|--------------------------|--------------------------------------------------------------|--------------------------------------------------|
+| Stock and ETF options    | The close on the expiration date: **4:00 PM ET**             | AAPL, SPY                                        |
+| PM-settled index options | The close on the expiration date: **4:00 PM ET**             | SPXW, NDXP, RUTW, XSP                            |
+| AM-settled index options | The opening quotation on the expiration date: **9:30 AM ET** | Monthly SPX, NDX and RUT; VIX and VIXW; DJX; RUI |
+
+On a day when the market closes early, the close is **1:00 PM ET**.
+
+The settlement value time is not the last time you can trade the contract. AM-settled contracts stop trading on the business day before the expiration date, so their `expiration` comes after their last trade. PM-settled index options and stock options trade until the close on the expiration date.
+
+Settlement rules have changed over the years. For historical data, `expiration` follows the rule that applied to that contract on that date.
 
 ## Request Date Formats
 

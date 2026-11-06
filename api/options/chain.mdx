@@ -380,14 +380,14 @@ When combining the `weekly`, `monthly`, and `quarterly` parameters, only identic
 
 - **am** `boolean`
 
-  Limit the option chain to A.M. expirations by setting `am` to `true`. If set to `false`, no A.M. expirations will be returned. This parameter is only applicable for index options such as SPX, NDX, etc. If no parameter is provided, both A.M. and P.M. expirations will be returned.
+  Limit the option chain to AM-settled contracts by setting `am` to `true`. An AM-settled contract's settlement value is fixed at the open, for example the monthly SPX, NDX and RUT, and VIX and VIXW. If set to `false`, no AM-settled contracts will be returned. This parameter applies only to index options. If no parameter is provided, both AM-settled and PM-settled contracts will be returned.
 
 - **pm** `boolean`
 
-  Limit the option chain to P.M. expirations by setting `pm` to `true`. If set to `false`, no P.M. expirations will be returned. This parameter is only applicable for index options such as SPX, NDX, etc. If no parameter is provided, both A.M. and P.M. expirations will be returned.
+  Limit the option chain to PM-settled contracts by setting `pm` to `true`. A PM-settled contract's settlement value is fixed at the close, for example SPXW, NDXP, RUTW and XSP. If set to `false`, no PM-settled contracts will be returned. This parameter applies only to index options. If no parameter is provided, both AM-settled and PM-settled contracts will be returned.
 
 :::caution
-The `am` and `pm` parameters are only applicable for index options such as SPX, NDX, etc. If they are used for stocks or ETFs, a bad parameters error will be returned.
+The `am` and `pm` parameters apply only to index options. On stock and ETF options they have no effect. See [Option Expiration](/docs/api/dates-and-times#option-expiration) for how each contract is settled.
 :::
 
 </TabItem>
@@ -413,7 +413,7 @@ The `am` and `pm` parameters are only applicable for index options such as SPX, 
 
 - **expiration** `array[number]`
 
-  The option's expiration date and time. Equity options and PM-settled index options (such as SPXW) expire at 4:00 PM Eastern. AM-settled index options (such as the monthly SPX) carry 9:30 AM Eastern on the expiration date, the time of the opening settlement. All timestamps use US Eastern Time (America/New_York). See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
+  The option's settlement value time: the moment the price that decides the payout is fixed. It is 4:00 PM Eastern on the expiration date for stock options and PM-settled index options (such as SPXW), 9:30 AM Eastern for AM-settled index options (such as the monthly SPX), and 1:00 PM Eastern on an early-close day. It is not the last trading time. See [Option Expiration](/docs/api/dates-and-times#option-expiration). All timestamps use US Eastern Time (America/New_York). See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
 
 - **side** `array[string]`
 

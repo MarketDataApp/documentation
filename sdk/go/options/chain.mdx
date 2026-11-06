@@ -284,7 +284,7 @@ for a single underlying after any server-side filters have been applied.
 type OptionQuote struct {
 	OptionSymbol    string     `json:"optionSymbol"`    // OCC option symbol
 	Underlying      string     `json:"underlying"`      // underlying stock symbol
-	Expiration      time.Time  `json:"expiration"`      // expiration date
+	Expiration      time.Time  `json:"expiration"`      // settlement value time
 	Strike          float64    `json:"strike"`          // strike price
 	Type            OptionType `json:"side"`            // "call" or "put"
 	Bid             float64    `json:"bid"`             // bid price
