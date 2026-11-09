@@ -159,25 +159,31 @@ foreach (var report in (await client.Stocks.GetEarningsAsync("AAPL")).Values)
 </TabItem>
 </Tabs>
 
+:::info[Upcoming reports by default]
+A request without `from`, `to` or `date` returns only upcoming reports: from today through the next three years. For past reports, set `from` and `to`, or `date` for a single day.
+:::
+
 ## Response Example
 
 ```json
 {
   "s": "ok",
   "symbol": ["AAPL"],
-  "fiscalYear": [2023],
+  "fiscalYear": [2027],
   "fiscalQuarter": [1],
-  "date": [1672462800],
-  "reportDate": [1675314000],
-  "reportTime": ["before market open"],
+  "date": [1798693200],
+  "reportDate": [1801112400],
+  "reportTime": ["after close"],
   "currency": ["USD"],
-  "reportedEPS": [1.88],
-  "estimatedEPS": [1.94],
-  "surpriseEPS": [-0.06],
-  "surpriseEPSpct": [-3.0928],
-  "updated": [1701690000]
+  "reportedEPS": [null],
+  "estimatedEPS": [2.9],
+  "surpriseEPS": [null],
+  "surpriseEPSpct": [null],
+  "updated": [1793941200]
 }
 ```
+
+The example is the upcoming report that the request above returns. A past report has the same fields, with the reported EPS and the surprise filled in.
 
 ## Request Parameters
 
@@ -193,7 +199,7 @@ foreach (var report in (await client.Stocks.GetEarningsAsync("AAPL")).Values)
 
 - **from** `date`
 
-  The earliest earnings report to include in the output. If you use countback, `from` is not required. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
+  The earliest earnings report to include in the output. If you use countback, `from` is not required. Without `from`, `to` and `date`, the output starts today and includes only upcoming reports. Accepted timestamp inputs: ISO 8601, unix, spreadsheet.
 
 - **to** `date`
 
@@ -245,7 +251,7 @@ foreach (var report in (await client.Stocks.GetEarningsAsync("AAPL")).Values)
 
 - **reportTime** `array[string]`
 
-  The value will be either `before market open`, `after market close`, or `during market hours`.
+  The value will be either `before open`, `after close`, or `during market hours`.
 
 - **currency** `array[string]`
 
@@ -253,7 +259,7 @@ foreach (var report in (await client.Stocks.GetEarningsAsync("AAPL")).Values)
 
 - **reportedEPS** `array[number]`
 
-  The earnings per share reported by the company. Earnings reported are typically non-GAAP unless the company does not report non-GAAP earnings.
+  The earnings per share reported by the company. Earnings reported are typically non-GAAP unless the company does not report non-GAAP earnings. `null` for an upcoming report.
 
   :::tip
 
@@ -262,7 +268,7 @@ foreach (var report in (await client.Stocks.GetEarningsAsync("AAPL")).Values)
 
 - **estimatedEPS** `array[number]`
 
-  The average consensus estimate by Wall Street analysts.
+  The average consensus estimate by Wall Street analysts. `null` when no consensus estimate is available.
 
 - **surpriseEPS** `array[number]`
 
@@ -281,7 +287,7 @@ foreach (var report in (await client.Stocks.GetEarningsAsync("AAPL")).Values)
 
 - **s** `string`
 
-  Status will be `no_data` if no earnings data can be found for the symbol.
+  Status will be `no_data` if no earnings data can be found for the symbol. For a request without dates, this means that no upcoming report date is known: for example funds and ETFs, which do not report earnings, or a company whose next report date is not available yet.
 
 </TabItem>
 <TabItem value="Error" label="Error">
