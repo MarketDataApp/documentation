@@ -26,7 +26,7 @@ Fetches current or historical option quotes from Market Data, for one option con
 =OPTIONDATA(option symbol, [attributes], start date, end date)
 ```
 
-- **option symbol** _(REQUIRED)_ Use the current OCC option symbol format for the option symbol, even for historic options prior to the symbol format change in 2010. Several contracts can be fetched at once: pass a range of cells in a single row or a single column, several OCC symbols separated by commas, or a table of four columns with one contract per row. See [Working With Multiple Contracts](#working-with-multiple-contracts).
+- **option symbol** _(REQUIRED)_ Use the current OCC option symbol format for the option symbol. Historical options data starts in 2010, with the symbol format change. Several contracts can be fetched at once: pass a range of cells in a single row or a single column, several OCC symbols separated by commas, or a table of four columns with one contract per row. See [Working With Multiple Contracts](#working-with-multiple-contracts).
 - **attribute** _(OPTIONAL "price" by default)_ Use at least one of the following attributes; seperate multiple attributes with commas:
   - "symbol" - The OCC option symbol.
   - "underlying" - The underlying symbol.
