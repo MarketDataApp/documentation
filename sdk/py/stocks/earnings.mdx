@@ -219,10 +219,10 @@ class StockEarnings:
     reportDate: list[datetime.datetime]
     reportTime: list[str]
     currency: list[str]
-    reportedEPS: list[float]
-    estimatedEPS: list[float]
-    surpriseEPS: list[float]
-    surpriseEPSpct: list[float]
+    reportedEPS: list[float | None]
+    estimatedEPS: list[float | None]
+    surpriseEPS: list[float | None]
+    surpriseEPSpct: list[float | None]
     updated: list[datetime.datetime]
 ```
 
@@ -238,10 +238,10 @@ StockEarnings represents earnings data for a stock, encapsulating fiscal year, q
 - `reportDate` (list[datetime.datetime]): List of report dates (automatically converted from timestamps).
 - `reportTime` (list[str]): List of report times.
 - `currency` (list[str]): List of currencies.
-- `reportedEPS` (list[float]): List of reported earnings per share.
-- `estimatedEPS` (list[float]): List of estimated earnings per share.
-- `surpriseEPS` (list[float]): List of surprise earnings per share (difference between reported and estimated).
-- `surpriseEPSpct` (list[float]): List of surprise EPS percentages.
+- `reportedEPS` (list[float | None]): List of reported earnings per share. `None` for an upcoming report.
+- `estimatedEPS` (list[float | None]): List of estimated earnings per share. `None` when no consensus estimate is available.
+- `surpriseEPS` (list[float | None]): List of surprise earnings per share (difference between reported and estimated). `None` when not available.
+- `surpriseEPSpct` (list[float | None]): List of surprise EPS percentages. `None` when not available.
 - `updated` (list[datetime.datetime]): List of last update timestamps (automatically converted from timestamps).
 
 <a name="StockEarningsHumanReadable"></a>
@@ -257,10 +257,10 @@ class StockEarningsHumanReadable:
     Report_Date: list[datetime.datetime]
     Report_Time: list[str]
     Currency: list[str]
-    Reported_EPS: list[float]
-    Estimated_EPS: list[float]
-    Surprise_EPS: list[float]
-    Surprise_EPS_Percent: list[float]
+    Reported_EPS: list[float | None]
+    Estimated_EPS: list[float | None]
+    Surprise_EPS: list[float | None]
+    Surprise_EPS_Percent: list[float | None]
     Updated: list[datetime.datetime]
 ```
 
@@ -275,10 +275,10 @@ StockEarningsHumanReadable represents earnings data in human-readable format wit
 - `Report_Date` (list[datetime.datetime]): List of report dates (automatically converted from timestamps).
 - `Report_Time` (list[str]): List of report times.
 - `Currency` (list[str]): List of currencies.
-- `Reported_EPS` (list[float]): List of reported earnings per share.
-- `Estimated_EPS` (list[float]): List of estimated earnings per share.
-- `Surprise_EPS` (list[float]): List of surprise earnings per share (difference between reported and estimated).
-- `Surprise_EPS_Percent` (list[float]): List of surprise EPS percentages.
+- `Reported_EPS` (list[float | None]): List of reported earnings per share. `None` for an upcoming report.
+- `Estimated_EPS` (list[float | None]): List of estimated earnings per share. `None` when no consensus estimate is available.
+- `Surprise_EPS` (list[float | None]): List of surprise earnings per share (difference between reported and estimated). `None` when not available.
+- `Surprise_EPS_Percent` (list[float | None]): List of surprise EPS percentages. `None` when not available.
 - `Updated` (list[datetime.datetime]): List of last update timestamps (automatically converted from timestamps).
 
 ### Notes
