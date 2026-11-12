@@ -25,7 +25,7 @@ Allowing a single account to be used from multiple IP addresses simultaneously w
 
 ## How the Restriction Is Enforced
 
-Market Data monitors for patterns that indicate simultaneous access from multiple IP addresses. A single IP change is permitted. However, if requests alternate back and forth between two IP addresses within a five-minute window — a pattern consistent with two active devices — your account is temporarily blocked for 5 minutes.
+Market Data monitors for patterns that indicate simultaneous access from multiple IP addresses. A single IP change is permitted, and the new address is authorized immediately. For the 5 minutes after that change, requests from any other address — the previous one or a new one — are rejected with a `403`, while requests from the new address keep working. After those 5 minutes the account starts clean. Requests made during the 5 minutes do not extend them.
 
 If your account has been blocked, see [403: Multiple IP Addresses](/docs/api/troubleshooting/multiple-ip-addresses/) for resolution steps.
 
