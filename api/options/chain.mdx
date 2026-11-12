@@ -261,7 +261,7 @@ This is a current chain, so the Greek columns are populated. A historical reques
 
   Should not be used together with `from` and `to`. Take care before combining with `weekly`, `monthly`, `quarterly`, since that will limit the expirations `dte` can return. If you are using the `date` parameter, dte is relative to the `date` provided.
 
-  :::caution A range returns every expiration in it, and bills for all of them
+  :::caution[A range returns every expiration in it, and bills for all of them]
   A single value and a list each resolve to one expiration per value. A range or an operator does not — it is a filter, so `dte=0-45` on a liquid underlying returns every expiration in that window and consumes one credit per contract returned, exactly like the equivalent `from`/`to` request.
   :::
 
