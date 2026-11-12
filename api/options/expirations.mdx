@@ -216,7 +216,7 @@ foreach (var expiration in (await client.Options.GetExpirationsAsync("AAPL")).Va
 
 - **expirations** `array[date]`
 
-  The expiration dates for the underlying, as a flat list of dates. It holds no strikes. With `strike`, only the expirations that include that strike are listed; with `date`, the list is the one from that trading day.
+  The expiration dates for the underlying, as a flat list of dates. It holds no strikes. With `strike`, only the expirations that include that strike are listed; with `date`, it lists the expirations that were open on that trading day.
 
 - **updated** `date`
 
