@@ -121,10 +121,14 @@ const MINIMUM_LINKS = 40;
  * put the issue number in the comment.
  */
 const KNOWN_BROKEN = new Map([
-  // #213 -- the funds candles endpoint exists in its path-parameter form
-  // (/D/VFINX/2024-01-01/2024-01-31/ answers 401) but not in the query-string
-  // form the docs use, which stocks does support. Which form is correct is an
-  // API contract question, so the docs are unchanged pending that answer.
+  // #213 -- the query-string form is routed and is correct. The 404 is the
+  // API's `{"s":"no_data"}` body, not a missing route: VFINX is the funds demo
+  // symbol (DEMO_SYMBOLS in the API's user_quotas_helper.py), but the funds
+  // handler (funds/handlers.py) returns no_data to any caller with no fund
+  // data permission and does not exempt the demo symbol, so an anonymous
+  // request never reaches the data. The path form "answers 401" only because
+  // its symbol kwarg is "VFINX/2024-01-01/2024-01-31", which is not the demo
+  // symbol. The fix belongs to the API, so the docs URL stays as it is.
   ['https://api.marketdata.app/v1/funds/candles/D/VFINX/?from=2024-01-01&to=2024-01-31', 213],
 ]);
 

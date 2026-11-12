@@ -1,20 +1,20 @@
 ---
 title: "403: Multiple IP Addresses"
-description: A 403 means the account sent requests from more than one IP address. The block clears itself after five minutes with no requests.
+description: A 403 means a request came from another IP address within 5 minutes of an IP change. The block ends by itself 5 minutes after that change.
 sidebar_position: 7
 ---
 
 :::info[Automatic Resolution]
-If your account is blocked, you do not need to contact support. The block will automatically resolve after 5 minutes if you stop making API requests. Simply wait 5 minutes without making any requests from the blocked IP address, then resume with a single device or IP address.
+If your account is blocked, you do not need to contact support. The block ends 5 minutes after your IP address changed. Requests from the blocked address do not extend it, so waiting 5 minutes from the first `403` is always enough. Then resume with a single device or IP address.
 
-During the block, you can continue making requests from the previously authorized IP address.
+During the block, you can continue making requests from the authorized IP address, the one named in `authorizedIP`.
 :::
 
 If you encounter an issue where your account is temporarily blocked due to accessing the API from multiple devices, follow these steps to resolve it. For background on why this restriction exists, see the [Single IP Address Policy](/docs/account/data-policies/single-ip/).
 
 ## Problem
 
-Your account is blocked because it was accessed from multiple IP addresses in a pattern that suggests simultaneous device usage. While **changing IP addresses is permitted**, rapidly switching back and forth between previously used IP addresses indicates multiple active devices, which is against our policy.
+Your account is blocked because it was accessed from multiple IP addresses in a pattern that suggests simultaneous device usage. While **changing IP addresses is permitted**, a request from another address within 5 minutes of that change — the previous address or a new one — indicates multiple active devices, which is against our policy.
 
 When this occurs, you'll receive an error response that includes detailed information to help you identify the source of the conflict:
 
@@ -29,8 +29,8 @@ When this occurs, you'll receive an error response that includes detailed inform
 ```
 
 The error response includes:
-- The IP address of your previous request (`authorizedIP`)
-- The IP address of your current request (`blockedIP`)
+- The IP address your account is authorized to use right now (`authorizedIP`)
+- The IP address of the rejected request (`blockedIP`)
 
 You can use these IP addresses to:
 1. Identify which devices or services are making the conflicting requests.
@@ -40,12 +40,13 @@ You can use these IP addresses to:
 ### How It Works
 
 When you access the API:
-- Each new IP address you connect from is recorded
-- If you connect from IP address A, then switch to IP address B, that's permitted.
-- However, if you then switch back to IP address A while IP address B is still active within 5 minutes, this suggests two devices are being used simultaneously.
-- This pattern triggers an **automatic temporary block** on your account.
-- During the block, you can continue making requests from your previously authorized IP address.
-- After the block expires, you can switch to a different IP address again, but should avoid switching back to recently used IPs.
+- The IP address you connect from is recorded.
+- If you connect from IP address A, then switch to IP address B, that's permitted, and B is authorized immediately.
+- For the next 5 minutes, a request from any address other than B — A, or a new address C — triggers an **automatic temporary block** and is rejected with a `403`.
+- During the block, you can continue making requests from B.
+- The 5 minutes run from the switch to B. Requests made during them, from B or from a blocked address, do not extend them.
+- Five minutes after the switch, the block ends and any single address can be used again.
+- There is no minimum gap between requests from the same address.
 
 ### Common Scenarios
 
@@ -63,7 +64,7 @@ When you access the API:
 
 ## Solution
 
-1. **Wait for 5 Minutes**: The block is temporary. Wait for 5 minutes before attempting to access the API again. During this time, ensure all your devices stop their API access.
+1. **Wait for 5 Minutes**: The block is temporary. It ends 5 minutes after the IP change that started it, so waiting 5 minutes from the first `403` is always enough. To keep it from starting again, stop API access from every device except one.
 
 2. **Use a Single Active Device**: While you can change devices or IP addresses:
    - Make sure to completely stop API access from your previous device before switching.
@@ -86,6 +87,6 @@ When you access the API:
 
 ## Important Note
 
-The system is designed to detect patterns of simultaneous access, not just IP changes. While you are permitted to change devices, attempting to maintain multiple active connections from different computers — even when egressed through a single shared IP — will result in account blocks and may result in suspension.
+The system is designed to detect patterns of simultaneous access, not just IP changes. While you are permitted to change devices, attempting to maintain multiple active connections from different computers violates the [Single IP Address Policy](/docs/account/data-policies/single-ip/) and may result in suspension, even when the computers share a single IP address.
 
 For further assistance, please contact our support team.

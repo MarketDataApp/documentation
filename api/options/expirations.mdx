@@ -211,16 +211,16 @@ foreach (var expiration in (await client.Options.GetExpirationsAsync("AAPL")).Va
 
 - **s** `string`
 
-  Status will always be `ok` when there is strike
-  data for the underlying/expirations requested.
+  Status will always be `ok` when there is expiration
+  data for the underlying requested.
 
 - **expirations** `array[date]`
 
-  The expiration dates requested for the underlying with the option strikes for each expiration.
+  The expiration dates for the underlying, as a flat list of dates. It holds no strikes. With `strike`, only the expirations that include that strike are listed; with `date`, it lists the expirations that were open on that trading day.
 
 - **updated** `date`
 
-  The date and time of this list of options expirations was last updated. All timestamps use US Eastern Time (America/New_York). For historical expirations, this should match the `date` parameter. See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
+  The date and time this list of option expirations was last updated. All timestamps use US Eastern Time (America/New_York). For historical expirations, this should match the `date` parameter. See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
 
 </TabItem>
 <TabItem value="NoData" label="No Data">
