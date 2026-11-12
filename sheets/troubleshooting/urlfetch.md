@@ -18,7 +18,7 @@ Urlfetch calls are different from Market Data requests. Even if you have our Tra
 | **Typical Use Case**     | Personal use, small projects                              | Business use, large projects                |
 | **Recalculation Impact** | Higher risk of hitting limit with frequent recalculations | Lower risk due to higher limit              |
 | **Market Data Requests** | Limited by lower urlfetch quota                           | More flexibility with higher quota          |
-| **Account Blocking**     | 24-hour block after exceeding limit                       | 24-hour block after exceeding limit         |
+| **Account Blocking**     | Blocked until the quota resets                            | Blocked until the quota resets              |
 | **Strategies Needed**    | More aggressive strategies to reduce usage                | Fewer strategies needed due to higher limit |
 
 ## Error Messages You May See In The Add-on Due to Urlfetch Issues
@@ -32,7 +32,9 @@ Although there is no way to determine how many urlfetch calls can be made by you
 
 ## Consequences Of Surpassing the Urlfetch Limit
 
-Google will block your account from making new urlfetch requests for 24 hours when you surpass the limit. When you see the urlfetch error message, you must wait a full 24 hours before making another request with the affected Google account.
+When you surpass the limit, Google stops accepting urlfetch calls from your Google account until your quota resets. Google's published rule is that quotas "are per user and reset 24 hours after the first request" ([Apps Script quotas](https://developers.google.com/apps-script/guides/services/quotas)). The reset is not a 24-hour penalty that starts when you see the error message, and it is not a fixed midnight cutoff, so a block can be much shorter than 24 hours. It releases on its own, and there is nothing you need to do to clear it.
+
+The reset time differs from one Google account to the next, and Market Data cannot tell you in advance when yours will come. Use the strategies below to bring your daily usage under the limit, so that the block does not return the next day.
 
 ## Strategies To Reduce Urlfetch Usage
 
