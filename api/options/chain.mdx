@@ -259,10 +259,10 @@ This is a current chain, so the Greek columns are populated. A historical reques
 
   Values are whole numbers of days, at most 36500. A malformed `dte` — a fraction, `nan`, a reversed range, or a value above that cap — is rejected with `400` and a message naming the problem. A well-formed range that matches no expiration returns `s: no_data` rather than an error.
 
-  Should not be used together with `from` and `to`. Take care before combining with `weekly`, `monthly`, `quarterly`, since that will limit the expirations `dte` can return. If you are using the `date` parameter, dte is relative to the `date` provided.
+  Cannot be used together with `from` and `to`: the API rejects that combination with a `400`. Take care before combining with `weekly`, `monthly`, `quarterly`, since that will limit the expirations `dte` can return. If you are using the `date` parameter, dte is relative to the `date` provided.
 
   :::caution[A range returns every expiration in it, and bills for all of them]
-  A single value and a list each resolve to one expiration per value. A range or an operator does not — it is a filter, so `dte=0-45` on a liquid underlying returns every expiration in that window and consumes one credit per contract returned, exactly like the equivalent `from`/`to` request.
+  A single value and a list each resolve to one expiration per value. A range or an operator does not — it is a filter, so `dte=0-45` on a liquid underlying returns every expiration in that window and costs the same as the equivalent `from`/`to` request. On real-time and delayed data, that is one credit per option symbol returned. See [Pricing](#pricing).
   :::
 
 - **from** `date`
