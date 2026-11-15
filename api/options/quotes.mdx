@@ -188,7 +188,7 @@ foreach (var quote in (await client.Options.GetQuoteAsync("AAPL271217C00250000")
 
 - **optionSymbol** `string`
 
-  The option symbol (as defined by the OCC) for the option you wish to lookup. Use the current OCC option symbol format. Historical options data starts in 2010, with the OCC symbol format change.
+  The option symbol (as defined by the OCC) for the option you wish to lookup. Use the current OCC option symbol format. Historical options data starts in 2010, with the OCC symbol format change. Calculated Greeks start with the session of July 1, 2010 (see [Historical Greeks](#historical-greeks)).
 
 </TabItem>
 <TabItem value="optional" label="Optional">
@@ -197,8 +197,8 @@ foreach (var quote in (await client.Options.GetQuoteAsync("AAPL271217C00250000")
 
   Use to lookup a historical end of day quote from a specific trading day. If no date is specified the quote will be the most current price available during market hours. When the market is closed the quote will be from the last trading day. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
 
-  :::info[Historical quotes carry no Greeks]
-  Greeks and implied volatility are not stored historically. On any request that includes `date`, `from` or `to`, the `iv`, `delta`, `gamma`, `theta` and `vega` columns are returned as `null`, on every plan.
+  :::info[Historical quotes include Greeks]
+  On a request with `date`, `from` or `to`, the `iv`, `delta`, `gamma`, `theta` and `vega` columns are calculated by Market Data from each session's end-of-day quotes. See [Historical Greeks](#historical-greeks).
   :::
 
 - **from** `date`
@@ -208,6 +208,26 @@ foreach (var quote in (await client.Options.GetQuoteAsync("AAPL271217C00250000")
 - **to** `date`
 
   Use to lookup a series of end of day quotes. To is the newest (rightmost) date to return (inclusive). If from/to is not specified the quote will be the most current price available during market hours. When the market is closed the quote will be from the last trading day. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
+
+- **model** `string`
+
+  The pricing model of the calculated Greeks on a historical request (`date`, or `from` and `to`). Paid plans only (Starter, Trader, Quant, Prime and Commercial; not trials). On a free or trial plan the parameter is ignored, and the response uses the default models.
+
+  - `bsm`: Black-Scholes-Merton for every contract. It does not value early exercise.
+  - `bjs`: Bjerksund-Stensland (2002) for American-style contracts.
+  - `crr`: Cox-Ross-Rubinstein, a binomial tree, for American-style contracts.
+  - `baw`: Barone-Adesi-Whaley for American-style contracts.
+  - `default`: the default models (the same as no `model`).
+
+  With `bjs`, `crr` or `baw`, European-style contracts still use Black-Scholes-Merton. Without `model`, American-style contracts use Bjerksund-Stensland and European-style contracts use Black-Scholes-Merton. The value is not case-sensitive, and long names also work (for example `blackscholesmerton`, `binomial`).
+
+  `model` applies only to historical requests. On a current quote, a paid plan gets `400 Bad Request`:
+
+  ```json
+  {"s":"error","errmsg":"The 'model' parameter applies only to historical requests (date=, or from= and to=) without source=."}
+  ```
+
+  On a paid plan, an unknown model name is also a `400`, with `"errmsg":"Invalid model. Use one of: bsm, bjs, crr, baw."`
 
 </TabItem>
 </Tabs>
@@ -302,7 +322,7 @@ foreach (var quote in (await client.Options.GetQuoteAsync("AAPL271217C00250000")
   The date and time of this quote snapshot. All timestamps use US Eastern Time (America/New_York). See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
 
 :::note[Greeks on historical requests]
-`iv`, `delta`, `gamma`, `theta` and `vega` are only populated on current (real-time, delayed or end-of-day) quotes. On any request that includes `date`, `from` or `to` these columns are returned as `null`, on every plan, because Greeks and implied volatility are not stored historically.
+On a request with `date`, `from` or `to`, `iv`, `delta`, `gamma`, `theta` and `vega` are calculated by Market Data from each session's end-of-day quotes. A value that cannot be calculated is `null`, never `0`. See [Historical Greeks](#historical-greeks).
 :::
 
 - **iv** `array[number]`
@@ -371,6 +391,26 @@ Use the HTTP status code—not just the `s` field—to distinguish between inval
 
 
 </Tabs>
+
+## Historical Greeks
+
+Market Data calculates the implied volatility and the Greeks of a historical request from the end-of-day quotes of that session:
+
+1. **Option price:** the mid of the end-of-day bid and ask. The last trade price is not used.
+2. **Underlying price:** the underlying price stored with the quote.
+3. **Time to expiration:** from the session close (4:00 PM Eastern) to the contract's settlement value time, in calendar days divided by 365.
+4. **Risk-free rate:** the risk-free rate curve of the session date, at the contract's expiration.
+5. **Carry:** implied for each expiration from the chain's own call and put prices (put-call parity), not from a dividend calendar.
+6. **Implied volatility:** the volatility at which the model price equals the mid. The model is Bjerksund-Stensland (2002) for American-style contracts and Black-Scholes-Merton for European-style contracts, or the [`model`](#request-parameters) that you name.
+7. **Greeks:** delta, gamma, theta and vega at that implied volatility.
+
+Each quote gets the values of its session's whole chain, so a quote has the same values in every request. A `from`/`to` series calculates each session separately.
+
+**Units** (the same as on current quotes): `iv` is a decimal (`0.3012` is 30.12%). `delta` and `gamma` are per $1 of the underlying. `theta` is per calendar day. `vega` is per 1 volatility point (0.01 of `iv`). Values are rounded to 4 decimals.
+
+**Null values.** A value that cannot be calculated is `null`: for example, a contract with no bid and no ask, an ask below the bid, or a mid that no volatility can reach. If the mid is at or below the lowest price that the model allows (for example, a deep in-the-money American put at its exercise value), `iv` is `null`, and with the default models the Greeks are the values at zero volatility. `rho` is not calculated.
+
+**Coverage.** Calculated Greeks start with the session of July 1, 2010. Some sessions with known data faults return `null`.
 
 ## Usage Information
 

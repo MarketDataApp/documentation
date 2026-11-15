@@ -181,7 +181,7 @@ foreach (var contract in chain.Values)
 
 ## Response Example
 
-This is a current chain, so the Greek columns are populated. A historical request (`date=`) returns `null` for all five — see [the note on the `date` parameter](#request-parameters).
+This is a current chain. A historical request (`date=`) also fills the Greek columns: Market Data calculates them from that session's end-of-day quotes. See [Historical Greeks](#historical-greeks).
 
 ```json
 {
@@ -230,9 +230,29 @@ This is a current chain, so the Greek columns are populated. A historical reques
 
   Use to lookup a historical end of day options chain from a specific trading day. If no date parameter is specified the chain will be the most current chain available during market hours. When the market is closed the chain will be from the previous session. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
 
-  :::info[Historical chains carry no Greeks]
-  Greeks and implied volatility are not stored historically. On any request that includes `date`, the `iv`, `delta`, `gamma`, `theta` and `vega` columns are returned as `null`, on every plan. For the same reason the `delta` filter cannot be combined with `date` (the request is rejected with `400`); filter historical chains by `strike` instead.
+  :::info[Historical chains include Greeks]
+  On a request with `date`, the `iv`, `delta`, `gamma`, `theta` and `vega` columns are calculated by Market Data from that session's end-of-day quotes. See [Historical Greeks](#historical-greeks).
   :::
+
+- **model** `string`
+
+  The pricing model of the calculated Greeks on a historical request (`date`). Paid plans only (Starter, Trader, Quant, Prime and Commercial; not trials). On a free or trial plan the parameter is ignored, and the response uses the default models.
+
+  - `bsm`: Black-Scholes-Merton for every contract. It does not value early exercise.
+  - `bjs`: Bjerksund-Stensland (2002) for American-style contracts.
+  - `crr`: Cox-Ross-Rubinstein, a binomial tree, for American-style contracts.
+  - `baw`: Barone-Adesi-Whaley for American-style contracts.
+  - `default`: the default models (the same as no `model`).
+
+  With `bjs`, `crr` or `baw`, European-style contracts still use Black-Scholes-Merton. Without `model`, American-style contracts use Bjerksund-Stensland and European-style contracts use Black-Scholes-Merton. The value is not case-sensitive, and long names also work (for example `blackscholesmerton`, `binomial`).
+
+  `model` applies only to historical requests. On a current chain, a paid plan gets `400 Bad Request`:
+
+  ```json
+  {"s":"error","errmsg":"The 'model' parameter applies only to historical requests (date=, or from= and to=) without source=."}
+  ```
+
+  On a paid plan, an unknown model name is also a `400`, with `"errmsg":"Invalid model. Use one of: bsm, bjs, crr, baw."`
 
 </TabItem>
 
@@ -320,14 +340,12 @@ When combining the `weekly`, `monthly`, and `quarterly` parameters, only identic
   Filter strikes using the absolute value of the delta. The values used will always return both sides of the chain (e.g. puts & calls). This means you must filter using `side` to exclude puts or calls. Delta cannot be used to filter the side of the chain, only the strikes.
   :::
 
-  :::caution[Not available on historical requests]
-  `delta` cannot be combined with the `date` parameter. Greeks are not stored historically, so there is no delta to filter on, and the request is rejected with `400 Bad Request`:
+  :::info[Delta on historical requests]
+  With `date`, `delta` filters on the calculated deltas of that session (see [Historical Greeks](#historical-greeks)). A contract without a calculated delta is left out. Possible `no_data` answers:
 
-  ```json
-  {"s":"error","errmsg":"The 'delta' parameter is not supported on historical requests for now."}
-  ```
-
-  Use the `strike` filter for historical chains.
+  - `The deltas for this date are not available.`: no contract of the request has a calculated delta.
+  - `The deltas for this request could not be computed. Try again.`: the calculation failed.
+  - `The deltas for this request did not finish within its time limit. Try again, or narrow it with expiration= or strikeLimit=.`
   :::
 
 - **strikeLimit** `number`
@@ -497,7 +515,7 @@ The `am` and `pm` parameters apply only to index options. On stock and ETF optio
   The date and time of this quote snapshot. All timestamps use US Eastern Time (America/New_York). See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
 
 :::note[Greeks on historical requests]
-`iv`, `delta`, `gamma`, `theta` and `vega` are only populated on current (real-time, delayed or end-of-day) chains. On any request that includes the `date` parameter these columns are returned as `null`, on every plan, because Greeks and implied volatility are not stored historically.
+On a request with `date`, `iv`, `delta`, `gamma`, `theta` and `vega` are calculated by Market Data from that session's end-of-day quotes. A value that cannot be calculated is `null`, never `0`. See [Historical Greeks](#historical-greeks).
 :::
 
 - **iv** `array[number]`
@@ -548,6 +566,26 @@ The `am` and `pm` parameters apply only to index options. On stock and ETF optio
 </TabItem>
 </Tabs>
 
+## Historical Greeks
+
+Market Data calculates the implied volatility and the Greeks of a historical request from the end-of-day quotes of that session:
+
+1. **Option price:** the mid of the end-of-day bid and ask. The last trade price is not used.
+2. **Underlying price:** the underlying price stored with the quote.
+3. **Time to expiration:** from the session close (4:00 PM Eastern) to the contract's settlement value time, in calendar days divided by 365.
+4. **Risk-free rate:** the risk-free rate curve of the session date, at the contract's expiration.
+5. **Carry:** implied for each expiration from the chain's own call and put prices (put-call parity), not from a dividend calendar.
+6. **Implied volatility:** the volatility at which the model price equals the mid. The model is Bjerksund-Stensland (2002) for American-style contracts and Black-Scholes-Merton for European-style contracts, or the [`model`](#request-parameters) that you name.
+7. **Greeks:** delta, gamma, theta and vega at that implied volatility.
+
+Each contract gets the values of its whole chain, so a contract has the same values in every request, whatever its filters and page.
+
+**Units** (the same as on current chains): `iv` is a decimal (`0.3012` is 30.12%). `delta` and `gamma` are per $1 of the underlying. `theta` is per calendar day. `vega` is per 1 volatility point (0.01 of `iv`). Values are rounded to 4 decimals.
+
+**Null values.** A value that cannot be calculated is `null`: for example, a contract with no bid and no ask, an ask below the bid, or a mid that no volatility can reach. If the mid is at or below the lowest price that the model allows (for example, a deep in-the-money American put at its exercise value), `iv` is `null`, and with the default models the Greeks are the values at zero volatility. `rho` is not calculated.
+
+**Coverage.** Calculated Greeks start with the session of July 1, 2010. Some sessions with known data faults return `null`.
+
 ## Usage Information
 
 ### Data Availability
@@ -565,11 +603,11 @@ The type of option chain data you receive depends on your user type and OPRA ent
 
 One historical row does not carry one as-of time. On a `date=D` request:
 
-| Field                                                    | As of                                        |
-|----------------------------------------------------------|----------------------------------------------|
-| `openInterest`                                           | before the open on D, settled out of D−1     |
-| `bid`, `ask`, `mid`, `last`, `underlyingPrice`, `volume` | the row's `updated` timestamp, 16:00 ET on D |
-| `iv`, `delta`, `gamma`, `theta`, `vega`                  | not returned — see the note on `date` above  |
+| Field                                                    | As of                                                                                    |
+|----------------------------------------------------------|------------------------------------------------------------------------------------------|
+| `openInterest`                                           | before the open on D, settled out of D−1                                                 |
+| `bid`, `ask`, `mid`, `last`, `underlyingPrice`, `volume` | the row's `updated` timestamp, 16:00 ET on D                                             |
+| `iv`, `delta`, `gamma`, `theta`, `vega`                  | calculated from the end-of-day quotes of D — see [Historical Greeks](#historical-greeks) |
 
 Two consequences matter when you build a point-in-time dataset:
 
