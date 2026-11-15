@@ -545,6 +545,10 @@ On a request with `date`, `iv`, `delta`, `gamma`, `theta` and `vega` are calcula
 
   Status will be `no_data` if no candles are found for the request.
 
+- **errmsg** `string` optional
+
+  A message that says why no data was returned, for example on a historical request with a delta filter.
+
 - **nextTime** `number` optional
 
   Unix time of the next quote if there is no data in the requested period, but there is data in a subsequent period.
