@@ -42,26 +42,33 @@ Although US-listed options primarily trade on exchanges in Chicago (CBOE), the A
 
 A historical option row (a quotes or chain request with `date`, or a quotes request with `from` and `to`) holds one end-of-day quote for each contract and session. The fields in one row do not share one time:
 
-| Field                       | As of                                                                                                                                 |
-|-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| `bid`, `ask`, `mid`, `last` | The end-of-day option quote. Its time depends on the option class, in the next table.                                                 |
-| `underlyingPrice`           | The underlying's regular-session close, **4:00 PM ET**, also for the classes that trade until 4:15 PM ET.                             |
-| `updated`                   | **4:00 PM ET** on every row, for every class. It is the regular close, not the time of the quote.                                     |
-| `openInterest`              | Before the open, settled out of the previous session. See [Point-in-Time Semantics](/docs/api/options/chain#point-in-time-semantics). |
+| Field               | As of                                                                                                                                        |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| `bid`, `ask`, `mid` | The end-of-day option quote. Its time depends on the option class, in the next table.                                                        |
+| `last`              | The last trade before that quote. It can be from earlier in the session.                                                                     |
+| `underlyingPrice`   | The underlying's regular-session close, **4:00 PM ET** (1:00 PM ET on an early-close day), also for the classes that trade until 4:15 PM ET. |
+| `updated`           | **4:00 PM ET** (1:00 PM ET on an early-close day) on every row, for every class. It is the regular close, not the time of the quote.         |
+| `openInterest`      | Before the open, settled out of the previous session. See [Point-in-Time Semantics](/docs/api/options/chain#point-in-time-semantics).        |
 
-The end-of-day quote depends on when the option class stops trading:
+The end-of-day quote depends on when the regular trading session of the option class ends:
 
-| Option class                                                   | Trading closes | End-of-day `bid`, `ask`, `mid`, `last`                     | Examples                                                    |
-|----------------------------------------------------------------|----------------|------------------------------------------------------------|-------------------------------------------------------------|
-| Single-stock options, and ETF options that close at 4:00 PM ET | **4:00 PM ET** | The 4:00 PM ET close                                       | AAPL, MSFT                                                  |
-| Broad-based index options                                      | **4:15 PM ET** | A quote taken after 4:00 PM ET, up to the 4:15 PM ET close | SPX, SPXW, XSP, NDX, RUT                                    |
-| Options on broad-based ETFs that trade until 4:15 PM ET        | **4:15 PM ET** | A quote taken after 4:00 PM ET, up to the 4:15 PM ET close | SPY, QQQ, IWM, DIA, and the sector ETFs such as XLF and XLK |
+| Option class                                                   | Regular trading closes | End-of-day `bid`, `ask`, `mid`                             | Examples                                                                               |
+|----------------------------------------------------------------|------------------------|------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| Single-stock options, and ETF options that close at 4:00 PM ET | **4:00 PM ET**         | The 4:00 PM ET close                                       | AAPL, MSFT                                                                             |
+| Broad-based index options                                      | **4:15 PM ET**         | A quote taken after 4:00 PM ET, up to the 4:15 PM ET close | SPX, SPXW, XSP, NDX, RUT                                                               |
+| Options on certain ETFs that trade until 4:15 PM ET            | **4:15 PM ET**         | A quote taken after 4:00 PM ET, up to the 4:15 PM ET close | SPY, QQQ, IWM, DIA, and the sector ETFs XLB, XLE, XLF, XLI, XLK, XLP, XLU, XLV and XLY |
+
+A Curb or extended trading session after the regular close does not change the end-of-day quote.
 
 For the classes that trade until 4:15 PM ET, the data does not record the exact time of the quote, and it is not the same minute every day. The quote can include a move of the underlying after 4:00 PM ET, but `underlyingPrice` and `updated` show 4:00 PM ET. So a calculation that combines the option prices with `underlyingPrice` mixes two times. Examples are put-call parity, an implied volatility that you calculate from `underlyingPrice`, and the `extrinsicValue` that the API calculates from `mid` and `underlyingPrice`. On a day with after-hours news, the difference is large. On July 30, 2024, SPY options priced the underlying about 0.6% below the `underlyingPrice` of 542.00, after a fall in SPY between 4:00 and 4:15 PM ET.
 
-On its expiration date, an expiring PM-settled index option, for example SPXW or XSP, stops trading at 4:00 PM ET. Its end-of-day quote on that date is the 4:00 PM ET close.
+VIX options also trade until 4:15 PM ET, but their `underlyingPrice` does not match a 4:00 PM ET value of the VIX index. The `underlyingPrice` row above does not describe them.
 
-On a day when the market closes early, the regular close is **1:00 PM ET**: `updated` and `underlyingPrice` are as of 1:00 PM ET, and the classes that trade until 4:15 PM ET trade until 1:15 PM ET.
+On its expiration date, an expiring PM-settled index option, for example SPXW or XSP, stops trading at 4:00 PM ET (1:00 PM ET on an early-close day). Its end-of-day quote on that date is the close at that time.
+
+On a day when the market closes early, the regular close is **1:00 PM ET**, and the classes that trade until 4:15 PM ET trade until 1:15 PM ET.
+
+These times describe the end-of-day archive. A recent session that the archive does not hold yet is served from a different end-of-day snapshot, and its times can differ.
 
 #### Option Expiration
 

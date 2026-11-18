@@ -568,9 +568,10 @@ One historical row does not carry one as-of time. On a `date=D` request:
 | Field                                             | As of                                                                                                                 |
 |---------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
 | `openInterest`                                    | before the open on D, settled out of D−1                                                                              |
-| `bid`, `ask`, `mid`, `last`                       | the end-of-day quote on D: the 16:00 ET close, or a quote taken after 16:00 ET for a class that trades until 16:15 ET |
+| `bid`, `ask`, `mid`                               | the end-of-day quote on D: the 16:00 ET close, or a quote taken after 16:00 ET for a class that trades until 16:15 ET |
+| `last`                                            | the last trade before that quote, which can be from earlier on D                                                      |
 | `underlyingPrice`, `inTheMoney`, `intrinsicValue` | the underlying's regular-session close, 16:00 ET on D                                                                 |
-| `extrinsicValue`                                  | a mix of the two rows above, because the API calculates it from `mid` and `intrinsicValue`                            |
+| `extrinsicValue`                                  | a mix of the `mid` time and the `underlyingPrice` time, because the API calculates it from `mid` and `intrinsicValue` |
 | `volume`                                          | the full session on D                                                                                                 |
 | `updated`                                         | 16:00 ET on D on every row; it is not the time of the quote                                                           |
 | `iv`, `delta`, `gamma`, `theta`, `vega`           | not returned — see the note on `date` above                                                                           |
