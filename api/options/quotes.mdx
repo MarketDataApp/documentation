@@ -214,7 +214,7 @@ foreach (var quote in (await client.Options.GetQuoteAsync("AAPL271217C00250000")
   The pricing model of the calculated Greeks on a historical request (`date`, or `from` and `to`). Paid plans only (Starter, Trader, Quant, Prime and Commercial; not trials). On a free or trial plan the parameter is ignored, and the response uses the default models.
 
   - `bsm`: Black-Scholes-Merton for every contract. It does not value early exercise.
-  - `bjs`: Bjerksund-Stensland (2002) for American-style contracts.
+  - `bjs`: Bjerksund-Stensland (1993) for American-style contracts.
   - `crr`: Cox-Ross-Rubinstein, a binomial tree, for American-style contracts.
   - `baw`: Barone-Adesi-Whaley for American-style contracts.
   - `default`: the default models (the same as no `model`).
@@ -398,10 +398,10 @@ Market Data calculates the implied volatility and the Greeks of a historical req
 
 1. **Option price:** the mid of the end-of-day bid and ask. The last trade price is not used.
 2. **Underlying price:** the underlying price stored with the quote.
-3. **Time to expiration:** from the session close (4:00 PM Eastern) to the contract's settlement value time, in calendar days divided by 365.
+3. **Time to expiration:** from 4:00 PM Eastern on the session date to the contract's settlement value time, in calendar days divided by 365.
 4. **Risk-free rate:** the risk-free rate curve of the session date, at the contract's expiration.
 5. **Carry:** implied for each expiration from the chain's own call and put prices (put-call parity), not from a dividend calendar.
-6. **Implied volatility:** the volatility at which the model price equals the mid. The model is Bjerksund-Stensland (2002) for American-style contracts and Black-Scholes-Merton for European-style contracts, or the [`model`](#request-parameters) that you name.
+6. **Implied volatility:** the volatility at which the model price equals the mid. The model is Bjerksund-Stensland (1993) for American-style contracts and Black-Scholes-Merton for European-style contracts, or the [`model`](#request-parameters) that you name.
 7. **Greeks:** delta, gamma, theta and vega at that implied volatility.
 
 Each quote gets the values of its session's whole chain, so a quote has the same values in every request. A `from`/`to` series calculates each session separately.
