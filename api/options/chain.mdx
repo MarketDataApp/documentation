@@ -474,11 +474,11 @@ The `am` and `pm` parameters apply only to index options. On stock and ETF optio
 
 - **openInterest** `array[number]`
 
-  The total number of contracts outstanding. Open interest is published once per trading day: it is calculated after the close and released at the start of the next session, and it does not change intraday. On a historical request (`date=D`), this is therefore the figure settled out of the D−1 session and available before the open on D — unlike every other field in the row, which is as of the 16:00 ET `updated` timestamp. To get the open interest produced by trading on day D, request the next trading day.
+  The total number of contracts outstanding. Open interest is published once per trading day: it is calculated after the close and released at the start of the next session, and it does not change intraday. On a historical request (`date=D`), this is therefore the figure settled out of the D−1 session and available before the open on D — unlike the prices in the row, which are as of the close on D (see [Point-in-Time Semantics](#point-in-time-semantics)). To get the open interest produced by trading on day D, request the next trading day.
 
 - **underlyingPrice** `array[number]`
 
-  The last price of the underlying security at the time of this quote.
+  The last price of the underlying security at the time of this quote. On a historical request, this is the underlying's regular-session close on D, 16:00 ET, also for an option class that trades until 16:15 ET.
 
 - **inTheMoney** `array[booleans]`
 
@@ -494,7 +494,7 @@ The `am` and `pm` parameters apply only to index options. On stock and ETF optio
 
 - **updated** `array[number]`
 
-  The date and time of this quote snapshot. All timestamps use US Eastern Time (America/New_York). See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
+  The date and time of this quote snapshot. On a historical request, every row reads the regular close on D, 16:00 ET (13:00 ET on an early-close day), for every option class. For a class that trades until 16:15 ET, such as SPY, QQQ or SPX, the quote is taken after this time. See [Historical Option Quote Times](/docs/api/dates-and-times#historical-option-quote-times). All timestamps use US Eastern Time (America/New_York). See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
 
 :::note[Greeks on historical requests]
 `iv`, `delta`, `gamma`, `theta` and `vega` are only populated on current (real-time, delayed or end-of-day) chains. On any request that includes the `date` parameter these columns are returned as `null`, on every plan, because Greeks and implied volatility are not stored historically.
@@ -565,16 +565,24 @@ The type of option chain data you receive depends on your user type and OPRA ent
 
 One historical row does not carry one as-of time. On a `date=D` request:
 
-| Field                                                    | As of                                        |
-|----------------------------------------------------------|----------------------------------------------|
-| `openInterest`                                           | before the open on D, settled out of D−1     |
-| `bid`, `ask`, `mid`, `last`, `underlyingPrice`, `volume` | the row's `updated` timestamp, 16:00 ET on D |
-| `iv`, `delta`, `gamma`, `theta`, `vega`                  | not returned — see the note on `date` above  |
+| Field                                             | As of                                                                                                                 |
+|---------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `openInterest`                                    | before the open on D, settled out of D−1                                                                              |
+| `bid`, `ask`, `mid`                               | the end-of-day quote on D: the 16:00 ET close, or a quote taken after 16:00 ET for a class that trades until 16:15 ET |
+| `last`                                            | the last trade before that quote, which can be from earlier on D                                                      |
+| `underlyingPrice`, `inTheMoney`, `intrinsicValue` | the underlying's regular-session close, 16:00 ET on D                                                                 |
+| `extrinsicValue`                                  | a mix of the `mid` time and the `underlyingPrice` time, because the API calculates it from `mid` and `intrinsicValue` |
+| `volume`                                          | the full session on D                                                                                                 |
+| `updated`                                         | 16:00 ET on D on every row; it is not the time of the quote                                                           |
+| `iv`, `delta`, `gamma`, `theta`, `vega`           | not returned — see the note on `date` above                                                                           |
 
-Two consequences matter when you build a point-in-time dataset:
+On an early-close day, read 13:00 ET for 16:00 ET, and 13:15 ET for 16:15 ET. Which classes trade until 16:15 ET, with examples, is in [Historical Option Quote Times](/docs/api/dates-and-times#historical-option-quote-times).
+
+Three consequences matter when you build a point-in-time dataset:
 
 - `openInterest` carries no look-ahead. It was published before trading on D began, so it is safe to use at any time on D. To read the open interest that D's trading produced, request the next trading day.
 - `volume` does carry look-ahead relative to an intraday cutoff. It is the full-session total for D, not the volume up to a given moment.
+- For a class that trades until 16:15 ET, such as SPY, QQQ or SPX, the option prices and `underlyingPrice` are not from the same moment. The option prices can include a move of the underlying after 16:00 ET that `underlyingPrice` does not show, and the data does not record the exact time of the quote. Put-call parity, an implied volatility calculated from `underlyingPrice`, and `extrinsicValue` all mix the two times.
 
 ### Pricing
 
