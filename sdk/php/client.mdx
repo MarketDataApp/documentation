@@ -181,6 +181,12 @@ try {
 
 See [Error Handling](/sdk/php/errors) for details on exception types.
 
+## Timeouts
+
+Since v1.2.0, the default HTTP client gives up on a request after 99 seconds, or after 2 seconds when it cannot open a connection. A request that times out is retried like any other network failure, and when every attempt times out the SDK throws a [`RequestError`](/sdk/php/errors#requesterror). No option or environment variable changes these values.
+
+To use other timeouts, pass your own client to `setGuzzle()`, as shown in [Custom HTTP Client](#custom-http-client).
+
 ## Custom HTTP Client
 
 Inject a custom Guzzle client for advanced use cases:
@@ -201,6 +207,8 @@ $guzzle = new GuzzleClient([
 
 $client->setGuzzle($guzzle);
 ```
+
+The SDK uses this client as given, so its `timeout` and `connect_timeout` settings replace the default client's 99-second and 2-second timeouts.
 
 ## Next Steps
 
