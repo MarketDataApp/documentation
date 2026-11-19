@@ -279,11 +279,11 @@ foreach (var quote in (await client.Options.GetQuoteAsync("AAPL271217C00250000")
 
 - **openInterest** `array[number]`
 
-  The total number of contracts outstanding. Open interest is published once per trading day: it is calculated after the close and released at the start of the next session, and it does not change intraday. On a historical request (`date=D`, or a `from`/`to` series), this is therefore the figure settled out of the D−1 session and available before the open on D — unlike the prices in the row, which are as of the close on D (see [Historical Option Quote Times](/docs/api/dates-and-times#historical-option-quote-times)). To get the open interest produced by trading on day D, request the next trading day.
+  The total number of contracts outstanding. Open interest is published once per trading day: it is calculated after the close and released at the start of the next session, and it does not change intraday. On a historical request (`date=D`, or a `from`/`to` series), this is therefore the figure settled out of the D−1 session and available before the open on D — unlike every other field in the row, which is as of the 16:00 ET `updated` timestamp. To get the open interest produced by trading on day D, request the next trading day.
 
 - **underlyingPrice** `array[number]`
 
-  The last price of the underlying security at the time of this quote. On a historical request, this is the underlying's regular-session close on that day, 16:00 ET, also for an option class that trades until 16:15 ET.
+  The last price of the underlying security at the time of this quote.
 
 - **inTheMoney** `array[booleans]`
 
@@ -299,7 +299,7 @@ foreach (var quote in (await client.Options.GetQuoteAsync("AAPL271217C00250000")
 
 - **updated** `array[number]`
 
-  The date and time of this quote snapshot. On a historical request, every row reads the regular close of its day, 16:00 ET (13:00 ET on an early-close day), for every option class. For a class that trades until 16:15 ET, such as SPY, QQQ or SPX, the quote is taken after this time. See [Historical Option Quote Times](/docs/api/dates-and-times#historical-option-quote-times). All timestamps use US Eastern Time (America/New_York). See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
+  The date and time of this quote snapshot. All timestamps use US Eastern Time (America/New_York). See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
 
 :::note[Greeks on historical requests]
 `iv`, `delta`, `gamma`, `theta` and `vega` are only populated on current (real-time, delayed or end-of-day) quotes. On any request that includes `date`, `from` or `to` these columns are returned as `null`, on every plan, because Greeks and implied volatility are not stored historically.
