@@ -36,7 +36,7 @@ earnings<P>(
 ): MarketDataPromise<StockEarnings[] | StockEarningsHuman[]>
 ```
 
-Fetches earnings data for a single symbol.
+Fetches earnings data for a single symbol. With no dates the API returns only upcoming reports, from today through the next three years.
 
 ### Parameters
 
@@ -130,9 +130,9 @@ interface StockEarnings {
 - `symbol` (string): The stock symbol.
 - `fiscalYear` (number): The fiscal year of the earnings report.
 - `fiscalQuarter` (number): The fiscal quarter (1–4).
-- `date` (number): Unix timestamp of the earnings event.
+- `date` (number): Unix timestamp of the last day of the fiscal period.
 - `reportDate` (number): Unix timestamp when the earnings were reported.
-- `reportTime` (string | null): Time of day the earnings were reported (e.g. `"bmo"`, `"amc"`).
+- `reportTime` (string | null): Time of day the earnings were reported: `"before open"`, `"after close"` or `"during market hours"`; `null` when the API has no time.
 - `currency` (string | null): Currency of the EPS figures.
 - `reportedEPS` (number | null): The actual reported earnings per share.
 - `estimatedEPS` (number | null): The analyst consensus estimate.

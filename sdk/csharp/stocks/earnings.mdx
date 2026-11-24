@@ -27,7 +27,7 @@ new StockEarningsRequest(string symbol)
     Date = DateOnly,        // a single date
     From = DateOnly,        // window start
     To = DateOnly,          // window end
-    Countback = int,        // N most recent reports
+    Countback = int,        // N reports ending at To (set To too)
     Report = string         // a specific report, e.g. "2024-Q1"
 }
 ```
@@ -45,7 +45,7 @@ public record StockEarning(
     int? FiscalQuarter,
     DateTimeOffset? Date,
     DateTimeOffset? ReportDate,
-    string? ReportTime,          // e.g. "before market open" / "after market close"
+    string? ReportTime,          // "before open" / "after close" / "during market hours", or null
     string? Currency,
     decimal? ReportedEps,
     decimal? EstimatedEps,
@@ -61,8 +61,10 @@ using MarketDataApp;
 
 using var client = await MarketDataClient.CreateAsync();
 
-// The four most recent reports.
-var earnings = await client.Stocks.GetEarningsAsync("AAPL", countback: 4);
+// The four most recent reports, up to today. The API reads dates in US Eastern time.
+var eastern = TimeZoneInfo.FindSystemTimeZoneById("America/New_York");
+var today = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, eastern));
+var earnings = await client.Stocks.GetEarningsAsync("AAPL", to: today, countback: 4);
 foreach (var report in earnings.Values)
 {
     Console.WriteLine(
