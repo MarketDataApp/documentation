@@ -211,7 +211,7 @@ foreach (var quote in (await client.Options.GetQuoteAsync("AAPL271217C00250000")
 
 - **model** `string`
 
-  The pricing model of the calculated Greeks on a historical request (`date`, or `from` and `to`). Paid plans only (Starter, Trader, Quant, Prime and Commercial; not trials). On a free or trial plan the parameter is ignored, and the response uses the default models.
+  The pricing model of the calculated Greeks on a historical request (`date`, or `from` and `to`). Paid plans only (Starter, Trader, Quant, Prime and Commercial; not trials). A request with `model` on a free or trial plan, or without a token (also for an AAPL contract, the [demo symbol](/api/authentication#demo-the-api-with-no-authentication)), gets `402 Payment Required`, with `"errmsg":"The model parameter is only available for paying users."` Leave out `model` to get the default models.
 
   - `bsm`: Black-Scholes-Merton for every contract. It does not value early exercise.
   - `bjs`: Bjerksund-Stensland (1993) for American-style contracts.
