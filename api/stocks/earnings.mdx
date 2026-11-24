@@ -161,6 +161,8 @@ foreach (var report in (await client.Stocks.GetEarningsAsync("AAPL")).Values)
 
 :::info[Upcoming reports by default]
 A request without `from`, `to` or `date` returns only upcoming reports: from today through the next three years. For past reports, set `from` and `to`, or `date` for a single day.
+
+When no data provider has published a company's next report date yet, the response can hold a date that the API estimates from the company's earlier reports. The API estimates a date only for a company whose report dates repeat from year to year.
 :::
 
 ## Response Example
@@ -251,7 +253,7 @@ The example is the upcoming report that the request above returns. A past report
 
 - **reportTime** `array[string]`
 
-  The value will be either `before open`, `after close`, or `during market hours`.
+  The value will be either `before open`, `after close`, or `during market hours`. It is `null` when only the day of the report is known.
 
 - **currency** `array[string]`
 
@@ -287,7 +289,7 @@ The example is the upcoming report that the request above returns. A past report
 
 - **s** `string`
 
-  Status will be `no_data` if no earnings data can be found for the symbol. For a request without dates, this means that no upcoming report date is known: for example funds and ETFs, which do not report earnings, or a company whose next report date is not available yet.
+  Status will be `no_data` if no earnings data can be found for the symbol. For a request without dates, this means that no upcoming report date is known and none can be estimated: for example funds and ETFs, which do not report earnings, or a company whose next report date is not published yet and whose earlier report dates do not repeat from year to year.
 
 </TabItem>
 <TabItem value="Error" label="Error">
