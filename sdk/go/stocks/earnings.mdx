@@ -193,6 +193,8 @@ func main() {
 | `stocks.LastN(n)`          | the `n` most recent reports          | `countback=n&to=<today>` |
 | `stocks.LastNUntil(n, to)` | the `n` reports ending at a day      | `countback=n&to=to`      |
 
+The earnings API bounds a one-sided window: `Since(from)` ends three years after `from`, and `Until(to)` starts three years before `to`, or today when `to` is in the future.
+
 ## Earning
 
 ```go
@@ -207,7 +209,7 @@ type Earning struct {
 	ReportedEPS        *float64  `json:"reportedEPS"`   // Actual reported EPS (nil for future earnings)
 	EstimatedEPS       *float64  `json:"estimatedEPS"`  // Consensus analyst estimate
 	SurpriseEPS        *float64  `json:"surpriseEPS"`   // Difference between reported and estimated
-	SurpriseEPSPercent *float64  `json:"surpriseEPSpct"` // Surprise as a percentage
+	SurpriseEPSPercent *float64  `json:"surpriseEPSpct"` // Surprise as a fraction of the estimate (0.0256 = 2.56%)
 	Updated            time.Time `json:"updated"`       // When this earnings data was last updated
 }
 ```
@@ -225,7 +227,7 @@ Represents a single earnings report, one per fiscal quarter. Timestamps are norm
 - `ReportedEPS` — the actual reported EPS; `nil` for earnings not yet reported.
 - `EstimatedEPS` — the consensus analyst estimate; `nil` when unavailable.
 - `SurpriseEPS` — the difference between reported and estimated EPS; `nil` when unavailable.
-- `SurpriseEPSPercent` — the surprise as a percentage (JSON alias `surpriseEPSpct`); `nil` when unavailable.
+- `SurpriseEPSPercent` — the surprise as a fraction of the estimate, for example `0.0256` for 2.56% (JSON alias `surpriseEPSpct`); `nil` when unavailable.
 - `Updated` — when this data was last updated.
 
 ### Helper Methods

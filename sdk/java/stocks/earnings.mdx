@@ -7,7 +7,7 @@ sidebar_position: 5
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-Retrieve historical and upcoming earnings data (EPS actuals, estimates, surprises) for a stock symbol.
+Retrieve historical and upcoming earnings data (EPS actuals, estimates, surprises) for a stock symbol. With no dates the API returns only upcoming reports, from today through the next three years.
 
 ## Making Requests
 
@@ -42,7 +42,7 @@ public record StockEarning(
     @Nullable Integer fiscalQuarter,
     @Nullable ZonedDateTime date,
     @Nullable ZonedDateTime reportDate,
-    @Nullable String reportTime,        // "before open" / "after close" / "during market hours"
+    @Nullable String reportTime,        // "before open" / "after close" / "during market hours", or null
     @Nullable String currency,
     @Nullable Double reportedEPS,
     @Nullable Double estimatedEPS,
