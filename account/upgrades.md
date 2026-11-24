@@ -27,43 +27,12 @@ The credit does not extend the renewal date of the new plan.
 
 ## Examples
 
-The examples use the list prices of each plan: Starter at $144 per year ($12 per month billed annually), Trader at $75 per month or $360 per year ($30 per month billed annually), and Prime at $250 per month.
-
-### Monthly to Monthly: Trader Monthly to Prime
-
-- **Current plan**: Trader monthly, $75. The current period started on November 1 and ends on December 1, so it has 30 days.
-- **Upgrade**: on November 16.
-- **Unused days**: November 17 to November 30, which is 14 days.
-- **Credit**: 14 × $75 ÷ 30 = $35.00.
-- **First payment of Prime**: $250.00 − $35.00 = $215.00.
-- **Prime renews**: on December 16, one month after the upgrade.
-
-### Monthly to Annual: Trader Monthly to Trader Annual
-
-- **Current plan**: Trader monthly, $75. The current period started on October 1 and ends on November 1, so it has 31 days.
-- **Upgrade**: on October 21.
-- **Unused days**: October 22 to October 31, which is 10 days.
-- **Credit**: 10 × $75 ÷ 31 = $24.19.
-- **First payment of Trader annual**: $360.00 − $24.19 = $335.81.
-- **Trader annual renews**: on October 21 of the next year.
-
-### Annual to Annual: Starter Annual to Trader Annual
-
-- **Current plan**: Starter annual, $144. The current period started on March 1, 2026 and ends on March 1, 2027, so it has 365 days.
-- **Upgrade**: on November 24, 2026.
-- **Unused days**: November 25, 2026 to February 28, 2027, which is 96 days.
-- **Credit**: 96 × $144 ÷ 365 = $37.87.
-- **First payment of Trader annual**: $360.00 − $37.87 = $322.13.
-- **Trader annual renews**: on November 24, 2027.
-
-### Annual to Monthly: Starter Annual to Prime
-
-- **Current plan**: Starter annual, $144. The current period started on June 1, 2026 and ends on June 1, 2027, so it has 365 days.
-- **Upgrade**: on November 24, 2026.
-- **Unused days**: November 25, 2026 to May 31, 2027, which is 188 days.
-- **Credit**: 188 × $144 ÷ 365 = $74.17.
-- **First payment of Prime**: $250.00 − $74.17 = $175.83.
-- **Prime renews**: on December 24, 2026, one month after the upgrade.
+| Upgrade                         | Unused days | Credit                    | First payment of the new plan |
+|---------------------------------|-------------|---------------------------|-------------------------------|
+| Trader monthly to Prime         | 14 of 30    | 14 × $75 ÷ 30 = $35.00    | $250.00 − $35.00 = $215.00    |
+| Trader monthly to Trader annual | 10 of 31    | 10 × $75 ÷ 31 = $24.19    | $360.00 − $24.19 = $335.81    |
+| Starter annual to Trader annual | 96 of 365   | 96 × $144 ÷ 365 = $37.87  | $360.00 − $37.87 = $322.13    |
+| Starter annual to Prime         | 188 of 365  | 188 × $144 ÷ 365 = $74.17 | $250.00 − $74.17 = $175.83    |
 
 ## Upgrades Credited by the Helpdesk
 
