@@ -236,7 +236,7 @@ StockEarnings represents earnings data for a stock, encapsulating fiscal year, q
 - `fiscalQuarter` (list[int]): List of fiscal quarters.
 - `date` (list[datetime.datetime]): List of earnings dates (automatically converted from timestamps).
 - `reportDate` (list[datetime.datetime]): List of report dates (automatically converted from timestamps).
-- `reportTime` (list[str]): List of report times.
+- `reportTime` (list[str]): List of report times. An item can be `None`.
 - `currency` (list[str]): List of currencies.
 - `reportedEPS` (list[float]): List of reported earnings per share. An item is `None` for an upcoming report.
 - `estimatedEPS` (list[float]): List of estimated earnings per share. An item is `None` when no consensus estimate is available.
@@ -273,7 +273,7 @@ StockEarningsHumanReadable represents earnings data in human-readable format wit
 - `Fiscal_Quarter` (list[int]): List of fiscal quarters.
 - `Date` (list[datetime.datetime]): List of earnings dates (automatically converted from timestamps).
 - `Report_Date` (list[datetime.datetime]): List of report dates (automatically converted from timestamps).
-- `Report_Time` (list[str]): List of report times.
+- `Report_Time` (list[str]): List of report times. An item can be `None`.
 - `Currency` (list[str]): List of currencies.
 - `Reported_EPS` (list[float]): List of reported earnings per share. An item is `None` for an upcoming report.
 - `Estimated_EPS` (list[float]): List of estimated earnings per share. An item is `None` when no consensus estimate is available.

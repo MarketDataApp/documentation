@@ -209,7 +209,7 @@ The example is the upcoming report that the request above returns. A past report
 
 - **countback** `number`
 
-  Countback will fetch a specific number of earnings reports before `to`. If you use `from`, countback is not required.
+  Countback will fetch a specific number of earnings reports before `to`. If you use `from`, countback is not required. Without `to`, countback counts back from the end of the default window, so it returns only upcoming reports. For the latest past reports, set `to` to today's date.
 
 - **date** `date`
 
@@ -253,7 +253,7 @@ The example is the upcoming report that the request above returns. A past report
 
 - **reportTime** `array[string]`
 
-  The value will be either `before open`, `after close`, or `during market hours`. It is `null` when only the day of the report is known.
+  The value will be either `before open`, `after close`, or `during market hours`. It can be `null`.
 
 - **currency** `array[string]`
 
@@ -274,11 +274,11 @@ The example is the upcoming report that the request above returns. A past report
 
 - **surpriseEPS** `array[number]`
 
-  The difference (in earnings per share) between the estimated earnings per share and the reported earnings per share.
+  The difference (in earnings per share) between the estimated earnings per share and the reported earnings per share. `null` when `reportedEPS` is `null`.
 
 - **surpriseEPSpct** `array[number]`
 
-  The difference in percentage terms between the estimated EPS and the reported EPS, expressed as a decimal. For example, if the estimated EPS is 1.00 and the reported EPS is 1.20, the surpriseEPSpct would be 0.20 (or 20%).
+  The difference in percentage terms between the estimated EPS and the reported EPS, expressed as a decimal. For example, if the estimated EPS is 1.00 and the reported EPS is 1.20, the surpriseEPSpct would be 0.20 (or 20%). `null` when `reportedEPS` is `null`.
 
 - **updated** `array[date]`
 
