@@ -1,87 +1,79 @@
 ---
 title: Plan Upgrades
-description: Upgrade a Market Data plan and keep your unused time. See how the credit is calculated when you move between monthly and annual billing.
+description: Upgrade a Market Data plan and keep the value of your unused time. See how the credit is calculated and how it comes off the first payment of your new plan.
 sidebar_position: 8
 ---
 
-At Market Data, we strive to make your experience with our services as seamless and positive as possible. When you decide to upgrade your plan, we ensure that your unused time is not wasted. The method we use to calculate your savings is the same, but the way you receive the credit is slightly different depending on whether you're moving from a monthly plan to an annual plan or from an annual plan to a monthly plan. Here's how we calculate and apply your unused time towards your new plan:
+When you upgrade your plan before the current billing period ends, you keep the value of the time you have not used. We calculate a credit for the unused days of the current period, and the credit comes off the first payment of your new plan. The same rule applies to every upgrade except those in [Upgrades credited by the helpdesk](#upgrades-credited-by-the-helpdesk), whether you move from monthly to monthly, monthly to annual, annual to annual, or annual to monthly billing.
 
-## Switching from a Monthly Plan to an Annual Plan
+## How the Credit Is Calculated
 
-If you decide to upgrade before your current monthly subscription period ends, we calculate the credit from the unused portion of your monthly plan. This credit is then applied as a discount on the upfront cost of your new annual plan.
+**Credit = unused days × amount paid for the current period ÷ days in the current period**
 
-### Step-by-Step Process:
+- **Days in the current period**: the number of days from the start of your current period to its end date. For a monthly plan this is 28 to 31 days. For an annual plan it is 365 days, or 366 when the period includes February 29.
+- **Unused days**: the days after the day of the upgrade and before the end date of the current period. The day of the upgrade counts as used.
+- **Amount paid for the current period**: the price of the current period after any discount. If the current period is the first period of a plan that you got by an earlier upgrade, the credit from that earlier upgrade counts as paid.
+- The credit is rounded to the nearest cent.
 
-1. **Calculate unused days**: We start by figuring out how many days remain in your current monthly subscription.
-2. **Determine the daily rate**: We calculate the daily rate of your monthly plan by dividing the total cost by 30 (average number of days per month).
-3. **Calculate your credit**: We multiply the number of unused days by the daily rate to find out how much credit you have.
-4. **Apply this credit**: This amount is then discounted from the price of your new annual plan.
+An upgrade during a free trial gives no credit, because nothing was paid for the trial.
 
-### Examples
+## How the Credit Is Applied
 
-Let's look at two specific examples to understand how the discounts are calculated and applied when upgrading to an annual plan:
+1. The credit comes off the first payment of your new plan. If the credit is larger than that payment, you pay nothing for the first period, and we refund the difference to the last payment of your current plan.
+2. Your new plan starts on the day of the upgrade.
+3. Your new plan renews one full billing period after the day of the upgrade: one month later for a monthly plan, one year later for an annual plan.
 
-#### Example 1: From Monthly Starter Plan to Annual Starter Plan
+The credit does not extend the renewal date of the new plan.
 
-- **Original Plan**: Monthly Starter Plan costing $30/month.
-- **New Plan**: Annual Starter Plan costing $144/year ($12/month billed annually).
+## Examples
 
-**Scenario**: Suppose you are halfway through your monthly cycle when you decide to upgrade.
+The examples use the list prices of each plan: Starter at $144 per year ($12 per month billed annually), Trader at $75 per month or $360 per year ($30 per month billed annually), and Prime at $250 per month.
 
-- **Unused Time Calculation**: 15 days remaining in the month.
-- **Daily Rate**: $30 / 30 = $1 per day.
-- **Credit Amount**: 15 days x $1/day = $15.
-- **Discount Applied**: Your new annual plan will be discounted by $15, so you pay $144 - $15 = $129 initially.
+### Monthly to Monthly: Trader Monthly to Prime
 
-#### Example 2: From Monthly Trader Plan to Annual Trader Plan
+- **Current plan**: Trader monthly, $75. The current period started on November 1 and ends on December 1, so it has 30 days.
+- **Upgrade**: on November 16.
+- **Unused days**: November 17 to November 30, which is 14 days.
+- **Credit**: 14 × $75 ÷ 30 = $35.00.
+- **First payment of Prime**: $250.00 − $35.00 = $215.00.
+- **Prime renews**: on December 16, one month after the upgrade.
 
-- **Original Plan**: Monthly Trader Plan costing $75/month.
-- **New Plan**: Annual Trader Plan costing $360/year ($30/month billed annually).
+### Monthly to Annual: Trader Monthly to Trader Annual
 
-**Scenario**: Suppose you decide to upgrade with 10 days left in your monthly plan.
+- **Current plan**: Trader monthly, $75. The current period started on October 1 and ends on November 1, so it has 31 days.
+- **Upgrade**: on October 21.
+- **Unused days**: October 22 to October 31, which is 10 days.
+- **Credit**: 10 × $75 ÷ 31 = $24.19.
+- **First payment of Trader annual**: $360.00 − $24.19 = $335.81.
+- **Trader annual renews**: on October 21 of the next year.
 
-- **Unused Time Calculation**: 10 days remaining.
-- **Daily Rate**: $75 / 30 = $2.50 per day.
-- **Credit Amount**: 10 days x $2.50/day = $25.00.
-- **Discount Applied**: Your new annual plan will be discounted by $25.00, so you pay $360 - $25.00 = $335.00 initially.
+### Annual to Annual: Starter Annual to Trader Annual
 
-## Switching from an Annual Plan to a Monthly Plan
+- **Current plan**: Starter annual, $144. The current period started on March 1, 2026 and ends on March 1, 2027, so it has 365 days.
+- **Upgrade**: on November 24, 2026.
+- **Unused days**: November 25, 2026 to February 28, 2027, which is 96 days.
+- **Credit**: 96 × $144 ÷ 365 = $37.87.
+- **First payment of Trader annual**: $360.00 − $37.87 = $322.13.
+- **Trader annual renews**: on November 24, 2027.
 
-When you upgrade to a different plan before your current annual subscription expires, we calculate the credit you will receive based on the percentage of unused days remaining in your subscription. This credit is then applied to extend the renewal date of your new, upgraded plan.
+### Annual to Monthly: Starter Annual to Prime
 
-### Step-by-Step Calculation:
+- **Current plan**: Starter annual, $144. The current period started on June 1, 2026 and ends on June 1, 2027, so it has 365 days.
+- **Upgrade**: on November 24, 2026.
+- **Unused days**: November 25, 2026 to May 31, 2027, which is 188 days.
+- **Credit**: 188 × $144 ÷ 365 = $74.17.
+- **First payment of Prime**: $250.00 − $74.17 = $175.83.
+- **Prime renews**: on December 24, 2026, one month after the upgrade.
 
-1. **Determine the unused days**: First, we count how many days are left until your current plan was set to expire.
-2. **Calculate the percentage of the year left**: We calculate what percentage of the year remains from the moment you upgrade.
-3. **Determine the credit**: We apply this percentage to the cost of your annual plan to figure out your credit amount.
-4. **Apply the credit to your new plan**: This credit is then used to extend the renewal date of your newly purchased monthly plan.
+## Upgrades Credited by the Helpdesk
 
-### Examples
+These upgrades use a flat upgrade price, and the unused time of your current plan does not come off it automatically:
 
-To give you a clearer picture, here are two examples of how the credit is calculated and applied:
+- from an annual plan (Starter annual or Trader annual) to Quant
+- from Trader annual to Prime
 
-#### Example 1: Upgrading from Annual Trader Plan to Prime Plan
-
-- **Original Plan**: Annual Trader Plan costing $360/year ($30/month billed annually).
-- **New Plan**: Prime Plan costing $250/month ($8.33 per day)
-
-**Scenario**: Suppose you decide to upgrade with 90 days left in your subscription year.
-
-- **Unused Time Calculation**: 90 days / 365 days = ~24.7% of the year left.
-- **Credit Amount**: 24.7% of $360 = $88.92.
-- **Application of Credit**: This $88.92 will be credited to your new Prime plan, extending the renewal date by 11 days.
-
-#### Example 2: Upgrading from Annual Starter Plan to Prime Plan
-
-- **Original Plan**: Annual Starter Plan costing $144/year ($12/month billed annually).
-- **New Plan**: Prime Plan costing $250/month. ($8.33 per day)
-
-**Scenario**: Suppose you decide to upgrade with 200 days left in your subscription year.
-
-- **Unused Time Calculation**: 200 days / 365 days = ~54.8% of the year left.
-- **Credit Amount**: 54.8% of $144 = $78.91.
-- **Application of Credit**: This $78.91 will be credited to your new Prime plan, extending the renewal date by 9 days.
+After one of these upgrades, [open a helpdesk ticket](https://dashboard.marketdata.app/marketdata/helpdesk), and we credit your account so that you get the full value of your unused time.
 
 ## How To Get More Information
 
-We strive to make upgrading your plan a seamless and value-retaining process. At Market Data, we guarantee that every day of your subscription is accounted for, ensuring that you can upgrade your plan whenever you wish without forfeiting the financial worth of your initial investment. Should you have any questions or uncertainties about upgrading, please don't hesitate to reach out to us.
+If you have a question about an upgrade, or want to check a credit before you upgrade, open a ticket with our [helpdesk](https://dashboard.marketdata.app/marketdata/helpdesk).
