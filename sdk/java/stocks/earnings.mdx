@@ -27,7 +27,7 @@ StockEarningsRequest.builder(String symbol)
     .from(LocalDate from)        // window start
     .to(LocalDate to)            // window end
     .countback(int n)            // N reports before `to`
-    .report(String report)       // "actual" or "estimated"
+    .report(String report)       // a specific fiscal report, e.g. "2023-Q4"
     .build()
 ```
 
@@ -42,7 +42,7 @@ public record StockEarning(
     @Nullable Integer fiscalQuarter,
     @Nullable ZonedDateTime date,
     @Nullable ZonedDateTime reportDate,
-    @Nullable String reportTime,        // "pre" / "post"
+    @Nullable String reportTime,        // "before open" / "after close" / "during market hours"
     @Nullable String currency,
     @Nullable Double reportedEPS,
     @Nullable Double estimatedEPS,

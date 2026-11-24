@@ -29,7 +29,7 @@ func (s *Service) Earnings(ctx context.Context, symbol string, opts ...EarningsO
 func (s *Service) GetEarnings(symbol string, opts ...EarningsOption) ([]Earning, error)
 ```
 
-Fetch earnings reports for one symbol. With no options the API returns its default set of recent and upcoming reports.
+Fetch earnings reports for one symbol. With no options the API returns only upcoming reports, from today through the next three years. For past reports, pass a date window such as `stocks.LastN(n)` or `stocks.Between(from, to)`.
 
 ### Parameters
 
@@ -89,8 +89,7 @@ func main() {
 **Output**
 
 ```
-FY2024 Q1  report 2024-01-25  EPS $2.18
-FY2024 Q2  report 2024-04-25  EPS n/a
+FY2027 Q1  report 2027-01-28  EPS n/a
 ```
 
 </TabItem>
@@ -185,14 +184,14 @@ func main() {
 ## Date Windows {/* #date-windows */}
 `stocks.WithEarningsWindow` takes a `DateWindow` — the same sealed-union value used by [Candles](/sdk/go/stocks/candles) and [News](/sdk/go/stocks/news). Build one with exactly one constructor:
 
-| Constructor                | Selects                              | API parameters      |
-|----------------------------|--------------------------------------|---------------------|
-| `stocks.OnDate(d)`         | a single calendar day                | `date=d`            |
-| `stocks.Between(from, to)` | an explicit closed range (inclusive) | `from=from&to=to`   |
-| `stocks.Since(from)`       | everything from a day onward         | `from=from`         |
-| `stocks.Until(to)`         | up to and including a day            | `to=to`             |
-| `stocks.LastN(n)`          | the `n` most recent reports          | `countback=n`       |
-| `stocks.LastNUntil(n, to)` | the `n` reports ending at a day      | `countback=n&to=to` |
+| Constructor                | Selects                              | API parameters           |
+|----------------------------|--------------------------------------|--------------------------|
+| `stocks.OnDate(d)`         | a single calendar day                | `date=d`                 |
+| `stocks.Between(from, to)` | an explicit closed range (inclusive) | `from=from&to=to`        |
+| `stocks.Since(from)`       | everything from a day onward         | `from=from`              |
+| `stocks.Until(to)`         | up to and including a day            | `to=to`                  |
+| `stocks.LastN(n)`          | the `n` most recent reports          | `countback=n&to=<today>` |
+| `stocks.LastNUntil(n, to)` | the `n` reports ending at a day      | `countback=n&to=to`      |
 
 ## Earning
 
@@ -203,7 +202,7 @@ type Earning struct {
 	FiscalQuarter      int       `json:"fiscalQuarter"` // Fiscal quarter (1-4)
 	Date               time.Time `json:"date"`          // Last calendar day of the fiscal period
 	ReportDate         time.Time `json:"reportDate"`    // When earnings were / will be reported
-	ReportTime         string    `json:"reportTime"`    // When during the day (before/after market, during hours)
+	ReportTime         string    `json:"reportTime"`    // "before open", "after close", "during market hours", or ""
 	Currency           string    `json:"currency"`      // Currency of the report (may be empty for future earnings)
 	ReportedEPS        *float64  `json:"reportedEPS"`   // Actual reported EPS (nil for future earnings)
 	EstimatedEPS       *float64  `json:"estimatedEPS"`  // Consensus analyst estimate
@@ -221,7 +220,7 @@ Represents a single earnings report, one per fiscal quarter. Timestamps are norm
 - `FiscalYear` / `FiscalQuarter` — the fiscal year and quarter (1-4) of the report.
 - `Date` — the last calendar day of the fiscal period.
 - `ReportDate` — the date the earnings were or will be reported.
-- `ReportTime` — when during the day the report is/was released (before market, after market, or during hours).
+- `ReportTime` — when during the day the report is/was released: `"before open"`, `"after close"` or `"during market hours"`; empty when the API sends `null`.
 - `Currency` — the currency of the report; may be empty for future earnings.
 - `ReportedEPS` — the actual reported EPS; `nil` for earnings not yet reported.
 - `EstimatedEPS` — the consensus analyst estimate; `nil` when unavailable.
