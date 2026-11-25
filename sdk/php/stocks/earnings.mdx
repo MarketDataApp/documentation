@@ -52,7 +52,7 @@ Get historical earnings per share data or a future earnings calendar for a stock
 
 - `from` (string, optional)
 
-  The earliest earnings report to include. If omitted without `countback`, returns recent and upcoming earnings. Accepted formats: ISO 8601, Unix timestamp.
+  The earliest earnings report to include. If `from`, `to` and `date` are all omitted, returns only upcoming earnings, from today through the next three years. With `from` alone, the window ends three years after `from`. Accepted formats: ISO 8601, Unix timestamp.
 
 - `to` (string, optional)
 
@@ -60,7 +60,7 @@ Get historical earnings per share data or a future earnings calendar for a stock
 
 - `countback` (int, optional)
 
-  Number of earnings reports to return before `to`. Use instead of `from`.
+  Number of earnings reports to return before `to`. Use instead of `from`, and set `to` as well: without `to`, `countback` counts back from the end of the upcoming window.
 
 - `date` (string, optional)
 
@@ -77,7 +77,7 @@ Get historical earnings per share data or a future earnings calendar for a stock
   An Earnings response object containing the earnings data.
 
 <Tabs>
-<TabItem value="Example (Recent Earnings)" label="Example (Recent Earnings)">
+<TabItem value="Example (Upcoming Earnings)" label="Example (Upcoming Earnings)">
 
 ```php
 <?php
@@ -86,14 +86,14 @@ use MarketDataApp\Client;
 
 $client = new Client();
 
-// Get recent and upcoming earnings for AAPL
+// Get upcoming earnings for AAPL
 $earnings = $client->stocks->earnings('AAPL');
 
 foreach ($earnings->earnings as $report) {
     echo "Date: " . $report->report_date->format('Y-m-d') . "\n";
     echo "Fiscal Year: " . $report->fiscal_year . " Q" . $report->fiscal_quarter . "\n";
     echo "EPS Estimate: $" . $report->estimated_eps . "\n";
-    echo "EPS Actual: $" . ($report->reported_eps ?? 'N/A') . "\n";
+    echo "EPS Actual: " . ($report->reported_eps !== null ? '$' . $report->reported_eps : 'N/A') . "\n";
     echo "Surprise: " . ($report->surprise_eps ?? 'N/A') . "\n\n";
 }
 ```
@@ -101,15 +101,9 @@ foreach ($earnings->earnings as $report) {
 **Output**
 
 ```
-Date: 2024-01-25
-Fiscal Year: 2024 Q1
-EPS Estimate: $2.10
-EPS Actual: $2.18
-Surprise: 0.08
-
-Date: 2024-04-25
-Fiscal Year: 2024 Q2
-EPS Estimate: $1.50
+Date: 2027-01-28
+Fiscal Year: 2027 Q1
+EPS Estimate: $2.9
 EPS Actual: N/A
 Surprise: N/A
 ```
@@ -237,7 +231,7 @@ Represents a single earnings report.
 - `fiscal_quarter` (int): The fiscal quarter (1-4).
 - `date` (Carbon): The last calendar day that corresponds to this earnings report (period end date).
 - `report_date` (Carbon): The date the earnings report was released or is projected to be released.
-- `report_time` (string): Time of day for the report ("before market open", "after market close", or "during market hours").
+- `report_time` (string): Time of day for the report ("before open", "after close", or "during market hours").
 - `currency` (string|null): The currency of the earnings report.
 - `reported_eps` (float|null): Actual reported EPS. Typically non-GAAP unless the company does not report non-GAAP earnings. Null for future reports.
 - `estimated_eps` (float|null): The average consensus EPS estimate by Wall Street analysts.

@@ -12,6 +12,10 @@ This formula can only be used with paid plans. Free plans or trial plans will no
 
 Fetches current or historical earnings data for a stock ticker.
 
+:::info[Upcoming reports by default]
+Without a start date, `EARNINGS` returns only upcoming reports: from today through the next three years. For past reports, add a start date and an end date, as in the third sample below.
+:::
+
 ## Sample Usage
 ```excel-formula
 =EARNINGS("AAPL")
@@ -31,7 +35,7 @@ Fetches current or historical earnings data for a stock ticker.
   - "year" – The fiscal year for the earnings report.
   - "quarter" – The fiscal quarter for the earnings report.
   - "date" – The date of the earnings report. This is usually expressed as the last day of the quarter.
-  - "report date" – The date the company reported the earnings.
+  - "report date" – The date the company reported the earnings, or the estimated date of an upcoming report.
   - "report time" - The time the company plans to report earnings.
   - "currency" - The currency earnings are reported in.
   - "reported eps" - The earnings per share reported by the company.
@@ -41,7 +45,7 @@ Fetches current or historical earnings data for a stock ticker.
   - "updated" - The date and time the earnings data for this ticker was lasted refreshed.
   - "all" – Returns all values.
 
-- **start date** _(OPTIONAL)_ The start date when fetching data. If start date is specified, but end date is not, only the single day’s data is returned.
+- **start date** _(OPTIONAL)_ The start date when fetching data. If start date is specified, but end date is not, only the single day’s data is returned. Without a start date, only upcoming reports are returned.
 
 - **end date** _(OPTIONAL)_ The end date when fetching data, or the number of calendar days (not trading days) from start date for which to return data.
 
