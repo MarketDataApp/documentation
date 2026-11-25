@@ -12,14 +12,14 @@ When you upgrade your plan before the current billing period ends, you keep the 
 
 - **Days in the current period**: the number of days from the start of your current period to its end date. For a monthly plan this is 28 to 31 days. For an annual plan it is 365 days, or 366 when the period includes February 29.
 - **Unused days**: the days after the day of the upgrade and before the end date of the current period. The day of the upgrade counts as used.
-- **Amount paid for the current period**: the price of the current period after any discount. If the current period is the first period of a plan that you got by an earlier upgrade, the credit from that earlier upgrade counts as paid.
+- **Amount paid for the current period**: the amount you paid for the current period, after any discount. If the current period is the first period of a plan that you got by an earlier upgrade, the credit from that earlier upgrade counts as paid.
 - The credit is rounded to the nearest cent.
 
 An upgrade during a free trial gives no credit, because nothing was paid for the trial.
 
 ## How the Credit Is Applied
 
-1. The credit comes off the first payment of your new plan. If the credit is larger than that payment, you pay nothing for the first period, and we refund the difference to the last payment of your current plan.
+1. The credit comes off the first payment of your new plan.
 2. Your new plan starts on the day of the upgrade.
 3. Your new plan renews one full billing period after the day of the upgrade: one month later for a monthly plan, one year later for an annual plan.
 
@@ -36,7 +36,7 @@ The credit does not extend the renewal date of the new plan.
 
 ## Upgrades Credited by the Helpdesk
 
-These upgrades use a flat upgrade price, and the unused time of your current plan does not come off it automatically:
+These upgrades have a flat upgrade price. You pay that price for the first period of your new plan, and the unused time of your current plan does not come off it automatically:
 
 - from an annual plan (Starter annual or Trader annual) to Quant
 - from Trader annual to Prime
