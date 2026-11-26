@@ -60,6 +60,7 @@ Fetches a current option chain, or the end-of-day option chain of a past trading
   - "vega" - The vega of the option.
   - "all" – Returns all values.
   - "noheaders" – Returns values without column headers.
+  - "bsm", "bjs", "crr", "baw" - The pricing model of the implied volatility and the greeks on a historical chain (with an **as of** date; paid plans only). Without one, American-style contracts use Bjerksund-Stensland and European-style contracts use Black-Scholes-Merton.
 - **expiration date** - _(OPTIONAL)_ - The expiration date of the option chain, or a range of expiration dates. Options from the selected expirations will be returned. If no value is specified, the next monthly expiration will be used.
   - "date" - A single date in YYYY-MM-DD or MM/DD/YYYY format enclosed between quotes.
   - \[date cell reference] - A cell reference to a date in Sheets.
@@ -80,7 +81,6 @@ Fetches a current option chain, or the end-of-day option chain of a past trading
   - "string of decimals" - Seperate multiple deltas with commas. Example: `".50,.60.,70"`
   - "logical expression" - A logical expression. Example: `"<200 delta <.50"`
   - "limit \[number]" - Limit the output to \[number] strikes closest to the money. Example: `"limit 4"`
-  - Deltas are only available for current chains. Selecting strikes by delta together with an **as of** date returns an error; use strikes instead.
 - **filters** _(OPTIONAL)_ – Use specific keywords to further filter the option chain.
   - "call", "calls" - Only return calls.
   - "put", "puts" - Only return puts.
@@ -114,7 +114,7 @@ Without an **as of** date, the `OPTIONCHAIN` function fetches current option cha
 With an **as of** date, `OPTIONCHAIN` returns the chain as it closed on that trading day.
 
 - Only end-of-day chains are available. There are no intraday snapshots, and only one date per formula.
-- The columns are the same as for a current chain. Implied volatility and the greeks (delta, gamma, theta, vega) are blank, and selecting strikes by delta is not available.
+- The columns are the same as for a current chain.
 - Open interest is the figure settled out of the previous session, as described under the "open interest" attribute.
 - A date in the future, a weekend or a market holiday returns an error, and so does today's date while the market is open. After the close, today's chain is available as soon as its end-of-day data is published; until then the formula returns a "not available yet" error.
 - A relative date such as "last session" is resolved when the formula calculates. It updates when the sheet is refreshed or a referenced cell changes, not on its own as days pass.

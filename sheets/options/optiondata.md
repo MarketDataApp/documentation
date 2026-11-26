@@ -55,6 +55,7 @@ Fetches current or historical option quotes from Market Data, for one option con
   - "vega" - The vega of the option.
   - "all" – Returns all values.
   - "noheaders" – Returns values without column headers.
+  - "bsm", "bjs", "crr", "baw" - The pricing model of the implied volatility and the greeks on a historical request (with a **start date**; paid plans only). Without one, American-style contracts use Bjerksund-Stensland and European-style contracts use Black-Scholes-Merton.
 - **start date** _(OPTIONAL)_ – The start date when fetching historical data. If start date is specified, but endDate is not, only the single day's data is returned. When fetching more than one contract, only a single date may be used.
 - **end date** _(OPTIONAL)_ – The end date when fetching historical data, or the number of calendar days (not trading days) from startDate for which to return data.
 
