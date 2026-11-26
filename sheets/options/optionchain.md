@@ -17,6 +17,7 @@ Fetches a current option chain, or the end-of-day option chain of a past trading
 =OPTIONCHAIN("AAPL","side,strike,bid,ask,","1/17/2025")
 =OPTIONCHAIN("AAPL","all,noheaders","60 DTE","150,160)
 =OPTIONCHAIN("AAPL","all","60 DTE","100-200","calls")
+=OPTIONCHAIN("AAPL","strike,bid,ask","12/01/2026 to 12/31/2026","200-250","puts")
 ```
 ### Historical Chains
 ```excel-formula
@@ -59,10 +60,14 @@ Fetches a current option chain, or the end-of-day option chain of a past trading
   - "vega" - The vega of the option.
   - "all" – Returns all values.
   - "noheaders" – Returns values without column headers.
-- **expiration date** - _(OPTIONAL)_ - The expiration date of the option chain. Options from this expiration will be returned. If no value is specified, the next monthly expiration will be used.
+- **expiration date** - _(OPTIONAL)_ - The expiration date of the option chain, or a range of expiration dates. Options from the selected expirations will be returned. If no value is specified, the next monthly expiration will be used.
   - "date" - A single date in YYYY-MM-DD or MM/DD/YYYY format enclosed between quotes.
   - \[date cell reference] - A cell reference to a date in Sheets.
   - "dte _number_" - Days to expiry. Return the expiration date most closely matching the indicated number. For example, if today was Jan 1 and you used a DTE of 45, the expiration closest to Feb 15 would be selected. With an **as of** date, the days are counted from that date instead of today.
+  - "_date_ to _date_" - A range of expiration dates. Returns every expiration from the first date through the second, both included. Example: `"12/01/2026 to 12/31/2026"`. For a range of days to expiration, use a dash instead: `"30-60 DTE"`.
+  - "from _date_", "to _date_" - Every expiration from that date on, or up to that date. Example: `"from 12/01/2026"`.
+  - \[two date cells] - A range of two cells, side by side or one above the other, read as the first and the last expiration date. Example: `B1:C1`.
+  - A date range with a missing date, or with more than two dates, returns an error.
   - The expiration date is always the contract's expiration, never the quote date. To see a chain as it was on a past day, use **as of**.
 - **strikes** _(OPTIONAL)_ – Limit the strikes returned from the option chain formula to only the specified strikes or deltas. The formula will assume strikes for numbers greater than 1 and deltas for numbers less than 1 or when the word `delta` is placed before the number(s).
   - \[number] - A single number or a cell reference to a number. Example: `150`
