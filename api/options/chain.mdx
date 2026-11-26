@@ -181,8 +181,6 @@ foreach (var contract in chain.Values)
 
 ## Response Example
 
-This is a current chain, so the Greek columns are populated. A historical request (`date=`) returns `null` for all five — see [the note on the `date` parameter](#request-parameters).
-
 ```json
 {
   "s": "ok",
@@ -230,9 +228,23 @@ This is a current chain, so the Greek columns are populated. A historical reques
 
   Use to lookup a historical end of day options chain from a specific trading day. If no date parameter is specified the chain will be the most current chain available during market hours. When the market is closed the chain will be from the previous session. Accepted date inputs: `ISO 8601`, `unix`, `spreadsheet`.
 
-  :::info[Historical chains carry no Greeks]
-  Greeks and implied volatility are not stored historically. On any request that includes `date`, the `iv`, `delta`, `gamma`, `theta` and `vega` columns are returned as `null`, on every plan. For the same reason the `delta` filter cannot be combined with `date` (the request is rejected with `400`); filter historical chains by `strike` instead.
-  :::
+- **model** `string`
+
+  The pricing model of the implied volatility and the Greeks on a historical request (`date`). Paid plans only. Without `model`, American-style contracts use Bjerksund-Stensland and European-style contracts use Black-Scholes-Merton.
+
+  - `bsm`: Black-Scholes-Merton for every contract.
+  - `bjs`: Bjerksund-Stensland for American-style contracts.
+  - `crr`: Cox-Ross-Rubinstein (a binomial tree) for American-style contracts.
+  - `baw`: Barone-Adesi-Whaley for American-style contracts.
+  - `default`: the default models, the same as no `model`.
+
+  With `bjs`, `crr` or `baw`, European-style contracts use Black-Scholes-Merton.
+
+  Errors:
+
+  - `402 Payment Required` on a free or trial plan, or without a token (also for the [demo symbol](/api/authentication#demo-the-api-with-no-authentication) AAPL): `The model parameter is only available for paying users.`
+  - `400 Bad Request` on a current chain (no `date`).
+  - `400 Bad Request` for an unknown name: `Invalid model. Use one of: bsm, bjs, crr, baw.`
 
 </TabItem>
 
@@ -318,16 +330,6 @@ When combining the `weekly`, `monthly`, and `quarterly` parameters, only identic
 
   :::tip
   Filter strikes using the absolute value of the delta. The values used will always return both sides of the chain (e.g. puts & calls). This means you must filter using `side` to exclude puts or calls. Delta cannot be used to filter the side of the chain, only the strikes.
-  :::
-
-  :::caution[Not available on historical requests]
-  `delta` cannot be combined with the `date` parameter. Greeks are not stored historically, so there is no delta to filter on, and the request is rejected with `400 Bad Request`:
-
-  ```json
-  {"s":"error","errmsg":"The 'delta' parameter is not supported on historical requests for now."}
-  ```
-
-  Use the `strike` filter for historical chains.
   :::
 
 - **strikeLimit** `number`
@@ -496,10 +498,6 @@ The `am` and `pm` parameters apply only to index options. On stock and ETF optio
 
   The date and time of this quote snapshot. All timestamps use US Eastern Time (America/New_York). See [Response Timezone](/docs/api/dates-and-times#response-timezone) for details.
 
-:::note[Greeks on historical requests]
-`iv`, `delta`, `gamma`, `theta` and `vega` are only populated on current (real-time, delayed or end-of-day) chains. On any request that includes the `date` parameter these columns are returned as `null`, on every plan, because Greeks and implied volatility are not stored historically.
-:::
-
 - **iv** `array[number]`
 
   The [implied volatility](https://www.investopedia.com/terms/i/iv.asp) of the option.
@@ -565,11 +563,10 @@ The type of option chain data you receive depends on your user type and OPRA ent
 
 One historical row does not carry one as-of time. On a `date=D` request:
 
-| Field                                                    | As of                                        |
-|----------------------------------------------------------|----------------------------------------------|
-| `openInterest`                                           | before the open on D, settled out of D−1     |
-| `bid`, `ask`, `mid`, `last`, `underlyingPrice`, `volume` | the row's `updated` timestamp, 16:00 ET on D |
-| `iv`, `delta`, `gamma`, `theta`, `vega`                  | not returned — see the note on `date` above  |
+| Field                                                                                             | As of                                        |
+|---------------------------------------------------------------------------------------------------|----------------------------------------------|
+| `openInterest`                                                                                    | before the open on D, settled out of D−1     |
+| `bid`, `ask`, `mid`, `last`, `underlyingPrice`, `volume`, `iv`, `delta`, `gamma`, `theta`, `vega` | the row's `updated` timestamp, 16:00 ET on D |
 
 Two consequences matter when you build a point-in-time dataset:
 
