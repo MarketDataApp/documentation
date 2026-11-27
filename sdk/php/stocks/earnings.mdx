@@ -91,8 +91,9 @@ $earnings = $client->stocks->earnings('AAPL');
 
 foreach ($earnings->earnings as $report) {
     echo "Date: " . $report->report_date->format('Y-m-d') . "\n";
-    echo "Fiscal Year: " . $report->fiscal_year . " Q" . $report->fiscal_quarter . "\n";
-    echo "EPS Estimate: $" . $report->estimated_eps . "\n";
+    echo "Report Time: " . ($report->report_time ?? 'N/A') . "\n";
+    echo "Fiscal Year: " . ($report->fiscal_year ?? '?') . " Q" . ($report->fiscal_quarter ?? '?') . "\n";
+    echo "EPS Estimate: " . ($report->estimated_eps !== null ? '$' . $report->estimated_eps : 'N/A') . "\n";
     echo "EPS Actual: " . ($report->reported_eps !== null ? '$' . $report->reported_eps : 'N/A') . "\n";
     echo "Surprise: " . ($report->surprise_eps ?? 'N/A') . "\n\n";
 }
@@ -102,6 +103,7 @@ foreach ($earnings->earnings as $report) {
 
 ```
 Date: 2027-01-28
+Report Time: after close
 Fiscal Year: 2027 Q1
 EPS Estimate: $2.9
 EPS Actual: N/A
@@ -134,9 +136,9 @@ foreach ($earnings->earnings as $report) {
     $surpriseIndicator = $surprise > 0 ? '↑' : ($surprise < 0 ? '↓' : '-');
 
     echo sprintf(
-        "Q%d %d: EPS $%.2f (Est: $%.2f) %s\n",
-        $report->fiscal_quarter,
-        $report->fiscal_year,
+        "Q%s %s: EPS $%.2f (Est: $%.2f) %s\n",
+        $report->fiscal_quarter ?? '?',
+        $report->fiscal_year ?? '?',
         $report->reported_eps ?? 0,
         $report->estimated_eps ?? 0,
         $surpriseIndicator
@@ -166,10 +168,10 @@ echo "Last 4 Quarterly Earnings:\n";
 
 foreach ($earnings->earnings as $report) {
     echo sprintf(
-        "%s: Q%d FY%d - $%.2f EPS\n",
+        "%s: Q%s FY%s - $%.2f EPS\n",
         $report->report_date->format('Y-m-d'),
-        $report->fiscal_quarter,
-        $report->fiscal_year,
+        $report->fiscal_quarter ?? '?',
+        $report->fiscal_year ?? '?',
         $report->reported_eps ?? 0
     );
 }
@@ -208,11 +210,11 @@ echo $earnings->getCsv();
 class Earning
 {
     public string $symbol;
-    public int $fiscal_year;
-    public int $fiscal_quarter;
+    public ?int $fiscal_year;
+    public ?int $fiscal_quarter;
     public Carbon $date;
     public Carbon $report_date;
-    public string $report_time;
+    public ?string $report_time;
     public ?string $currency;
     public ?float $reported_eps;
     public ?float $estimated_eps;
@@ -227,11 +229,11 @@ Represents a single earnings report.
 ### Properties
 
 - `symbol` (string): The stock ticker symbol.
-- `fiscal_year` (int): The fiscal year of the earnings report.
-- `fiscal_quarter` (int): The fiscal quarter (1-4).
+- `fiscal_year` (int|null): The fiscal year of the earnings report. Can be null for an upcoming report.
+- `fiscal_quarter` (int|null): The fiscal quarter (1-4). Can be null for an upcoming report.
 - `date` (Carbon): The last calendar day that corresponds to this earnings report (period end date).
 - `report_date` (Carbon): The date the earnings report was released or is projected to be released.
-- `report_time` (string): Time of day for the report ("before open", "after close", or "during market hours").
+- `report_time` (string|null): Time of day for the report ("before open", "after close", or "during market hours"). Null for an upcoming report when only its day is known.
 - `currency` (string|null): The currency of the earnings report.
 - `reported_eps` (float|null): Actual reported EPS. Typically non-GAAP unless the company does not report non-GAAP earnings. Null for future reports.
 - `estimated_eps` (float|null): The average consensus EPS estimate by Wall Street analysts.
